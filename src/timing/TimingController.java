@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2004, Sun Microsystems, Inc
+ * Copyright (c) 2005, Sun Microsystems, Inc
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -12,7 +12,7 @@
  *     copyright notice, this list of conditions and the following 
  *     disclaimer in the documentation and/or other materials provided 
  *     with the distribution.
- *   * Neither the name of the Ping demo project nor the names of its
+ *   * Neither the name of the TimingFramework project nor the names of its
  *     contributors may be used to endorse or promote products derived 
  *     from this software without specific prior written permission.
  * 
@@ -56,7 +56,7 @@ public class TimingController {
     private long currentStartTime;  // Tracks current cycle start time
     private int currentCycle = 0;   // Tracks number of cycles so far
     private Direction direction = Direction.FORWARD;	// Tracks current direction
-    private boolean intNumCycles;
+    private boolean intRepeatCount;
 
     private Envelope envelope;
     private Cycle cycle;
@@ -67,7 +67,7 @@ public class TimingController {
         BACKWARD};
 
     /**
-     * Used to specify indefinite Cycle duration or Envelope numCycles
+     * Used to specify indefinite Cycle duration or Envelope repeatCount
      * @see Cycle
      * @see Envelope
      * */
@@ -89,13 +89,13 @@ public class TimingController {
 	this.envelope = envelope;
 
 	// Set convenience variable: do we have an integer number of cycles?
-	intNumCycles = 
-	    (Math.rint(envelope.getNumCycles()) == envelope.getNumCycles());
+	intRepeatCount = 
+	    (Math.rint(envelope.getRepeatCount()) == envelope.getRepeatCount());
 
 	// Create internal Timer object
 	TimerTarget timerTarget = new TimerTarget();
 	timer = new Timer(cycle.getResolution(), timerTarget);
-	timer.setInitialDelay(envelope.getStartDelay());
+	timer.setInitialDelay(envelope.getBegin());
 
 	/**
 	 * hack workaround for starting the Toolkit thread before any Timer stuff
@@ -114,7 +114,7 @@ public class TimingController {
      */
     public void start() {
 	// Initialize start time variables to current time
-	startTime = (System.nanoTime() / 1000000) + envelope.getStartDelay();
+	startTime = (System.nanoTime() / 1000000) + envelope.getBegin();
 	currentStartTime = startTime;
 	timer.start();
     }
@@ -129,7 +129,7 @@ public class TimingController {
     /**
      * This method is optional; animations will always stop on their own
      * if TimingController is provided with appropriate values for
-     * duration and numCycles in the constructor.  But if the application 
+     * duration and repeatCount in the constructor.  But if the application 
      * wants to stop the timer mid-stream, this is the method to call.
      */
     public void stop() {
@@ -172,8 +172,8 @@ public class TimingController {
 	    long totalElapsedTime = currentTime - startTime;
 	    double currentCycle = (double)totalElapsedTime / cycle.getDuration();
 
-	    if ((envelope.getNumCycles() != INFINITE) &&
-		currentCycle >= envelope.getNumCycles())
+	    if ((envelope.getRepeatCount() != INFINITE) &&
+		currentCycle >= envelope.getRepeatCount())
 	    {
 		// Envelope done: stop based on end behavior
 		timer.stop();
@@ -181,7 +181,7 @@ public class TimingController {
 		case HOLD:
 		    // Make sure we send a final end value
 		    float endFraction;
-		    if (intNumCycles) {
+		    if (intRepeatCount) {
 			// If supposed to run integer number of cycles, hold
 			// on integer boundary
 			if (direction == Direction.BACKWARD)

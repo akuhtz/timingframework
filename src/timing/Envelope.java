@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2004, Sun Microsystems, Inc
+ * Copyright (c) 2005, Sun Microsystems, Inc
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -12,7 +12,7 @@
  *     copyright notice, this list of conditions and the following 
  *     disclaimer in the documentation and/or other materials provided 
  *     with the distribution.
- *   * Neither the name of the Ping demo project nor the names of its
+ *   * Neither the name of the TimingFramework project nor the names of its
  *     contributors may be used to endorse or promote products derived 
  *     from this software without specific prior written permission.
  * 
@@ -66,8 +66,8 @@ public class Envelope {
     };
     
     // Private variables to hold the internal values
-    private double numCycles;
-    private int startDelay;
+    private double repeatCount;
+    private int begin;
     private RepeatBehavior repeatBehavior;
     private EndBehavior endBehavior;
 
@@ -75,11 +75,11 @@ public class Envelope {
     /**
      * Constructs the Envelope object for use in creating a 
      * TimingController object.
-     * @param numCycles fractional value representing the number of
+     * @param repeatCount fractional value representing the number of
      * cycles that should be run before this Envelope ends.  Value
      * can be any positive double value or TimingController.INIFINITE
      * to representing an unending Envelope.
-     * @param startDelay number of milliseconds to delay before starting
+     * @param begin number of milliseconds to delay before starting
      * the first cycle.
      * @param repeatBehavior RepeatBehavior of each successive
      * cycle.
@@ -92,42 +92,42 @@ public class Envelope {
      * @exception IllegalArgumentException if any parameters have invalid
      * values
      */
-    public Envelope(double numCycles, int startDelay, 
+    public Envelope(double repeatCount, int begin, 
 		    RepeatBehavior repeatBehavior,
 		    EndBehavior endBehavior)
     {
 	// First, check for bad parameters
-	if ((startDelay < 0) ||
+	if ((begin < 0) ||
 	    (endBehavior == null) ||
-	    ((numCycles != TimingController.INFINITE && numCycles <= 0)))
+	    ((repeatCount != TimingController.INFINITE && repeatCount <= 0)))
 	{
 	    String errorMessage = "Errors: ";
-	    if (startDelay < 0) {
-		errorMessage += "startDelay " + startDelay + 
+	    if (begin < 0) {
+		errorMessage += "begin " + begin + 
 				" cannot be negative\n";
 	    }
 	    if (endBehavior == null) {
 		errorMessage += "endBehavior cannot be null\n";
 	    }
-	    if ((numCycles != TimingController.INFINITE && numCycles <= 0))
+	    if ((repeatCount != TimingController.INFINITE && repeatCount <= 0))
 	    {
 		errorMessage += "cannot have zero or negative value of " +
-				"numCycles (" + numCycles + ")\n";
+				"repeatCount (" + repeatCount + ")\n";
 	    }
             throw new IllegalArgumentException(errorMessage);
 	}
-	this.numCycles = numCycles;
-	this.startDelay = startDelay;
+	this.repeatCount = repeatCount;
+	this.begin = begin;
 	this.repeatBehavior = repeatBehavior;
 	this.endBehavior = endBehavior;
     }
 
-    public double getNumCycles() {
-	return numCycles;
+    public double getRepeatCount() {
+	return repeatCount;
     }
 
-    public int getStartDelay() {
-	return startDelay;
+    public int getBegin() {
+	return begin;
     }
 
     public RepeatBehavior getRepeatBehavior() {
