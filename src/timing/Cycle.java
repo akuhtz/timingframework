@@ -64,7 +64,7 @@ public class Cycle {
 		errorMessage += "resolution " + resolution + 
 				" cannot be negative\n";
 	    }
-            throw new IllegalArgumentException(errorMessage);
+	    throw new IllegalArgumentException(errorMessage);
 	}
 	this.duration = duration;
 	this.resolution = resolution;

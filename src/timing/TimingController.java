@@ -63,8 +63,8 @@ public class TimingController {
 
     // Used internally to track current animation direction
     private enum Direction {
-        FORWARD,
-        BACKWARD};
+	FORWARD,
+	BACKWARD};
 
     /**
      * Used to specify indefinite Cycle duration or Envelope repeatCount
