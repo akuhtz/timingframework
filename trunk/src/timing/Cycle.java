@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2004, Sun Microsystems, Inc
+ * Copyright (c) 2005, Sun Microsystems, Inc
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -12,7 +12,7 @@
  *     copyright notice, this list of conditions and the following 
  *     disclaimer in the documentation and/or other materials provided 
  *     with the distribution.
- *   * Neither the name of the Ping demo project nor the names of its
+ *   * Neither the name of the TimingFramework project nor the names of its
  *     contributors may be used to endorse or promote products derived 
  *     from this software without specific prior written permission.
  * 

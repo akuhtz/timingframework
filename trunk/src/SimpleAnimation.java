@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2004, Sun Microsystems, Inc
+ * Copyright (c) 2005, Sun Microsystems, Inc
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -12,7 +12,7 @@
  *     copyright notice, this list of conditions and the following 
  *     disclaimer in the documentation and/or other materials provided 
  *     with the distribution.
- *   * Neither the name of the Ping demo project nor the names of its
+ *   * Neither the name of the TimingFramework project nor the names of its
  *     contributors may be used to endorse or promote products derived 
  *     from this software without specific prior written permission.
  * 
@@ -60,15 +60,17 @@ public class SimpleAnimation {
      * Creates the window and sub-panels and makes it all visible
      */
     private static void createAndShowGUI() {
-	JFrame f = new JFrame();
+        UIManager.put("swing.boldMetal", Boolean.FALSE);
+	JFrame f = new JFrame("Timing Demo");
 	f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	f.setLayout(new BorderLayout());
+        f.setSize(500, 500);
 	AnimationView animationView = new AnimationView();
-	animationView.setPreferredSize(new Dimension(500, 500));
+	//animationView.setPreferredSize(new Dimension(500, 500));
 	ControlPanel controlPanel = new ControlPanel(animationView);
-	f.add(controlPanel, BorderLayout.WEST);
-	f.add(animationView, BorderLayout.CENTER);
-	f.pack();
+	f.add(controlPanel, BorderLayout.CENTER);
+	//f.add(animationView, BorderLayout.CENTER);
+	//f.pack();
 	f.setVisible(true);
     }
 
@@ -124,6 +126,10 @@ class AnimationView extends JComponent {
      * is in the animation cycle (given by currentFraction).
      */
     public void paintComponent(Graphics g) {
+        if (isOpaque()) {
+            g.setColor(getBackground());
+            g.fillRect(0, 0, getWidth(), getHeight());
+        }
 	if (prevW != getWidth() || prevH != getHeight()) {
 	    // Handle window resizing
 	    prevW = getWidth();
@@ -143,10 +149,10 @@ class AnimationView extends JComponent {
  * starting the animation running.
  */
 class ControlPanel extends JPanel implements ActionListener {
-    JFormattedTextField startDelayField;
+    JFormattedTextField beginField;
     JFormattedTextField durationField;
     JFormattedTextField resolutionField;
-    JFormattedTextField numCyclesField;
+    JFormattedTextField repeatCountField;
     JRadioButton repeatButton, reverseButton;
     JRadioButton holdButton, resetButton;
     Animation animation = null;
@@ -162,47 +168,66 @@ class ControlPanel extends JPanel implements ActionListener {
     public ControlPanel(AnimationView animationView) {
 	this.animationView = animationView;
 
-	JPanel textPanel;
-	setLayout(new GridLayout(7, 1));
+	setLayout(new GridBagLayout());
 	NumberFormat intFormat = NumberFormat.getNumberInstance();
 	intFormat.setParseIntegerOnly(true);
 	NumberFormat doubleFormat = NumberFormat.getNumberInstance();
 
-	// startDelay
-	textPanel = new JPanel();
-	textPanel.setLayout(new GridLayout(1, 2));
-	textPanel.add(new JLabel("startDelay"));
-	startDelayField = new JFormattedTextField(intFormat);
-	startDelayField.setValue(0);
-	textPanel.add(startDelayField);
-	add(textPanel);
+	// begin
+	add(new JLabel("Time to Begin (ms):"),
+            new GridBagConstraints(0, 0, 1, 1, 0, 0,
+                                   GridBagConstraints.EAST, 
+                                   GridBagConstraints.NONE,
+                                   new Insets(5, 5, 0, 0), 0, 0));
+	beginField = new JFormattedTextField(intFormat);
+	beginField.setValue(0);
+        add(beginField, 
+            new GridBagConstraints(1, 0, 1, 1, .5, 0,
+                                   GridBagConstraints.CENTER, 
+                                   GridBagConstraints.HORIZONTAL,
+                                   new Insets(5, 5, 0, 0), 0, 0));
 
 	// duration
-	textPanel = new JPanel();
-	textPanel.setLayout(new GridLayout(1, 2));
-	textPanel.add(new JLabel("duration"));
+        add(new JLabel("Cycle Duration (ms):"),
+            new GridBagConstraints(2, 0, 1, 1, 0, 0,
+                                   GridBagConstraints.EAST, 
+                                   GridBagConstraints.NONE,
+                                   new Insets(5, 5, 0, 0), 0, 0));
 	durationField = new JFormattedTextField(intFormat);
 	durationField.setValue(1000);
-	textPanel.add(durationField);
-	add(textPanel);
+	add(durationField, 
+            new GridBagConstraints(3, 0, 1, 1, .5, 0,
+                                   GridBagConstraints.CENTER, 
+                                   GridBagConstraints.HORIZONTAL,
+                                   new Insets(5, 5, 0, 5), 0, 0));
 
 	// resolution
-	textPanel = new JPanel();
-	textPanel.setLayout(new GridLayout(1, 2));
-	textPanel.add(new JLabel("resolution"));
+	add(new JLabel("Resolution (ms):"),
+            new GridBagConstraints(0, 1, 1, 1, 0, 0,
+                                   GridBagConstraints.EAST, 
+                                   GridBagConstraints.NONE,
+                                   new Insets(5, 5, 0, 0), 0, 0));
 	resolutionField = new JFormattedTextField(intFormat);
 	resolutionField.setValue(30);
-	textPanel.add(resolutionField);
-	add(textPanel);
-
-	// numCycles: Note that this is a non-integer field
-	textPanel = new JPanel();
-	textPanel.setLayout(new GridLayout(1, 2));
-	textPanel.add(new JLabel("numCycles"));
-	numCyclesField = new JFormattedTextField(doubleFormat);
-	numCyclesField.setValue(2);
-	textPanel.add(numCyclesField);
-	add(textPanel);
+	add(resolutionField, 
+            new GridBagConstraints(1, 1, 1, 1, .5, 0,
+                                   GridBagConstraints.CENTER, 
+                                   GridBagConstraints.HORIZONTAL,
+                                   new Insets(5, 5, 0, 0), 0, 0));
+        
+	// repeatCount: Note that this is a non-integer field
+	add(new JLabel("RepeatCount:"),
+            new GridBagConstraints(2, 1, 1, 1, 0, 0,
+                                   GridBagConstraints.EAST, 
+                                   GridBagConstraints.NONE,
+                                   new Insets(5, 5, 0, 0), 0, 0));
+	repeatCountField = new JFormattedTextField(doubleFormat);
+	repeatCountField.setValue(2);
+	add(repeatCountField, 
+            new GridBagConstraints(3, 1, 1, 1, .5, 0,
+                                   GridBagConstraints.CENTER, 
+                                   GridBagConstraints.HORIZONTAL,
+                                   new Insets(5, 5, 0, 5), 0, 0));
 
 	// RepeatBehavior radio buttons
 	repeatButton = new JRadioButton("Repeat", true);
@@ -210,11 +235,16 @@ class ControlPanel extends JPanel implements ActionListener {
 	ButtonGroup group = new ButtonGroup();
 	group.add(repeatButton);
 	group.add(reverseButton);
+        
 	JPanel buttonPanel = new JPanel();
-	buttonPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
+	buttonPanel.setBorder(new TitledBorder("Repeat Behavior"));
 	buttonPanel.add(repeatButton);
 	buttonPanel.add(reverseButton);
-	add(buttonPanel);
+	add(buttonPanel, 
+            new GridBagConstraints(0, 2, 2, 1, .5, 0,
+                                   GridBagConstraints.CENTER, 
+                                   GridBagConstraints.HORIZONTAL,
+                                   new Insets(5, 5, 0, 0), 0, 0));
 
 	// EndBehavior radio buttons
 	holdButton = new JRadioButton("Hold", true);
@@ -222,17 +252,39 @@ class ControlPanel extends JPanel implements ActionListener {
 	group = new ButtonGroup();
 	group.add(holdButton);
 	group.add(resetButton);
+        
 	buttonPanel = new JPanel();
-	buttonPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
+	buttonPanel.setBorder(new TitledBorder("End Behavior"));
 	buttonPanel.add(holdButton);
 	buttonPanel.add(resetButton);
-	add(buttonPanel);
+	add(buttonPanel, 
+            new GridBagConstraints(2, 2, 2, 1, .5, 0,
+                                   GridBagConstraints.CENTER, 
+                                   GridBagConstraints.HORIZONTAL,
+                                   new Insets(5, 5, 0, 5), 0, 0));
 
 	// Go button to start the animation
 	JButton button;
 	button = new JButton("GO");
-	add(button);
+	add(button, 
+            new GridBagConstraints(0, 3, 4, 1, 0, 0,
+                                   GridBagConstraints.EAST, 
+                                   GridBagConstraints.NONE,
+                                   new Insets(5, 5, 0, 5), 0, 0));
 	button.addActionListener(this);
+        
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.add(animationView);
+        TitledBorder animationBorder = new TitledBorder("Animation");
+        animationBorder.setTitleFont(panel.getFont().deriveFont(18f));
+        animationBorder.setTitleJustification(TitledBorder.CENTER);
+        panel.setBorder(animationBorder);
+	add(panel, 
+            new GridBagConstraints(0, 4, 4, 1, 1, 1,
+                                   GridBagConstraints.CENTER, 
+                                   GridBagConstraints.BOTH,
+                                   new Insets(5, 5, 5, 5), 0, 0));
+        
     }
 
     /**
@@ -273,10 +325,10 @@ class ControlPanel extends JPanel implements ActionListener {
 	if (animation != null && animation.isRunning()) {
 	    animation.stop();
 	}
-	int startDelay = getFieldValueAsInt(startDelayField);
+	int begin = getFieldValueAsInt(beginField);
 	int duration = getFieldValueAsInt(durationField);
 	int resolution = getFieldValueAsInt(resolutionField);
-	double numCycles = getFieldValueAsDouble(numCyclesField);
+	double repeatCount = getFieldValueAsDouble(repeatCountField);
 	Envelope.RepeatBehavior repeatBehavior = 
 	    reverseButton.isSelected() ? Envelope.RepeatBehavior.REVERSE : 
 					 Envelope.RepeatBehavior.FORWARD;
@@ -291,7 +343,7 @@ class ControlPanel extends JPanel implements ActionListener {
 	 * of TimingController) with those objects.
 	 */
 	Cycle cycle = new Cycle(duration, resolution);
-	Envelope envelope = new Envelope(numCycles, startDelay, 
+	Envelope envelope = new Envelope(repeatCount, begin, 
 					 repeatBehavior, behavior);
 	// Note the extra parameter to Animation (above what TimingController
 	// requires); we will pass in the animation fraction to 
