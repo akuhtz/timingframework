@@ -60,11 +60,11 @@ public class SimpleAnimation {
      * Creates the window and sub-panels and makes it all visible
      */
     private static void createAndShowGUI() {
-        UIManager.put("swing.boldMetal", Boolean.FALSE);
+	UIManager.put("swing.boldMetal", Boolean.FALSE);
 	JFrame f = new JFrame("Timing Demo");
 	f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	f.setLayout(new BorderLayout());
-        f.setSize(500, 500);
+	f.setSize(500, 500);
 	AnimationView animationView = new AnimationView();
 	ControlPanel controlPanel = new ControlPanel(animationView);
 	f.add(controlPanel, BorderLayout.CENTER);
@@ -75,12 +75,12 @@ public class SimpleAnimation {
 	// Need to do GUI stuff like making the JFrame visible on the
 	// Event Dispatch Thread; do this via invokeLater()
 
-        Runnable doCreateAndShowGUI = new Runnable() {
+	Runnable doCreateAndShowGUI = new Runnable() {
 	    public void run() {
-	        createAndShowGUI();
+		createAndShowGUI();
 	    }
-        };
-        SwingUtilities.invokeLater(doCreateAndShowGUI);
+	};
+	SwingUtilities.invokeLater(doCreateAndShowGUI);
     }
 }
 
@@ -123,10 +123,10 @@ class AnimationView extends JComponent {
      * is in the animation cycle (given by currentFraction).
      */
     public void paintComponent(Graphics g) {
-        if (isOpaque()) {
-            g.setColor(getBackground());
-            g.fillRect(0, 0, getWidth(), getHeight());
-        }
+	if (isOpaque()) {
+	    g.setColor(getBackground());
+	    g.fillRect(0, 0, getWidth(), getHeight());
+	}
 	if (prevW != getWidth() || prevH != getHeight()) {
 	    // Handle window resizing
 	    prevW = getWidth();
@@ -172,59 +172,59 @@ class ControlPanel extends JPanel implements ActionListener {
 
 	// begin
 	add(new JLabel("Time to Begin (ms):"),
-            new GridBagConstraints(0, 0, 1, 1, 0, 0,
-                                   GridBagConstraints.EAST, 
-                                   GridBagConstraints.NONE,
-                                   new Insets(5, 5, 0, 0), 0, 0));
+	    new GridBagConstraints(0, 0, 1, 1, 0, 0,
+				   GridBagConstraints.EAST, 
+				   GridBagConstraints.NONE,
+				   new Insets(5, 5, 0, 0), 0, 0));
 	beginField = new JFormattedTextField(intFormat);
 	beginField.setValue(0);
-        add(beginField, 
-            new GridBagConstraints(1, 0, 1, 1, .5, 0,
-                                   GridBagConstraints.CENTER, 
-                                   GridBagConstraints.HORIZONTAL,
-                                   new Insets(5, 5, 0, 0), 0, 0));
+	add(beginField, 
+	    new GridBagConstraints(1, 0, 1, 1, .5, 0,
+				   GridBagConstraints.CENTER, 
+				   GridBagConstraints.HORIZONTAL,
+				   new Insets(5, 5, 0, 0), 0, 0));
 
 	// duration
-        add(new JLabel("Cycle Duration (ms):"),
-            new GridBagConstraints(2, 0, 1, 1, 0, 0,
-                                   GridBagConstraints.EAST, 
-                                   GridBagConstraints.NONE,
-                                   new Insets(5, 5, 0, 0), 0, 0));
+	add(new JLabel("Cycle Duration (ms):"),
+	    new GridBagConstraints(2, 0, 1, 1, 0, 0,
+				   GridBagConstraints.EAST, 
+				   GridBagConstraints.NONE,
+				   new Insets(5, 5, 0, 0), 0, 0));
 	durationField = new JFormattedTextField(intFormat);
 	durationField.setValue(1000);
 	add(durationField, 
-            new GridBagConstraints(3, 0, 1, 1, .5, 0,
-                                   GridBagConstraints.CENTER, 
-                                   GridBagConstraints.HORIZONTAL,
-                                   new Insets(5, 5, 0, 5), 0, 0));
+	    new GridBagConstraints(3, 0, 1, 1, .5, 0,
+				   GridBagConstraints.CENTER, 
+				   GridBagConstraints.HORIZONTAL,
+				   new Insets(5, 5, 0, 5), 0, 0));
 
 	// resolution
 	add(new JLabel("Resolution (ms):"),
-            new GridBagConstraints(0, 1, 1, 1, 0, 0,
-                                   GridBagConstraints.EAST, 
-                                   GridBagConstraints.NONE,
-                                   new Insets(5, 5, 0, 0), 0, 0));
+	    new GridBagConstraints(0, 1, 1, 1, 0, 0,
+				   GridBagConstraints.EAST, 
+				   GridBagConstraints.NONE,
+				   new Insets(5, 5, 0, 0), 0, 0));
 	resolutionField = new JFormattedTextField(intFormat);
 	resolutionField.setValue(30);
 	add(resolutionField, 
-            new GridBagConstraints(1, 1, 1, 1, .5, 0,
-                                   GridBagConstraints.CENTER, 
-                                   GridBagConstraints.HORIZONTAL,
-                                   new Insets(5, 5, 0, 0), 0, 0));
-        
+	    new GridBagConstraints(1, 1, 1, 1, .5, 0,
+				   GridBagConstraints.CENTER, 
+				   GridBagConstraints.HORIZONTAL,
+				   new Insets(5, 5, 0, 0), 0, 0));
+	
 	// repeatCount: Note that this is a non-integer field
 	add(new JLabel("RepeatCount:"),
-            new GridBagConstraints(2, 1, 1, 1, 0, 0,
-                                   GridBagConstraints.EAST, 
-                                   GridBagConstraints.NONE,
-                                   new Insets(5, 5, 0, 0), 0, 0));
+	    new GridBagConstraints(2, 1, 1, 1, 0, 0,
+				   GridBagConstraints.EAST, 
+				   GridBagConstraints.NONE,
+				   new Insets(5, 5, 0, 0), 0, 0));
 	repeatCountField = new JFormattedTextField(doubleFormat);
 	repeatCountField.setValue(2);
 	add(repeatCountField, 
-            new GridBagConstraints(3, 1, 1, 1, .5, 0,
-                                   GridBagConstraints.CENTER, 
-                                   GridBagConstraints.HORIZONTAL,
-                                   new Insets(5, 5, 0, 5), 0, 0));
+	    new GridBagConstraints(3, 1, 1, 1, .5, 0,
+				   GridBagConstraints.CENTER, 
+				   GridBagConstraints.HORIZONTAL,
+				   new Insets(5, 5, 0, 5), 0, 0));
 
 	// RepeatBehavior radio buttons
 	repeatButton = new JRadioButton("Repeat", true);
@@ -232,16 +232,16 @@ class ControlPanel extends JPanel implements ActionListener {
 	ButtonGroup group = new ButtonGroup();
 	group.add(repeatButton);
 	group.add(reverseButton);
-        
+
 	JPanel buttonPanel = new JPanel();
 	buttonPanel.setBorder(new TitledBorder("Repeat Behavior"));
 	buttonPanel.add(repeatButton);
 	buttonPanel.add(reverseButton);
 	add(buttonPanel, 
-            new GridBagConstraints(0, 2, 2, 1, .5, 0,
-                                   GridBagConstraints.CENTER, 
-                                   GridBagConstraints.HORIZONTAL,
-                                   new Insets(5, 5, 0, 0), 0, 0));
+	    new GridBagConstraints(0, 2, 2, 1, .5, 0,
+				   GridBagConstraints.CENTER, 
+				   GridBagConstraints.HORIZONTAL,
+				   new Insets(5, 5, 0, 0), 0, 0));
 
 	// EndBehavior radio buttons
 	holdButton = new JRadioButton("Hold", true);
@@ -249,39 +249,39 @@ class ControlPanel extends JPanel implements ActionListener {
 	group = new ButtonGroup();
 	group.add(holdButton);
 	group.add(resetButton);
-        
+
 	buttonPanel = new JPanel();
 	buttonPanel.setBorder(new TitledBorder("End Behavior"));
 	buttonPanel.add(holdButton);
 	buttonPanel.add(resetButton);
 	add(buttonPanel, 
-            new GridBagConstraints(2, 2, 2, 1, .5, 0,
-                                   GridBagConstraints.CENTER, 
-                                   GridBagConstraints.HORIZONTAL,
-                                   new Insets(5, 5, 0, 5), 0, 0));
+	    new GridBagConstraints(2, 2, 2, 1, .5, 0,
+				   GridBagConstraints.CENTER, 
+				   GridBagConstraints.HORIZONTAL,
+				   new Insets(5, 5, 0, 5), 0, 0));
 
 	// Go button to start the animation
 	JButton button;
 	button = new JButton("GO");
 	add(button, 
-            new GridBagConstraints(0, 3, 4, 1, 0, 0,
-                                   GridBagConstraints.EAST, 
-                                   GridBagConstraints.NONE,
-                                   new Insets(5, 5, 0, 5), 0, 0));
+	    new GridBagConstraints(0, 3, 4, 1, 0, 0,
+				   GridBagConstraints.EAST, 
+				   GridBagConstraints.NONE,
+				   new Insets(5, 5, 0, 5), 0, 0));
 	button.addActionListener(this);
-        
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.add(animationView);
-        TitledBorder animationBorder = new TitledBorder("Animation");
-        animationBorder.setTitleFont(panel.getFont().deriveFont(18f));
-        animationBorder.setTitleJustification(TitledBorder.CENTER);
-        panel.setBorder(animationBorder);
+	
+	JPanel panel = new JPanel(new BorderLayout());
+	panel.add(animationView);
+	TitledBorder animationBorder = new TitledBorder("Animation");
+	animationBorder.setTitleFont(panel.getFont().deriveFont(18f));
+	animationBorder.setTitleJustification(TitledBorder.CENTER);
+	panel.setBorder(animationBorder);
 	add(panel, 
-            new GridBagConstraints(0, 4, 4, 1, 1, 1,
-                                   GridBagConstraints.CENTER, 
-                                   GridBagConstraints.BOTH,
-                                   new Insets(5, 5, 5, 5), 0, 0));
-        
+	    new GridBagConstraints(0, 4, 4, 1, 1, 1,
+				   GridBagConstraints.CENTER, 
+				   GridBagConstraints.BOTH,
+				   new Insets(5, 5, 5, 5), 0, 0));
+	
     }
 
     /**

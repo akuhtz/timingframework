@@ -114,7 +114,7 @@ public class Envelope {
 		errorMessage += "cannot have zero or negative value of " +
 				"repeatCount (" + repeatCount + ")\n";
 	    }
-            throw new IllegalArgumentException(errorMessage);
+	    throw new IllegalArgumentException(errorMessage);
 	}
 	this.repeatCount = repeatCount;
 	this.begin = begin;
