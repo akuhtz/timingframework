@@ -66,11 +66,8 @@ public class SimpleAnimation {
 	f.setLayout(new BorderLayout());
         f.setSize(500, 500);
 	AnimationView animationView = new AnimationView();
-	//animationView.setPreferredSize(new Dimension(500, 500));
 	ControlPanel controlPanel = new ControlPanel(animationView);
 	f.add(controlPanel, BorderLayout.CENTER);
-	//f.add(animationView, BorderLayout.CENTER);
-	//f.pack();
 	f.setVisible(true);
     }
 
