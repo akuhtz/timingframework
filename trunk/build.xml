@@ -1,0 +1,82 @@
+<project name="TimingFramework" default="dist" basedir=".">
+    <description>
+        timingframework build file: builds SimpleAnimation as well as timing package
+    </description>
+  <!-- set global properties for this build -->
+  <property name="src" location="src"/>
+  <property name="build" location="build"/>
+  <property name="dist"  location="dist"/>
+  <property name="resources"  location="resources"/>
+  <property name="doc"  location="doc"/>
+  <property name="www"  location="www"/>
+
+  <target name="init">
+    <!-- Create the time stamp -->
+    <tstamp/>
+    <!-- Create the build directory structure used by compile -->
+    <mkdir dir="${build}"/>
+  </target>
+
+  <target name="www">
+    <!-- Create the www directory structure used by java.net -->
+    <mkdir dir="${www}"/>
+  </target>
+
+  <target name="compile" depends="init"
+        description="compile the source " >
+    <!-- Compile the java code from ${src} into ${build} -->
+    <javac srcdir="${src}" destdir="${build}"/>
+  </target>
+
+  <target name="run" depends="dist" 
+    description="run the jar" >
+    <java jar="${dist}/SimpleAnimation.jar"
+       fork="true"
+    >
+    </java>
+  </target>
+
+  <target name="resources" depends="init"
+        description="copy resources into build dir" >
+    <!-- Copy the resource files from ${resources} into ${build}/ -->
+    <mkdir dir="${dist}"/>
+    <mkdir dir="${build}/images"/>
+    <copy todir="${build}/images">
+      <fileset dir="${resources}/images" />
+    </copy>
+  </target>
+
+  <target name="dist" depends="compile, resources, doc"
+        description="generate the distribution" >
+    <!-- Create the distribution directory -->
+    <mkdir dir="${dist}"/>
+    <!-- Put everything in ${build} into the Ping.jar file -->
+    <jar jarfile="${dist}/SimpleAnimation.jar" basedir="${build}" >
+      <manifest>
+        <attribute name="Built-By" value="${user.name}"/>
+	<attribute name="Main-Class" value="SimpleAnimation"/>
+      </manifest>
+    </jar>
+    <copy todir="${www}">
+      <fileset dir="${dist}" />
+    </copy>
+    <copy todir="${www}/doc">
+      <fileset dir="${doc}" />
+    </copy>
+  </target>
+
+  <target name="doc" depends="compile"
+        description="generate the javadocs" >
+    <!-- Create the distribution directory -->
+    <mkdir dir="${doc}"/>
+    <!-- Build the javadocs -->
+    <javadoc packagenames="timing.*" sourcepath="${src}" destdir="${doc}"/>
+  </target>
+
+  <target name="clean"
+        description="clean up" >
+    <!-- Delete the ${build} and ${dist} directory trees -->
+    <delete dir="${build}"/>
+    <delete dir="${dist}"/>
+  </target>
+</project>
