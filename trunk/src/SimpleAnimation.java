@@ -41,6 +41,7 @@
  */
 
 import java.awt.*;
+import java.awt.geom.*;
 import java.awt.event.*;
 import java.net.URL;
 import java.text.*;
@@ -92,9 +93,8 @@ class AnimationView extends JComponent {
     Image duke = null;
     int xStart = 0, yStart = 0;	 // upper-left of image
     int xEnd = 300, yEnd = 300;  // set later based on component size
+    int xCurrent = 0, yCurrent = 0; // current position of duke
     int prevW = -1, prevH = -1;  // used to track view resizes
-    float currentFraction = 0.0f;// used to track where the image should
-				 // be drawn
 
     public AnimationView() {
 	try {
@@ -106,6 +106,21 @@ class AnimationView extends JComponent {
     }
 
     /**
+     * Utility method to set current duke position and schedule repaints
+     * based on old and new positions.
+     */
+    private synchronized void setDukePosition(float fraction) {
+	Rectangle oldRect = new Rectangle(xCurrent, yCurrent, 
+		duke.getWidth(null), duke.getHeight(null));
+	xCurrent = (int)(xStart + ((xEnd - xStart) * fraction) + .5f);
+	yCurrent = (int)(yStart + ((yEnd - yStart) * fraction) + .5f);
+	Rectangle newRect = new Rectangle(xCurrent, yCurrent, 
+		duke.getWidth(null), duke.getHeight(null));
+	newRect.add(oldRect);
+	repaint(newRect);
+    }
+    
+    /**
      * Called by TimingController subclass (below).  This sets the
      * fraction for the image animation and then causes a repaint().
      * Note that repaint() causes a repaint of the entire view; a more
@@ -114,9 +129,8 @@ class AnimationView extends JComponent {
      * used to be, draw the image in the new location).
      */
     public void setAnimationFraction(float fraction) {
-	currentFraction = fraction;
-	repaint();
-    }
+	setDukePosition(fraction);
+   }
 
     /**
      * Draws the image in the proper location according to where it
@@ -134,8 +148,6 @@ class AnimationView extends JComponent {
 	    xEnd = getWidth() - duke.getWidth(this);
 	    yEnd = getHeight() - duke.getHeight(this);
 	}
-	int xCurrent = (int)(xStart + ((xEnd - xStart) * currentFraction) + .5f);
-	int yCurrent = (int)(yStart + ((yEnd - yStart) * currentFraction) + .5f);
 	g.drawImage(duke, xCurrent, yCurrent, null);
     }
 }
@@ -152,7 +164,7 @@ class ControlPanel extends JPanel implements ActionListener {
     JFormattedTextField repeatCountField;
     JRadioButton repeatButton, reverseButton;
     JRadioButton holdButton, resetButton;
-    Animation animation = null;
+    TimingController animation = null;
     AnimationView animationView; // We will pass this into Animation
 				 // so that the animation fraction can
 				 // can be passed into AnimationView
@@ -345,30 +357,29 @@ class ControlPanel extends JPanel implements ActionListener {
 	// Note the extra parameter to Animation (above what TimingController
 	// requires); we will pass in the animation fraction to 
 	// animationView during the animation
-	animation = new Animation(animationView, cycle, envelope);
+	AnimationTarget animationTarget = new AnimationTarget(animationView);
+	animation = new TimingController(cycle, envelope, animationTarget);
 	animation.start();
     }
 }
 
 /**
- * Animation is a subclass of TimingController which simply receives
- * the calls to timingEvent() and passes the cycle fraction along
+ * Animation implements TimingTarget in order to receive
+ * the calls to timingEvent().  It passes the cycle fraction along
  * to the AnimationView object.
  */
-class Animation extends TimingController {
+class AnimationTarget implements TimingTarget {
     AnimationView animationView;
 
-    public Animation(AnimationView animationView, Cycle cycle, 
-		     Envelope envelope)
+    public AnimationTarget(AnimationView animationView)
     {
-	super(cycle, envelope);
 	this.animationView = animationView;
     }
 
     /**
      * Don't care about the times here, only the cycle fraction.
      */
-    protected void timingEvent(long cycleElapsedTime,
+    public void timingEvent(long cycleElapsedTime,
 			       long totalElapsedTime, 
 			       float fraction)
     {

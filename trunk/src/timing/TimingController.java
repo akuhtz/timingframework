@@ -46,12 +46,14 @@ import java.awt.event.*;
  * <code>timingEvent()</code>
  * method that subclasses should override.
  */
-public class TimingController {
+public class TimingController implements TimingTarget {
 
     private Timer timer;    // Currently uses Swing timer.  This could change
 			    // in the future to use a more general mechanism
 			    // (and one of better timing resolution)
 
+    private TimingTarget target = null;
+    
     private long startTime;	    // Tracks original cycle start time
     private long currentStartTime;  // Tracks current cycle start time
     private int currentCycle = 0;   // Tracks number of cycles so far
@@ -78,15 +80,33 @@ public class TimingController {
      * @param cycle encapsulates the parameters that
      * each timing cycle will use.
      * @param envelope encapsulates the parameters that
-     * each envelope will use
+     * each envelope will use.
      * @see Cycle
      * @see Envelope
      */
     public TimingController(Cycle cycle, Envelope envelope) {
-
+	this(cycle, envelope, null);
+    }
+    
+    /**
+     * Constructor: sets up all necessary information
+     * @param cycle encapsulates the parameters that
+     * each timing cycle will use.
+     * @param envelope encapsulates the parameters that
+     * each envelope will use.
+     * @param target TimingTarget object that will be called with
+     * all timing events.
+     * @see Cycle
+     * @see Envelope
+     * @see #timingEvent(long, long, float)
+     */
+    public TimingController(Cycle cycle, Envelope envelope, 
+			    TimingTarget target) {
+	
 	// Set class variables
 	this.cycle = cycle;
 	this.envelope = envelope;
+	this.target = target;
 
 	// Set convenience variable: do we have an integer number of cycles?
 	intRepeatCount = 
@@ -138,8 +158,12 @@ public class TimingController {
 
 
     /**
-     * Subclasses should override this method to receive timing events.
-     * This default implementation does nothing.
+     * There are two ways to receive timing events: either override
+     * this method in a subclass of TimingController or create
+     * a TimingController instance directly with a TimingTarget
+     * object.
+     * This default implementation calls the TimingTarget's timingEvent()
+     * method if the target is non-null.
      * @param cycleElapsedTime the total time in milliseconds elapsed in
      * the current Cycle
      * @param totalElapsedTime the total time in milliseconds elapsed
@@ -149,12 +173,16 @@ public class TimingController {
      * (<code>Envelope.RepeatBehavior.REVERSE</code>) the fraction decreases
      * from 1.0 to 0 on backwards-running cycles.
      * @see Envelope.RepeatBehavior
+     * @see TimingTarget
+     * @see #TimingController(Cycle, Envelope, TimingTarget)
      */
-    protected void timingEvent(long cycleElapsedTime,
-			       long totalElapsedTime, 
-			       float fraction)
+    public void timingEvent(long cycleElapsedTime,
+			    long totalElapsedTime, 
+			    float fraction)
     {
-	// Default action does nothing
+	if (target != null) {
+	    target.timingEvent(cycleElapsedTime, totalElapsedTime, fraction);
+	}
     }
     
     /**

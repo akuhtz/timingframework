@@ -1,38 +1,77 @@
 <html>
     <head>
-	<title>Timing is Everything</title>
-	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+        <title>Timing is Everything</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
     </head>
     <body bgcolor="#ffffff" text="#000000">
-	<h1>Timing is Everything</h1>
-	<p>
-	    Welcome to the TimingFramework project. This project contains source code for 
-	    the "Timing is Everything" article, published 
-	    <a href="http://today.java.net/pub/a/today/2005/02/15/timing.html">here</a>.
-	    </p>
-	</p>
-	<p>
-	    The main things to check out here are the <a href="http://today.java.net/pub/a/today/2005/02/15/timing.html">
-		Article</a>, the <a href="https://timingframework.dev.java.net/source/browse/timingframework/src">
-		source code</a>, the <a href="doc/allclasses-noframe.html">Javadocs for the 
-		timing framework</a>, and the <a href="http://timingframework.dev.java.net/SimpleAnimation.jar">
-		SimpleAnimation sample application</a>. Note that SimpleAnimation was 
-	    compield with J2SE 5.0, so the jar file will only work for you if you have 5.0 
-	    installed. (You can download the sources and recompile under a different jdk if 
-	    you prefer).
-	</p>
-	<p>
-	    If you want to download and build the project (please do!), grab the 
-	    appropriate files and either run "ant" in the main directory (where build.xml 
-	    resides) or load it into NetBeans 4 (note the handy-dandy NetBeans project file 
-	    in the "nbproject" directory).
-	</p>
-	<p>
-	    I would like to thank Christopher Campbell, Hans Muller, Scott Violet,
-	    and Vincent Hardy for contributing to ideas and code in both the
-	    article and project.  This article and project took a while to
-	    incubate and the assistance of these people hopefully made the
-	    end result better than it otherwise would have been.
-	</p>
+        <h1>Timing is Everything</h1>
+        <p>
+            Welcome to the TimingFramework project. This project contains source code for 
+            the "Timing is Everything" article, published <a href="http://today.java.net/pub/a/today/2005/02/15/timing.html">
+                here</a>.
+        </p>
+        <P></P>
+        <p>
+            The main things to check out here are the <a href="http://today.java.net/pub/a/today/2005/02/15/timing.html">
+                Article</a>, the <a href="https://timingframework.dev.java.net/source/browse/timingframework/src">
+                source code</a>, the <a href="doc/allclasses-noframe.html">Javadocs for the 
+                timing framework</a>, and the <a href="http://timingframework.dev.java.net/SimpleAnimation.jar">
+                SimpleAnimation sample application</a>. Note that SimpleAnimation was 
+            compiled with J2SE 5.0, so the jar file will only work for you if you have 5.0 
+            installed. (You can download the sources and recompile under a different jdk if 
+            you prefer).
+        </p>
+        <p>
+            If you want to download and build the project (please do!), grab the 
+            appropriate files and either run "ant" in the main directory (where build.xml 
+            resides) or load it into NetBeans 4 (note the handy-dandy NetBeans project file 
+            in the "nbproject" directory).
+        </p>
+        <P>This project is starting to take on a life post-article, so I'm doing a couple 
+            of things to change the way things work here:</P>
+        <UL>
+            <LI>
+                One is that there is a zipped-up version of the original source code, <A href="articleSrc.zip">
+                    articleSrc.zip</A>, available for download if you are looking for the 
+                source that exactly matches the original article.</LI>
+            <LI>
+                Another major change coming soon is that I will soon open the gates to allow 
+                other people to start making changes here.&nbsp; I have not done that to date 
+                because the real intent of the project was to simply live as a source 
+                repository for the article.&nbsp; But also, I wanted to make sure that any 
+                interesting developments in this timing project could be pulled into j2se if 
+                necessary; after all, if there are useful timing utilities that people need, 
+                why not put them into core where they belong?&nbsp; I posted the project 
+                originally before working on the details of how that could work.&nbsp; Now I 
+                understand how that works (basically, people that want to submit code into the 
+                project will need to sign a JCA license that gives us the right to reuse the 
+                code here in the jdk).&nbsp; I'll be changing the site soon to make that 
+                mechanism possible.&nbsp; <STRONG>Note:</STRONG> this does <EM>not</EM> mean 
+                that everyone that wants to check out and use the code needs to sign this 
+                license; this only applies to people that want to putback changes to this 
+                project.</LI></UL>
+        <P>In the meantime, I've just put back changes to the project to start improving 
+            the code.&nbsp; This first step is that I've introduced a new interface, 
+            TimingTarget, and a new way to send timing events.&nbsp; In the original 
+            version, TimingController had to be subclassed and timing events were sent to 
+            the timingEvent() method of the subclass.&nbsp; Now, the event is sent either 
+            to the subclass or, if TimingController is not subclassed, is sent to the 
+            TimingTarget object that the non-subclassed controller ws constructed 
+            with.&nbsp; I think this change will make it easier to use TimingController, 
+            certainly in situations where a single object wants to receive timing events 
+            from multiple controllers.&nbsp; I also made minor modifications to 
+            SimpleAnimation to reflect the TimingTarget change as well as an unrelated 
+            change to optimize the area being updated on every frame.</P>
+        <P>Check back for future changes; I hope to keep the project going on a trajectory 
+            layed out vaguely in the article.&nbsp; The first step is to have value 
+            interpolations.&nbsp; Then we'll continue on, probably aiming toward general 
+            SMIL support in the long term.</P>
+        <p>
+            I would like to thank Christopher Campbell, Hans Muller, Scott Violet, and 
+            Vincent Hardy for contributing to ideas and code in both the article and 
+            project. This article and project took a while to incubate and the assistance 
+            of these people hopefully made the end result better than it otherwise would 
+            have been.
+        </p>
     </body>
 </html>
