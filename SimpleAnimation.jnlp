@@ -17,4 +17,7 @@
         <jar href="www/SimpleAnimation.jar"/>
     </resources>
 
+    <application-desc>
+    </application-desc>
+
 </jnlp>

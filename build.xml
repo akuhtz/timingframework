@@ -57,6 +57,7 @@
 	<attribute name="Main-Class" value="SimpleAnimation"/>
       </manifest>
     </jar>
+    <copy file="SimpleAnimation.jnlp" todir="${www}" />
     <copy todir="${www}">
       <fileset dir="${dist}" />
     </copy>
