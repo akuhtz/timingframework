@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<jnlp spec="1.0+"
+    codebase="https://timingframework.dev.java.net/"
+    href="SimpleAnimation.jnlp" >
+
+    <information>
+        <title>SimpleAnimation</title>
+        <vendor>Chet Haase, Java2D Team</vendor>
+        <homepage href="https//timingframework.dev.java.net/index.html"/>
+        <description>Demo for use of the timing facilities in Java</description>
+        <offline-allowed/>
+    </information>
+
+    <resources>
+        <j2se href="http://java.sun.com/products/autodl/j2se" version="1.5+"/>
+        <jar href="SimpleAnimation.jar"/>
+    </resources>
+
+    <application-desc>
+        <argument>-fs</argument>
+        <argument>on</argument>
+    </application-desc>
+
+</jnlp>
