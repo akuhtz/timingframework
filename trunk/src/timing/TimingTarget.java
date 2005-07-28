@@ -59,4 +59,19 @@ public interface TimingTarget {
     public void timingEvent(long cycleElapsedTime,
 			    long totalElapsedTime, 
 			    float fraction);
+    
+    /**
+     * This method is called when the timer first starts.  It allows the 
+     * application to perform any initialization that must be done prior to
+     * receiving timing events.
+     */
+    public void begin();
+    
+    /**
+     * This method is called when the timer ends, either due to the timing
+     * sequence ending naturally or due to a call to 
+     * <code>TimingController.stop()</code>.  Applications may want to put
+     * custom cleanup code in this method.
+     */
+    public void end();
 }

@@ -113,11 +113,12 @@ class AnimationView extends JComponent {
 	Rectangle oldRect = new Rectangle(xCurrent, yCurrent, 
 		duke.getWidth(null), duke.getHeight(null));
 	xCurrent = (int)(xStart + ((xEnd - xStart) * fraction) + .5f);
-	yCurrent = (int)(yStart + ((yEnd - yStart) * fraction) + .5f);
+	//yCurrent = (int)(yStart + ((yEnd - yStart) * fraction) + .5f);
+	yCurrent = 0;
 	Rectangle newRect = new Rectangle(xCurrent, yCurrent, 
 		duke.getWidth(null), duke.getHeight(null));
 	newRect.add(oldRect);
-	repaint(newRect);
+	repaint();
     }
     
     /**
@@ -148,6 +149,8 @@ class AnimationView extends JComponent {
 	    xEnd = getWidth() - duke.getWidth(this);
 	    yEnd = getHeight() - duke.getHeight(this);
 	}
+	//g.setColor(Color.blue);
+	g.fillOval(xCurrent, yCurrent + duke.getHeight(null), 40, 40);
 	g.drawImage(duke, xCurrent, yCurrent, null);
     }
 }
@@ -385,4 +388,10 @@ class AnimationTarget implements TimingTarget {
     {
 	animationView.setAnimationFraction(fraction);
     }
+    
+    /*
+     * Overrides of TimingTarget methods; nothing to do here
+     */
+    public void begin() {}
+    public void end() {}
 }
