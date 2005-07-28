@@ -127,7 +127,24 @@ public class TimingController implements TimingTarget {
 	 * */
 	java.awt.Toolkit tk = java.awt.Toolkit.getDefaultToolkit();	
     }
-
+    
+    /**
+     * Constructor: this is a utility method that sets up reasonable defaults
+     * for a simple timing sequence that will have no delay, will not repeat,
+     * will hold the end value when it ends, will use a timer resolution 
+     * of 30 milliseconds, and will run for the length of time specified
+     * in the duration parameter.
+     * @param duration The length of time that this will run, in milliseconds.
+     * @param target TimingTarget object that will be called with
+     * all timing events.
+     */
+    public TimingController(int duration, TimingTarget target) {
+	this(new Cycle(duration, 30), 
+             new Envelope(1, 0, Envelope.RepeatBehavior.FORWARD, 
+                          Envelope.EndBehavior.HOLD), 
+             target);
+    }
+    
     /**
      * The constructor sets up everything, but start must be called to 
      * actually start the timer.
@@ -154,6 +171,7 @@ public class TimingController implements TimingTarget {
      */
     public void stop() {
 	timer.stop();
+        end();
     }
 
 
@@ -186,6 +204,26 @@ public class TimingController implements TimingTarget {
     }
     
     /**
+     * Implementation of <code>TimingTarget.begin</code>.  Sublcasses of
+     * TimingController may want to do any custom setup here.
+     */
+    public void begin() {
+	if (target != null) {
+	    target.begin();
+	}
+    }
+    
+    /**
+     * Implementation of <code>TimingTarget.end</code>.  Sublcasses of
+     * TimingController may want to do any custom cleanup here.
+     */
+    public void end() {
+	if (target != null) {
+	    target.end();
+	}
+    }
+    
+    /**
      * Internal implementation detail: we happen to use javax.swing.Timer
      * currently, which sends its timing events to an ActionListener.
      * This internal private class is our ActionListener that traps
@@ -204,7 +242,6 @@ public class TimingController implements TimingTarget {
 		currentCycle >= envelope.getRepeatCount())
 	    {
 		// Envelope done: stop based on end behavior
-		timer.stop();
 		switch (envelope.getEndBehavior()) {
 		case HOLD:
 		    // Make sure we send a final end value
@@ -225,6 +262,7 @@ public class TimingController implements TimingTarget {
 			    ((float)cycleElapsedTime / cycle.getDuration()));
 		    }
 		    timingEvent(cycleElapsedTime, totalElapsedTime, endFraction);
+                    stop();
 		    break;
 
 		case RESET:
