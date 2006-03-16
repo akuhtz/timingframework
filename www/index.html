@@ -3,75 +3,104 @@
         <title>Timing is Everything</title>
         <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
     </head>
-    <body bgcolor="#ffffff" text="#000000">
+    <body text="#000000" bgColor="#ffffff">
         <h1>Timing is Everything</h1>
-        <p>
-            Welcome to the TimingFramework project. This project contains source code for 
-            the "Timing is Everything" article, published <a href="http://today.java.net/pub/a/today/2005/02/15/timing.html">
-                here</a>.
+        <p>Welcome to the TimingFramework project. This project contains source code for 
+            the articles <a href="http://today.java.net/pub/a/today/2005/02/15/timing.html">Timing 
+                is Everything</a> and "Time Again" on java.net.
         </p>
+        <P>The project has been updated significantly since the original article. The new 
+            features implemented are described more completely in the "Time Again" article, 
+            but briefly they include:
+            <ul>
+                <li>
+                Property Setters: Easy delegation of property animation to the framework (like 
+                changing the size of a component over time, for example).
+                <li>
+                KeyFrames: More powerful and complex animations via multi-step sequences of 
+                time/value pairs.
+                <li>
+                Non-Linear Interpolation: More interesting and useful animations by specifying 
+                spline paths for value interpolation.
+                <li>
+                Acceleration/deceleration: Easy specification of simple non-linear behavior by 
+                telling the TimingController periods of acceleration and deceleration during 
+                the normal time fraction.
+                <li>
+                    Minor upgrades: Various additions to the existing classes, such as the ability 
+                    to call <code>TimingController.addTarget()</code> to add additional 
+                    TimingTargets to the same TimingController; this should make it easier to 
+                    synchronize several timers together. Check out the ButtonAnimation demo to see 
+                    how this is done for both the button animation and the fraction display label.</li></ul>
         <P></P>
-        <p>
-            The main things to check out here are the <a href="http://today.java.net/pub/a/today/2005/02/15/timing.html">
-                Article</a>, the <a href="https://timingframework.dev.java.net/source/browse/timingframework/src">
-                source code</a>, the <a href="doc/allclasses-noframe.html">Javadocs for the 
-                timing framework</a>, and the <a href="http://timingframework.dev.java.net/SimpleAnimation.jar">
-                SimpleAnimation sample application</a>. Note that SimpleAnimation was 
-            compiled with J2SE 5.0, so the jar file will only work for you if you have 5.0 
-            installed. (You can download the sources and recompile under a different jdk if 
-            you prefer).
+        <p>There are also some new demos here. The old "SimpleAnimation" demo has gone away 
+            and has been replaced by the "ButtonAnimation" demo. This new demo is along the 
+            same lines as the previous one: it's a basic and&nbsp;unattractive front-end 
+            that exposes the dials and knobs of the timing framework through the GUI, 
+            allowing you to tweak the parameters and see the results. Between the graphical 
+            view of what's happening and the code for this demo, this will hopefully make 
+            it easier to understand the various features of the framework.
+        </p>
+        <p>There is also a great demo by Romain Guy written to both show off and educate 
+            about the new KeySplines/non-linear interpolation capabilities of the library. 
+            There is no source for this one right now, but this one is more for showing 
+            what splines can do, not necessarily for how to reuse the code to do those 
+            animations.
+        </p>
+        <p>The project is also NetBeans-friendly, so you should be able to download the 
+            project and build it easily. I'm running in NetBeans 5.0, in case you need that 
+            version to interpret the&nbsp;project files correctly.
+        </p>
+        <p>The main things to check out here are the Articles, the <A href="https://timingframework.dev.java.net/source/browse/timingframework/src">
+                source code</A>, the <A href="javadoc/">Javadocs for the timing framework</A>, 
+            the <A href="TimingFramework.jar">library</A>, and the demos (source for 
+            ButtonAnimation is in the <A href="https://timingframework.dev.java.net/source/browse/timingframework/demo">
+                demo directory</A>, compiled versions of the demos are in the 
+            TimingFramework jarfile). Note that the library is dependent upon jdk 5.0, so 
+            you will need 5.0 to run it or build against it.
+        </p>
+        <p>To run the demos, download <A href="TimingFramework.jar">TimingFramework.jar</A>. 
+            Then you can run one of the two demos as follows:
+            <ul>
+                <li>
+                    ButtonAnimation: This is the simple demo that exposes the various dials and 
+                    knobs of the Timing Framework library. This demo should run automatically if 
+                    you run TimingFramework.jar, or you can run it explicitly by typing:
+                    <pre>        java -cp TimingFramework.jar org.jdesktop.animation.timing.examples.ButtonAnimation</pre>
+                <li>
+                    SplineEditor: This is the demo for showing how splines control animation 
+                    timing. You can run this by typing:
+                    <pre>        java -cp TimingFramework.jar org.jdesktop.animation.timing.examples.editor.SplineEditor
+</pre>
+                </li>
+            </ul>
+        <P></P>
+        <p>The project is still read-only for now; this is because the project is still 
+            very much in flux, but it's also because I want to make sure that any 
+            interesting developments in the project can be pulled into Java SE if 
+            appropriate; after all, if there are useful timing utilities that people need, 
+            why not put them into core where they belong? I hope to change that eventually 
+            (probably by using a JCA license like SwingLabs does), but for now feel free to 
+            browse, download, and build the source, or to just use the library as you see 
+            fit. I'm thinking that's all that most people want for now anyway...
         </p>
         <p>
-            If you want to download and build the project (please do!), grab the 
-            appropriate files and either run "ant" in the main directory (where build.xml 
-            resides) or load it into NetBeans 4 (note the handy-dandy NetBeans project file 
-            in the "nbproject" directory).
+            For those folks that got here by reading the original Timing is Everything 
+            article, I've cached a zipped version of the original source code in <A href="articleSrc.zip">
+                articleSrc.zip</A>, although I'd just suggest reading the second article 
+            and using the current source instead; lots of things in the latest library to 
+            make life with Timing Framework much easier than with the original version.
         </p>
-        <P>This project is starting to take on a life post-article, so I'm doing a couple 
-            of things to change the way things work here:</P>
-        <UL>
-            <LI>
-                One is that there is a zipped-up version of the original source code, <A href="articleSrc.zip">
-                    articleSrc.zip</A>, available for download if you are looking for the 
-                source that exactly matches the original article.</LI>
-            <LI>
-                Another major change coming soon is that I will soon open the gates to allow 
-                other people to start making changes here.&nbsp; I have not done that to date 
-                because the real intent of the project was to simply live as a source 
-                repository for the article.&nbsp; But also, I wanted to make sure that any 
-                interesting developments in this timing project could be pulled into j2se if 
-                necessary; after all, if there are useful timing utilities that people need, 
-                why not put them into core where they belong?&nbsp; I posted the project 
-                originally before working on the details of how that could work.&nbsp; Now I 
-                understand how that works (basically, people that want to submit code into the 
-                project will need to sign a JCA license that gives us the right to reuse the 
-                code here in the jdk).&nbsp; I'll be changing the site soon to make that 
-                mechanism possible.&nbsp; <STRONG>Note:</STRONG> this does <EM>not</EM> mean 
-                that everyone that wants to check out and use the code needs to sign this 
-                license; this only applies to people that want to putback changes to this 
-                project.</LI></UL>
-        <P>In the meantime, I've just put back changes to the project to start improving 
-            the code.&nbsp; This first step is that I've introduced a new interface, 
-            TimingTarget, and a new way to send timing events.&nbsp; In the original 
-            version, TimingController had to be subclassed and timing events were sent to 
-            the timingEvent() method of the subclass.&nbsp; Now, the event is sent either 
-            to the subclass or, if TimingController is not subclassed, is sent to the 
-            TimingTarget object that the non-subclassed controller ws constructed 
-            with.&nbsp; I think this change will make it easier to use TimingController, 
-            certainly in situations where a single object wants to receive timing events 
-            from multiple controllers.&nbsp; I also made minor modifications to 
-            SimpleAnimation to reflect the TimingTarget change as well as an unrelated 
-            change to optimize the area being updated on every frame.</P>
-        <P>Check back for future changes; I hope to keep the project going on a trajectory 
-            layed out vaguely in the article.&nbsp; The first step is to have value 
-            interpolations.&nbsp; Then we'll continue on, probably aiming toward general 
-            SMIL support in the long term.</P>
+        <P>
+            Check back for future changes. I think the latest round of changes is quite 
+            powerful and will enable some great animations in Swing applications, but 
+            there's more work to be done...</P>
         <p>
-            I would like to thank Christopher Campbell, Hans Muller, Scott Violet, and 
-            Vincent Hardy for contributing to ideas and code in both the article and 
-            project. This article and project took a while to incubate and the assistance 
-            of these people hopefully made the end result better than it otherwise would 
-            have been.
+            <i>I would like to thank Christopher Campbell, Hans Muller, Scott Violet, Romain 
+                Guy, and Vincent Hardy for contributing to ideas and code in both the article 
+                and project. This article and project took a while to incubate and the 
+                assistance of these people hopefully made the end result better than it 
+                otherwise would have been.</i>
         </p>
     </body>
 </html>
