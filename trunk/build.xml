@@ -1,83 +1,92 @@
-<project name="TimingFramework" default="dist" basedir=".">
-    <description>
-        timingframework build file: builds SimpleAnimation as well as timing package
-    </description>
-  <!-- set global properties for this build -->
-  <property name="src" location="src"/>
-  <property name="build" location="build"/>
-  <property name="dist"  location="dist"/>
-  <property name="resources"  location="resources"/>
-  <property name="doc"  location="doc"/>
-  <property name="www"  location="www"/>
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- You may freely edit this file. See commented blocks below for -->
+<!-- some examples of how to customize the build. -->
+<!-- (If you delete it and reopen the project it will be recreated.) -->
+<project name="TimingFramework" default="default" basedir=".">
+    <description>Builds, tests, and runs the project TimingFramework.</description>
+    <import file="nbproject/build-impl.xml"/>
+    <!--
 
-  <target name="init">
-    <!-- Create the time stamp -->
-    <tstamp/>
-    <!-- Create the build directory structure used by compile -->
-    <mkdir dir="${build}"/>
-  </target>
+    There exist several targets which are by default empty and which can be 
+    used for execution of your tasks. These targets are usually executed 
+    before and after some main targets. They are: 
 
-  <target name="www">
-    <!-- Create the www directory structure used by java.net -->
-    <mkdir dir="${www}"/>
-  </target>
+      -pre-init:                 called before initialization of project properties
+      -post-init:                called after initialization of project properties
+      -pre-compile:              called before javac compilation
+      -post-compile:             called after javac compilation
+      -pre-compile-single:       called before javac compilation of single file
+      -post-compile-single:      called after javac compilation of single file
+      -pre-compile-test:         called before javac compilation of JUnit tests
+      -post-compile-test:        called after javac compilation of JUnit tests
+      -pre-compile-test-single:  called before javac compilation of single JUnit test
+      -post-compile-test-single: called after javac compilation of single JUunit test
+      -pre-jar:                  called before JAR building
+      -post-jar:                 called after JAR building
+      -post-clean:               called after cleaning build products
 
-  <target name="compile" depends="init"
-        description="compile the source " >
-    <!-- Compile the java code from ${src} into ${build} -->
-    <javac srcdir="${src}" destdir="${build}"/>
-  </target>
+    (Targets beginning with '-' are not intended to be called on their own.)
 
-  <target name="run" depends="dist" 
-    description="run the jar" >
-    <java jar="${dist}/SimpleAnimation.jar"
-       fork="true"
-    >
-    </java>
-  </target>
+    Example of inserting an obfuscator after compilation could look like this:
 
-  <target name="resources" depends="init"
-        description="copy resources into build dir" >
-    <!-- Copy the resource files from ${resources} into ${build}/ -->
-    <mkdir dir="${dist}"/>
-    <mkdir dir="${build}/images"/>
-    <copy todir="${build}/images">
-      <fileset dir="${resources}/images" />
-    </copy>
-  </target>
+        <target name="-post-compile">
+            <obfuscate>
+                <fileset dir="${build.classes.dir}"/>
+            </obfuscate>
+        </target>
 
-  <target name="dist" depends="compile, resources, doc"
-        description="generate the distribution" >
-    <!-- Create the distribution directory -->
-    <mkdir dir="${dist}"/>
-    <!-- Put everything in ${build} into the Ping.jar file -->
-    <jar jarfile="${dist}/SimpleAnimation.jar" basedir="${build}" >
-      <manifest>
-        <attribute name="Built-By" value="${user.name}"/>
-	<attribute name="Main-Class" value="SimpleAnimation"/>
-      </manifest>
-    </jar>
-    <copy file="SimpleAnimation.jnlp" todir="${www}" />
-    <copy todir="${www}">
-      <fileset dir="${dist}" />
-    </copy>
-    <copy todir="${www}/doc">
-      <fileset dir="${doc}" />
-    </copy>
-  </target>
+    For list of available properties check the imported 
+    nbproject/build-impl.xml file. 
 
-  <target name="doc" depends="compile"
-        description="generate the javadocs" >
-    <!-- Create the distribution directory -->
-    <mkdir dir="${doc}"/>
-    <!-- Build the javadocs -->
-    <javadoc packagenames="timing.*" sourcepath="${src}" destdir="${doc}"/>
-  </target>
 
-  <target name="clean"
-        description="clean up" >
-    <!-- Delete the ${build} and ${dist} directory trees -->
-    <delete dir="${build}"/>
-    <delete dir="${dist}"/>
-  </target>
+    Another way to customize the build is by overriding existing main targets.
+    The targets of interest are: 
+
+      -init-macrodef-javac:     defines macro for javac compilation
+      -init-macrodef-junit:     defines macro for junit execution
+      -init-macrodef-debug:     defines macro for class debugging
+      -init-macrodef-java:      defines macro for class execution
+      -do-jar-with-manifest:    JAR building (if you are using a manifest)
+      -do-jar-without-manifest: JAR building (if you are not using a manifest)
+      run:                      execution of project 
+      -javadoc-build:           Javadoc generation
+      test-report:              JUnit report generation
+
+    An example of overriding the target for project execution could look like this:
+
+        <target name="run" depends="TimingFramework-impl.jar">
+            <exec dir="bin" executable="launcher.exe">
+                <arg file="${dist.jar}"/>
+            </exec>
+        </target>
+
+    Notice that the overridden target depends on the jar target and not only on 
+    the compile target as the regular run target does. Again, for a list of available 
+    properties which you can use, check the target you are overriding in the
+    nbproject/build-impl.xml file. 
+
+    -->
+<!-- Overriding -javadoc-build target to exclude irrelevant source tree of demos-->
+    <target name="-javadoc-build" depends="init">
+        <mkdir dir="${dist.javadoc.dir}"/>
+        <javadoc destdir="${dist.javadoc.dir}" source="${javac.source}" notree="${javadoc.notree}" use="${javadoc.use}" nonavbar="${javadoc.nonavbar}" noindex="${javadoc.noindex}" splitindex="${javadoc.splitindex}" author="${javadoc.author}" version="${javadoc.version}" windowtitle="${javadoc.windowtitle}" private="${javadoc.private}" additionalparam="${javadoc.additionalparam}" failonerror="true" useexternalfile="true" executable="${platform.javadoc}">
+            <classpath>
+                <path path="${javac.classpath}"/>
+            </classpath>
+            <sourcepath>
+                <pathelement location="${src.dir}"/>
+            </sourcepath>
+            <packageset dir="${src.dir}" includes="*/**"/>
+            <fileset dir="${src.dir}" includes="*.java"/>
+        </javadoc>
+        <mkdir dir="${www.javadoc.dir}"/>
+        <copy todir="${www.javadoc.dir}">
+            <fileset dir="${dist.javadoc.dir}"/>
+        </copy>
+    </target>
+    <target name="-post-jar">
+        <copy todir="${www.dir}">
+            <fileset file="${dist.dir}/TimingFramework.jar"/>
+        </copy>
+    </target>
 </project>
