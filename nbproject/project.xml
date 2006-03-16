@@ -1,59 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://www.netbeans.org/ns/project/1">
-    <type>org.netbeans.modules.ant.freeform</type>
+    <type>org.netbeans.modules.java.j2seproject</type>
     <configuration>
-        <general-data xmlns="http://www.netbeans.org/ns/freeform-project/1">
-            <!--Do not use Project Properties customizer when editing this file manually.-->
+        <data xmlns="http://www.netbeans.org/ns/j2se-project/3">
             <name>TimingFramework</name>
-            <folders>
-                <source-folder>
-                    <label>src</label>
-                    <type>java</type>
-                    <location>src</location>
-                </source-folder>
-            </folders>
-            <ide-actions>
-                <action name="build">
-                    <target>compile</target>
-                </action>
-                <action name="rebuild">
-                    <target>clean</target>
-                    <target>compile</target>
-                </action>
-                <action name="clean">
-                    <target>clean</target>
-                </action>
-                <action name="javadoc">
-                    <target>doc</target>
-                </action>
-                <action name="run">
-                    <target>run</target>
-                </action>
-            </ide-actions>
-            <view>
-                <items>
-                    <source-folder style="packages">
-                        <label>src</label>
-                        <location>src</location>
-                    </source-folder>
-                    <source-file>
-                        <location>build.xml</location>
-                    </source-file>
-                </items>
-                <context-menu>
-                    <ide-action name="build"/>
-                    <ide-action name="rebuild"/>
-                    <ide-action name="clean"/>
-                    <ide-action name="javadoc"/>
-                    <ide-action name="run"/>
-                </context-menu>
-            </view>
-        </general-data>
-        <java-data xmlns="http://www.netbeans.org/ns/freeform-project-java/1">
-            <compilation-unit>
-                <package-root>src</package-root>
-                <source-level>1.5</source-level>
-            </compilation-unit>
-        </java-data>
+            <minimum-ant-version>1.6.5</minimum-ant-version>
+            <explicit-platform explicit-source-supported="true"/>
+            <source-roots>
+                <root id="src.src.dir"/>
+                <root id="src.dir"/>
+            </source-roots>
+            <test-roots>
+                <root id="test.src.dir"/>
+            </test-roots>
+        </data>
     </configuration>
 </project>
