@@ -67,26 +67,11 @@
 
     -->
 <!-- Overriding -javadoc-build target to exclude irrelevant source tree of demos-->
-    <target name="-javadoc-build" depends="init">
-        <mkdir dir="${dist.javadoc.dir}"/>
-        <javadoc destdir="${dist.javadoc.dir}" source="${javac.source}" notree="${javadoc.notree}" use="${javadoc.use}" nonavbar="${javadoc.nonavbar}" noindex="${javadoc.noindex}" splitindex="${javadoc.splitindex}" author="${javadoc.author}" version="${javadoc.version}" windowtitle="${javadoc.windowtitle}" private="${javadoc.private}" additionalparam="${javadoc.additionalparam}" failonerror="true" useexternalfile="true" executable="${platform.javadoc}">
-            <classpath>
-                <path path="${javac.classpath}"/>
-            </classpath>
-            <sourcepath>
-                <pathelement location="${src.dir}"/>
-            </sourcepath>
-            <packageset dir="${src.dir}" includes="*/**"/>
-            <fileset dir="${src.dir}" includes="*.java"/>
-        </javadoc>
-        <mkdir dir="${www.javadoc.dir}"/>
-        <copy todir="${www.javadoc.dir}">
-            <fileset dir="${dist.javadoc.dir}"/>
-        </copy>
-    </target>
-    <target name="-post-jar">
-        <copy todir="${www.dir}">
-            <fileset file="${dist.dir}/TimingFramework.jar"/>
-        </copy>
-    </target>
+  <target name="java.net" depends="javadoc,jar">
+    <zip destfile="${www.dir}/javadoc.zip"
+         basedir="${dist.javadoc.dir}"/>
+    <copy todir="${www.dir}">
+        <fileset file="${dist.dir}/TimingFramework.jar"/>
+    </copy>
+  </target>
 </project>

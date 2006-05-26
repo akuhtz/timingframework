@@ -4,77 +4,146 @@
         <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
     </head>
     <body text="#000000" bgColor="#ffffff">
+        <center>
         <h1>Timing is Everything</h1>
-        <p>Welcome to the TimingFramework project. This project contains source code for 
-            the articles <a href="http://today.java.net/pub/a/today/2005/02/15/timing.html">Timing 
-                is Everything</a> and <a href="http://today.java.net/pub/a/today/2006/03/16/time-again.html">Time Again</a> on java.net.
+        <h3>Chet Haase</h3>
+        </center>
+        <p>Welcome to the <b>Timing Framework</b>, a library for making Java animation
+            and timing-based control easier. There are two articles on java.net
+            that describe some of the fundamentals: 
+            <a href="http://today.java.net/pub/a/today/2005/02/15/timing.html">Timing 
+            is Everything</a> and 
+            <a href="http://today.java.net/pub/a/today/2006/03/16/time-again.html">Time Again</a>;
+            these articles will serve as a good introduction to the framework.
         </p>
-        <P>The project has been updated significantly since the original article. The new 
-            features implemented are described more completely in the "Time Again" article, 
-            but briefly they include:
+        <h2>The Library</h2>
+        <P>The library is divided into three logical parts, which make up the
+            three packages:
+            <ul>
+                <li>Fundamentals: org.jdesktop.animation.timing</li>
+                <li>Interpolation: org.jdesktop.animation.timing.interpolation</li>
+                <li>Triggers: org.jdesktop.animation.timing.triggers</li>
+            </ul>
+            <b>Fundamentals</b> is described fairly completely in the original
+            "Timing is Everything" article.  These classes include the base
+            TimingController object that actually runs the animation, Cycle/Envelope
+            which describe the animation, TimingTarget and TimingListener interfaces
+            which are used to receive timing events, and TimingEvent which 
+            describes events that TimingController produces.
+            </p>
+            <p>
+            <b>Interpolation</b> is desribed in the second article,
+            "Time Again", but here are the core concepts:
             <ul>
                 <li>
                 Property Setters: Easy delegation of property animation to the framework (like 
-                changing the size of a component over time, for example).
+                changing the size of a component over time, for example).  This
+                capability is handled through the combination of 
+                the <code>PropertyRange</code> and <code>ObjectModifier
+                classes.</code>
+                </li>
                 <li>
                 KeyFrames: More powerful and complex animations via multi-step sequences of 
-                time/value pairs.
+                time/value pairs.  KeyFrames combines the objects <code>KeyTimes</code>,
+                <code>KeyValues</code>, <code>KeySplines</code>, and 
+                <code>KeyFrames.InterpolationType</code>.
+                </li>
                 <li>
                 Non-Linear Interpolation: More interesting and useful animations by specifying 
-                spline paths for value interpolation.
+                spline paths for value interpolation.  This capability is
+                controlled through the use of the <code>KeySplines</code>
+                class, which contains one or more <code>Spline</code> structures.
+                </li>
                 <li>
                 Acceleration/deceleration: Easy specification of simple non-linear behavior by 
                 telling the TimingController periods of acceleration and deceleration during 
                 the normal time fraction.
-                <li>
-                    Minor upgrades: Various additions to the existing classes, such as the ability 
-                    to call <code>TimingController.addTarget()</code> to add additional 
-                    TimingTargets to the same TimingController; this should make it easier to 
-                    synchronize several timers together. Check out the ButtonAnimation demo to see 
-                    how this is done for both the button animation and the fraction display label.</li></ul>
-        <P></P>
-        <p>There are also some new demos here. The old "SimpleAnimation" demo has gone away 
-            and has been replaced by the "ButtonAnimation" demo. This new demo is along the 
-            same lines as the previous one: it's a basic and&nbsp;unattractive front-end 
-            that exposes the dials and knobs of the timing framework through the GUI, 
-            allowing you to tweak the parameters and see the results. Between the graphical 
-            view of what's happening and the code for this demo, this will hopefully make 
-            it easier to understand the various features of the framework.
-        </p>
-        <p>There is also a great demo by Romain Guy written to both show off and educate 
-            about the new KeySplines/non-linear interpolation capabilities of the library. 
-            There is no source for this one right now, but this one is more for showing 
-            what splines can do, not necessarily for how to reuse the code to do those 
-            animations.
-        </p>
-        <p>The project is also NetBeans-friendly, so you should be able to download the 
-            project and build it easily. I'm running in NetBeans 5.0, in case you need that 
-            version to interpret the&nbsp;project files correctly.
-        </p>
-        <p>The main things to check out here are the Articles, the <A href="https://timingframework.dev.java.net/source/browse/timingframework/src">
-                source code</A>, the <A href="javadoc/allclasses-frame.html">Javadocs for the timing framework</A>, 
-            the <A href="TimingFramework.jar">library</A>, and the demos (source for 
-            ButtonAnimation is in the <A href="https://timingframework.dev.java.net/source/browse/timingframework/demo">
-                demo directory</A>, compiled versions of the demos are in the 
-            TimingFramework jarfile). Note that the library is dependent upon jdk 5.0, so 
-            you will need 5.0 to run it or build against it.
-        </p>
-        <p>To run the demos, download <A href="TimingFramework.jar">TimingFramework.jar</A>. 
-            Then you can run one of the two demos as follows:
-            <ul>
-                <li>
-                    ButtonAnimation: This is the simple demo that exposes the various dials and 
-                    knobs of the Timing Framework library. This demo should run automatically if 
-                    you run TimingFramework.jar, or you can run it explicitly by typing:
-                    <pre>        java -cp TimingFramework.jar org.jdesktop.animation.timing.examples.ButtonAnimation</pre>
-                <li>
-                    SplineEditor: This is the demo for showing how splines control animation 
-                    timing. You can run this by typing:
-                    <pre>        java -cp TimingFramework.jar org.jdesktop.animation.timing.examples.editor.SplineEditor
-</pre>
                 </li>
             </ul>
-        <P></P>
+            <p>
+            <b>Triggers</b> contain support
+            for easy starting/stopping of animations based on events.  Triggers
+            basically wrap EventListener handling for and simplify things
+            substantially.  Instead of writing various listeners to track
+            events and fire off animations appropriately in your code, 
+            you can set up Triggers to do the listening and starting/stopping
+            for you.  The intent is to make it easier to have canonical
+            effects on GUI components, like pulsating buttons, components
+            that animate to a focus state, etc.
+            Check out the Triggers demo to see what I mean (until I get a
+            chance to document it better than this admittedly brief paragraph).
+        </P>
+        <p>There are various new and old demos in the demos directory.  You should
+        be able to checkout that directory from CVS and get entire build tree
+        for NetBeans, or you can just look at the files one by one.  The demos 
+        include:
+        <ul>
+            <li>ButtonAnimation: This is a nuts-and-bolts view of most of the
+            capabilities of the framework.  It allows you to tweak the various
+            options of the framework and see the effects on basic Swing button
+            rendering.</li>
+            <li>DiscreteInterpolation: This one is so basic it probably should
+            not even be here, but heck I wrote it so I might as well post it.
+            It shows how you might use DISCRETE interpolation to change 
+            values of objects (in this case, the String displayed in the
+            window) over time.  It shows basic usage of the KeyFrames,
+            KeyTimes, KeyValues, and InterpolationType classes in the
+            interpolation package.  It also uses a simple Trigger to kick
+            off the animation.</li>
+            <li>Triggers: Another unattractive demo, but it shows how you can
+            use some of the new Triggers to automatically kick off animations
+            based on GUI events.</li>
+            <li>Racetrack: There are several demos in this package (BasicRace,
+            SetterRace, TriggerRace, NonLinearRace, and MultiStepRace) which were used in
+            our JavaOne presentation to show how the various features of the
+            framework work.  The demo gets more interesting, and uses more
+            framework features, as you progress through the demos in the order
+            listed above (MultiStepRace shows off most of the framework
+            functionality).  Graphics and sound effects provided by the
+            one and only Romain Guy (thanks Romain!)</li>
+            <li>SplineEditor: This is a beautiful demo by Romain Guy that
+            helps visualize the effect of various Spline curves on any
+            particular animation.  You can choose several pre-made Splines or
+            drag the points to create your own and see the resulting
+            animation.  Great for getting a handle on how non-linear
+            interpolation works in the framework.</li>
+        </ul>
+        </p>
+        <p>
+        <h2>Demos</h2>
+        <p>To run the demos, download <A href="TimingFramework.jar">TimingFramework.jar</A>
+            and <a href="../demos/TimingExamples.jar">TimingExamples.jar</a>. 
+            Then you can run any of the demos as follows:
+            <pre>
+                java -cp TimingFramework.jar;TimingExamples.jar DEMO
+            </pre>
+            where DEMO is one of:
+            <ul>
+                <li>org.jdesktop.animation.timing.examples.ButtonAnimation</li>
+                <li>org.jdesktop.animation.timing.examples.DiscreteInterpolation</li>
+                <li>org.jdesktop.animation.timing.examples.Triggers</li>
+                <li>org.jdesktop.animation.timing.examples.racetrack.BasicRace</li>
+                <li>org.jdesktop.animation.timing.examples.racetrack.SetterRace</li>
+                <li>org.jdesktop.animation.timing.examples.racetrack.TriggerRace</li>
+                <li>org.jdesktop.animation.timing.examples.racetrack.NonLinearRace</li>
+                <li>org.jdesktop.animation.timing.examples.racetrack.MultiStepRace</li>
+                <li>org.jdesktop.animation.timing.examples.editor.SplineEditor</li>
+            </ul>
+        <P>
+            <h2>Project Details</h2>
+        </P>
+        <p>This project is NetBeans-friendly, so you should be able to download the 
+            project and build it easily. I'm running in NetBeans 5.0, in case you need that 
+            version to interpret the project files correctly.
+        </p>
+        <p>The main things to check out here are the Articles, the <A href="https://timingframework.dev.java.net/source/browse/timingframework/src">
+                source code</A>, the <A href="javadoc.zip">Javadocs for the timing framework</A>, 
+            the <A href="TimingFramework.jar">library</A>, and the <a href="../demos">demos</a>.
+            Note that the library is dependent upon jdk 5.0, so 
+            you will need 5.0 to run it or build against it.  I use 5.0 because
+            generics and varargs helped provide a nice way to get a lot of different
+            PropertyRange and KeyValues variants in a very compact way.
+        </p>
         <p>The project is still read-only for now; this is because the project is still 
             very much in flux, but it's also because I want to make sure that any 
             interesting developments in the project can be pulled into Java SE if 
@@ -102,5 +171,24 @@
                 assistance of these people hopefully made the end result better than it 
                 otherwise would have been.</i>
         </p>
+        <P>
+            <p>
+            <b>Change Log:</b>
+            </p>
+            <p>May 25, 2006: Lots of stuff:
+            <ul>
+                <li>Put all interpolation classes (PropertyRange, KeyFrames,
+                    etc.) in separate package</li>
+                <li>Added support for Triggers (in timing.triggers package)</li>
+                <li>Removed demos from main library and project and created
+                new subproject in demos/ directory.  This cut the framework
+                jarfile by over half...</li>
+                <li>Minor cleanup on various javadocs and some method
+                parameter ordering</li>
+                <li>Fixed non-stop REPEAT cycle bug (thanks Owen!) and some
+                other roundoff errors in TimingController.actionPerformed()</li>
+                <li>Added new demos (Triggers, racetrack.*, and DiscreteInterpolation)</li>
+                <li>Added support for doubles in KeyValues (because Romain insisted)</li>
+            </ul>
     </body>
 </html>
