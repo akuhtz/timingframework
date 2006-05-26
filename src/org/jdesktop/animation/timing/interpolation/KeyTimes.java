@@ -7,9 +7,10 @@
  * and open the template in the editor.
  */
 
-package org.jdesktop.animation.timing;
+package org.jdesktop.animation.timing.interpolation;
 
 import java.util.ArrayList;
+import org.jdesktop.animation.timing.*;
 
 /**
  * Stores a list of times from 0 to 1 that are used in calculating interpolated

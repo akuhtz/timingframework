@@ -30,20 +30,22 @@
  */
 
 
-package org.jdesktop.animation.timing;
+package org.jdesktop.animation.timing.interpolation;
 
-import java.awt.Point;
+import java.awt.Dimension;
 import java.lang.reflect.Method;
+import org.jdesktop.animation.timing.*;
 
 /**
  *
  * @author Chet
  */
-class KeyValuesPoint extends KeyValues<Point> {
+class KeyValuesDimension extends KeyValues<Dimension> {
     
     /** Creates a new instance of KeyValuesInt */
-    public KeyValuesPoint(Point... values) {
-        for (Point value : values) {
+    public KeyValuesDimension(Dimension... values) {
+        super(values);
+        for (Dimension value : values) {
             this.values.add(value);
         }
     }
@@ -52,7 +54,7 @@ class KeyValuesPoint extends KeyValues<Point> {
      * Returns type of values
      */
     public Class<?> getType() {
-        return Point.class;
+        return Dimension.class;
     }
 
     /**
@@ -62,14 +64,12 @@ class KeyValuesPoint extends KeyValues<Point> {
      */
     public void setValue(Object object, Method method, int i0,
             int i1, float fraction) {
-        Point value = (Point)values.get(i0).clone();
+        Dimension value = values.get(i0);
         if (i0 != i1) {
-            Point v0 = values.get(i0);
-            Point v1 = values.get(i1);
-            value.x += (int)((v1.x - v0.x) * 
-                    fraction + .5);
-            value.y += (int)((v1.y - v0.y) * 
-                    fraction + .5);
+            Dimension v0 = values.get(i0);
+            Dimension v1 = values.get(i1);
+            value.width += (int)((v1.width - v0.width) * fraction + .5);
+            value.height += (int)((v1.height - v0.height) * fraction + .5);
         }
         try {
             method.invoke(object, value);

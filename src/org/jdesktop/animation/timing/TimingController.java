@@ -54,6 +54,7 @@ public class TimingController implements TimingTarget {
     private int currentCycle = 0;   // Tracks number of cycles so far
     private Direction direction = Direction.FORWARD;	// Tracks current direction
     private boolean intRepeatCount;
+    private ArrayList listeners = new ArrayList();
 
     private Envelope envelope;
     private Cycle cycle;
@@ -105,7 +106,9 @@ public class TimingController implements TimingTarget {
 	// Set class variables
 	this.cycle = cycle;
 	this.envelope = envelope;
-	targets.add(target);
+        if (target != null) {
+            targets.add(target);
+        }
 
 	// Set convenience variable: do we have an integer number of cycles?
 	intRepeatCount = 
@@ -204,8 +207,16 @@ public class TimingController implements TimingTarget {
      * to the list.
      */
     public void addTarget(TimingTarget target) {
-        synchronized (targets) {
-            targets.add(target);
+        if (target != null) {
+            synchronized (targets) {
+                targets.add(target);
+            }
+        }
+    }
+    
+    public void addTimingListener(TimingListener listener) {
+        if (listener != null) {
+            listeners.add(listener);
         }
     }
     
@@ -299,6 +310,12 @@ public class TimingController implements TimingTarget {
                 target.begin();
             }
 	}
+        synchronized (listeners) {
+            for (int i = 0; i < listeners.size(); ++i) {
+                TimingListener listener = (TimingListener)listeners.get(i);
+                listener.timerStarted(new TimingEvent(this));
+            }
+	}
     }
     
     /**
@@ -310,6 +327,24 @@ public class TimingController implements TimingTarget {
             for (int i = 0; i < targets.size(); ++i) {
                 TimingTarget target = (TimingTarget)targets.get(i);
                 target.end();
+            }
+	}
+        synchronized (listeners) {
+            for (int i = 0; i < listeners.size(); ++i) {
+                TimingListener listener = (TimingListener)listeners.get(i);
+                listener.timerStopped(new TimingEvent(this));
+            }
+	}
+    }
+    
+    /**
+     * Notify listeners that timer is about to repeat
+     */
+    protected void repeat() {
+        synchronized (listeners) {
+            for (int i = 0; i < listeners.size(); ++i) {
+                TimingListener listener = (TimingListener)listeners.get(i);
+                listener.timerRepeated(new TimingEvent(this));
             }
 	}
     }
@@ -343,6 +378,13 @@ public class TimingController implements TimingTarget {
             } else {
                 fraction = runRate * (fraction - (acceleration / 2));
             }
+            // clamp fraction to [0,1] since above calculations may
+            // cause rounding errors
+            if (fraction < 0) {
+                fraction = 0;
+            } else if (fraction > 1.0f) {
+                fraction = 1.0f;
+            }
         }
         timingEvent(cycleElapsedTime, totalElapsedTime, fraction);
     }
@@ -373,8 +415,7 @@ public class TimingController implements TimingTarget {
 		    if (intRepeatCount) {
 			// If supposed to run integer number of cycles, hold
 			// on integer boundary
-			if (direction == Direction.BACKWARD)
-			{
+			if (direction == Direction.BACKWARD) {
 			    // If we were traveling backward, hold on 0
 			    endFraction = 0.0f;
 			} else {
@@ -387,9 +428,7 @@ public class TimingController implements TimingTarget {
 		    }
 		    timingEventPreprocessor(cycleElapsedTime, 
                             totalElapsedTime, endFraction);
-                    stop();
 		    break;
-
 		case RESET:
 		    // RESET requires setting the final value to the start value
 		    timingEventPreprocessor(cycleElapsedTime, 
@@ -399,39 +438,35 @@ public class TimingController implements TimingTarget {
 		    // should not reach here
 		    break;
 		}
+                stop();
 	    } else if ((cycle.getDuration() != INFINITE) && 
 		       (cycleElapsedTime > cycle.getDuration()))
 	    {
 		// Cycle end: Time to stop or change the behavior of the timer
+                long actualCycleTime = cycleElapsedTime % cycle.getDuration();
+                float fraction = (float)actualCycleTime / cycle.getDuration();
+                // Set new start time for this cycle
+                currentStartTime = currentTime - actualCycleTime;
 
 		if (envelope.getRepeatBehavior() == 
 		    Envelope.RepeatBehavior.REVERSE)
 		{
-		    // reverse the direction
-		    if (direction == Direction.FORWARD) {
-			// We were going forward: send an event with the final 
-			// value and switch direction
-			timingEventPreprocessor(cycleElapsedTime, 
-                                totalElapsedTime, 1.0f);
-			direction = Direction.BACKWARD;
-		    } else {
-			// We were going backward: send an event with the initial 
-			// value and switch direction
-			timingEventPreprocessor(cycleElapsedTime, 
-                                totalElapsedTime, 0.0f);
-			direction = Direction.FORWARD;
-		    }
-		    // Set new start time for this cycle
-		    currentStartTime = currentTime;
-		} else {
-		    // Like REVERSE, only don't have to switch directions
-
-		    // set initial value
-		    timingEventPreprocessor(cycleElapsedTime, 
-                            totalElapsedTime, 0.0f);
-		    // Set new start time for this cycle
-		    currentStartTime = currentTime;
+                    boolean oddCycles = 
+                            ((int)(cycleElapsedTime / cycle.getDuration()) % 2)
+                            > 0;
+                    if (oddCycles) {
+                        // reverse the direction
+                        direction = (direction == Direction.FORWARD) ? 
+                                Direction.BACKWARD :
+                                Direction.FORWARD;
+                    }
+                    if (direction == Direction.BACKWARD) {
+                        fraction = 1.0f - fraction;
+                    }
 		}
+                timingEventPreprocessor(actualCycleTime, 
+                        totalElapsedTime, fraction);
+                repeat();
 	    } else {
 		// mid-stream: calculate fraction of animation between
 		// start and end times and send fraction to target

@@ -30,9 +30,10 @@
  */
 
 
-package org.jdesktop.animation.timing;
+package org.jdesktop.animation.timing.interpolation;
 
 import java.lang.reflect.Method;
+import org.jdesktop.animation.timing.*;
 
 /**
  *
@@ -54,6 +55,7 @@ public class ObjectModifier implements TimingTarget {
     private PropertyRange propertyRange;
     private Object object;
     private Method propertySetter;
+    private Method propertyGetter;
             
     /** 
      * Creates a new instance of ObjectModifer.  Subclasses should call
@@ -78,7 +80,7 @@ public class ObjectModifier implements TimingTarget {
         } catch (NoSuchMethodException e) {
             throw new IllegalArgumentException("Bad property name (" +
                     propertyRange.getPropertyName() +"): could not find " +
-                    "an appropriate setter method for that property");
+                    "an appropriate setter or getter method for that property");
         }
     }
 
@@ -97,11 +99,15 @@ public class ObjectModifier implements TimingTarget {
         String propertyName = propertyRange.getPropertyName();
         String firstChar = propertyName.substring(0, 1);
         String remainder = propertyName.substring(1);
-        String propertySetterName = "set" + firstChar.toUpperCase() + remainder;
-        // Now get the Method from the object
         Class propertyType = propertyRange.getType();
+        String propertySetterName = "set" + firstChar.toUpperCase() + remainder;
         propertySetter = object.getClass().getMethod(propertySetterName,
                 propertyType);
+        if (propertyRange.isToAnimation()) {
+            // Only need the getter for "to" animations
+            String propertyGetterName = "get" + firstChar.toUpperCase() + remainder;
+            propertyGetter = object.getClass().getMethod(propertyGetterName);
+        }
     }
     
     //
@@ -110,10 +116,19 @@ public class ObjectModifier implements TimingTarget {
     
     /**
      * Called by TimingController to signal that the timer is about to start.
-     * This method does nothing in ObjectModifier; subclasses may want to
-     * override it if they have any tasks to perform at this time.
+     * The only operation performed in this method is calling PropertyRange
+     * with the current value of the object's property; this accounts
+     * for "to" animations, which need to start from the current value.
      */
-    public void begin() {}
+    public void begin() {
+        if (propertyRange.isToAnimation()) {
+            try {
+                propertyRange.setStartValue(propertyGetter.invoke(object));
+            } catch (Exception e) {
+                System.out.println("Problem with propertySetter in ObjectModifier");
+            }
+        }
+    }
 
     /**
      * Called by TimingController to signal that the timer has ended.

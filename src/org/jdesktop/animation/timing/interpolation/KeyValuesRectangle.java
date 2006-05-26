@@ -30,20 +30,22 @@
  */
 
 
-package org.jdesktop.animation.timing;
+package org.jdesktop.animation.timing.interpolation;
 
-import java.awt.Color;
+import java.awt.Rectangle;
 import java.lang.reflect.Method;
+import org.jdesktop.animation.timing.*;
 
 /**
  *
  * @author Chet
  */
-class KeyValuesColor extends KeyValues<Color> {
+class KeyValuesRectangle extends KeyValues<Rectangle> {
     
-    /** Creates a new instance of KeyValuesInt */
-    public KeyValuesColor(Color... values) {
-        for (Color value : values) {
+    /** Creates a new instance */
+    public KeyValuesRectangle(Rectangle... values) {
+        super(values);
+        for (Rectangle value : values) {
             this.values.add(value);
         }
     }
@@ -52,7 +54,7 @@ class KeyValuesColor extends KeyValues<Color> {
      * Returns type of values
      */
     public Class<?> getType() {
-        return Color.class;
+        return Rectangle.class;
     }
 
     /**
@@ -62,27 +64,19 @@ class KeyValuesColor extends KeyValues<Color> {
      */
     public void setValue(Object object, Method method, int i0,
             int i1, float fraction) {
-        Color value;
-        if (i0 == i1) {
-            value = values.get(i0);
-        } else {
-            Color v0 = values.get(i0);
-            Color v1 = values.get(i1);
-            int red = (int)(v0.getRed() + (v1.getRed() - v0.getRed()) * 
-                    fraction + .5);
-            int green = (int)(v0.getGreen() + (v1.getGreen() - v0.getGreen()) * 
-                    fraction + .5);
-            int blue = (int)(v0.getBlue() + (v1.getBlue() - v0.getBlue()) * 
-                    fraction + .5);
-            int alpha = (int)(v0.getAlpha() + (v1.getAlpha() - v0.getAlpha()) * 
-                    fraction + .5);
-            value = new Color(red, green, blue, alpha);
+        Rectangle value = values.get(i0);
+        if (i0 != i1) {
+            Rectangle v0 = values.get(i0);
+            Rectangle v1 = values.get(i1);
+            value.x += (int)((v1.x - v0.x) * fraction + .5);
+            value.y += (int)((v1.y - v0.y) * fraction + .5);
+            value.width += (int)((v1.width - v0.width) * fraction + .5);
+            value.height += (int)((v1.height - v0.height) * fraction + .5);
         }
         try {
             method.invoke(object, value);
         } catch (Exception e) {
-            System.out.println("Problem invoking method in KVColor.setValue:" + 
-                    e);
+            System.out.println("Problem invoking method in KVFloat.setValue:" + e);
         }
     }   
     
@@ -94,8 +88,7 @@ class KeyValuesColor extends KeyValues<Color> {
         try {
             method.invoke(object, values.get(index));
         } catch (Exception e) {
-            System.out.println("Problem invoking method in KVColor.setValue:" + 
-                    e);
+            System.out.println("Problem invoking method in KVFloat.setValue:" + e);
         }
     }
     
