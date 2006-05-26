@@ -29,9 +29,10 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.jdesktop.animation.timing;
+package org.jdesktop.animation.timing.interpolation;
 
 import java.util.ArrayList;
+import org.jdesktop.animation.timing.*;
 
 /**
  * 

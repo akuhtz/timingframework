@@ -30,10 +30,11 @@
  */
 
 
-package org.jdesktop.animation.timing;
+package org.jdesktop.animation.timing.interpolation;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import org.jdesktop.animation.timing.*;
 
 /**
  * This class holds the control points for a spline.  The anchor points

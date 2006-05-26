@@ -30,7 +30,7 @@
  */
 
 
-package org.jdesktop.animation.timing;
+package org.jdesktop.animation.timing.interpolation;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -38,6 +38,7 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import org.jdesktop.animation.timing.*;
 
 /**
  *
@@ -57,6 +58,7 @@ import java.util.ArrayList;
 public abstract class KeyValues<T> {
     
     protected ArrayList<T> values = new ArrayList<T>();
+    protected Object startValue;
     
     /**
      * Callers should create KeyValues structures from the factory methods
@@ -64,6 +66,35 @@ public abstract class KeyValues<T> {
      */
     protected KeyValues() {
         // default constructor does nothing
+    }
+    
+    /**
+     * Subclasses call this constructor to account for "to" animations;
+     * this method inserts a "null" value as the first element
+     */
+    protected KeyValues(Object[] values) {
+        if (values.length == 1) {
+            // set first element to null
+            this.values.add(null);
+        }
+    }
+    protected KeyValues(float[] values) {
+        if (values.length == 1) {
+            // set first element to null
+            this.values.add(null);
+        }
+    }
+    protected KeyValues(int[] values) {
+        if (values.length == 1) {
+            // set first element to null
+            this.values.add(null);
+        }
+    }
+    protected KeyValues(double[] values) {
+        if (values.length == 1) {
+            // set first element to null
+            this.values.add(null);
+        }
     }
     
     /**
@@ -89,6 +120,13 @@ public abstract class KeyValues<T> {
      */
     public static KeyValues createKeyValues(float... values) {
         return new KeyValuesFloat(values);
+    }
+    
+    /**
+     * Create KeyValues object with double values
+     */
+    public static KeyValues createKeyValues(double... values) {
+        return new KeyValuesDouble(values);
     }
     
     /**
@@ -127,6 +165,24 @@ public abstract class KeyValues<T> {
     public abstract Class<?> getType();
     
     /**
+     * Called at start of animation; sets starting value in simple
+     * "to" animations
+     */
+    public void setStartValue(Object startValue) {
+        if (isToAnimation()) {
+            this.startValue = startValue;
+        }
+    }
+    
+    /**
+     * Utility method for determining whether this is a "to" animation
+     * (true if the first value is null).
+     */
+    boolean isToAnimation() {
+        return (values.get(0) == null);
+    }
+        
+    /**
      * Sets the value of the property
      * with a linear interpolation of the given fraction between
      * the values at i0 and i1.  Subclasses need to override this
@@ -141,4 +197,4 @@ public abstract class KeyValues<T> {
      * method to calculate the value according to their type.
      */
     public abstract void setValue(Object object, Method method, int index);
-}
+    }

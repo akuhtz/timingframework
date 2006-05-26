@@ -29,64 +29,38 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+package org.jdesktop.animation.timing.triggers;
 
-package org.jdesktop.animation.timing;
+import org.jdesktop.animation.timing.*;
+import org.jdesktop.animation.timing.triggers.Trigger.TriggerAction;
+import org.jdesktop.animation.timing.triggers.TriggerEvent;
 
-import java.awt.Dimension;
-import java.lang.reflect.Method;
 
 /**
+ * Abstract superclass of all listeners for triggers.  This class caches the
+ * timer and action to be performed on the trigger and implements the utility
+ * method pullTrigger() that is called by subclasses upon a valid trigger
+ * event.
  *
  * @author Chet
  */
-class KeyValuesDimension extends KeyValues<Dimension> {
-    
-    /** Creates a new instance of KeyValuesInt */
-    public KeyValuesDimension(Dimension... values) {
-        for (Dimension value : values) {
-            this.values.add(value);
-        }
+public abstract class TriggerListener {
+    TimingController timer;
+    TriggerAction action;
+    protected TriggerListener(TimingController timer, TriggerAction action) {
+        this.timer = timer;
+        this.action = action;
     }
     
     /**
-     * Returns type of values
+     * Utility method to start or stop the timer based on the specified
+     * TriggerAction that the listener was created with
      */
-    public Class<?> getType() {
-        return Dimension.class;
-    }
-
-    /**
-     * Linear interpolation variant; set the value of the property
-     * to be a linear interpolation of the given fraction between
-     * the values at i0 and i1
-     */
-    public void setValue(Object object, Method method, int i0,
-            int i1, float fraction) {
-        Dimension value = values.get(i0);
-        if (i0 != i1) {
-            Dimension v0 = values.get(i0);
-            Dimension v1 = values.get(i1);
-            value.width += (int)((v1.width - v0.width) * fraction + .5);
-            value.height += (int)((v1.height - v0.height) * fraction + .5);
-        }
-        try {
-            method.invoke(object, value);
-        } catch (Exception e) {
-            System.out.println("Problem invoking method in KVFloat.setValue:" + e);
-        }
-    }   
-    
-    /**
-     * Discrete variant; set the value of the property to be the
-     * value at index.
-     */
-    public void setValue(Object object, Method method, int index) {
-        try {
-            method.invoke(object, values.get(index));
-        } catch (Exception e) {
-            System.out.println("Problem invoking method in KVFloat.setValue:" + e);
+    protected void pullTrigger() {
+        if (action == TriggerAction.START) {
+            timer.start();
+        } else {
+            timer.stop();
         }
     }
-    
-    
 }

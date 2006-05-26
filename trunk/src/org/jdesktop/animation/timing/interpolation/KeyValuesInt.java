@@ -29,28 +29,31 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.jdesktop.animation.timing;
+
+package org.jdesktop.animation.timing.interpolation;
 
 import java.lang.reflect.Method;
+import org.jdesktop.animation.timing.*;
 
 /**
  *
  * @author Chet
  */
-class KeyValuesFloat extends KeyValues<Float> {
+class KeyValuesInt extends KeyValues<Integer> {
     
     /** Creates a new instance of KeyValuesInt */
-    public KeyValuesFloat(float... values) {
-        for (float value : values) {
+    public KeyValuesInt(int... values) {
+        super(values);
+        for (int value : values) {
             this.values.add(value);
         }
     }
     
     /**
-     * Returns type of values
+     * Returns types of from/to values
      */
     public Class<?> getType() {
-        return float.class;
+        return int.class;
     }
 
     /**
@@ -60,19 +63,19 @@ class KeyValuesFloat extends KeyValues<Float> {
      */
     public void setValue(Object object, Method method, int i0,
             int i1, float fraction) {
-        float value;
+        int value;
         if (i0 == i1) {
             // trivial case
             value = values.get(i0);
         } else {
-            float v0 = values.get(i0);
-            float v1 = values.get(i1);
-            value = v0 + (v1 - v0) * fraction;
+            int v0 = values.get(i0);
+            int v1 = values.get(i1);
+            value = (int)(v0 + (v1 - v0) * fraction + .5f);
         }
         try {
             method.invoke(object, value);
         } catch (Exception e) {
-            System.out.println("Problem invoking method in KVFloat.setValue:" + e);
+            System.out.println("Problem invoking method in KVInt.setValue:" + e);
         }
     }   
     
@@ -84,7 +87,7 @@ class KeyValuesFloat extends KeyValues<Float> {
         try {
             method.invoke(object, values.get(index));
         } catch (Exception e) {
-            System.out.println("Problem invoking method in KVFloat.setValue:" + e);
+            System.out.println("Problem invoking method in KVInt.setValue:" + e);
         }
     }
     

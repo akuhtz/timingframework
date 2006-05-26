@@ -29,66 +29,57 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+package org.jdesktop.animation.timing.triggers;
 
-package org.jdesktop.animation.timing;
-
-import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.lang.reflect.Method;
+import javax.swing.AbstractButton;
+import org.jdesktop.animation.timing.*;
 
 /**
+ * ActionTrigger handles action events on a given Object and
+ * fires the appropriate TriggerAction when actions occur.
  *
  * @author Chet
  */
-class KeyValuesRectangle extends KeyValues<Rectangle> {
-    
-    /** Creates a new instance of KeyValuesInt */
-    public KeyValuesRectangle(Rectangle... values) {
-        for (Rectangle value : values) {
-            this.values.add(value);
-        }
+public class ActionTrigger extends Trigger {
+
+    /** Creates a new instance of ActionTrigger 
+     * @param timer the TimingController that will perform the action
+     * when the event occurs
+     * @param source the Object that will be listened to for ActionEvents;
+     * this must be an object that has an addActionListener() method on it
+     * @param action the TriggerAction that will be fired on timer when
+     * the event occurs
+     */
+    public ActionTrigger(TimingController timer, Object source, 
+            TriggerAction action) {
+        setupListener(timer, source, action, null);
     }
     
-    /**
-     * Returns type of values
-     */
-    public Class<?> getType() {
-        return Rectangle.class;
+    protected void setupListener(TimingController timer, Object source, 
+            TriggerAction action, TriggerEvent event) {
+        try {
+            ActionTriggerListener listener = new 
+                ActionTriggerListener(timer, action);
+            setupListener(source, listener, "addActionListener",
+                    ActionListener.class);
+        } catch (Exception e) {
+            System.out.println("Exception creating " +
+                "action listener for object " + source + ": " + e);
+        }
     }
 
-    /**
-     * Linear interpolation variant; set the value of the property
-     * to be a linear interpolation of the given fraction between
-     * the values at i0 and i1
-     */
-    public void setValue(Object object, Method method, int i0,
-            int i1, float fraction) {
-        Rectangle value = values.get(i0);
-        if (i0 != i1) {
-            Rectangle v0 = values.get(i0);
-            Rectangle v1 = values.get(i1);
-            value.x += (int)((v1.x - v0.x) * fraction + .5);
-            value.y += (int)((v1.y - v0.y) * fraction + .5);
-            value.width += (int)((v1.width - v0.width) * fraction + .5);
-            value.height += (int)((v1.height - v0.height) * fraction + .5);
+    class ActionTriggerListener extends TriggerListener 
+            implements ActionListener {
+        protected ActionTriggerListener(TimingController timer, 
+                TriggerAction action) {
+            super(timer, action);
         }
-        try {
-            method.invoke(object, value);
-        } catch (Exception e) {
-            System.out.println("Problem invoking method in KVFloat.setValue:" + e);
-        }
-    }   
-    
-    /**
-     * Discrete variant; set the value of the property to be the
-     * value at index.
-     */
-    public void setValue(Object object, Method method, int index) {
-        try {
-            method.invoke(object, values.get(index));
-        } catch (Exception e) {
-            System.out.println("Problem invoking method in KVFloat.setValue:" + e);
+        public void actionPerformed(ActionEvent ae) {
+            pullTrigger();
         }
     }
-    
     
 }
