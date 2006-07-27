@@ -29,65 +29,50 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-
-package org.jdesktop.animation.timing.interpolation;
-
-import java.awt.Point;
-import java.lang.reflect.Method;
-import org.jdesktop.animation.timing.*;
+package org.jdesktop.animation.timing;
 
 /**
+ * Simple class to hold data for timing events (elapsed time and fraction)
  *
  * @author Chet
  */
-class KeyValuesPoint extends KeyValues<Point> {
-        /** Creates a new instance of KeyValuesInt */
-    public KeyValuesPoint(Point... values) {
-        super(values);
-        for (Point value : values) {
-            this.values.add(value);
-        }
-    }
+public class TimingData {
     
-    /**
-     * Returns type of values
-     */
-    public Class<?> getType() {
-        return Point.class;
-    }
-
-    /**
-     * Linear interpolation variant; set the value of the property
-     * to be a linear interpolation of the given fraction between
-     * the values at i0 and i1
-     */
-    public void setValue(Object object, Method method, int i0,
-            int i1, float fraction) {
-        Point value = (Point)values.get(i0).clone();
-        if (i0 != i1) {
-            Point v0 = value;
-            Point v1 = values.get(i1);
-            value.x += (int)((v1.x - v0.x) * fraction + .5);
-            value.y += (int)((v1.y - v0.y) * fraction + .5);
-        }
-        try {
-            method.invoke(object, value);
-        } catch (Exception e) {
-            System.out.println("Problem invoking method in KVFloat.setValue:" + e);
-        }
-    }   
+    private long cycleElapsedTime;
+    private long totalElapsedTime;
+    private float fraction;
     
-    /**
-     * Discrete variant; set the value of the property to be the
-     * value at index.
-     */
-    public void setValue(Object object, Method method, int index) {
-        try {
-            method.invoke(object, values.get(index));
-        } catch (Exception e) {
-            System.out.println("Problem invoking method in KVFloat.setValue:" + e);
-        }
+    /** Creates a new instance of TimingData */
+    public TimingData(long cycleElapsedTime,
+			    long totalElapsedTime, 
+			    float fraction) {
+        this.cycleElapsedTime = cycleElapsedTime;
+        this.totalElapsedTime = totalElapsedTime;
+        this.fraction = fraction;
     }
     
     
+    public void setCycleElapsedTime(long cycleElapsedTime) {
+        this.cycleElapsedTime = cycleElapsedTime;
+    }
+    
+    public long getCycleElapsedTime() {
+        return cycleElapsedTime;
+    }
+    
+    public void setTotalElapsedTime(long totalElapsedTime) {
+        this.totalElapsedTime = totalElapsedTime;
+    }
+    
+    public long getTotalElapsedTime() {
+        return totalElapsedTime;
+    }
+    
+    public void setFraction(float fraction) {
+        this.fraction = fraction;
+    }
+    
+    public float getFraction() {
+        return fraction;
+    }
 }

@@ -64,12 +64,12 @@ class KeyValuesDimension extends KeyValues<Dimension> {
      */
     public void setValue(Object object, Method method, int i0,
             int i1, float fraction) {
-        Dimension value = values.get(i0);
+        Dimension value = (Dimension)values.get(i0).clone();
         if (i0 != i1) {
-            Dimension v0 = values.get(i0);
+            Dimension v0 = value;
             Dimension v1 = values.get(i1);
             value.width += (int)((v1.width - v0.width) * fraction + .5);
-            value.height += (int)((v1.height - v0.height) * fraction + .5);
+            value.height = (int)((v1.height - v0.height) * fraction + .5);
         }
         try {
             method.invoke(object, value);

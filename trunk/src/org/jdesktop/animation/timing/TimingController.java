@@ -355,13 +355,12 @@ public class TimingController implements TimingTarget {
      * It then calls the real timingEvent() method with this
      * new value.
      */
-    private void timingEventPreprocessor(long cycleElapsedTime,
-			    long totalElapsedTime, 
-			    float fraction)
+    private void timingEventPreprocessor(TimingData timingData)
     {
         if (acceleration != 0 || deceleration != 0.0f) {
             // See the SMIL 2.0 specification for details on this
             // calculation
+            float fraction = timingData.getFraction();
             float oldFraction = fraction;
             float runRate = 1.0f / (1.0f - acceleration/2.0f - 
                     deceleration/2.0f);
@@ -385,8 +384,103 @@ public class TimingController implements TimingTarget {
             } else if (fraction > 1.0f) {
                 fraction = 1.0f;
             }
+            timingData.setFraction(fraction);
         }
-        timingEvent(cycleElapsedTime, totalElapsedTime, fraction);
+    }
+    
+    /**
+     * This method calculates and returns the TimingData information based
+     * on the current time
+     */
+    public TimingData getTimingData() {
+        TimingData timingData;
+        long currentTime = System.nanoTime() / 1000000;
+        // Calculate values that are passed into TimingController.timingEvent()
+        long cycleElapsedTime = currentTime - currentStartTime;
+        long totalElapsedTime = currentTime - startTime;
+        double currentCycle = (double)totalElapsedTime / cycle.getDuration();
+        float fraction;
+
+        if ((envelope.getRepeatCount() != INFINITE) &&
+            currentCycle >= envelope.getRepeatCount())
+        {
+            // Envelope done: stop based on end behavior
+            switch (envelope.getEndBehavior()) {
+            case HOLD:
+                // Make sure we send a final end value
+                if (intRepeatCount) {
+                    // If supposed to run integer number of cycles, hold
+                    // on integer boundary
+                    if (direction == Direction.BACKWARD) {
+                        // If we were traveling backward, hold on 0
+                        fraction = 0.0f;
+                    } else {
+                        fraction = 1.0f;
+                    }
+                } else {
+                    // hold on final value instead
+                    fraction = Math.min(1.0f, 
+                        ((float)cycleElapsedTime / cycle.getDuration()));
+                }
+                break;
+            case RESET:
+                // RESET requires setting the final value to the start value
+                fraction = 0.0f;
+                break;
+            default:
+                fraction = 0.0f;
+                // should not reach here
+                break;
+            }
+            stop();
+        } else if ((cycle.getDuration() != INFINITE) && 
+                   (cycleElapsedTime > cycle.getDuration()))
+        {
+            // Cycle end: Time to stop or change the behavior of the timer
+            long actualCycleTime = cycleElapsedTime % cycle.getDuration();
+            fraction = (float)actualCycleTime / cycle.getDuration();
+            // Set new start time for this cycle
+            currentStartTime = currentTime - actualCycleTime;
+
+            if (envelope.getRepeatBehavior() == 
+                Envelope.RepeatBehavior.REVERSE)
+            {
+                boolean oddCycles = 
+                        ((int)(cycleElapsedTime / cycle.getDuration()) % 2)
+                        > 0;
+                if (oddCycles) {
+                    // reverse the direction
+                    direction = (direction == Direction.FORWARD) ? 
+                            Direction.BACKWARD :
+                            Direction.FORWARD;
+                }
+                if (direction == Direction.BACKWARD) {
+                    fraction = 1.0f - fraction;
+                }
+            }
+            repeat();
+        } else {
+            // mid-stream: calculate fraction of animation between
+            // start and end times and send fraction to target
+            fraction = 0.0f;
+            if (cycle.getDuration() != INFINITE) {
+                // Only limited duration animations need a fraction
+                fraction = (float)cycleElapsedTime / cycle.getDuration();
+                if (direction == Direction.BACKWARD) {
+                    // If this is a reversing cycle, want to know inverse
+                    // fraction; how much from start to finish, not 
+                    // finish to start
+                    fraction = (1.0f - fraction);
+                }
+                // Clamp fraction in case timing mechanism caused out of 
+                // bounds value
+                fraction = Math.min(fraction, 1.0f);
+                fraction = Math.max(fraction, 0.0f);
+            }
+        }
+        timingData = new TimingData(cycleElapsedTime, totalElapsedTime, 
+                fraction);
+        return timingData;
     }
     
     /**
@@ -398,96 +492,10 @@ public class TimingController implements TimingTarget {
      */
     private class TimerTarget implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
-	    long currentTime = System.nanoTime() / 1000000;
-	    // Calculate values that are passed into TimingController.timingEvent()
-	    long cycleElapsedTime = currentTime - currentStartTime;
-	    long totalElapsedTime = currentTime - startTime;
-	    double currentCycle = (double)totalElapsedTime / cycle.getDuration();
-
-	    if ((envelope.getRepeatCount() != INFINITE) &&
-		currentCycle >= envelope.getRepeatCount())
-	    {
-		// Envelope done: stop based on end behavior
-		switch (envelope.getEndBehavior()) {
-		case HOLD:
-		    // Make sure we send a final end value
-		    float endFraction;
-		    if (intRepeatCount) {
-			// If supposed to run integer number of cycles, hold
-			// on integer boundary
-			if (direction == Direction.BACKWARD) {
-			    // If we were traveling backward, hold on 0
-			    endFraction = 0.0f;
-			} else {
-			    endFraction = 1.0f;
-			}
-		    } else {
-			// hold on final value instead
-			endFraction = Math.min(1.0f, 
-			    ((float)cycleElapsedTime / cycle.getDuration()));
-		    }
-		    timingEventPreprocessor(cycleElapsedTime, 
-                            totalElapsedTime, endFraction);
-		    break;
-		case RESET:
-		    // RESET requires setting the final value to the start value
-		    timingEventPreprocessor(cycleElapsedTime, 
-                            totalElapsedTime, 0.0f);
-		    break;
-		default:
-		    // should not reach here
-		    break;
-		}
-                stop();
-	    } else if ((cycle.getDuration() != INFINITE) && 
-		       (cycleElapsedTime > cycle.getDuration()))
-	    {
-		// Cycle end: Time to stop or change the behavior of the timer
-                long actualCycleTime = cycleElapsedTime % cycle.getDuration();
-                float fraction = (float)actualCycleTime / cycle.getDuration();
-                // Set new start time for this cycle
-                currentStartTime = currentTime - actualCycleTime;
-
-		if (envelope.getRepeatBehavior() == 
-		    Envelope.RepeatBehavior.REVERSE)
-		{
-                    boolean oddCycles = 
-                            ((int)(cycleElapsedTime / cycle.getDuration()) % 2)
-                            > 0;
-                    if (oddCycles) {
-                        // reverse the direction
-                        direction = (direction == Direction.FORWARD) ? 
-                                Direction.BACKWARD :
-                                Direction.FORWARD;
-                    }
-                    if (direction == Direction.BACKWARD) {
-                        fraction = 1.0f - fraction;
-                    }
-		}
-                timingEventPreprocessor(actualCycleTime, 
-                        totalElapsedTime, fraction);
-                repeat();
-	    } else {
-		// mid-stream: calculate fraction of animation between
-		// start and end times and send fraction to target
-		float fraction = 0.0f;
-		if (cycle.getDuration() != INFINITE) {
-		    // Only limited duration animations need a fraction
-		    fraction = (float)cycleElapsedTime / cycle.getDuration();
-		    if (direction == Direction.BACKWARD) {
-			// If this is a reversing cycle, want to know inverse
-			// fraction; how much from start to finish, not 
-			// finish to start
-			fraction = (1.0f - fraction);
-		    }
-		    // Clamp fraction in case timing mechanism caused out of 
-		    // bounds value
-		    fraction = Math.min(fraction, 1.0f);
-		    fraction = Math.max(fraction, 0.0f);
-		}
-		timingEventPreprocessor(cycleElapsedTime, 
-                        totalElapsedTime, fraction);
-	    }
+            TimingData timingData = getTimingData();
+            timingEvent(timingData.getCycleElapsedTime(),
+                    timingData.getTotalElapsedTime(),
+                    timingData.getFraction());
 	}
     }
 

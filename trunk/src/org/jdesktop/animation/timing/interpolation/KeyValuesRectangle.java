@@ -64,9 +64,9 @@ class KeyValuesRectangle extends KeyValues<Rectangle> {
      */
     public void setValue(Object object, Method method, int i0,
             int i1, float fraction) {
-        Rectangle value = values.get(i0);
+        Rectangle value = (Rectangle)values.get(i0).clone();
         if (i0 != i1) {
-            Rectangle v0 = values.get(i0);
+            Rectangle v0 = value;
             Rectangle v1 = values.get(i1);
             value.x += (int)((v1.x - v0.x) * fraction + .5);
             value.y += (int)((v1.y - v0.y) * fraction + .5);
