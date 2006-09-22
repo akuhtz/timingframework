@@ -480,6 +480,7 @@ public class TimingController implements TimingTarget {
         }
         timingData = new TimingData(cycleElapsedTime, totalElapsedTime, 
                 fraction);
+        timingEventPreprocessor(timingData);
         return timingData;
     }
     
