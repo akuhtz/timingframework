@@ -37,29 +37,35 @@ import java.util.ArrayList;
 import org.jdesktop.animation.timing.*;
 
 /**
- * This class holds the control points for a spline.  The anchor points
- * for the spline are assumed to be (0, 0) and (1, 1).  Control points
+ * This class interpolates fractional values using Bezier splines.  The anchor
+ * points  * for the spline are assumed to be (0, 0) and (1, 1).  Control points
  * should all be in the range [0, 1].
- *
- * For more information on how splines are used, refer to the
+ * <p>
+ * For more information on how splines are used to interpolate, refer to the
  * SMIL specification at http://w3c.org.
- * 
+ * <p>
+ * This class provides one simple built-in facility for non-linear
+ * interpolation.  Applications are free to define their own Interpolator
+ * implementation and use that instead when particular non-linear
+ * effects are desired.
+ *
  * @author Chet
  */
-public class Spline {
+public class SplineInterpolator implements Interpolator {
 
     // Note: (x0,y0) and (x1,y1) are implicitly (0, 0) and (1,1) respectively
     private float x1, y1, x2, y2;
     private ArrayList lengths = new ArrayList();
     
     /**
-     * Creates a new instance of Spline with the control points defined
-     * by (x1, y1) and (x2, y2).  The anchor points are implicitly defined
-     * as (0, 0) and (1, 1).
+     * Creates a new instance of SplineInterpolator with the control points
+     * defined by (x1, y1) and (x2, y2).  The anchor points are implicitly
+     * defined as (0, 0) and (1, 1).
+     * 
      * @throws IllegalArgumentException This exception is thrown when values
      * beyond the allowed [0,1] range are passed in
      */
-    public Spline(float x1, float y1, float x2, float y2) {
+    public SplineInterpolator(float x1, float y1, float x2, float y2) {
         if (x1 < 0 || x1 > 1.0f ||
                 y1 < 0 || y1 > 1.0f ||
                 x2 < 0 || x2 > 1.0f ||
@@ -112,7 +118,7 @@ public class Spline {
      * so this simplifies to:
      *   x = b1*x1 + b2*x2 + b3
      *   y = b1*x1 + b2*x2 + b3
-     * @param t parametric value for spline calucation
+     * @param t parametric value for spline calculation
      */
     private Point2D.Float getXY(float t) {
         Point2D.Float xy;
@@ -147,8 +153,9 @@ public class Spline {
      * linearly interpolating between the nearest values) and then
      * calculate the Y value for this t.
      * @param lengthFraction Fraction of time in a given time interval.
+     * @return interpolated fraction between 0 and 1
      */
-    float getInterpolatedValue(float lengthFraction) {
+    public float interpolate(float lengthFraction) {
         // REMIND: speed this up with binary search
         float interpolatedT = 1.0f;
         float prevT = 0.0f;

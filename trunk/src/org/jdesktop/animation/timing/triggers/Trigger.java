@@ -47,7 +47,7 @@ import org.jdesktop.animation.timing.*;
 public abstract class Trigger {
   
     /**
-     * A Trigger can be set up to either start or stop a given TimingController
+     * A Trigger can be set up to either start or stop a given Animator
      */
     public enum TriggerAction {
         START,
@@ -65,8 +65,8 @@ public abstract class Trigger {
      * the second source/event.  The first timer will be auto-stopped
      * when the second source/event occurs, and vice versa.
      */
-    public Trigger(TimingController startTimer, Object source, 
-            TriggerEvent event, TimingController stopTimer) {
+    public Trigger(Animator startTimer, Object source, 
+            TriggerEvent event, Animator stopTimer) {
         setupListener(startTimer, source, TriggerAction.START, event);
         setupListener(startTimer, source, TriggerAction.STOP, 
                 event.getOppositeEvent());
@@ -82,7 +82,7 @@ public abstract class Trigger {
      * the appropriate EventListener object and call Trigger.setupListener()
      * to do the rest.
      */
-    abstract protected void setupListener(TimingController timer, 
+    abstract protected void setupListener(Animator timer, 
                 Object source, TriggerAction action, TriggerEvent event);
     
     /**
@@ -91,8 +91,8 @@ public abstract class Trigger {
      * subclass calls this method with that listener object to create the
      * Method reference and add the listener.
      */
-    protected void setupListener(Object object, EventListener listener, 
-            String methodName, Class<? extends EventListener> listenerClass) 
+    protected void setupListener(Object object, Object listener, 
+            String methodName, Class listenerClass) 
             throws NoSuchMethodException, IllegalAccessException, 
             java.lang.reflect.InvocationTargetException
     {

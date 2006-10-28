@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2006, Sun Microsystems, Inc
+ * Copyright (c) 2005-2006, Sun Microsystems, Inc
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -31,64 +31,29 @@
 
 package org.jdesktop.animation.timing.interpolation;
 
-import java.lang.reflect.Method;
-import org.jdesktop.animation.timing.*;
-
 /**
+ * Interface that defines the single {@link #interpolate(float)} method.
+ * This interface is implemented by built-in interpolators.  
+ * Applications may choose to implement
+ * their own Interpolator to get custom interpolation behavior.
  *
  * @author Chet
  */
-class KeyValuesFloat extends KeyValues<Float> {
-    
-    /** Creates a new instance of KeyValuesInt */
-    public KeyValuesFloat(float... values) {
-        super(values);
-        for (float value : values) {
-            this.values.add(value);
-        }
-    }
-    
+public interface Interpolator {
+  
     /**
-     * Returns type of values
+     * This function takes an input value between 0 and 1 and returns
+     * another value, also between 0 and 1. The purpose of the function
+     * is to define how time (represented as a (0-1) fraction of the
+     * duration of an animation) is altered to derive different value
+     * calculations during an animation.
+     * @param fraction a value between 0 and 1, representing the elapsed
+     * fraction of a time interval (either an entire animation cycle or an 
+     * interval between two KeyTimes, depending on where this Interpolator has
+     * been set)
+     * @return a value between 0 and 1.  Values outside of this boundary may
+     * cause undefined results.
      */
-    public Class<?> getType() {
-        return float.class;
-    }
-
-    /**
-     * Linear interpolation variant; set the value of the property
-     * to be a linear interpolation of the given fraction between
-     * the values at i0 and i1
-     */
-    public void setValue(Object object, Method method, int i0,
-            int i1, float fraction) {
-        float value;
-        if (i0 == i1) {
-            // trivial case
-            value = values.get(i0);
-        } else {
-            float v0 = values.get(i0);
-            float v1 = values.get(i1);
-            value = v0 + (v1 - v0) * fraction;
-        }
-        try {
-            method.invoke(object, value);
-        } catch (Exception e) {
-            System.out.println("Problem invoking method in KVFloat.setValue:" + e);
-        }
-    }   
-    
-    /**
-     * Discrete variant; set the value of the property to be the
-     * value at index.
-     */
-    public void setValue(Object object, Method method, int index) {
-        try {
-            method.invoke(object, values.get(index));
-        } catch (Exception e) {
-            System.out.println("Problem invoking method in KVFloat.setValue:" + e);
-        }
-    }
-    
+    public float interpolate(float fraction);
     
 }

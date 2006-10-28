@@ -45,30 +45,9 @@ import org.jdesktop.animation.timing.*;
  */
 public class KeyFrames {
     
-    /**
-     * Type of interpolation used between each value in KeyValues.
-     */
-    public enum InterpolationType {
-        /**
-         * Interpolate linearly between each value
-         */
-        LINEAR,
-        /**
-         * Jump from value to value based on whether the timing fraction
-         * has equalled or surpassed the new value.
-         */
-        DISCRETE,
-        /**
-         * Interpolate using the spline control points defined for each
-         * key frame.
-         */
-        NONLINEAR
-    };
-    
     private KeyValues keyValues;
     private KeyTimes keyTimes;
-    private KeySplines keySplines;
-    private InterpolationType interpolationType;
+    private KeyInterpolators interpolators;
     
     /** 
      * Simplest variation; determine keyTimes based on even division of
@@ -77,147 +56,112 @@ public class KeyFrames {
      * @param keyValues values that will be assumed at each time in keyTimes
      */
     public KeyFrames(KeyValues keyValues) {
-        init(keyValues, null, null, InterpolationType.LINEAR);
-    }
-    
-    /**
-     * Simple division of time into equal divisions according to the
-     * number of values in keyValues, but this constructor also takes
-     * an InterpolationType parameter to tell KeyFrames how to interpolate
-     * between each value.
-     */
-    public KeyFrames(KeyValues keyValues, InterpolationType interpolationType) {
-        init(keyValues, null, null, interpolationType);
+        init(keyValues, null, (Interpolator)null);
     }
     
     /**
      * This variant takes both keyValues (values at each
-     * point in time) and keyTimes (times at which values are sampled), in
-     * addition to InterpolationType.
+     * point in time) and keyTimes (times at which values are sampled).
      * @param keyValues values that the animation will assume at each of the
      * corresponding times in keyTimes
      * @param keyTimes times at which the animation will assume the
      * corresponding values in keyValues
-     * @param interpolationType how the animation will interpolate between the
-     * values in keyValues.  This can be only DISCRETE or LINEAR in this 
-     * constructor since NONLINEAR requires keySplines
-     * @throws IllegalArgumentException A request for NONLINEAR interpolation 
-     * will cause this exception because that interpolation type requires
-     * keySplines.  
      * @throws IllegalArgumentException keyTimes and keySizes must have the
      * same number of elements since these structures are meant to have
      * corresponding entries; an exception is thrown otherwise.
      */
-    public KeyFrames(KeyValues keyValues, KeyTimes keyTimes, 
-            InterpolationType interpolationType) {
-        init(keyValues, null, keyTimes, interpolationType);
+    public KeyFrames(KeyValues keyValues, KeyTimes keyTimes) {
+        init(keyValues, keyTimes, (Interpolator)null);
     }
     
     /**
      * Full constructor: caller provides
      * an instance of all key* structures which will be used to calculate
-     * between all times in the keyTimes list.  A null keySplines parameter
-     * is equivalent to calling {@link KeyFrames#KeyFrames(KeyValues, KeyTimes,
-     * InterpolationType) KeyFrames(KeyValues, KeyTimes, InterpolationType)},
-     * where IntepolationType should not be NONLINEAR.  An interpolationType
-     * value of anything except NONLINEAR will cause the keySplines parameter
-     * to be ignored.
+     * between all times in the keyTimes list.  A null interpolator parameter
+     * is equivalent to calling {@link KeyFrames#KeyFrames(KeyValues, KeyTimes)}.
      * @param keyValues values that the animation will assume at each of the
      * corresponding times in keyTimes
      * @param keyTimes times at which the animation will assume the
      * corresponding values in keyValues
-     * @param keySplines collection of Splines that control the interpolation
-     * of the animation between the values in keyValues during the time
-     * intervals between times in keyTimes.  The size of keySplines must
-     * be equal to one less than the size of keyTimes/keyValues.
-     * @param interpolationType how the animation will interpolate between the
-     * values in keyValues.  This can only be NONLINEAR if keySplines is
-     * not null
-     * @throws IllegalArgumentException A request for NONLINEAR interpolation 
-     * in the event of a null keySplines is not allowed
-     * @throws IllegalArgumentException keyTimes and keySizes must have the
+     * @param interpolators collection of Interpolators that control 
+     * the calculation of values in each of the intervals defined by keyFrames.
+     * If this value is null, a {@link LinearInterpolator} will be used
+     * for all intervals.  If there is only one interpolator, that interpolator
+     * will be used for all intervals.  Otherwise, there must be a number of
+     * interpolators equal to the number of intervals (which is one less than
+     * the number of keyTimes).
+     * @throws IllegalArgumentException keyTimes and keyValues must have the
      * same number of elements since these structures are meant to have
      * corresponding entries; an exception is thrown otherwise.
-     * @throws IllegalArgumentException keySplines must have a size equal to
-     * one less than the size of keyTimes and keyValues since the splines must
-     * have the right number of elements to perform interpolation in 
-     * (keyTimes - 1) time intervals.
+     * @throws IllegalArgumentException The number of interpolators must either
+     * be zero (interpolators == null), one, or one less than the size of 
+     * keyTimes.
      */
-    public KeyFrames(KeyValues keyValues, 
-            KeySplines keySplines,
-            KeyTimes keyTimes, 
-            InterpolationType interpolationType) {
-        init(keyValues, keySplines, keyTimes, interpolationType);
+    public KeyFrames(KeyValues keyValues, KeyTimes keyTimes,
+            Interpolator... interpolators) {
+        init(keyValues, keyTimes, interpolators);
     }
 
     /**
      * Utility constructor that assumes even division of times according to
-     * size of keyValues and NONLINEAR interpolation if keySplines is not null.
-     * In the event of a null keySplines parameter, LINEAR interpolation is
-     * assumed.
+     * size of keyValues and interpolation according to interpolators 
+     * parameter.
      * @param keyValues values that the animation will assume at each of the
      * corresponding times in keyTimes
-     * @param keySplines collection of Splines that control the interpolation
-     * of the animation between the values in keyValues during the time
-     * intervals between times in keyTimes.  The size of keySplines must
-     * be equal to one less than the size of keyTimes/keyValues.
-     * @throws IllegalArgumentException keySplines must have a size equal to
-     * one less than the size of keyValues since the splines must
-     * have the right number of elements to perform interpolation in 
-     * (sizeof(keyValues) - 1) time intervals.
+     * @param interpolators collection of Interpolators that control 
+     * the calculation of values in each of the intervals defined by keyFrames.
+     * If this value is null, a {@link LinearInterpolator} will be used
+     * for all intervals.  If there is only one interpolator, that interpolator
+     * will be used for all intervals.  Otherwise, there must be a number of
+     * interpolators equal to the number of intervals (which is one less than
+     * the number of keyTimes).
+     * @throws IllegalArgumentException The number of interpolators must either
+     * be zero (interpolators == null), one, or one less than the size of 
+     * keyTimes.
      */
-    public KeyFrames(KeyValues keyValues, KeySplines keySplines) {
-        if (keySplines != null) {
-            init(keyValues, keySplines, null, InterpolationType.NONLINEAR);
-        } else {
-            init(keyValues, keySplines, null, InterpolationType.LINEAR);
-        }
+    public KeyFrames(KeyValues keyValues, Interpolator... interpolators) {
+        init(keyValues, null, interpolators);
     }
 
     /**
      * Utility function called by constructors to perform common
-     * initialization
+     * initialization chores
      */
-    private void init(KeyValues keyValues,
-            KeySplines keySplines,
-            KeyTimes keyTimes, 
-            InterpolationType interpolationType) {
+    private void init(KeyValues keyValues, KeyTimes keyTimes,
+            Interpolator... interpolators) {
+        int numFrames = keyValues.getSize();
         // If keyTimes null, create our own
         if (keyTimes == null) {
-            int numKeyTimes = keyValues.getSize();
-            float keyTimesArray[] = new float[numKeyTimes];
+            float keyTimesArray[] = new float[numFrames];
             float timeVal = 0.0f;
             keyTimesArray[0] = timeVal;
-            for (int i = 1; i < (numKeyTimes - 1); ++i) {
-                timeVal += (1.0f / (numKeyTimes - 1));
+            for (int i = 1; i < (numFrames - 1); ++i) {
+                timeVal += (1.0f / (numFrames - 1));
                 keyTimesArray[i] = timeVal;
             }
-            keyTimesArray[numKeyTimes - 1] = 1.0f;
+            keyTimesArray[numFrames - 1] = 1.0f;
             this.keyTimes = new KeyTimes(keyTimesArray);
         } else {
             this.keyTimes = keyTimes;
         }
         this.keyValues = keyValues;
-        this.keySplines = keySplines;
-        this.interpolationType = interpolationType;
-        if (interpolationType == InterpolationType.NONLINEAR &&
-                keySplines == null) {
-            throw new IllegalArgumentException("NONLINEAR interpolation " +
-                    "requires KeySplines");
-        }
-        if (keyValues.getSize() != this.keyTimes.getSize()) {
+        if (numFrames != this.keyTimes.getSize()) {
             throw new IllegalArgumentException("keyValues and keyTimes" +
                     " must be of equal size");
         }
-        if (keySplines != null && 
-                (keySplines.getSize() != (this.keyTimes.getSize() - 1))) {
-            throw new IllegalArgumentException("keySplines must have" +
-                    " a size equal to the one less than the size of" +
-                    " keyValues");
+        if (interpolators != null && 
+                (interpolators.length != (numFrames - 1)) &&
+                (interpolators.length != 1)) {
+            throw new IllegalArgumentException("interpolators must be " +
+                    "either null (implying interpolation for all intervals), " +
+                    "a single interpolator (which will be used for all " +
+                    "intervals), or a number of interpolators equal to " +
+                    "one less than the number of times.");
         }
+        this.interpolators = new KeyInterpolators(numFrames - 1, interpolators);
     }
         
-    public Class getType() {
+    Class getType() {
         return keyValues.getType();
     }
     
@@ -225,34 +169,35 @@ public class KeyFrames {
         return keyValues;
     }
     
-    KeySplines getKeySplines() {
-        return keySplines;
-    }
-    
     KeyTimes getKeyTimes() {
         return keyTimes;
     }
     
-    public void setValue(Object object, Method method, float fraction) {
+    /**
+     * Returns time interval that contains this time fraction
+     */
+    public int getInterval(float fraction) {
+        return keyTimes.getInterval(fraction);
+    }
+    
+    /**
+     * Returns a value for the given fraction elapsed of the animation
+     * cycle.  Given the fraction, this method will determine what
+     * interval the fraction lies within, how much of that interval has
+     * elapsed, what the boundary values are (from KeyValues), what the
+     * interpolated fraction is (from the Interpolator for the interval),
+     * and what the final interpolated intermediate value is (using the
+     * appropriate Evaluator).
+     */
+    Object getValue(float fraction) {
         // First, figure out the real fraction to use, given the
         // interpolation type and keyTimes
-        int interval = keyTimes.getInterval(fraction);
+        int interval = getInterval(fraction);
         float t0 = keyTimes.getTime(interval);
-        if (interpolationType == InterpolationType.DISCRETE) {
-            if (fraction < 1.0f) {
-                keyValues.setValue(object, method, interval);
-            } else {
-                keyValues.setValue(object, method, keyTimes.getSize() -1 );
-            }
-        } else { // LINEAR or NONLINEAR
-            float t1 = keyTimes.getTime(interval + 1);
-            float t = (fraction - t0) / (t1 - t0);
-            if (interpolationType == InterpolationType.NONLINEAR) {
-                //System.out.println("Interpolation: time t, interpT = " +
-                //        t + ", " + keySplines.interpolate(i0, t));
-                t = keySplines.interpolate(interval, t);
-            }
-            keyValues.setValue(object, method, interval, (interval + 1), t);
-        }
+        float t1 = keyTimes.getTime(interval + 1);
+        float t = (fraction - t0) / (t1 - t0);
+        float interpolatedT = interpolators.interpolate(interval, t);
+        return keyValues.getValue(interval, (interval+1), interpolatedT);
     }
+    
 }

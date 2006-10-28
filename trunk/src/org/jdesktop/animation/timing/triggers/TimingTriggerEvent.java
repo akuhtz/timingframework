@@ -37,14 +37,14 @@ package org.jdesktop.animation.timing.triggers;
  * @author Chet
  */
 public class TimingTriggerEvent extends TriggerEvent {
-    /** Event fired when TimingController starts */
+    /** Event fired when Animator starts */
     public static final TimingTriggerEvent START = 
             new TimingTriggerEvent("Start");
-    /** Event fired when TimingController stops */
+    /** Event fired when Animator stops */
     public static final TimingTriggerEvent STOP = 
             new TimingTriggerEvent("Stop");
     /** 
-     * Event fired when TimingController finishes one cycle and
+     * Event fired when Animator finishes one cycle and
      * starts another
      */
     public static final TimingTriggerEvent REPEAT = 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2006, Sun Microsystems, Inc
+ * Copyright (c) 2005-2006, Sun Microsystems, Inc
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -29,68 +29,48 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-
 package org.jdesktop.animation.timing.interpolation;
 
-import java.awt.Rectangle;
-import java.lang.reflect.Method;
 import org.jdesktop.animation.timing.*;
 
 /**
+ * This class implements the Interpolator interface by providing a
+ * simple interpolate function that simply returns the value that
+ * it was given. The net effect is that callers will end up calculating
+ * values linearly during intervals.
+ * <p>
+ * Because there is no variation to this class, it is a singleton and
+ * is referenced by using the {@link #getInstance} static method.
  *
  * @author Chet
  */
-class KeyValuesRectangle extends KeyValues<Rectangle> {
+public class LinearInterpolator implements Interpolator {
     
-    /** Creates a new instance */
-    public KeyValuesRectangle(Rectangle... values) {
-        super(values);
-        for (Rectangle value : values) {
-            this.values.add(value);
+    private static LinearInterpolator instance = null;
+    
+    private LinearInterpolator() {}
+    
+    /**
+     * Returns the single DiscreteInterpolator object
+     */
+    public static LinearInterpolator getInstance() {
+        if (instance == null) {
+            instance = new LinearInterpolator();
         }
+        return instance;
     }
     
     /**
-     * Returns type of values
+     * This method always returns the value it was given, which will cause
+     * callers to calculate a linear interpolation between boundary values.
+     * @param fraction a value between 0 and 1, representing the elapsed
+     * fraction of a time interval (either an entire animation cycle or an 
+     * interval between two KeyTimes, depending on where this Interpolator has
+     * been set)
+     * @return the same value passed in as <code>fraction</code>
      */
-    public Class<?> getType() {
-        return Rectangle.class;
+    public float interpolate(float fraction) {
+        return fraction;
     }
-
-    /**
-     * Linear interpolation variant; set the value of the property
-     * to be a linear interpolation of the given fraction between
-     * the values at i0 and i1
-     */
-    public void setValue(Object object, Method method, int i0,
-            int i1, float fraction) {
-        Rectangle value = (Rectangle)values.get(i0).clone();
-        if (i0 != i1) {
-            Rectangle v0 = value;
-            Rectangle v1 = values.get(i1);
-            value.x += (int)((v1.x - v0.x) * fraction + .5);
-            value.y += (int)((v1.y - v0.y) * fraction + .5);
-            value.width += (int)((v1.width - v0.width) * fraction + .5);
-            value.height += (int)((v1.height - v0.height) * fraction + .5);
-        }
-        try {
-            method.invoke(object, value);
-        } catch (Exception e) {
-            System.out.println("Problem invoking method in KVFloat.setValue:" + e);
-        }
-    }   
-    
-    /**
-     * Discrete variant; set the value of the property to be the
-     * value at index.
-     */
-    public void setValue(Object object, Method method, int index) {
-        try {
-            method.invoke(object, values.get(index));
-        } catch (Exception e) {
-            System.out.println("Problem invoking method in KVFloat.setValue:" + e);
-        }
-    }
-    
     
 }

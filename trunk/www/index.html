@@ -14,7 +14,9 @@
             <a href="http://today.java.net/pub/a/today/2005/02/15/timing.html">Timing 
             is Everything</a> and 
             <a href="http://today.java.net/pub/a/today/2006/03/16/time-again.html">Time Again</a>;
-            these articles will serve as a good introduction to the framework.
+            these articles will serve as a good introduction to the framework,
+            although some of the API particulars have changed since the articles
+            were published.
         </p>
         <h2>The Library</h2>
         <P>The library is divided into three logical parts, which make up the
@@ -27,11 +29,13 @@
             </p>
             <p>
             <b>Fundamentals</b> is described fairly completely in the original
-            "Timing is Everything" article.  These classes include the base
-            TimingController object that actually runs the animation, Cycle/Envelope
-            which describe the animation, TimingTarget and TimingListener interfaces
-            which are used to receive timing events, and TimingEvent which 
-            describes events that TimingController produces.
+            "Timing is Everything" article, although some of the names have
+            changed and some of the classes have merged.  
+            These classes include the base
+            Animator object (which used to be called "TimingController")
+            that actually runs the animation and the TimingTarget interface,
+            and its adapter class TimingTargetAdapter,
+            which are used to receive timing events.
             </p>
             <p>
             <b>Interpolation</b> is desribed in the second article,
@@ -40,25 +44,29 @@
                 <li>
                 Property Setters: Easy delegation of property animation to the framework (like 
                 changing the size of a component over time, for example).  This
-                capability is handled through the combination of 
-                the <code>PropertyRange</code> and <code>ObjectModifier
-                classes.</code>
+                capability is handled by the class PropertySetter (a class
+                which merges the original classes <code>PropertyRange</code> and 
+                <code>ObjectModifier</code>.
                 </li>
                 <li>
                 KeyFrames: More powerful and complex animations via multi-step sequences of 
                 time/value pairs.  KeyFrames combines the objects <code>KeyTimes</code>,
-                <code>KeyValues</code>, <code>KeySplines</code>, and 
-                <code>KeyFrames.InterpolationType</code>.
+                <code>KeyValues</code>, and <code>Interpolator</code>.
                 </li>
                 <li>
                 Non-Linear Interpolation: More interesting and useful animations by specifying 
-                spline paths for value interpolation.  This capability is
-                controlled through the use of the <code>KeySplines</code>
-                class, which contains one or more <code>Spline</code> structures.
+                non-linear paths for time interpolation.  This capability is
+                controlled through the use of the <code>Interpolator</code>
+                interface, which can be overridden to provide arbitrary 
+                interpolation values for any input, or by using one of the
+                built-in subclasses: <code>LinearInterpolator</code> (the default
+                where none is provided), <code>DiscreteInterpolator</code>, and
+                <code>SplineInterpolator</code> (which provides an built-in mechanism
+                for creating spline-based interpolation).
                 </li>
                 <li>
                 Acceleration/deceleration: Easy specification of simple non-linear behavior by 
-                telling the TimingController periods of acceleration and deceleration during 
+                telling the Animator periods of acceleration and deceleration during 
                 the normal time fraction.
                 </li>
             </ul>
@@ -89,7 +97,7 @@
             It shows how you might use DISCRETE interpolation to change 
             values of objects (in this case, the String displayed in the
             window) over time.  It shows basic usage of the KeyFrames,
-            KeyTimes, KeyValues, and InterpolationType classes in the
+            KeyTimes, KeyValues, and SplineInterpolator classes in the
             interpolation package.  It also uses a simple Trigger to kick
             off the animation.</li>
             <li>Triggers: Another unattractive demo, but it shows how you can
@@ -107,15 +115,19 @@
             helps visualize the effect of various Spline curves on any
             particular animation.  You can choose several pre-made Splines or
             drag the points to create your own and see the resulting
-            animation.  Great for getting a handle on how non-linear
+            animation.  Great for getting a handle on how spline-based non-linear
             interpolation works in the framework.</li>
         </ul>
         </p>
         <p>
         <h2>Demos</h2>
-        <p>To run the demos, download <A href="TimingFramework.jar">TimingFramework.jar</A>
-            and <a href="TimingExamples.jar">TimingExamples.jar</a>. 
-            Then you can run any of the demos as follows:
+        <p>To run the demos, download the files from the appropriate version
+        in the <A href="downloads">downloads directory</A>.  This directory 
+        contains specific versions of the javadocs, library sources,
+        demos jarfile, and framework jarfile
+            Then you can run any of the demos as follows (note that you'll
+            have to adjust the command-line to account for the version
+            numbers):
             <pre>
                 java -cp TimingFramework.jar;TimingExamples.jar DEMO
             </pre>
@@ -138,13 +150,14 @@
             project and build it easily. I'm running in NetBeans 5.0, in case you need that 
             version to interpret the project files correctly.
         </p>
-        <p>The main things to check out here are the Articles, the <A href="https://timingframework.dev.java.net/source/browse/timingframework/src">
-                source code</A>, the <A href="javadoc.zip">Javadocs for the timing framework</A>, 
-            the <A href="TimingFramework.jar">library</A>, and the <a href="TimingExamples.jar">demos</a>.
-            Note that the library is dependent upon jdk 5.0, so 
+        <p>The main things to check out here are the Articles mentioned above and
+        all of the items in the <A href="downloads">downloads directory</A> 
+        (the source code, the library,
+        the demos, and the JavaDocs).
+            Note that the library is dependent upon JDK 5.0, so 
             you will need 5.0 to run it or build against it.  I use 5.0 because
             generics and varargs helped provide a nice way to get a lot of different
-            PropertyRange and KeyValues variants in a very compact way.
+            PropertySetter and KeyValues variants in a very compact way.
         </p>
         <p>The project is still read-only for now; this is because the project is still 
             very much in flux, but it's also because I want to make sure that any 
@@ -177,6 +190,69 @@
             <p>
             <b>Change Log:</b>
             </p>
+            <p>October 27, 2006, Version 0.5: Refactoring, big and small:
+            <ul>
+                <li>Version 0.5: About time I added a version number to this thing...</li>
+                <li>TimingController has been renamed Animator</li>
+                <li>PropertySetter takes the place of the original
+                PropertyRange and ObjectModifier classes</li>
+                <li>KeySplines has gone away and been replaced by a much
+                more flexible and powerful system built on the new Interpolator
+                interface.  This interface has one method, interpolate(float),
+                that returns an arbitrary number from 0 to 1 given an input 
+                number from 0 to 1.  This number will be used to interpolate in
+                any given interval.  You can provide an Interpolator to intervals
+                in KeyFrames (just like the old KeySplines approach), or you
+                can provide an Interpolator to an entire Animator (much like
+                acceleration/deceleration control interpolation on an Animator).
+                Interpolator has 3 built-in implementations: LinearInterpolator
+                (the default for Animator and any KeyFrames interval if no
+                other Interpolator is provided), DiscreteInterpolator, and
+                SplineInterpolator (which acts like the old KeySplines
+                class).</li>
+                <li>Evaluator is a new class that provides built-in parametric
+                evaluators for various known types.  When you create a 
+                KeyValues object with a list of parameters, the system will
+                search for an Evaluator that knows how to interpolate between
+                these types. If none exists, it will throw and exception.  If
+                you need a KeyValues for an unsupported type, create a KeyValues
+                with your own Evaluator implementation.</li>
+                <li>TimingController.setBegin() has become Animator.setStartDelay():
+                I got tired of having a property name that sounded more like
+                a method name.  This was a holdover from the SMIL spec that didn't
+                fit very well, so I played dictator and changed it.</li>
+                <li>TimingListener/TimingEvent went away: I folded in the repeat()
+                method into TimingTarget and created an adapter class to make
+                it easier to listen to specific events.  Now anyone wishing to
+                listen in on timing events does through the TimingTarget interface.</li>
+                <li>Triggers: Not much changed here (probably need to look closer
+                now that the other stuff is done).  I removed the TimingEvent class
+                from the core package, which changed the TimingTriggerEvent
+                class, but that's about it.</li>
+                <li>Animator is final: There were always two ways to get Animator
+                to run animations.  One was to point it at a TimingTarget and
+                run it, the other was to subclass Animator and run it instead.
+                I found the latter less intuitive and more complex in 
+                maintaining, so I opted to simplify and just eliminate
+                the subclassing option.</li>
+                <li>Simplification: There were various changes made with the aim
+                of simplifying the library overall.  For example, there are
+                less and yet more logical constructors in various classes.
+                Animator, for instance, has only 2 constructors, both of which
+                handle common cases, but neither of which handle the gamut of
+                property-setting possibilities.  Instead, you are expected to
+                call one of the constructors (or clone and existing Animator)
+                and call appropriate set* methods as necessary (which probably
+                won't be the common case).</li>
+            </ul></p>
+                <p>
+                    I'm probably missing some details here, but this should be the
+                    main stuff.  Dig in and have at it...
+                </P>
+                <p>
+                    Some stuff I'm thinking about now includes GUI-focused
+                    animations, higher-level effects, and animated transitions.
+                </p>
             <p>May 25, 2006: Lots of stuff:
             <ul>
                 <li>Put all interpolation classes (PropertyRange, KeyFrames,
