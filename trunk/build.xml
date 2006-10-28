@@ -77,7 +77,7 @@
         <fileset file="${dist.dir}/TimingFramework.jar"/>
     </copy>
     <copy tofile="${version.dir}/TimingExamples-${versionNum}.jar">
-        <fileset file="../TimingExamples/TimingExamples.jar"/>
+        <fileset file="demos/dist/TimingExamples.jar"/>
     </copy>
   </target>
 </project>
