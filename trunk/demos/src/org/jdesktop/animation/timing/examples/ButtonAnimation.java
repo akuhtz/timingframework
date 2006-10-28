@@ -43,28 +43,21 @@
 
 package org.jdesktop.animation.timing.examples;
 
-import org.jdesktop.animation.timing.Cycle;
-import org.jdesktop.animation.timing.Envelope;
-import org.jdesktop.animation.timing.interpolation.KeyFrames.InterpolationType;
 import org.jdesktop.animation.timing.interpolation.KeyFrames;
-import org.jdesktop.animation.timing.interpolation.KeySplines;
 import org.jdesktop.animation.timing.interpolation.KeyTimes;
 import org.jdesktop.animation.timing.interpolation.KeyValues;
-import org.jdesktop.animation.timing.interpolation.PropertyRange;
-import org.jdesktop.animation.timing.interpolation.ObjectModifier;
-import org.jdesktop.animation.timing.interpolation.Spline;
-import org.jdesktop.animation.timing.TimingController;
-import org.jdesktop.animation.timing.TimingEvent;
-import org.jdesktop.animation.timing.TimingListener;
+import org.jdesktop.animation.timing.interpolation.PropertySetter;
+import org.jdesktop.animation.timing.Animator;
 import org.jdesktop.animation.timing.TimingTarget;
 import java.awt.*;
-import java.awt.geom.*;
 import java.awt.event.*;
-import java.net.URL;
 import java.text.*;
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.*;
+import org.jdesktop.animation.timing.interpolation.DiscreteInterpolator;
+import org.jdesktop.animation.timing.interpolation.Interpolator;
+import org.jdesktop.animation.timing.interpolation.LinearInterpolator;
+import org.jdesktop.animation.timing.interpolation.SplineInterpolator;
 
 
 /**
@@ -95,7 +88,7 @@ class ControlPanel extends JPanel implements ActionListener {
     JFormattedTextField splineY1[] = new JFormattedTextField[4];
     JFormattedTextField accelerationField;
     JFormattedTextField decelerationField;
-    TimingController animation = null;
+    Animator animation = null;
     AnimationView animationView; // We will pass this into Animation
     // so that the animation fraction can
     // can be passed into AnimationView
@@ -103,8 +96,8 @@ class ControlPanel extends JPanel implements ActionListener {
     
     /**
      * "Go" button pressed: get the values from the controls and
-     * create/start the animation.  This is the heart of the whole
-     * demo, where we create and run a TimingController based on the
+     * getInstance/start the animation.  This is the heart of the whole
+     * demo, where we getInstance and run a Animator based on the
      * current state of the GUI.
      */
     public void actionPerformed(ActionEvent ae) {
@@ -124,66 +117,63 @@ class ControlPanel extends JPanel implements ActionListener {
         // Must be a GO action; setup and start the animation
         
         // First, set up the Cycle and Envelope needed by
-        // TimingController
+        // Animator
         int begin = getFieldValueAsInt(beginField);
         int duration = getFieldValueAsInt(durationField);
         int resolution = getFieldValueAsInt(resolutionField);
         double repeatCount = getFieldValueAsDouble(repeatCountField);
-        Envelope.RepeatBehavior repeatBehavior =
-                reverseButton.isSelected() ? Envelope.RepeatBehavior.REVERSE :
-                    Envelope.RepeatBehavior.FORWARD;
-        Envelope.EndBehavior behavior = (holdButton.isSelected()) ?
-            Envelope.EndBehavior.HOLD : Envelope.EndBehavior.RESET;
-        Cycle cycle = new Cycle(duration, resolution);
-        Envelope envelope = new Envelope(repeatCount, begin,
-                repeatBehavior, behavior);
+        Animator.RepeatBehavior repeatBehavior =
+                reverseButton.isSelected() ? Animator.RepeatBehavior.REVERSE :
+                    Animator.RepeatBehavior.LOOP;
+        Animator.EndBehavior behavior = (holdButton.isSelected()) ?
+            Animator.EndBehavior.HOLD : Animator.EndBehavior.RESET;
         
         // Next, set up the property setter information based on the
         // keyframes-related widgets
         JComponent animatingComponent = animationView.getAnimatingComponent();
         int numKeyframes = twoButton.isSelected() ? 2 :
             (threeButton.isSelected() ? 3 : 4);
-        InterpolationType interpolationType =
-                linearButton.isSelected() ? InterpolationType.LINEAR :
-                    (discreteButton.isSelected() ? InterpolationType.DISCRETE :
-                        InterpolationType.NONLINEAR);
         float times[] = new float[numKeyframes];
         Point points[] = new Point[numKeyframes];
-        Spline splines[] = new Spline[numKeyframes-1];
-        for (int i = 0; i < numKeyframes; ++i) {
-            times[i] = (float)getFieldValueAsDouble(time[i]);
-            points[i] = new Point(getFieldValueAsInt(valueX[i]),
-                    getFieldValueAsInt(valueY[i]));
-            if (interpolationType == InterpolationType.NONLINEAR
-                    && (i < numKeyframes - 1)) {
-                splines[i] = new Spline(
+        Interpolator interpolators[] = null;
+        if (nonlinearButton.isSelected()) {
+            interpolators = new Interpolator[numKeyframes-1];
+            for (int i = 0; i < numKeyframes - 1; ++i) {
+                interpolators[i] = new SplineInterpolator(
                         (float)getFieldValueAsDouble(splineX0[i]),
                         (float)getFieldValueAsDouble(splineY0[i]),
                         (float)getFieldValueAsDouble(splineX1[i]),
                         (float)getFieldValueAsDouble(splineY1[i]));
             }
         }
+        for (int i = 0; i < numKeyframes; ++i) {
+            times[i] = (float)getFieldValueAsDouble(time[i]);
+            points[i] = new Point(getFieldValueAsInt(valueX[i]),
+                    getFieldValueAsInt(valueY[i]));
+        }
         KeyTimes keyTimes = new KeyTimes(times);
-        KeyValues keyValues = KeyValues.createKeyValues(points);
-        KeySplines keySplines = (interpolationType == InterpolationType.NONLINEAR) ?
-            new KeySplines(splines) : null;
-        KeyFrames keyFrames = new KeyFrames(keyValues, keySplines, keyTimes, 
-                interpolationType);
-        PropertyRange range = new PropertyRange("location", keyFrames);
+        KeyValues keyValues = KeyValues.create(points);
+        //KeySplines keySplines = (interpolationType == InterpolationType.NONLINEAR) ?
+        //    new KeySplines(splines) : null;
+        KeyFrames keyFrames = new KeyFrames(keyValues, keyTimes,
+                //new KeyTimes(times),
+                (Interpolator[])(nonlinearButton.isSelected() ? interpolators :
+                    discreteButton.isSelected() ? DiscreteInterpolator.getInstance() :
+                        null));
         
-        // Create the TimingController with an ObjectModifier as
+        // Create the Animator with a PropertySetter as
         // the TimingTarget; this will do the work of setting the property
         // specified above
-        animation = new TimingController(cycle,
-                envelope,
-                new ObjectModifier(animatingComponent, range));
+        animation = new Animator(duration, repeatCount, repeatBehavior,
+                new PropertySetter(animatingComponent, "location", keyFrames));
+        animation.setResolution(resolution);
+        animation.setStartDelay(begin);
+        animation.setEndBehavior(behavior);
         
         // Now add another TimingTarget to the animation; this will track
         // and display the animation fraction
         animation.addTarget(animationView);
-        
-        // Add animationView as a listener as well (debugging purposes only)
-        animation.addTimingListener(animationView);
+        animationView.setTimer(animation);
         
         // Vary the acceleration/deceleration values appropriately
         float acceleration = (float)getFieldValueAsDouble(accelerationField);
@@ -263,7 +253,7 @@ class ControlPanel extends JPanel implements ActionListener {
                 GridBagConstraints.CENTER,
                 GridBagConstraints.HORIZONTAL,
                 new Insets(5, 5, 0, 0), 0, 0));
-        // RepeatBehavior radio buttons
+        // Direction radio buttons
         repeatButton = new JRadioButton("Repeat", true);
         reverseButton = new JRadioButton("Reverse");
         ButtonGroup group = new ButtonGroup();
@@ -629,10 +619,11 @@ class ControlPanel extends JPanel implements ActionListener {
  * location), but we override paintComponent() in order to display the
  * animation fraction amount in the view.
  */
-class AnimationView extends JComponent implements TimingTarget, TimingListener {
+class AnimationView extends JComponent implements TimingTarget {
     
     JButton button = new JButton("Animating Button");
     float currentFraction;
+    Animator timer = null;
     
     public AnimationView() {
         try {
@@ -643,25 +634,12 @@ class AnimationView extends JComponent implements TimingTarget, TimingListener {
         }
     }
     
+    public void setTimer(Animator timer) {
+        this.timer = timer;
+    }
+    
     JComponent getAnimatingComponent() {
         return button;
-    }
-    
-    // 
-    // TimingListener methods
-    // We use these methods to listen-in on timer changes
-    // 
-    
-    public void timerStarted(TimingEvent e) {
-        System.out.println("Timer started");
-    }
-    
-    public void timerStopped(TimingEvent e) {
-        System.out.println("Timer stopped");
-    }
-    
-    public void timerRepeated(TimingEvent e) {
-        System.out.println("Timer repeated");
     }
     
     //
@@ -678,12 +656,13 @@ class AnimationView extends JComponent implements TimingTarget, TimingListener {
         currentFraction = 1;
     }
     
-    public void timingEvent(long cycleElapsedTime,
-            long totalElapsedTime,
-            float fraction) {
+    public void repeat() {}
+    
+    public void timingEvent(float fraction) {
         currentFraction = fraction;
         int x = getWidth() - 100;
         int y = 0;
+            System.out.println("paintImmediately: fraction = " + fraction);
         paintImmediately(x, y, 100, 10);
     }
     
@@ -692,6 +671,10 @@ class AnimationView extends JComponent implements TimingTarget, TimingListener {
      * is in the animation cycle (given by currentFraction).
      */
     public void paintComponent(Graphics g) {
+        if (timer != null) {
+            float fraction = timer.getTimingFraction();
+            System.out.println("paintComponent: fraction: " + fraction);
+        }  
         g.drawString("fraction = " + currentFraction, getWidth() - 100, 10);
     }
 }

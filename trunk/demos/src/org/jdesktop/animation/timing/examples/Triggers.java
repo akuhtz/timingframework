@@ -32,15 +32,12 @@
 package org.jdesktop.animation.timing.examples;
 
 import java.awt.*;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import javax.swing.*;
 import org.jdesktop.animation.timing.*;
-import org.jdesktop.animation.timing.interpolation.ObjectModifier;
-import org.jdesktop.animation.timing.interpolation.PropertyRange;
+import org.jdesktop.animation.timing.interpolation.PropertySetter;
 import org.jdesktop.animation.timing.triggers.ButtonStateEvent;
-import org.jdesktop.animation.timing.Envelope.EndBehavior;
-import org.jdesktop.animation.timing.Envelope.RepeatBehavior;
+import org.jdesktop.animation.timing.Animator.EndBehavior;
+import org.jdesktop.animation.timing.Animator.Direction;
 import org.jdesktop.animation.timing.triggers.ComponentFocusEvent;
 import org.jdesktop.animation.timing.triggers.ActionTrigger;
 import org.jdesktop.animation.timing.triggers.ButtonStateTrigger;
@@ -111,63 +108,46 @@ public class Triggers {
         panel.add(armed);
         
         // Create a hover effect for button1
-        PropertyRange range = PropertyRange.createPropertyRangeColor("background", 
+        PropertySetter modifier = new PropertySetter(rollover, "background",
                 activeColor);
-        ObjectModifier modifier = new ObjectModifier(rollover, range);
-        TimingController timerStart = new TimingController(1000, modifier);
-        range = PropertyRange.createPropertyRangeColor("background", 
+        Animator timerStart = new Animator(1000, modifier);
+        modifier = new PropertySetter(rollover, "background", 
                 inactiveColor);
-        modifier = new ObjectModifier(rollover, range);
-        TimingController timerStop = new TimingController(1000, modifier);
+        Animator timerStop = new Animator(1000, modifier);
         Trigger trigger = new ButtonStateTrigger(timerStart, button, 
                 ButtonStateEvent.ROLLOVER,
                 timerStop);
 
         // Create a click effect
-        range = PropertyRange.createPropertyRangeColor("background", 
-                activeColor);
-        modifier = new ObjectModifier(action, range);
-        Cycle cycle = new Cycle(1000, 30);
-        Envelope envelope = new Envelope(1, 0, RepeatBehavior.FORWARD,
-                EndBehavior.RESET);
-        TimingController timer = new TimingController(cycle, envelope, modifier);
+        modifier = new PropertySetter(action, "background", activeColor);
+        int duration = 1000;
+        int resolution = 30;
+        int repeatCount = 1;
+        int begin = 0;
+        Animator timer = new Animator(duration, modifier);
+        timer.setEndBehavior(EndBehavior.RESET);
         trigger = new ActionTrigger(timer, button, TriggerAction.START);
 
         // Create a focus effect
-        range = PropertyRange.createPropertyRangeColor("background", 
+        modifier = new PropertySetter(focus, "background", 
                 activeColor);
-        modifier = new ObjectModifier(focus, range);
-        timerStart = new TimingController(1000, modifier);
-        range = PropertyRange.createPropertyRangeColor("background", 
-                inactiveColor);
-        modifier = new ObjectModifier(focus, range);
-        timerStop = new TimingController(1000, modifier);
+        timerStart = new Animator(1000, modifier);
+        modifier = new PropertySetter(focus, "background", inactiveColor);
+        timerStop = new Animator(1000, modifier);
         trigger = new ComponentFocusTrigger(timerStart, button, 
                 ComponentFocusEvent.FOCUS_IN, 
                 timerStop);
 
         // Create an armed effect
-        range = PropertyRange.createPropertyRangeColor("background", 
-                activeColor);
-        modifier = new ObjectModifier(armed, range);
-        timerStart = new TimingController(1000, modifier);
-        range = PropertyRange.createPropertyRangeColor("background", 
-                inactiveColor);
-        modifier = new ObjectModifier(armed, range);
-        timerStop = new TimingController(1000, modifier);
+        modifier = new PropertySetter(armed, "background", activeColor);
+        timerStart = new Animator(1000, modifier);
+        modifier = new PropertySetter(armed, "background", inactiveColor);
+        timerStop = new Animator(1000, modifier);
         trigger = new ButtonStateTrigger(timerStart, button, 
                 ButtonStateEvent.ARMED, 
                 timerStop);
-        PropertyChangeListener list = new PropertyChangeTriggerListener();
-        button.addPropertyChangeListener(list);
     }
 
-    static class PropertyChangeTriggerListener implements PropertyChangeListener {
-        public void propertyChange(PropertyChangeEvent event) {
-            System.out.println("Triggers.propertyChange: event = " + event);
-        }
-    }
-    
     public static void main(String[] args) {
         // Need to do GUI stuff like making the JFrame visible on the
         // Event Dispatch Thread; do this via invokeLater()

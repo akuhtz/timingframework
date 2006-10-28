@@ -39,12 +39,12 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
-import org.jdesktop.animation.timing.TimingController;
+import org.jdesktop.animation.timing.Animator;
+import org.jdesktop.animation.timing.interpolation.DiscreteInterpolator;
 import org.jdesktop.animation.timing.interpolation.KeyFrames;
 import org.jdesktop.animation.timing.interpolation.KeyTimes;
 import org.jdesktop.animation.timing.interpolation.KeyValues;
-import org.jdesktop.animation.timing.interpolation.ObjectModifier;
-import org.jdesktop.animation.timing.interpolation.PropertyRange;
+import org.jdesktop.animation.timing.interpolation.PropertySetter;
 import org.jdesktop.animation.timing.triggers.ActionTrigger;
 import org.jdesktop.animation.timing.triggers.Trigger.TriggerAction;
 
@@ -93,21 +93,19 @@ public class DiscreteInterpolation extends JComponent {
         KeyTimes keyTimes = new KeyTimes(times);
         
         // keyValues are just progressive index values
-        int vals[] = {0, 1, 2, 3, 4, 5, 6};
-        KeyValues keyValues = KeyValues.createKeyValues(vals);
+        KeyValues keyValues = KeyValues.create(0, 1, 2, 3, 4, 5, 6);
         
         // Create KeyFrames with times, values, and DISCRETE interpolation
         KeyFrames keyFrames = new KeyFrames(keyValues, keyTimes,
-                KeyFrames.InterpolationType.DISCRETE);
+                DiscreteInterpolator.getInstance());
         
         // Property setter will use stringIndex property of this class
-        PropertyRange range = new PropertyRange("stringIndex", keyFrames);
-        ObjectModifier modifier = new ObjectModifier(this, range);
+        PropertySetter setter = new PropertySetter(this, "stringIndex", keyFrames);
         
         // Run the timer for totalTime (in ms), with modifier as the
         // TimingTarget
-        TimingController timer = new TimingController(
-                (int)(totalTime * 1000), modifier);
+        Animator timer = new Animator(
+                (int)(totalTime * 1000), setter);
         
         // Now set up Trigger to start animation
         new ActionTrigger(timer, button, TriggerAction.START);
