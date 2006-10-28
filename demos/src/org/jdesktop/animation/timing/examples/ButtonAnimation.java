@@ -74,7 +74,7 @@ class ControlPanel extends JPanel implements ActionListener {
     JFormattedTextField durationField;
     JFormattedTextField resolutionField;
     JFormattedTextField repeatCountField;
-    JRadioButton repeatButton, reverseButton;
+    JRadioButton loopButton, reverseButton;
     JRadioButton holdButton, resetButton;
     JRadioButton linearButton, discreteButton, nonlinearButton;
     JRadioButton twoButton, threeButton, fourButton;
@@ -155,11 +155,14 @@ class ControlPanel extends JPanel implements ActionListener {
         KeyValues keyValues = KeyValues.create(points);
         //KeySplines keySplines = (interpolationType == InterpolationType.NONLINEAR) ?
         //    new KeySplines(splines) : null;
-        KeyFrames keyFrames = new KeyFrames(keyValues, keyTimes,
-                //new KeyTimes(times),
-                (Interpolator[])(nonlinearButton.isSelected() ? interpolators :
-                    discreteButton.isSelected() ? DiscreteInterpolator.getInstance() :
-                        null));
+        KeyFrames keyFrames;
+        if (nonlinearButton.isSelected()) {
+            keyFrames = new KeyFrames(keyValues, keyTimes, interpolators);
+        } else if (discreteButton.isSelected()) {
+            keyFrames = new KeyFrames(keyValues, keyTimes, DiscreteInterpolator.getInstance());
+        } else {
+            keyFrames = new KeyFrames(keyValues, keyTimes, (Interpolator)null);
+        }
         
         // Create the Animator with a PropertySetter as
         // the TimingTarget; this will do the work of setting the property
@@ -247,22 +250,22 @@ class ControlPanel extends JPanel implements ActionListener {
                 GridBagConstraints.NONE,
                 new Insets(5, 5, 0, 0), 0, 0));
         repeatCountField = new JFormattedTextField(doubleFormat);
-        repeatCountField.setValue(1);
+        repeatCountField.setValue(2);
         textPanel.add(repeatCountField,
                 new GridBagConstraints(6, 0, 1, 1, .5, 0,
                 GridBagConstraints.CENTER,
                 GridBagConstraints.HORIZONTAL,
                 new Insets(5, 5, 0, 0), 0, 0));
         // Direction radio buttons
-        repeatButton = new JRadioButton("Repeat", true);
+        loopButton = new JRadioButton("Loop", true);
         reverseButton = new JRadioButton("Reverse");
         ButtonGroup group = new ButtonGroup();
-        group.add(repeatButton);
+        group.add(loopButton);
         group.add(reverseButton);
         
         JPanel buttonPanel = new JPanel();
         buttonPanel.setBorder(new TitledBorder("Repeat Behavior"));
-        buttonPanel.add(repeatButton);
+        buttonPanel.add(loopButton);
         buttonPanel.add(reverseButton);
         textPanel.add(buttonPanel,
                 new GridBagConstraints(0, 1, 4, 1, .5, 0,
@@ -662,7 +665,6 @@ class AnimationView extends JComponent implements TimingTarget {
         currentFraction = fraction;
         int x = getWidth() - 100;
         int y = 0;
-            System.out.println("paintImmediately: fraction = " + fraction);
         paintImmediately(x, y, 100, 10);
     }
     
@@ -671,10 +673,6 @@ class AnimationView extends JComponent implements TimingTarget {
      * is in the animation cycle (given by currentFraction).
      */
     public void paintComponent(Graphics g) {
-        if (timer != null) {
-            float fraction = timer.getTimingFraction();
-            System.out.println("paintComponent: fraction: " + fraction);
-        }  
         g.drawString("fraction = " + currentFraction, getWidth() - 100, 10);
     }
 }
