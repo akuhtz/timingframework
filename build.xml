@@ -68,10 +68,16 @@
     -->
 <!-- Overriding -javadoc-build target to exclude irrelevant source tree of demos-->
   <target name="java.net" depends="javadoc,jar">
-    <zip destfile="${www.dir}/javadoc.zip"
+    <mkdir dir="${version.dir}"/>
+    <zip destfile="${version.dir}/javadoc.zip"
          basedir="${dist.javadoc.dir}"/>
-    <copy todir="${www.dir}">
+    <zip destfile="${version.dir}/src.zip"
+         basedir="${src.dir}"/>
+    <copy tofile="${version.dir}/TimingFramework-${versionNum}.jar">
         <fileset file="${dist.dir}/TimingFramework.jar"/>
+    </copy>
+    <copy tofile="${version.dir}/TimingExamples-${versionNum}.jar">
+        <fileset file="../TimingExamples/TimingExamples.jar"/>
     </copy>
   </target>
 </project>

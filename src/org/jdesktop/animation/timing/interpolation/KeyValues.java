@@ -29,146 +29,126 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-
 package org.jdesktop.animation.timing.interpolation;
 
-import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import org.jdesktop.animation.timing.*;
+import java.util.Collections;
+import java.util.List;
 
 /**
- *
  * Stores a list of values that correspond to the times in a {@link
  * KeyTimes} object.  These structures are then used to create a
- * {@link KeyFrames} object, which is then used to create a {@link
- * PropertyRange} and {@link ObjectModifier} object, for the purposes
- * of modifying an object's property over time.
- *
+ * {@link KeyFrames} object, which is then used to create a
+ * {@link PropertySetter} for the purposes of modifying an object's
+ * property over time.
+ * <p>
  * At each of the times in {@link KeyTimes}, the property will take
  * on the corresponding value in the KeyValues object.  Between these
  * times, the property will take on a value based on the interpolation
- * information stored in the KeyFrames object.
- *
+ * information stored in the KeyFrames object and the {@link 
+ * Evaluator} for the type of the values in KeyValues.
+ * <p>
+ * This class has built-in support for various known types, as defined
+ * in {@link Evaluator}.
+ * <p>
+ * For a simple example using KeyValues to create a KeyFrames and 
+ * PropertySetter object, see the class header comments in 
+ * {@link PropertySetter}.
+ * 
+ * 
  * @author Chet
  */
-public abstract class KeyValues<T> {
-    
-    protected ArrayList<T> values = new ArrayList<T>();
-    protected Object startValue;
+public class KeyValues<T> {
+
+    private final List<T> values = new ArrayList<T>();
+    private final Evaluator<T> evaluator;
+    private final Class<?> type;
+    private T startValue;
+
+    /**
+     * Constructs a KeyValues object from one or more values.  The
+     * internal Evaluator is automatically determined by the
+     * type of the parameters.
+     * 
+     * @param params the values to interpolate between.  If there is only
+     * one parameter, this is assumed to be a "to" animation where the
+     * first value is dynamically determined at runtime when the animation
+     * is started.
+     * @throws IllegalArgumentException if an {@link Evaluator} cannot be 
+     * found that can interpolate between the value types supplied
+     */
+    public static <T> KeyValues<T> create(T... params) {
+        return new KeyValues(params);
+    }
+
+    /**
+     * Constructs a KeyValues object from a Evaluator
+     * and one or more values.
+     * 
+     * @param params the values to interpolate between.  If there is only
+     * one parameter, this is assumed to be a "to" animation where the
+     * first value is dynamically determined at runtime when the animation
+     * is started.
+     * @throws IllegalArgumentException if params does not have at least
+     * one value.
+     */
+    public static <T> KeyValues<T> create(Evaluator evaluator, T... params) {
+        return new KeyValues(evaluator, params);
+    }
+
+    /**
+     * Private constructor, called by factory method
+     */
+    private KeyValues(T... params) {
+        this(Evaluator.create(params.getClass().getComponentType()),
+                params);
+    }
+
+    /**
+     * Private constructor, called by factory method
+     */
+    private KeyValues(Evaluator evaluator, T... params) {
+        if (params == null) {
+            throw new IllegalArgumentException("params array cannot be null");
+        } else if (params.length == 0) {
+            throw new IllegalArgumentException(
+                "params array must have at least one element");
+        }
+        if (params.length == 1) {
+            // this is a "to" animation; set first element to null
+            values.add(null);
+        }
+        Collections.addAll(values, params);
+        this.type = params.getClass().getComponentType();
+        this.evaluator = evaluator;
+    }
     
     /**
-     * Callers should create KeyValues structures from the factory methods
-     * which create KeyValues subclasses based on the types of values.
+     * Returns the number of values stored in this object.
+     *
+     * @return the number of values stored in this object
      */
-    protected KeyValues() {
-        // default constructor does nothing
-    }
-    
-    /**
-     * Subclasses call this constructor to account for "to" animations;
-     * this method inserts a "null" value as the first element
-     */
-    protected KeyValues(Object[] values) {
-        if (values.length == 1) {
-            // set first element to null
-            this.values.add(null);
-        }
-    }
-    protected KeyValues(float[] values) {
-        if (values.length == 1) {
-            // set first element to null
-            this.values.add(null);
-        }
-    }
-    protected KeyValues(int[] values) {
-        if (values.length == 1) {
-            // set first element to null
-            this.values.add(null);
-        }
-    }
-    protected KeyValues(double[] values) {
-        if (values.length == 1) {
-            // set first element to null
-            this.values.add(null);
-        }
-    }
-    
-    /**
-     * Returns the number of values stored in this object
-     */
-    public int getSize() {
+    int getSize() {
         return values.size();
     }
-    
-    //
-    // Factory methods for creating type-specific subclasses
-    //
-    
+
     /**
-     * Create KeyValues object with int values
+     * Returns the data type of the values stored in this object.
+     *
+     * @return a Class value representing the type of values stored in this
+     *         object
      */
-    public static KeyValues createKeyValues(int... values) {
-        return new KeyValuesInt(values);
+    Class<?> getType() {
+        return this.type;
     }
-    
-    /**
-     * Create KeyValues object with float values
-     */
-    public static KeyValues createKeyValues(float... values) {
-        return new KeyValuesFloat(values);
-    }
-    
-    /**
-     * Create KeyValues object with double values
-     */
-    public static KeyValues createKeyValues(double... values) {
-        return new KeyValuesDouble(values);
-    }
-    
-    /**
-     * Create KeyValues object with Point values
-     */
-    public static KeyValues createKeyValues(Point... values) {
-        return new KeyValuesPoint(values);
-    }
-    
-    /**
-     * Create KeyValues object with Dimension values
-     */
-    public static KeyValues createKeyValues(Dimension... values) {
-        return new KeyValuesDimension(values);
-    }
-    
-    /**
-     * Create KeyValues object with Rectangle values
-     */
-    public static KeyValues createKeyValues(Rectangle... values) {
-        return new KeyValuesRectangle(values);
-    }
-    
-    /**
-     * Create KeyValues object with Color values
-     */
-    public static KeyValues createKeyValues(Color... values) {
-        return new KeyValuesColor(values);
-    }
-    
-    /**
-     * Subclasses will override this to return the type associated
-     * with that subclass.  This is used in ObjectModifier to set
-     * up the property-setting method with the appropriate type.
-     */
-    public abstract Class<?> getType();
-    
+
     /**
      * Called at start of animation; sets starting value in simple
-     * "to" animations
+     * "to" animations.
      */
-    public void setStartValue(Object startValue) {
+    void setStartValue(T startValue) {
         if (isToAnimation()) {
             this.startValue = startValue;
         }
@@ -181,20 +161,28 @@ public abstract class KeyValues<T> {
     boolean isToAnimation() {
         return (values.get(0) == null);
     }
-        
+
     /**
-     * Sets the value of the property
-     * with a linear interpolation of the given fraction between
-     * the values at i0 and i1.  Subclasses need to override this
-     * method to calculate the value according to their type.
+     * Returns value calculated from the value at the lower index, the
+     * value at the upper index, the fraction elapsed between these 
+     * endpoints, and the evaluator set up by this object at construction
+     * time.
      */
-    public abstract void setValue(Object object, Method method, int i0,
-            int i1, float fraction);
-    
-    /**
-     * Sets the value of the property to be the value at index.
-     * Subclasses need to override this
-     * method to calculate the value according to their type.
-     */
-    public abstract void setValue(Object object, Method method, int index);
+    T getValue(int i0, int i1, float fraction) {
+        T value;
+        T lowerValue = values.get(i0);
+        if (lowerValue == null) {
+            // "to" animation
+            lowerValue = startValue;
+        }
+        if (i0 == i1) {
+            // trivial case
+            value = lowerValue;
+        } else {
+            T v0 = lowerValue;
+            T v1 = values.get(i1);
+            value = evaluator.evaluate(v0, v1, fraction);
+        }
+        return value;
     }
+}

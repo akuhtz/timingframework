@@ -47,7 +47,8 @@ public class ButtonStateTrigger extends Trigger {
     
     /**
      * Creates a new instance of ButtonStateTrigger
-     * @param timer the TimingController that will perform the action
+     * 
+     * @param timer the Animator that will perform the action
      * when the event occurs
      * @param source the AbstractButton that will be listened to for 
      * change events
@@ -55,7 +56,7 @@ public class ButtonStateTrigger extends Trigger {
      * the event occurs
      * @param event the ButtonStateEvent that will cause the action to fire
      */
-    public ButtonStateTrigger(TimingController timer, AbstractButton source, 
+    public ButtonStateTrigger(Animator timer, AbstractButton source, 
             TriggerAction action, ButtonStateEvent event) {
         setupListener(timer, source, action, event);
     }
@@ -67,12 +68,12 @@ public class ButtonStateTrigger extends Trigger {
      * stopTimer will set up that animation to start and stop on
      * opposite events.
      */
-    public ButtonStateTrigger(TimingController startTimer, AbstractButton source, 
-            ButtonStateEvent event, TimingController stopTimer) {
+    public ButtonStateTrigger(Animator startTimer, AbstractButton source, 
+            ButtonStateEvent event, Animator stopTimer) {
         super(startTimer, source, event, stopTimer);
     }
     
-    protected void setupListener(TimingController timer, Object source, 
+    protected void setupListener(Animator timer, Object source, 
             TriggerAction action, TriggerEvent event) {
         try {
             ButtonModel model = ((AbstractButton)source).getModel();
@@ -92,7 +93,7 @@ public class ButtonStateTrigger extends Trigger {
         boolean armed;
         boolean rollover;
         ButtonStateEvent event;
-        protected ButtonStateListener(TimingController timer, 
+        protected ButtonStateListener(Animator timer, 
                 TriggerAction action, ButtonStateEvent event,
                 ButtonModel model) {
             super(timer, action);

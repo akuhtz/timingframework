@@ -45,9 +45,9 @@ import org.jdesktop.animation.timing.triggers.TriggerEvent;
  * @author Chet
  */
 public abstract class TriggerListener {
-    TimingController timer;
+    Animator timer;
     TriggerAction action;
-    protected TriggerListener(TimingController timer, TriggerAction action) {
+    protected TriggerListener(Animator timer, TriggerAction action) {
         this.timer = timer;
         this.action = action;
     }

@@ -29,50 +29,39 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.jdesktop.animation.timing;
+package org.jdesktop.animation.timing.interpolation;
+
+import java.util.ArrayList;
 
 /**
- * Simple class to hold data for timing events (elapsed time and fraction)
  *
  * @author Chet
  */
-public class TimingData {
+class KeyInterpolators {
     
-    private long cycleElapsedTime;
-    private long totalElapsedTime;
-    private float fraction;
+    private ArrayList<Interpolator> interpolators = new ArrayList<Interpolator>();
     
-    /** Creates a new instance of TimingData */
-    public TimingData(long cycleElapsedTime,
-			    long totalElapsedTime, 
-			    float fraction) {
-        this.cycleElapsedTime = cycleElapsedTime;
-        this.totalElapsedTime = totalElapsedTime;
-        this.fraction = fraction;
+    /**
+     * Creates a new instance of KeyInterpolators
+     */
+    KeyInterpolators(int numIntervals, Interpolator... interpolators) {
+        if (interpolators == null || interpolators[0] == null) {
+            for (int i = 0; i < numIntervals; ++i) {
+                this.interpolators.add(LinearInterpolator.getInstance());
+            }
+        } else if (interpolators.length < numIntervals) {
+            for (int i = 0; i < numIntervals; ++i) {
+                this.interpolators.add(interpolators[0]);
+            }
+        } else {
+            for (int i = 0; i < numIntervals; ++i) {
+                this.interpolators.add(interpolators[i]);
+            }
+        }
     }
     
-    
-    public void setCycleElapsedTime(long cycleElapsedTime) {
-        this.cycleElapsedTime = cycleElapsedTime;
+    float interpolate(int interval, float fraction) {
+        return interpolators.get(interval).interpolate(fraction);
     }
     
-    public long getCycleElapsedTime() {
-        return cycleElapsedTime;
-    }
-    
-    public void setTotalElapsedTime(long totalElapsedTime) {
-        this.totalElapsedTime = totalElapsedTime;
-    }
-    
-    public long getTotalElapsedTime() {
-        return totalElapsedTime;
-    }
-    
-    public void setFraction(float fraction) {
-        this.fraction = fraction;
-    }
-    
-    public float getFraction() {
-        return fraction;
-    }
 }

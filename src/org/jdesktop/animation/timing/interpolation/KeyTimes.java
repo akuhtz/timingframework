@@ -1,10 +1,32 @@
-/*
- * KeyTimes.java
- *
- * Created on February 8, 2006, 4:45 PM
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
+/**
+ * Copyright (c) 2005-2006, Sun Microsystems, Inc
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 
+ *   * Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
+ *   * Redistributions in binary form must reproduce the above
+ *     copyright notice, this list of conditions and the following 
+ *     disclaimer in the documentation and/or other materials provided 
+ *     with the distribution.
+ *   * Neither the name of the TimingFramework project nor the names of its
+ *     contributors may be used to endorse or promote products derived 
+ *     from this software without specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 package org.jdesktop.animation.timing.interpolation;
@@ -13,9 +35,10 @@ import java.util.ArrayList;
 import org.jdesktop.animation.timing.*;
 
 /**
- * Stores a list of times from 0 to 1 that are used in calculating interpolated
- * values for ObjectModifier given a matching set of KeyValues and
- * possibly KeySplines for those times.  In the simplest case, a
+ * Stores a list of times from 0 to 1 (the elapsed fraction of an animation
+ * cycle) that are used in calculating interpolated
+ * values for PropertySetter given a matching set of KeyValues and
+ * Interpolators for those time intervals.  In the simplest case, a
  * KeyFrame will consist of just two times in KeyTimes: 0 and 1.
  *
  * @author Chet
@@ -56,14 +79,14 @@ public class KeyTimes {
         return times;
     }
     
-    public int getSize() {
+    int getSize() {
         return times.size();
     }
 
     /**
      * Returns time interval that contains this time fraction
      */
-    public int getInterval(float fraction) {
+    int getInterval(float fraction) {
         int prevIndex = 0;
         for (int i = 1; i < times.size(); ++i) {
             float time = times.get(i);
@@ -77,7 +100,7 @@ public class KeyTimes {
         return prevIndex;
     }
 
-    public float getTime(int index) {
+    float getTime(int index) {
         return times.get(index);
     }
 }

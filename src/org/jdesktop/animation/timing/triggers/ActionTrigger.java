@@ -45,20 +45,22 @@ import org.jdesktop.animation.timing.*;
  */
 public class ActionTrigger extends Trigger {
 
-    /** Creates a new instance of ActionTrigger 
-     * @param timer the TimingController that will perform the action
+    /**
+     * Creates a new instance of ActionTrigger 
+     * 
+     * @param timer the Animator that will perform the action
      * when the event occurs
      * @param source the Object that will be listened to for ActionEvents;
      * this must be an object that has an addActionListener() method on it
      * @param action the TriggerAction that will be fired on timer when
      * the event occurs
      */
-    public ActionTrigger(TimingController timer, Object source, 
+    public ActionTrigger(Animator timer, Object source, 
             TriggerAction action) {
         setupListener(timer, source, action, null);
     }
     
-    protected void setupListener(TimingController timer, Object source, 
+    protected void setupListener(Animator timer, Object source, 
             TriggerAction action, TriggerEvent event) {
         try {
             ActionTriggerListener listener = new 
@@ -73,7 +75,7 @@ public class ActionTrigger extends Trigger {
 
     class ActionTriggerListener extends TriggerListener 
             implements ActionListener {
-        protected ActionTriggerListener(TimingController timer, 
+        protected ActionTriggerListener(Animator timer, 
                 TriggerAction action) {
             super(timer, action);
         }

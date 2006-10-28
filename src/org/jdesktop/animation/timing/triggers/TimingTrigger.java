@@ -40,17 +40,19 @@ import org.jdesktop.animation.timing.*;
  * @author Chet
  */
 public class TimingTrigger extends Trigger {
-    /** Creates a new instance of TimingTrigger
-     * @param timer the TimingController that will perform the action
+    /**
+     * Creates a new instance of TimingTrigger
+     * 
+     * @param timer the Animator that will perform the action
      * when the event occurs
-     * @param source the TimingController object that will be listened to
+     * @param source the Animator object that will be listened to
      * for timing events
      * @param action the TriggerAction that will be fired on timer when
      * the event occurs
      * @param event the TimingTriggerEvent that will cause the action
      * to be fired
      */
-    public TimingTrigger(TimingController timer, TimingController source, 
+    public TimingTrigger(Animator timer, Animator source, 
             TriggerAction action, TimingTriggerEvent event) {
         setupListener(timer, source, action, event);
     }
@@ -62,18 +64,18 @@ public class TimingTrigger extends Trigger {
      * stopTimer will set up that animation to start and stop in
      * reverse order
      */
-    public TimingTrigger(TimingController startTimer, TimingController source, 
-            TimingTriggerEvent event, TimingController stopTimer) {
+    public TimingTrigger(Animator startTimer, Animator source, 
+            TimingTriggerEvent event, Animator stopTimer) {
         super(startTimer, source, event, stopTimer);
     }
     
-    protected void setupListener(TimingController timer, Object source, 
+    protected void setupListener(Animator timer, Object source, 
             TriggerAction action, TriggerEvent event) {
         try {
             TimingTriggerListener listener = new 
                 TimingTriggerListener(timer, action, (TimingTriggerEvent)event);
-            setupListener(source, listener, "addTimingListener", 
-                    TimingListener.class);
+            setupListener(source, listener, "addTimingTarget", 
+                    TimingTarget.class);
         } catch (Exception e) {
             System.out.println("Exception creating " +
                 "timing listener for object " + source + ": " + e);
@@ -81,24 +83,26 @@ public class TimingTrigger extends Trigger {
     }
 
     class TimingTriggerListener extends TriggerListener 
-            implements TimingListener {
+            implements TimingTarget {
         TimingTriggerEvent event;
-        protected TimingTriggerListener(TimingController timer, 
+        protected TimingTriggerListener(Animator timer, 
                 TriggerAction action, TimingTriggerEvent event) {
             super(timer, action);
             this.event = event;
         }
-        public void timerStarted(TimingEvent e) {
+        public void timingEvent(float fraction) {}
+        
+        public void begin() {
             if (event == TimingTriggerEvent.START) {
                 pullTrigger();
             }
         }
-        public void timerStopped(TimingEvent e) {
+        public void end() {
             if (event == TimingTriggerEvent.STOP) {
                 pullTrigger();
             }
         }
-        public void timerRepeated(TimingEvent e) {
+        public void repeat() {
             if (event == TimingTriggerEvent.REPEAT) {
                 pullTrigger();
             }

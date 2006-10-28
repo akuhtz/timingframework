@@ -46,14 +46,15 @@ public class ComponentFocusTrigger extends Trigger {
     
     /**
      * Creates a new instance of ComponentFocusTrigger
-     * @param timer the TimingController that will perform the action
+     * 
+     * @param timer the Animator that will perform the action
      * when the event occurs
      * @param source the Component that will be listened to for focus events
      * @param action the TriggerAction that will be fired on timer when
      * the event occurs
      * @param event the ComponentFocusEvent that will cause the action to fire
      */
-    public ComponentFocusTrigger(TimingController timer, Component source, 
+    public ComponentFocusTrigger(Animator timer, Component source, 
             TriggerAction action, ComponentFocusEvent event) {
         setupListener(timer, source, action, event);
     }
@@ -65,12 +66,12 @@ public class ComponentFocusTrigger extends Trigger {
      * stopTimer will set up that animation to start and stop in
      * reverse order
      */
-    public ComponentFocusTrigger(TimingController startTimer, Component source, 
-            ComponentFocusEvent event, TimingController stopTimer) {
+    public ComponentFocusTrigger(Animator startTimer, Component source, 
+            ComponentFocusEvent event, Animator stopTimer) {
         super(startTimer, source, event, stopTimer);
     }
     
-    protected void setupListener(TimingController timer, Object source, 
+    protected void setupListener(Animator timer, Object source, 
             TriggerAction action, TriggerEvent event) {
         try {
             ComponentFocusListener listener = new 
@@ -85,7 +86,7 @@ public class ComponentFocusTrigger extends Trigger {
 
     class ComponentFocusListener extends TriggerListener implements FocusListener {
         ComponentFocusEvent event;
-        protected ComponentFocusListener(TimingController timer, 
+        protected ComponentFocusListener(Animator timer, 
                 TriggerAction action, ComponentFocusEvent event) {
             super(timer, action);
             this.event = event;
