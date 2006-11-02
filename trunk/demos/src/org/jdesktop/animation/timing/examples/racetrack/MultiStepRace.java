@@ -34,16 +34,14 @@ package org.jdesktop.animation.timing.examples.racetrack;
 import java.awt.Point;
 import javax.swing.JButton;
 import javax.swing.SwingUtilities;
-import org.jdesktop.animation.timing.Cycle;
-import org.jdesktop.animation.timing.Envelope;
-import org.jdesktop.animation.timing.TimingController;
+import org.jdesktop.animation.timing.Animator;
+import org.jdesktop.animation.timing.Animator.RepeatBehavior;
+import org.jdesktop.animation.timing.interpolation.Interpolator;
 import org.jdesktop.animation.timing.interpolation.KeyFrames;
-import org.jdesktop.animation.timing.interpolation.KeySplines;
 import org.jdesktop.animation.timing.interpolation.KeyTimes;
 import org.jdesktop.animation.timing.interpolation.KeyValues;
-import org.jdesktop.animation.timing.interpolation.ObjectModifier;
-import org.jdesktop.animation.timing.interpolation.PropertyRange;
-import org.jdesktop.animation.timing.interpolation.Spline;
+import org.jdesktop.animation.timing.interpolation.PropertySetter;
+import org.jdesktop.animation.timing.interpolation.SplineInterpolator;
 import org.jdesktop.animation.timing.triggers.ActionTrigger;
 import org.jdesktop.animation.timing.triggers.Trigger;
 import org.jdesktop.animation.timing.triggers.Trigger.TriggerAction;
@@ -61,7 +59,7 @@ import org.jdesktop.animation.timing.triggers.Trigger.TriggerAction;
  */
 public class MultiStepRace {
     
-    protected TimingController timer;
+    protected Animator timer;
     private SoundEffects soundEffects;
     public static final int RACE_TIME = 10000;
     
@@ -71,7 +69,7 @@ public class MultiStepRace {
         RaceGUI basicGUI = new RaceGUI(appName);
         
         // Now set up an animation that will automatically
-        // run itself with ObjectModifier
+        // run itself with PropertySetter
         
         // We're going to need a more involved PropertyRange object
         // that has all curves of the track in it, as well as 
@@ -83,7 +81,7 @@ public class MultiStepRace {
             TrackView.THIRD_TURN_START, TrackView.THIRD_TURN_END,
             TrackView.FOURTH_TURN_START, 
             TrackView.START_POS};
-        KeyValues keyValues = KeyValues.createKeyValues(values);
+        KeyValues keyValues = KeyValues.create(values);
         // Calculate the keyTimes based on the distances that must be
         // traveled on each leg of the journey
         double totalDistance = 0;
@@ -106,47 +104,37 @@ public class MultiStepRace {
         KeyTimes keyTimes = new KeyTimes(times);
         // For realistic movement, we want a big acceleration
         // on the straightaways
-        Spline initialSpline = new Spline(1.00f, 0.00f, 0.2f, .2f);
-        Spline straightawaySpline = new Spline(0.50f, 0.20f, .50f, .80f);
-        Spline curveSpline = new Spline(0.50f, 0.20f, .50f, .80f);
-        Spline finalSpline = new Spline(0.50f, 0.00f, .50f, 1.00f);
-        KeySplines keySplines = new KeySplines(
-                initialSpline, curveSpline,
-                straightawaySpline, curveSpline,
+        Interpolator initialSpline = new SplineInterpolator(1.00f, 0.00f, 0.2f, .2f);
+        Interpolator straightawaySpline = new SplineInterpolator(0.50f, 0.20f, .50f, .80f);
+        Interpolator curveSpline = new SplineInterpolator(0.50f, 0.20f, .50f, .80f);
+        Interpolator finalSpline = new SplineInterpolator(0.50f, 0.00f, .50f, 1.00f);
+        KeyFrames keyFrames = new KeyFrames(keyValues, keyTimes,
+                initialSpline, curveSpline, straightawaySpline, curveSpline,
                 straightawaySpline, curveSpline,
                 straightawaySpline, finalSpline);
-        KeyFrames keyFrames = new KeyFrames(keyValues, keySplines,
-                keyTimes, KeyFrames.InterpolationType.NONLINEAR);
-        PropertyRange range = new PropertyRange("carPosition", keyFrames);
-        ObjectModifier modifier = new ObjectModifier(basicGUI.getTrack(), range);
+        PropertySetter modifier = new PropertySetter(basicGUI.getTrack(), 
+                "carPosition", keyFrames);
         
         // Now create the timing controller to run this.  Make it repeating
-        Cycle cycle = new Cycle(RACE_TIME, 30);
-        Envelope envelope = 
-                new Envelope(TimingController.INFINITE, 0, Envelope.RepeatBehavior.FORWARD,
-                Envelope.EndBehavior.HOLD);
-        timer = new TimingController(cycle, envelope, modifier);
+        timer = new Animator(RACE_TIME, Animator.INFINITE,
+                RepeatBehavior.LOOP, modifier);
         
         // Now create similar keyframes for rotation of car
-        double[] rotations = {360, 315, 270, 225, 180, 135, 90, 45, 0};
-        keyValues = KeyValues.createKeyValues(rotations);
-        Spline straightawayTurnSpline = new Spline(1.0f, 0.0f, 1.0f, 0.0f);
-        Spline curveTurnSpline = new Spline(0.0f, 0.5f, 0.5f, 1.0f);
-        keySplines = new KeySplines(
+        keyValues = KeyValues.create(360, 315, 270, 225, 180, 135, 90, 45, 0);
+        Interpolator straightawayTurnSpline = new SplineInterpolator(1.0f, 0.0f, 1.0f, 0.0f);
+        Interpolator curveTurnSpline = new SplineInterpolator(0.0f, 0.5f, 0.5f, 1.0f);
+        keyFrames = new KeyFrames(keyValues, keyTimes, 
                 straightawayTurnSpline, curveTurnSpline, 
                 straightawayTurnSpline, curveTurnSpline, 
                 straightawayTurnSpline, curveTurnSpline, 
                 straightawayTurnSpline, curveTurnSpline);
-        keyFrames = new KeyFrames(keyValues, keySplines,
-                keyTimes, KeyFrames.InterpolationType.NONLINEAR);
-        range = new PropertyRange("carRotation", keyFrames);
-        modifier = new ObjectModifier(basicGUI.getTrack(), range);
+        modifier = new PropertySetter(basicGUI.getTrack(), "carRotation", 
+                keyFrames);
         timer.addTarget(modifier);
         
         // Finally, add sound effects, triggered by the same timer
-        soundEffects = new SoundEffects(keyTimes);
+        soundEffects = new SoundEffects(keyFrames);
         timer.addTarget(soundEffects);
-        timer.addTimingListener(soundEffects);
         
         timer.addTarget(modifier);
 
