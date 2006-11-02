@@ -68,17 +68,15 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.jdesktop.animation.timing.Cycle;
-import org.jdesktop.animation.timing.Envelope;
 import org.jdesktop.animation.timing.interpolation.KeyFrames;
-import org.jdesktop.animation.timing.interpolation.KeySplines;
 import org.jdesktop.animation.timing.interpolation.KeyTimes;
 import org.jdesktop.animation.timing.interpolation.KeyValues;
-import org.jdesktop.animation.timing.interpolation.ObjectModifier;
-import org.jdesktop.animation.timing.interpolation.PropertyRange;
-import org.jdesktop.animation.timing.interpolation.Spline;
-import org.jdesktop.animation.timing.TimingController;
-import org.jdesktop.animation.timing.interpolation.KeyFrames.InterpolationType;
+import org.jdesktop.animation.timing.interpolation.PropertySetter;
+import org.jdesktop.animation.timing.Animator;
+import org.jdesktop.animation.timing.Animator.RepeatBehavior;
+import org.jdesktop.animation.timing.interpolation.Interpolator;
+import org.jdesktop.animation.timing.interpolation.Evaluator;
+import org.jdesktop.animation.timing.interpolation.SplineInterpolator;
 
 class SplineControlPanel extends JPanel {
     private SplineDisplay display;
@@ -86,14 +84,14 @@ class SplineControlPanel extends JPanel {
     private BouncerSimulator bounceSimulator = new BouncerSimulator();
     
     private int linesCount = 0;
-
+    
     private JLabel labelControl1;
     private JLabel labelControl2;
-    private TimingController controller;
-
+    private Animator controller;
+    
     SplineControlPanel() {
         super(new BorderLayout());
-
+        
         add(buildEquationDisplay(), BorderLayout.CENTER);
         add(buildDebugControls(), BorderLayout.EAST);
     }
@@ -103,13 +101,13 @@ class SplineControlPanel extends JPanel {
         JPanel debugPanel = new JPanel(new GridBagLayout());
         
         debugPanel.add(Box.createHorizontalStrut(150),
-                       new GridBagConstraints(0, linesCount++,
-                                              2, 1,
-                                              1.0, 0.0,
-                                              GridBagConstraints.LINE_START,
-                                              GridBagConstraints.NONE, 
-                                              new Insets(0, 0, 0, 0),
-                                              0, 0));
+                new GridBagConstraints(0, linesCount++,
+                2, 1,
+                1.0, 0.0,
+                GridBagConstraints.LINE_START,
+                GridBagConstraints.NONE,
+                new Insets(0, 0, 0, 0),
+                0, 0));
         
 //        button = addButton(debugPanel, "Create");
 //        button.addActionListener(new ActionListener() {
@@ -129,7 +127,7 @@ class SplineControlPanel extends JPanel {
 //                }
 //            }
 //        });
-
+        
         addSeparator(debugPanel, "Control Points");
         labelControl1 = addDebugLabel(debugPanel, "Point 1:", formatPoint(display.getControl1()));
         labelControl2 = addDebugLabel(debugPanel, "Point 2:", formatPoint(display.getControl2()));
@@ -146,12 +144,12 @@ class SplineControlPanel extends JPanel {
                 code.append(formatter.format(c1.getY())).append("f, ");
                 code.append(formatter.format(c2.getX())).append("f, ");
                 code.append(formatter.format(c2.getY())).append("f);");
-
+                
                 Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
                 clipboard.setContents(new StringSelection(code.toString()), null);
             }
         });
-
+        
         addEmptySpace(debugPanel, 6);
         addSeparator(debugPanel, "Animation");
         
@@ -165,24 +163,24 @@ class SplineControlPanel extends JPanel {
         addEmptySpace(debugPanel, 6);
         addSeparator(debugPanel, "Templates");
         debugPanel.add(createTemplates(),
-                       new GridBagConstraints(0, linesCount++,
-                                              2, 1,
-                                              1.0, 0.0,
-                                              GridBagConstraints.CENTER,
-                                              GridBagConstraints.NONE, 
-                                              new Insets(0, 0, 0, 0),
-                                              0, 0));
+                new GridBagConstraints(0, linesCount++,
+                2, 1,
+                1.0, 0.0,
+                GridBagConstraints.CENTER,
+                GridBagConstraints.NONE,
+                new Insets(0, 0, 0, 0),
+                0, 0));
         
         addEmptySpace(debugPanel, 6);
         
         debugPanel.add(Box.createVerticalGlue(),
-                       new GridBagConstraints(0, linesCount++,
-                                              2, 1,
-                                              1.0, 1.0,
-                                              GridBagConstraints.LINE_START,
-                                              GridBagConstraints.NONE, 
-                                              new Insets(0, 0, 0, 0),
-                                              0, 0));
+                new GridBagConstraints(0, linesCount++,
+                2, 1,
+                1.0, 1.0,
+                GridBagConstraints.LINE_START,
+                GridBagConstraints.NONE,
+                new Insets(0, 0, 0, 0),
+                0, 0));
         
         JPanel wrapper = new JPanel(new BorderLayout());
         wrapper.add(new JSeparator(JSeparator.VERTICAL), BorderLayout.WEST);
@@ -191,7 +189,7 @@ class SplineControlPanel extends JPanel {
         
         return wrapper;
     }
-
+    
     private Component createTemplates() {
         DefaultListModel model = new DefaultListModel();
         model.addElement(createTemplate(0.0, 0.0, 1.0, 1.0));
@@ -215,23 +213,23 @@ class SplineControlPanel extends JPanel {
     private JButton addButton(JPanel debugPanel, String label) {
         JButton button;
         debugPanel.add(button = new JButton(label),
-                       new GridBagConstraints(0, linesCount++,
-                                              2, 1,
-                                              1.0, 0.0,
-                                              GridBagConstraints.CENTER,
-                                              GridBagConstraints.NONE, 
-                                              new Insets(3, 0, 0, 0),
-                                              0, 0));
+                new GridBagConstraints(0, linesCount++,
+                2, 1,
+                1.0, 0.0,
+                GridBagConstraints.CENTER,
+                GridBagConstraints.NONE,
+                new Insets(3, 0, 0, 0),
+                0, 0));
         return button;
     }
-
+    
     private String formatPoint(Point2D p) {
         NumberFormat formatter = getNumberFormatter();
         return "" + formatter.format(p.getX()) + ", " + formatter.format(p.getY());
     }
-
+    
     private Component buildEquationDisplay() {
-        JPanel panel = new JPanel(new BorderLayout()); 
+        JPanel panel = new JPanel(new BorderLayout());
         
         display = new SplineDisplay();
         display.addPropertyChangeListener("control1", new PropertyChangeListener() {
@@ -246,32 +244,32 @@ class SplineControlPanel extends JPanel {
         });
         
         panel.add(display, BorderLayout.NORTH);
-
+        
         JPanel wrapper = new JPanel(new GridBagLayout());
         wrapper.add(new JSeparator(),
-                    new GridBagConstraints(0, 0,
-                                           2, 1,
-                                           1.0, 0.0,
-                                           GridBagConstraints.LINE_START,
-                                           GridBagConstraints.HORIZONTAL, 
-                                           new Insets(0, 0, 0, 0),
-                                           0, 0));
+                new GridBagConstraints(0, 0,
+                2, 1,
+                1.0, 0.0,
+                GridBagConstraints.LINE_START,
+                GridBagConstraints.HORIZONTAL,
+                new Insets(0, 0, 0, 0),
+                0, 0));
         wrapper.add(bounceSimulator,
-                    new GridBagConstraints(0, 1,
-                                           1, 1,
-                                           1.0, 1.0,
-                                           GridBagConstraints.CENTER,
-                                           GridBagConstraints.BOTH, 
-                                           new Insets(0, 0, 0, 0),
-                                           0, 0));
+                new GridBagConstraints(0, 1,
+                1, 1,
+                1.0, 1.0,
+                GridBagConstraints.CENTER,
+                GridBagConstraints.BOTH,
+                new Insets(0, 0, 0, 0),
+                0, 0));
         wrapper.add(dropSimulator,
-                    new GridBagConstraints(1, 1,
-                                           1, 1,
-                                           1.0, 1.0,
-                                           GridBagConstraints.CENTER,
-                                           GridBagConstraints.BOTH, 
-                                           new Insets(0, 0, 0, 0),
-                                           0, 0));
+                new GridBagConstraints(1, 1,
+                1, 1,
+                1.0, 1.0,
+                GridBagConstraints.CENTER,
+                GridBagConstraints.BOTH,
+                new Insets(0, 0, 0, 0),
+                0, 0));
         panel.add(wrapper, BorderLayout.CENTER);
         
         return panel;
@@ -280,62 +278,62 @@ class SplineControlPanel extends JPanel {
     private JLabel addDebugLabel(JPanel panel, String label, String value) {
         JLabel labelComponent = new JLabel(label);
         panel.add(labelComponent,
-                  new GridBagConstraints(0, linesCount,
-                                         1, 1,
-                                         0.5, 0.0,
-                                         GridBagConstraints.LINE_END,
-                                         GridBagConstraints.NONE, 
-                                         new Insets(0, 6, 0, 0),
-                                         0, 0));
+                new GridBagConstraints(0, linesCount,
+                1, 1,
+                0.5, 0.0,
+                GridBagConstraints.LINE_END,
+                GridBagConstraints.NONE,
+                new Insets(0, 6, 0, 0),
+                0, 0));
         labelComponent = new JLabel(value);
         panel.add(labelComponent,
-                  new GridBagConstraints(1, linesCount++,
-                                         1, 1,
-                                         0.5, 0.0,
-                                         GridBagConstraints.LINE_START,
-                                         GridBagConstraints.NONE, 
-                                         new Insets(0, 6, 0, 0),
-                                         0, 0));
+                new GridBagConstraints(1, linesCount++,
+                1, 1,
+                0.5, 0.0,
+                GridBagConstraints.LINE_START,
+                GridBagConstraints.NONE,
+                new Insets(0, 6, 0, 0),
+                0, 0));
         return labelComponent;
     }
     
     private void addEmptySpace(JPanel panel, int size) {
         panel.add(Box.createVerticalStrut(size),
-                   new GridBagConstraints(0, linesCount++,
-                                          2, 1,
-                                          1.0, 0.0,
-                                          GridBagConstraints.CENTER,
-                                          GridBagConstraints.VERTICAL, 
-                                          new Insets(6, 0, 0, 0),
-                                          0, 0));
+                new GridBagConstraints(0, linesCount++,
+                2, 1,
+                1.0, 0.0,
+                GridBagConstraints.CENTER,
+                GridBagConstraints.VERTICAL,
+                new Insets(6, 0, 0, 0),
+                0, 0));
     }
     
     private void addSeparator(JPanel panel, String label) {
         JPanel innerPanel = new JPanel(new GridBagLayout());
         innerPanel.add(new JLabel(label),
-                  new GridBagConstraints(0, 0,
-                                         1, 1,
-                                         0.0, 0.0,
-                                         GridBagConstraints.LINE_START,
-                                         GridBagConstraints.NONE, 
-                                         new Insets(0, 0, 0, 0),
-                                         0, 0));
+                new GridBagConstraints(0, 0,
+                1, 1,
+                0.0, 0.0,
+                GridBagConstraints.LINE_START,
+                GridBagConstraints.NONE,
+                new Insets(0, 0, 0, 0),
+                0, 0));
         innerPanel.add(new JSeparator(),
-                  new GridBagConstraints(1, 0,
-                                         1, 1,
-                                         0.9, 0.0,
-                                         GridBagConstraints.LINE_START,
-                                         GridBagConstraints.HORIZONTAL, 
-                                         new Insets(0, 6, 0, 6),
-                                         0, 0));
+                new GridBagConstraints(1, 0,
+                1, 1,
+                0.9, 0.0,
+                GridBagConstraints.LINE_START,
+                GridBagConstraints.HORIZONTAL,
+                new Insets(0, 6, 0, 6),
+                0, 0));
         panel.add(innerPanel,
-                  new GridBagConstraints(0, linesCount++,
-                                         2, 1,
-                                         1.0, 0.0,
-                                         GridBagConstraints.LINE_START,
-                                         GridBagConstraints.HORIZONTAL, 
-                                         new Insets(6, 6, 6, 0),
-                                         0, 0));
+                new GridBagConstraints(0, linesCount++,
+                2, 1,
+                1.0, 0.0,
+                GridBagConstraints.LINE_START,
+                GridBagConstraints.HORIZONTAL,
+                new Insets(6, 6, 6, 0),
+                0, 0));
     }
     
     private void startSampleAnimation() {
@@ -343,27 +341,45 @@ class SplineControlPanel extends JPanel {
             controller.stop();
         }
         
-        Cycle bouncingCycle = new Cycle(1000, 10);
-        Envelope bouncingEnvelope = new Envelope(4, 0,
-                                                 Envelope.RepeatBehavior.REVERSE,
-                                                 Envelope.EndBehavior.RESET);
         Point2D control1 = display.getControl1();
         Point2D control2 = display.getControl2();
-        KeySplines splines = new KeySplines(new Spline((float) control1.getX(), (float) control1.getY(),
-                                                       (float) control2.getX(), (float) control2.getY()));
+        Interpolator splines = new SplineInterpolator((float) control1.getX(), 
+                (float) control1.getY(),
+                (float) control2.getX(), (float) control2.getY());
         KeyTimes times = new KeyTimes(0.0f, 1.0f);
-        KeyValues values = KeyValues.createKeyValues(0.0, 1.0);
-        KeyFrames frames = new KeyFrames(values, splines, times, InterpolationType.NONLINEAR);
-        PropertyRange range = new PropertyRange("time", frames);
-
-        ObjectModifier dropModifier = new ObjectModifier(dropSimulator, range);
-        ObjectModifier bounceModifier = new ObjectModifier(bounceSimulator, range);
+        KeyValues values = KeyValues.create(0.0, 1.0);
+        KeyFrames frames = new KeyFrames(values,times, splines);
         
-        controller = new TimingController(bouncingCycle,
-                                          bouncingEnvelope, dropModifier);
+        PropertySetter dropModifier = new PropertySetter(dropSimulator,
+                "time", frames);
+        PropertySetter bounceModifier = new PropertySetter(bounceSimulator,
+                "time", frames);
+        
+        controller = new Animator(1000, 4, RepeatBehavior.REVERSE, dropModifier);
+        controller.setResolution(10);
         controller.addTarget(bounceModifier);
         
         controller.start();
+    }
+    
+    private Evaluator point2dInterpolator = new Point2DNonLinearInterpolator();
+    
+    private class Point2DNonLinearInterpolator extends Evaluator<Point2D> {
+        private Point2D value;
+        public Point2D evaluate(Point2D v0, Point2D v1,
+                float fraction) {
+            Point2D value = (Point2D)v0.clone();
+            if (v0 != v1) {
+                double x = value.getX();
+                x += (v1.getX() - v0.getX()) * fraction;
+                double y = value.getY();
+                y += (v1.getY() - v0.getY()) * fraction;
+                value.setLocation(x, y);
+            } else {
+                value.setLocation(v0.getX(), v0.getY());
+            }
+            return value;
+        }
     }
     
     private class TemplateSelectionHandler implements ListSelectionListener {
@@ -379,25 +395,15 @@ class SplineControlPanel extends JPanel {
                     controller.stop();
                 }
                 
-                Cycle bouncingCycle = new Cycle(300, 10);
-                Envelope bouncingEnvelope = new Envelope(1, 0,
-                                                         Envelope.RepeatBehavior.FORWARD,
-                                                         Envelope.EndBehavior.HOLD);
-
+                controller = new Animator(300,
+                        new PropertySetter(display, "control1",
+                        point2dInterpolator, display.getControl1(),
+                        template.getControl1()));
+                controller.setResolution(10);
+                controller.addTarget(new PropertySetter(display, "control2",
+                        point2dInterpolator, display.getControl2(),
+                        template.getControl2()));
                 
-                PropertyRange range1, range2;
-                range1 = PropertyRangePoint2D.create("control1",
-                                                     display.getControl1(),
-                                                     template.getControl1());
-                range2 = PropertyRangePoint2D.create("control2",
-                                                     display.getControl2(),
-                                                     template.getControl2());
-
-                controller = new TimingController(bouncingCycle,
-                                                  bouncingEnvelope,
-                                                  new ObjectModifier(display, range1));
-                controller.addTarget(new ObjectModifier(display, range2));
-
                 controller.start();
             }
         }
@@ -409,25 +415,25 @@ class SplineControlPanel extends JPanel {
         formatter.setMaximumFractionDigits(2);
         return formatter;
     }
-
+    
     private static Template createTemplate(double x1, double y1, double x2, double y2) {
         return new Template(new Point2D.Double(x1, y1),
-                            new Point2D.Double(x2, y2));
+                new Point2D.Double(x2, y2));
     }
     
     private static class TemplateCellRenderer extends DefaultListCellRenderer {
         private boolean isSelected;
-
+        
         @Override
         public Component getListCellRendererComponent(JList list, Object value, int index,
-                                                      boolean isSelected, boolean cellHasFocus) {
+                boolean isSelected, boolean cellHasFocus) {
             Template template = (Template) value;
             this.setBackground(Color.WHITE);
             this.setIcon(new ImageIcon(template.getImage()));
             this.isSelected = isSelected;
             return this;
         }
-
+        
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
@@ -443,16 +449,16 @@ class SplineControlPanel extends JPanel {
         private Point2D control1;
         private Point2D control2;
         private Image image;
-
+        
         public Template(Point2D control1, Point2D control2) {
             this.control1 = control1;
             this.control2 = control2;
         }
-
+        
         public Point2D getControl1() {
             return control1;
         }
-
+        
         public Point2D getControl2() {
             return control2;
         }

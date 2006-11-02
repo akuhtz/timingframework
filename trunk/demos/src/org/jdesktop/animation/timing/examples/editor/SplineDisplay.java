@@ -56,7 +56,7 @@ import javax.imageio.ImageIO;
 
 import org.jdesktop.animation.timing.examples.editor.equation.EquationDisplay;
 
-class SplineDisplay extends EquationDisplay {
+public class SplineDisplay extends EquationDisplay {
     private static final double CONTROL_POINT_SIZE = 12.0;
 
     private Point2D control1 = new Point2D.Double(0.25, 0.75);
