@@ -38,18 +38,19 @@ import java.awt.event.ActionListener;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
-import org.jdesktop.animation.timing.TimingController;
+import org.jdesktop.animation.timing.Animator;
 import org.jdesktop.animation.timing.TimingTarget;
 
 /**
- * The simplest version of the animation; set up a TimingController to
+ * The simplest version of the animation; set up a Animator to
  * move the car from one position to another over a given time period.
- *
+ * 
+ * 
  * @author Chet
  */
 public class BasicRace implements ActionListener, TimingTarget {
     
-    TimingController timer;
+    Animator timer;
     RaceGUI basicGUI;
     TrackView track;
     
@@ -88,7 +89,7 @@ public class BasicRace implements ActionListener, TimingTarget {
                 // simple utility constructor that takes the animation
                 // duration and the TimingTarget.  The actual work of the
                 // animation is done in the timingEvent method below
-                timer = new TimingController(RACE_TIME, this);
+                timer = new Animator(RACE_TIME, this);
                 timer.start();
             }
         } else if (ae.getActionCommand().equals("Stop")) {
@@ -108,9 +109,7 @@ public class BasicRace implements ActionListener, TimingTarget {
         track.setCarPosition(start);
     }
     
-    public void timingEvent(long cycleElapsedTime,
-			    long totalElapsedTime, 
-			    float fraction) {
+    public void timingEvent(float fraction) {
         // Simple linear calculation of position using parametric equation
         current.x = (int)(start.x + (end.x - start.x) * fraction);
         current.y = (int)(start.y + (end.y - start.y) * fraction);
@@ -121,5 +120,8 @@ public class BasicRace implements ActionListener, TimingTarget {
     }
     
     public void end() {
+    }
+    
+    public void repeat() {
     }
 }

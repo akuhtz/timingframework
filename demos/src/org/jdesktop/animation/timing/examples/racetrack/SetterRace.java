@@ -34,15 +34,14 @@ package org.jdesktop.animation.timing.examples.racetrack;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.SwingUtilities;
-import org.jdesktop.animation.timing.TimingController;
-import org.jdesktop.animation.timing.interpolation.ObjectModifier;
-import org.jdesktop.animation.timing.interpolation.PropertyRange;
+import org.jdesktop.animation.timing.Animator;
+import org.jdesktop.animation.timing.interpolation.PropertySetter;
 
 /**
  * Like BasicRace, only this version uses the property setter capabilities
  * of the framework.  Instead of manually calculating the position of the
  * car, we have the framework do it for us, based on how we set up the
- * PropertyRange and ObjectModifier objects.  All of this is done at
+ * PropertySetter object.  All of this is done at
  * construction time and we merely start or stop the animation based on
  * the Go/Stop buttons at runtime.
  *
@@ -50,7 +49,7 @@ import org.jdesktop.animation.timing.interpolation.PropertyRange;
  */
 public class SetterRace implements ActionListener {
     
-    protected TimingController timer;
+    protected Animator timer;
     public static final int RACE_TIME = 2000;
     
     
@@ -59,13 +58,11 @@ public class SetterRace implements ActionListener {
         RaceGUI basicGUI = new RaceGUI(appName);
         
         // Now set up an animation that will automatically
-        // run itself with ObjectModifier
+        // run itself with PropertySetter
         
-        PropertyRange range = PropertyRange.
-                createPropertyRangePoint("carPosition", 
-                TrackView.START_POS, TrackView.FIRST_TURN_START);
-        ObjectModifier modifier = new ObjectModifier(basicGUI.getTrack(), range);
-        timer = new TimingController(RACE_TIME, modifier);
+        PropertySetter modifier = new PropertySetter(basicGUI.getTrack(), 
+                "carPosition", TrackView.START_POS, TrackView.FIRST_TURN_START);
+        timer = new Animator(RACE_TIME, modifier);
         basicGUI.getControlPanel().addListener(this);
     }
     

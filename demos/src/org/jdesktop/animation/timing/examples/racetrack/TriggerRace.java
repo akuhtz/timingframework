@@ -33,9 +33,8 @@ package org.jdesktop.animation.timing.examples.racetrack;
 
 import javax.swing.JButton;
 import javax.swing.SwingUtilities;
-import org.jdesktop.animation.timing.TimingController;
-import org.jdesktop.animation.timing.interpolation.ObjectModifier;
-import org.jdesktop.animation.timing.interpolation.PropertyRange;
+import org.jdesktop.animation.timing.Animator;
+import org.jdesktop.animation.timing.interpolation.PropertySetter;
 import org.jdesktop.animation.timing.triggers.ActionTrigger;
 import org.jdesktop.animation.timing.triggers.Trigger;
 import org.jdesktop.animation.timing.triggers.Trigger.TriggerAction;
@@ -56,13 +55,12 @@ public class TriggerRace {
         RaceGUI basicGUI = new RaceGUI(appName);
         
         // Now set up an animation that will automatically
-        // run itself with ObjectModifier
+        // run itself with PropertySetter
         
-        PropertyRange range = PropertyRange.
-                createPropertyRangePoint("carPosition", 
+        PropertySetter modifier = new PropertySetter(basicGUI.getTrack(), 
+                "carPosition", 
                 TrackView.START_POS, TrackView.FIRST_TURN_START);
-        ObjectModifier modifier = new ObjectModifier(basicGUI.getTrack(), range);
-        TimingController timer = new TimingController(RACE_TIME, modifier);
+        Animator timer = new Animator(RACE_TIME, modifier);
         JButton goButton = basicGUI.getControlPanel().getGoButton();
         JButton stopButton = basicGUI.getControlPanel().getStopButton();
         

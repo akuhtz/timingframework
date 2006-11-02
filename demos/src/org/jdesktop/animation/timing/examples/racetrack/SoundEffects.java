@@ -33,9 +33,8 @@ package org.jdesktop.animation.timing.examples.racetrack;
 
 import java.applet.AudioClip;
 import java.net.URL;
-import org.jdesktop.animation.timing.TimingEvent;
-import org.jdesktop.animation.timing.TimingListener;
 import org.jdesktop.animation.timing.TimingTarget;
+import org.jdesktop.animation.timing.interpolation.KeyFrames;
 import org.jdesktop.animation.timing.interpolation.KeyTimes;
 
 /**
@@ -44,15 +43,15 @@ import org.jdesktop.animation.timing.interpolation.KeyTimes;
  *
  * @author Chet
  */
-public class SoundEffects implements TimingTarget, TimingListener {
+public class SoundEffects implements TimingTarget {
     
     AudioClip drivingClip;
     AudioClip turningClip;
-    KeyTimes keyTimes;
+    KeyFrames keyFrames;
     
     /** Creates a new instance of SoundEffects */
-    public SoundEffects(KeyTimes keyTimes) {
-        this.keyTimes = keyTimes;
+    public SoundEffects(KeyFrames keyFrames) {
+        this.keyFrames = keyFrames;
         try {
             URL url  = SoundEffects.class.getResource("sounds/vroom.wav");
             drivingClip = java.applet.Applet.newAudioClip(url);
@@ -103,41 +102,34 @@ public class SoundEffects implements TimingTarget, TimingListener {
         stop();
     }
     
-    public void timingEvent(long cycleElapsedTime,
-            long totalElapsedTime,
-            float fraction) {
+    public void timingEvent(float fraction) {
        if (!pastFirstTurn) {
-           if (keyTimes.getInterval(fraction) == 1) {
+           if (keyFrames.getInterval(fraction) == 1) {
                turn();
                pastFirstTurn = true;
            }
        } else if (!pastSecondTurn) {
-           if (keyTimes.getInterval(fraction) == 3) {
+           if (keyFrames.getInterval(fraction) == 3) {
                turn();
                pastSecondTurn = true;
            }
        } else if (!pastThirdTurn) {
-           if (keyTimes.getInterval(fraction) == 5) {
+           if (keyFrames.getInterval(fraction) == 5) {
                turn();
                pastThirdTurn = true;
            }
        } else if (!pastFourthTurn) {
-           if (keyTimes.getInterval(fraction) == 7) {
+           if (keyFrames.getInterval(fraction) == 7) {
                turn();
                pastFourthTurn = true;
            }
        }
     }
-    
-    // Timing Listener implementation (only care about repeat)
-    public void timerStarted(TimingEvent e) {}    
-    public void timerStopped(TimingEvent e) {}
-    
-    public void timerRepeated(TimingEvent e) {
+
+    public void repeat() {
         pastFirstTurn = false;
         pastSecondTurn = false;
         pastThirdTurn = false;
         pastFourthTurn = false;
-    }
-    
+    }    
 }
