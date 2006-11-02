@@ -74,8 +74,8 @@ public class ComponentFocusTrigger extends Trigger {
     protected void setupListener(Animator timer, Object source, 
             TriggerAction action, TriggerEvent event) {
         try {
-            ComponentFocusListener listener = new 
-                ComponentFocusListener(timer, action, (ComponentFocusEvent)event);
+            listener = new ComponentFocusListener(timer, action, 
+                    (ComponentFocusEvent)event);
             setupListener(source, listener, "addFocusListener", 
                     FocusListener.class);
         } catch (Exception e) {

@@ -45,7 +45,9 @@ import org.jdesktop.animation.timing.*;
  * @author Chet
  */
 public abstract class Trigger {
-  
+
+    protected TriggerListener listener = null;
+    
     /**
      * A Trigger can be set up to either start or stop a given Animator
      */
@@ -54,7 +56,6 @@ public abstract class Trigger {
         STOP
     };
     
-
     public Trigger() {}
     
     /**
@@ -74,6 +75,16 @@ public abstract class Trigger {
             setupListener(stopTimer, source, TriggerAction.START, 
                     event.getOppositeEvent());
             setupListener(stopTimer, source, TriggerAction.STOP, event);
+        }
+    }
+    
+    /**
+     * This method disables this Trigger and effectively noop's any actions
+     * that this trigger would otherwise take.
+     */
+    public void disarm() {
+        if (listener != null) {
+            listener.cancel();
         }
     }
     

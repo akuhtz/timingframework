@@ -72,9 +72,9 @@ public class TimingTrigger extends Trigger {
     protected void setupListener(Animator timer, Object source, 
             TriggerAction action, TriggerEvent event) {
         try {
-            TimingTriggerListener listener = new 
-                TimingTriggerListener(timer, action, (TimingTriggerEvent)event);
-            setupListener(source, listener, "addTimingTarget", 
+            listener = new TimingTriggerListener(timer, 
+                    action, (TimingTriggerEvent)event);
+            setupListener(source, listener, "addTarget", 
                     TimingTarget.class);
         } catch (Exception e) {
             System.out.println("Exception creating " +
