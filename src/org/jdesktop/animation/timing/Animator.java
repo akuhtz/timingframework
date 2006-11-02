@@ -399,6 +399,7 @@ public final class Animator {
         }
         throwExceptionIfRunning();
         this.resolution = resolution;
+        timer.setDelay(resolution);
     }
     
     /**
@@ -486,6 +487,7 @@ public final class Animator {
         }
         throwExceptionIfRunning();
         this.startDelay = startDelay;
+        timer.setInitialDelay(startDelay);
     }
 
     /**

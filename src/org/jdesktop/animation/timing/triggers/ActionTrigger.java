@@ -63,8 +63,7 @@ public class ActionTrigger extends Trigger {
     protected void setupListener(Animator timer, Object source, 
             TriggerAction action, TriggerEvent event) {
         try {
-            ActionTriggerListener listener = new 
-                ActionTriggerListener(timer, action);
+            listener = new ActionTriggerListener(timer, action);
             setupListener(source, listener, "addActionListener",
                     ActionListener.class);
         } catch (Exception e) {

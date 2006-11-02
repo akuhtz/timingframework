@@ -47,6 +47,8 @@ import org.jdesktop.animation.timing.triggers.TriggerEvent;
 public abstract class TriggerListener {
     Animator timer;
     TriggerAction action;
+    boolean canceled = false;
+    
     protected TriggerListener(Animator timer, TriggerAction action) {
         this.timer = timer;
         this.action = action;
@@ -57,10 +59,21 @@ public abstract class TriggerListener {
      * TriggerAction that the listener was created with
      */
     protected void pullTrigger() {
+        if (canceled) {
+            return;
+        }
         if (action == TriggerAction.START) {
             timer.start();
         } else {
             timer.stop();
         }
+    }
+    
+    /**
+     * Canceling a listener causes a later call to pullTrigger to noop; this
+     * mechanism is used by {@link Trigger#disarm} to disable a Trigger.
+     */
+    public void cancel() {
+        canceled = true;
     }
 }

@@ -77,8 +77,7 @@ public class ButtonStateTrigger extends Trigger {
             TriggerAction action, TriggerEvent event) {
         try {
             ButtonModel model = ((AbstractButton)source).getModel();
-            ButtonStateListener listener = new 
-                ButtonStateListener(timer, action, 
+            listener = new ButtonStateListener(timer, action, 
                     (ButtonStateEvent)event, model);
             setupListener(model, listener, "addChangeListener", 
                     ChangeListener.class);
