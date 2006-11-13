@@ -56,7 +56,7 @@ public abstract class Trigger {
         STOP
     };
     
-    public Trigger() {}
+    protected Trigger() {}
     
     /**
      * This constructor sets up animations to auto-start/auto-stop
@@ -65,8 +65,10 @@ public abstract class Trigger {
      * second set or parameters declare the timer to start based on
      * the second source/event.  The first timer will be auto-stopped
      * when the second source/event occurs, and vice versa.
+     * <p>
+     * This constructor exists solely for the use of subclasses.
      */
-    public Trigger(Animator startTimer, Object source, 
+    protected Trigger(Animator startTimer, Object source, 
             TriggerEvent event, Animator stopTimer) {
         setupListener(startTimer, source, TriggerAction.START, event);
         setupListener(startTimer, source, TriggerAction.STOP, 
