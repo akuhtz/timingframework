@@ -190,6 +190,25 @@
             <p>
             <b>Change Log:</b>
             </p>
+            <p>November 13, 2006, Version 0.51: Minor bug fixes, API enhancements</p>
+            <ul>
+                <li>Animator.cancel(): New method that just stops an Animator in
+                its tracks, period.  Just like stop(), only this one doesn't end
+                up calling the end() method of the TimingTargets.
+                </li>
+                <li>Animator bugs: Various minor bugs, such as calling end() before
+                the last timingEvent() had been sent, and not handling INFINITE
+                durations correctly</li>
+                <li>Animator.start() throws an exception if called while running</li>
+                <li>Animator.removeTarget(TimingTarget): parallel of addTarget()
+                method</li>
+                <li>Animator(duration): simplified constructor that doesn't require
+                a TimingTarget</li>
+                <li>LinearInterpolator, DiscreteInterpolator, and SplineInterpolator
+                are all final classes (they were not meant to be subclassed)</li>
+                <li>ButtonAnimation demo tweaked to include some of the new
+                stuff from the .50 refactoring (initialFraction, direction).</li>
+            </ul>
             <p>October 27, 2006, Version 0.5: Refactoring, big and small:
             <ul>
                 <li>Version 0.5: About time I added a version number to this thing...</li>

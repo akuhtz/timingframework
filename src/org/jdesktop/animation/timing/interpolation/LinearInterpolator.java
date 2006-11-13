@@ -44,7 +44,7 @@ import org.jdesktop.animation.timing.*;
  *
  * @author Chet
  */
-public class LinearInterpolator implements Interpolator {
+public final class LinearInterpolator implements Interpolator {
     
     private static LinearInterpolator instance = null;
     

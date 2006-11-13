@@ -46,7 +46,7 @@ package org.jdesktop.animation.timing.interpolation;
  *
  * @author Chet
  */
-public class DiscreteInterpolator implements Interpolator {
+public final class DiscreteInterpolator implements Interpolator {
     
     private static DiscreteInterpolator instance = null;
     

@@ -91,7 +91,10 @@ public final class Animator {
     private int currentCycle = 0;   // Tracks number of cycles so far
     private boolean intRepeatCount = true;  // for typical cases
                                             // of repeated cycles
-
+    private boolean timeToStop = false;     // This gets triggered during
+                                            // fraction calculation
+    private boolean hasBegun = false;
+    
     // Private variables to hold the internal "envelope" values that control
     // how the cycle is started, ended, and repeated.
     private double repeatCount = 1.0;
@@ -165,6 +168,20 @@ public final class Animator {
         }
     }
 
+    /**
+     * Constructor: this is a utility constructor
+     * for a simple timing sequence that will run for 
+     * <code>duration</code> length of time.  This variant takes no
+     * TimingTarget, and is equivalent to calling {@link #Animator(int, 
+     * TimingTarget)} with a TimingTarget of <code>null</code>.
+     * 
+     * @param duration The length of time that this will run, in milliseconds.
+     */
+
+    public Animator(int duration) {
+        this(duration, null);
+    }
+    
     /**
      * Constructor: this is a utility constructor
      * for a simple timing sequence that will run for 
@@ -348,14 +365,31 @@ public final class Animator {
     /**
      * Adds a TimingTarget to the list of targets that get notified of each
      * timingEvent.  This can be done at any time before, during, or after the
-     * timing envelope has started or completed; the new target will begin
+     * animation has started or completed; the new target will begin
      * having its TimingTarget methods called as soon as it is added.
+     * @param target TimingTarget to be added to the list of targets that
+     * get notified by this Animator of all timing events.
      */
     public void addTarget(TimingTarget target) {
         if (target != null) {
             synchronized (targets) {
                 targets.add(target);
             }
+        }
+    }
+    
+    /**
+     * Removes the specified TimingTarget from the list of targets that get
+     * notified of each timingEvent.  This can be done at any time before,
+     * during, or after the animation has started or completed; the 
+     * target will cease having its TimingTarget methods called as soon
+     * as it is removed.
+     * @param target TimingTarget to be removed from the list of targets that
+     * get notified by this Animator of all timing events.
+     */
+    public void removeTarget(TimingTarget target) {
+        synchronized (targets) {
+            targets.remove(target);
         }
     }
     
@@ -572,9 +606,13 @@ public final class Animator {
     
     /**
      * Starts the animation
+     * @throws IllegalStateException if animation is already running; this
+     * command may only be run prior to starting the animation or 
+     * after the animation has ended
      */
     public void start() {
-        begin();
+        throwExceptionIfRunning();
+        hasBegun = false;
 	// Initialize start time variables to current time
 	startTime = (System.nanoTime() / 1000000) + getStartDelay();
         if (initialFraction > 0.0f && duration != INFINITE) {
@@ -597,12 +635,28 @@ public final class Animator {
      * if Animator is provided with appropriate values for
      * duration and repeatCount in the constructor.  But if the application 
      * wants to stop the timer mid-stream, this is the method to call.
+     * This call will result in calls to the <code>end()</code> method
+     * of all TimingTargets of this Animator.
+     * @see #cancel()
      */
     public void stop() {
 	timer.stop();
         end();
+        timeToStop = false;
     }
 
+    /**
+     * This method is like the {@link #stop} method, only this one will
+     * not result in a calls to the <code>end()</code> method in all 
+     * TimingTargets of this Animation; it simply cancels the Animator
+     * immediately.
+     * @see #stop()
+     */
+    public void cancel() {
+        timer.stop();
+        timeToStop = false;
+    }
+    
     //
     // TimingTarget implementations
     // Note that Animator does not actually implement TimingTarget directly;
@@ -620,6 +674,9 @@ public final class Animator {
                 TimingTarget target = (TimingTarget)targets.get(i);
                 target.timingEvent(fraction);
             }
+        }
+        if (timeToStop) {
+            stop();
         }
     }
     
@@ -756,7 +813,13 @@ public final class Animator {
         double currentCycle = (double)totalElapsedTime / duration;
         float fraction;
 
-        if ((repeatCount != INFINITE) && currentCycle >= repeatCount) {
+        if (!hasBegun) {
+            // Call begin() first time after calling start()
+            begin();
+            hasBegun = true;
+        }
+        if ((duration != INFINITE) && (repeatCount != INFINITE) && 
+                (currentCycle >= repeatCount)) {
             // Envelope done: stop based on end behavior
             switch (endBehavior) {
             case HOLD:
@@ -785,7 +848,7 @@ public final class Animator {
                 // should not reach here
                 break;
             }
-            stop();
+            timeToStop = true;
         } else if ((duration != INFINITE) && (cycleElapsedTime > duration)) {
             // Cycle end: Time to stop or change the behavior of the timer
             long actualCycleTime = cycleElapsedTime % duration;

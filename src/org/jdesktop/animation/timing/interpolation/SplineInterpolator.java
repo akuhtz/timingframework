@@ -51,7 +51,7 @@ import org.jdesktop.animation.timing.*;
  *
  * @author Chet
  */
-public class SplineInterpolator implements Interpolator {
+public final class SplineInterpolator implements Interpolator {
 
     // Note: (x0,y0) and (x1,y1) are implicitly (0, 0) and (1,1) respectively
     private float x1, y1, x2, y2;
