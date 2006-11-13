@@ -74,8 +74,10 @@ class ControlPanel extends JPanel implements ActionListener {
     JFormattedTextField durationField;
     JFormattedTextField resolutionField;
     JFormattedTextField repeatCountField;
+    JFormattedTextField initialFractionField;
     JRadioButton loopButton, reverseButton;
     JRadioButton holdButton, resetButton;
+    JRadioButton forwardButton, backwardButton;
     JRadioButton linearButton, discreteButton, nonlinearButton;
     JRadioButton twoButton, threeButton, fourButton;
     JButton goButton;
@@ -122,6 +124,9 @@ class ControlPanel extends JPanel implements ActionListener {
         int duration = getFieldValueAsInt(durationField);
         int resolution = getFieldValueAsInt(resolutionField);
         double repeatCount = getFieldValueAsDouble(repeatCountField);
+        double initialFraction = getFieldValueAsDouble(initialFractionField);
+        Animator.Direction direction = forwardButton.isSelected() ? 
+            Animator.Direction.FORWARD : Animator.Direction.BACKWARD;
         Animator.RepeatBehavior repeatBehavior =
                 reverseButton.isSelected() ? Animator.RepeatBehavior.REVERSE :
                     Animator.RepeatBehavior.LOOP;
@@ -172,6 +177,8 @@ class ControlPanel extends JPanel implements ActionListener {
         animation.setResolution(resolution);
         animation.setStartDelay(begin);
         animation.setEndBehavior(behavior);
+        animation.setInitialFraction((float)initialFraction);
+        animation.setDirection(direction);
         
         // Now add another TimingTarget to the animation; this will track
         // and display the animation fraction
@@ -221,6 +228,39 @@ class ControlPanel extends JPanel implements ActionListener {
                 GridBagConstraints.CENTER,
                 GridBagConstraints.HORIZONTAL,
                 new Insets(5, 5, 0, 0), 0, 0));
+
+        textPanel.add(new JLabel("Initial Fraction (0-1)"),
+                new GridBagConstraints(0, 1, 2, 1, 0, 0,
+                GridBagConstraints.WEST,
+                GridBagConstraints.NONE,
+                new Insets(5, 5, 0, 0), 0, 0));
+        initialFractionField = new JFormattedTextField(doubleFormat);
+        initialFractionField.setValue(0);
+        textPanel.add(initialFractionField,
+                new GridBagConstraints(2, 1, 1, 1, .5, 0,
+                GridBagConstraints.CENTER,
+                GridBagConstraints.HORIZONTAL,
+                new Insets(5, 5, 0, 0), 0, 0));
+        textPanel.add(new JLabel("Direction"),
+                new GridBagConstraints(4, 1, 2, 1, 0, 0,
+                GridBagConstraints.WEST,
+                GridBagConstraints.NONE,
+                new Insets(5, 5, 0, 0), 0, 0));
+        forwardButton = new JRadioButton("Forward", true);
+        backwardButton = new JRadioButton("Backward");
+        ButtonGroup group = new ButtonGroup();
+        group.add(forwardButton);
+        group.add(backwardButton);
+        
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(forwardButton);
+        buttonPanel.add(backwardButton);
+        textPanel.add(buttonPanel,
+                new GridBagConstraints(6, 1, 2, 1, .5, 0,
+                GridBagConstraints.CENTER,
+                GridBagConstraints.HORIZONTAL,
+                new Insets(5, 5, 0, 5), 0, 0));
+
         textPanel.setBorder(new TitledBorder("Cycle"));
         add(textPanel,
                 new GridBagConstraints(0, 0, 8, 1, .5, 0,
