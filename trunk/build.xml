@@ -73,6 +73,8 @@
          basedir="${dist.javadoc.dir}"/>
     <zip destfile="${version.dir}/TimingFramework-${versionNum}-src.zip"
          basedir="${src.dir}"/>
+    <zip destfile="${version.dir}/TimingExamples-${versionNum}-src.zip"
+        basedir="demos/src"/>
     <copy tofile="${version.dir}/TimingFramework-${versionNum}.jar">
         <fileset file="${dist.dir}/TimingFramework.jar"/>
     </copy>
