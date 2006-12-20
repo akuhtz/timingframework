@@ -80,7 +80,7 @@ class ControlPanel extends JPanel implements ActionListener {
     JRadioButton forwardButton, backwardButton;
     JRadioButton linearButton, discreteButton, nonlinearButton;
     JRadioButton twoButton, threeButton, fourButton;
-    JButton goButton;
+    JButton goButton, stopButton, pauseButton, resumeButton;
     JFormattedTextField time[] = new JFormattedTextField[4];
     JFormattedTextField valueX[] = new JFormattedTextField[4];
     JFormattedTextField valueY[] = new JFormattedTextField[4];
@@ -103,6 +103,21 @@ class ControlPanel extends JPanel implements ActionListener {
      * current state of the GUI.
      */
     public void actionPerformed(ActionEvent ae) {
+        // First, check to see whether someone is pausing/resuming/stopping the
+        // animation
+        if (animation != null) {
+            if (ae.getSource().equals(pauseButton)) {
+                animation.pause();
+                return;
+            } else if (ae.getSource().equals(resumeButton)) {
+                animation.resume();
+                return;
+            } else if (ae.getSource().equals(pauseButton)) {
+                animation.stop();
+                return;
+            }
+        }
+        
         // If we are already running an animation, stop it pending
         // a restart with the new control values
         if (animation != null && animation.isRunning()) {
@@ -439,7 +454,7 @@ class ControlPanel extends JPanel implements ActionListener {
             if (i == 0) {
                 valueY[i].setValue(0);
             } else {
-                valueY[i].setValue(250);
+                valueY[i].setValue(190);
             }
             textPanel.add(valueY[i],
                     new GridBagConstraints(2, i, 1, 1, .5, 0,
@@ -540,6 +555,48 @@ class ControlPanel extends JPanel implements ActionListener {
                 GridBagConstraints.HORIZONTAL,
                 new Insets(5, 5, 0, 5), 0, 0));
     }
+
+    /**
+     * Set up the Go/Stop/Pause/Resume buttons
+     */
+    private void setupActionsGUI() {
+        JPanel buttonPanel = new JPanel();
+        add(buttonPanel,
+                new GridBagConstraints(5, 5, 3, 1, .5, 0,
+                GridBagConstraints.WEST,
+                GridBagConstraints.BOTH,
+                new Insets(5, 5, 0, 5), 0, 0));
+        buttonPanel.setBorder(new TitledBorder("Actions"));
+        buttonPanel.setLayout(new GridBagLayout());
+        pauseButton = new JButton("Pause");
+        resumeButton = new JButton("Resume");
+        stopButton = new JButton("Stop");
+        goButton = new JButton("Go");
+        pauseButton.addActionListener(this);
+        resumeButton.addActionListener(this);
+        stopButton.addActionListener(this);
+        goButton.addActionListener(this);
+        buttonPanel.add(pauseButton,
+                new GridBagConstraints(0, 0, 1, 1, 0, 0,
+                GridBagConstraints.WEST,
+                GridBagConstraints.HORIZONTAL,
+                new Insets(5, 5, 0, 0), 0, 0));
+        buttonPanel.add(resumeButton,
+                new GridBagConstraints(0, 1, 1, 1, 0, 0,
+                GridBagConstraints.WEST,
+                GridBagConstraints.HORIZONTAL,
+                new Insets(5, 5, 0, 0), 0, 0));
+        buttonPanel.add(stopButton,
+                new GridBagConstraints(1, 0, 1, 1, 0, 0,
+                GridBagConstraints.WEST,
+                GridBagConstraints.HORIZONTAL,
+                new Insets(5, 5, 0, 0), 0, 0));
+        buttonPanel.add(goButton,
+                new GridBagConstraints(1, 1, 1, 1, 0, 0,
+                GridBagConstraints.WEST,
+                GridBagConstraints.HORIZONTAL,
+                new Insets(5, 5, 0, 0), 0, 0));
+    }
     
     /**
      * Sets up the GUI for all of the text fields and radio buttons
@@ -561,16 +618,8 @@ class ControlPanel extends JPanel implements ActionListener {
         setupPropertySetterGUI();
         
         setupAccelerationGUI();
-        
-        // Go button to start the animation
-        goButton = new JButton("GO");
-        add(goButton,
-                new GridBagConstraints(5, 5, 3, 1, 0, 0,
-                GridBagConstraints.CENTER,
-                GridBagConstraints.HORIZONTAL |
-                GridBagConstraints.VERTICAL,
-                new Insets(5, 5, 0, 5), 0, 0));
-        goButton.addActionListener(this);
+     
+        setupActionsGUI();
         
         // Animation View
         JPanel panel = new JPanel(new BorderLayout());
