@@ -18,6 +18,11 @@
             although some of the API particulars have changed since the articles
             were published.
         </p>
+        <p>
+            Ongoing changes to the library are documented in the <a href="#Changes">Changes</a> 
+            section below.  <a href="https://timingframework.dev.java.net/servlets/ProjectForumView">Forums</a> 
+            are now active for questions, bugs, and suggestions.
+        </p>
         <h2>The Library</h2>
         <P>The library is divided into three logical parts, which make up the
             three packages:
@@ -124,7 +129,7 @@
         <p>To run the demos, download the files from the appropriate version
         in the <A href="https://timingframework.dev.java.net/servlets/ProjectDocumentList">downloads directory</A>.  This directory 
         contains specific versions of the javadocs, library sources,
-        demos jarfile, and framework jarfile
+        demos jarfile, demos sources, and framework jarfile
             Then you can run any of the demos as follows (note that you'll
             have to adjust the command-line to account for the version
             numbers):
@@ -188,8 +193,33 @@
         </p>
         <P>
             <p>
-            <b>Change Log:</b>
+            <a name="Changes"><b>Change Log:</b></a>
             </p>
+            <p>December 20, 2006, Version 0.52: Minor API and demo enhancements, plus news</p>
+            <p>But first, the <b>news</b>: I plan to freeze a version of the TimingFramework
+            soon and call it, for lack of a more catchy name, "1.0".  It will be fairly close
+            to what you see today (note that I haven't made any major changes since the
+            big refactoring in October).  The reason for freezing is that I want a static/
+            known version to be used in the upcoming book ("Filthy Rich Clients", co-authored
+            with Romain Guy); the book talks about the API, so the API had better not after
+            the book is printed).  Also, SwingLabs wants to start bundling up a "Developer Pack"
+            soon, and would like stable version of the API to be included.</p>
+            <p>One thing that may not make the cut is the triggers package; I'm just not happy
+            with that API yet (very useful, but not very pretty from a code standpoint).  We'll
+            have to see if I can whip that into shape Real Soon Now, or else it'll miss 1.0</p>
+            <p>Note that work here on this project will continue; versions will just start
+            going past 1.0. But for anyone that wants a stable version, I thought you might
+            want to know that it's in the works.</p>
+            <ul>
+                <li>Animator.pause(), Animator.resume(): These methods pause/unpause
+                a running animation</li>
+                <li>ButtonAnimation: This demo has been enhanced to allow pause/resume/stop
+                in addition to the old Go functionality</li>
+                <li>TimingExamples-src: By popular request (okay, one person asked for
+                it), the demo sources are now available as a standalone zip file.
+                Checkout the <A href="https://timingframework.dev.java.net/servlets/ProjectDocumentList">downloads directory</A> 
+                to see the stunning result.</li>
+            </ul>
             <p>November 13, 2006, Version 0.51: Minor bug fixes, API enhancements</p>
             <ul>
                 <li>Animator.cancel(): New method that just stops an Animator in

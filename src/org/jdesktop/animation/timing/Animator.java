@@ -83,7 +83,7 @@ public final class Animator {
                             // it easier to use the framework for GUI
                             // animations.
 
-    private ArrayList targets = new ArrayList();    // Animators may have 
+    private ArrayList<TimingTarget> targets = new ArrayList<TimingTarget>();    // Animators may have 
                                                     // multiple targets
 
     private long startTime;	    // Tracks original Animator start time
@@ -94,6 +94,7 @@ public final class Animator {
     private boolean timeToStop = false;     // This gets triggered during
                                             // fraction calculation
     private boolean hasBegun = false;
+    private long pauseBeginTime = 0;        // Used for pause/resume
     
     // Private variables to hold the internal "envelope" values that control
     // how the cycle is started, ended, and repeated.
@@ -194,10 +195,9 @@ public final class Animator {
      */
     public Animator(int duration, TimingTarget target) {
         this.duration = duration;
-        if (target != null) {
-            targets.add(target);
-        }
-	/**
+        addTarget(target);
+
+        /**
 	 * hack workaround for starting the Toolkit thread before any Timer stuff
 	 * javax.swing.Timer uses the Event Dispatch Thread, which is not
 	 * created until the Toolkit thread starts up.  Using the Swing
@@ -367,13 +367,19 @@ public final class Animator {
      * timingEvent.  This can be done at any time before, during, or after the
      * animation has started or completed; the new target will begin
      * having its TimingTarget methods called as soon as it is added.
+     * If <code>target</code> is already on the list of targets in this Animator, it
+     * is not added again (there will be only one instance of any given
+     * target in any Animator's list of targets).
      * @param target TimingTarget to be added to the list of targets that
-     * get notified by this Animator of all timing events.
+     * get notified by this Animator of all timing events. Target cannot
+     * be null.
      */
     public void addTarget(TimingTarget target) {
         if (target != null) {
             synchronized (targets) {
-                targets.add(target);
+                if (!targets.contains(target)) {
+                    targets.add(target);
+                }
             }
         }
     }
@@ -643,6 +649,7 @@ public final class Animator {
 	timer.stop();
         end();
         timeToStop = false;
+        pauseBeginTime = 0;
     }
 
     /**
@@ -655,6 +662,38 @@ public final class Animator {
     public void cancel() {
         timer.stop();
         timeToStop = false;
+        pauseBeginTime = 0;
+    }
+    
+    /**
+     * This method pauses a running animation.  No further events are sent to
+     * TimingTargets. A paused animation may be resumed again by calling the
+     * {@link #resume} method.  Pausing a non-running animation has no effect.
+     * 
+     * @see #resume()
+     * @see #isRunning()
+     */
+    public void pause() {
+        if (isRunning()) {
+            pauseBeginTime = System.nanoTime();
+            timer.stop();
+        }
+    }
+    
+    /**
+     * This method resumes a paused animation.  Resuming an animation that
+     * is not paused has no effect.
+     *
+     * @see #pause()
+     */
+    public void resume() {
+        if (pauseBeginTime > 0) {
+            long pauseDelta = (System.nanoTime() - pauseBeginTime) / 1000000;
+            startTime += pauseDelta;
+            currentStartTime += pauseDelta;
+            timer.start();
+            pauseBeginTime = 0;
+        }
     }
     
     //
@@ -671,7 +710,7 @@ public final class Animator {
     private void timingEvent(float fraction) {
         synchronized (targets) {
             for (int i = 0; i < targets.size(); ++i) {
-                TimingTarget target = (TimingTarget)targets.get(i);
+                TimingTarget target = targets.get(i);
                 target.timingEvent(fraction);
             }
         }
@@ -686,7 +725,7 @@ public final class Animator {
     private void begin() {
         synchronized (targets) {
             for (int i = 0; i < targets.size(); ++i) {
-                TimingTarget target = (TimingTarget)targets.get(i);
+                TimingTarget target = targets.get(i);
                 target.begin();
             }
         }
@@ -698,7 +737,7 @@ public final class Animator {
     private void end() {
         synchronized (targets) {
             for (int i = 0; i < targets.size(); ++i) {
-                TimingTarget target = (TimingTarget)targets.get(i);
+                TimingTarget target = targets.get(i);
                 target.end();
             }
         }
@@ -710,7 +749,7 @@ public final class Animator {
     private void repeat() {
         synchronized (targets) {
             for (int i = 0; i < targets.size(); ++i) {
-                TimingTarget target = (TimingTarget)targets.get(i);
+                TimingTarget target = targets.get(i);
                 target.repeat();
             }
         }
