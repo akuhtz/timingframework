@@ -32,42 +32,42 @@
 package org.jdesktop.animation.timing.triggers;
 
 /**
+ * Focus In/Out events
+ *
  * @author Chet
  */
-public class ButtonStateEvent extends TriggerEvent {
-    /** Event fired when Button becomes Armed */
-    public static final ButtonStateEvent ARMED = 
-            new ButtonStateEvent("Armed");
-    /** Event fired when Button becomes Disarmed */
-    public static final ButtonStateEvent DISARMED = 
-            new ButtonStateEvent("Disarmed");
-    /** Event fired when Button gets rollover state */
-    public static final ButtonStateEvent ROLLOVER = 
-            new ButtonStateEvent("Rollover");
-    /** Event fired when Button loses rollover state */
-    public static final ButtonStateEvent ROLLOFF = 
-            new ButtonStateEvent("Rolloff");
+public class FocusTriggerEvent extends TriggerEvent {
+    /**
+     * Event fired when Component receives focus
+     */
+    public static final FocusTriggerEvent FOCUS_IN = 
+            new FocusTriggerEvent("FocusIn");
+    /**
+     * Event fired when Component loses focus
+     */
+    public static final FocusTriggerEvent FOCUS_OUT = 
+            new FocusTriggerEvent("FocusOut");
 
-    protected ButtonStateEvent(String name) {
+    /**
+     * Protected constructor; this helps ensure type-safe use of 
+     * pre-define TriggerEvent objects.
+     */
+    private FocusTriggerEvent(String name) {
         super(name);
     }
 
     /**
-     * This method finds the opposite of the current event.: ARMED ->
-     * DISARMED, DISARMED -> ARMED, ROLLOVER -> ROLLOFF, ROLLOFF ->
-     * ROLLOVER.
+     * This method finds the opposite of the current event.: FOCUS_IN ->
+     * FOCUS_OUT and FOCUS_OUT -> FOCUS_IN.
+     * 
      */
     public TriggerEvent getOppositeEvent() {
-        if (this.equals(ButtonStateEvent.ARMED)) {
-            return ButtonStateEvent.DISARMED;
-        } else if (this.equals(ButtonStateEvent.DISARMED)) {
-            return ButtonStateEvent.ARMED;
-        } else if (this.equals(ButtonStateEvent.ROLLOVER)) {
-            return ButtonStateEvent.ROLLOFF;
-        } else if (this.equals(ButtonStateEvent.ROLLOFF)) {
-            return ButtonStateEvent.ROLLOVER;
+        if (this == FocusTriggerEvent.FOCUS_IN) {
+            return FocusTriggerEvent.FOCUS_OUT;
+        } else {
+            return FocusTriggerEvent.FOCUS_IN;
         }
-        // Should not reach here
-        return this;
-    }   
-}
+    }
+    
+};
+    

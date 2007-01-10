@@ -31,86 +31,148 @@
 
 package org.jdesktop.animation.timing.triggers;
 
-import java.lang.reflect.Method;
-import java.util.EventListener;
-import org.jdesktop.animation.timing.*;
+import org.jdesktop.animation.timing.Animator;
 
 /**
  * This abstract class should be overridden by any class wanting to
  * implement a new Trigger.  The subclass will define the events to trigger
- * off of and the listener to handle those events, and will implement
- * the abstract setupListener() method to handle the listener-specific
- * details.
+ * off of and any listeners to handle those events. That subclass will call
+ * either {@link #fire()} or {@link #fire(TriggerEvent)} to start the
+ * animator based on an event that occurred.
+ * <p>
+ * Subclasses should call one of the constructors in Trigger, according to
+ * whether they want Trigger to discern between different TriggerEvents
+ * and whether they want Trigger to auto-reverse the animation based on
+ * opposite TriggerEvents.  
+ * <p>
+ * Subclasses should call one of the <code>fire</code> methods based on
+ * whether they want Trigger to perform any event logic or simply start
+ * the animation.
  *
  * @author Chet
  */
 public abstract class Trigger {
 
-    protected TriggerListener listener = null;
+    private boolean disarmed = false;
+    private Animator animator, reverseAnimator;
+    private TriggerEvent triggerEvent;
+    private boolean autoReverse = false;
+
+    /**
+     * Creates a Trigger that will start the animator when {@link #fire()}
+     * is called. Subclasses call this method to set up a simple Trigger
+     * that will be started by calling {@link #fire()}, and will have
+     * no dependency upon the specific {@link TriggerEvent} that must have
+     * occurred to start the animator.
+     * @param animator the Animator that will start when the Trigger
+     * is fired
+     */
+    protected Trigger(Animator animator) {
+        this(animator, null);
+    }
     
     /**
-     * A Trigger can be set up to either start or stop a given Animator
+     * Creates a Trigger that will start the animator when 
+     * {@link #fire(TriggerEvent)} is called with an event that equals
+     * triggerEvent.
+     * @param animator the Animator that will start when the Trigger
+     * is fired
+     * @param triggerEvent the TriggerEvent that must occur for this
+     * Trigger to fire
      */
-    public enum TriggerAction {
-        START,
-        STOP
-    };
-    
-    protected Trigger() {}
+    protected Trigger(Animator animator, TriggerEvent triggerEvent) {
+        this(animator, triggerEvent, false);
+    }
     
     /**
-     * This constructor sets up animations to auto-start/auto-stop
-     * based on the start/stop events.  The first set of parameters
-     * declare the timer to start based on the source/event, the
-     * second set or parameters declare the timer to start based on
-     * the second source/event.  The first timer will be auto-stopped
-     * when the second source/event occurs, and vice versa.
-     * <p>
-     * This constructor exists solely for the use of subclasses.
+     * Creates a Trigger that will start the animator when 
+     * {@link #fire(TriggerEvent)} is called with an event that equals
+     * triggerEvent. Also, automatically stops and reverses animator when 
+     * opposite event occurs, and stops reversing animator likewise
+     * when triggerEvent occurs.
+     * @param animator the Animator that will start when the Trigger
+     * is fired
+     * @param triggerEvent the TriggerEvent that must occur for this
+     * Trigger to fire
+     * @param autoReverse flag to determine whether the animator should
+     * stop and reverse based on opposite triggerEvents.
+     * @see TriggerEvent#getOppositeEvent()
      */
-    protected Trigger(Animator startTimer, Object source, 
-            TriggerEvent event, Animator stopTimer) {
-        setupListener(startTimer, source, TriggerAction.START, event);
-        setupListener(startTimer, source, TriggerAction.STOP, 
-                event.getOppositeEvent());
-        if (stopTimer != null) {
-            setupListener(stopTimer, source, TriggerAction.START, 
-                    event.getOppositeEvent());
-            setupListener(stopTimer, source, TriggerAction.STOP, event);
-        }
+    protected Trigger(Animator animator, TriggerEvent triggerEvent,
+            boolean autoReverse) {
+        this.animator = animator;
+        this.triggerEvent = triggerEvent;
+        this.autoReverse = autoReverse;
     }
     
     /**
      * This method disables this Trigger and effectively noop's any actions
-     * that this trigger would otherwise take.
+     * that would otherwise occur
      */
     public void disarm() {
-        if (listener != null) {
-            listener.cancel();
+        disarmed = true;
+    }
+
+    /**
+     * Called by subclasses to start the animator if currentEvent equals
+     * the event that the Trigger is based upon.  Also, if the Trigger is
+     * set to autoReverse, stops and reverses the animator running in the
+     * opposite direction as appropriate.
+     * @param currentEvent the {@link TriggerEvent} that just occurred, which
+     * will be compared with the TriggerEvent used to construct this Trigger
+     * and determine whether the animator should be started or reversed
+     */
+    protected void fire(TriggerEvent currentEvent) {
+        if (disarmed) {
+            return;
+        }
+        if (currentEvent == triggerEvent) {
+            // event occurred; fire the animation
+            if (autoReverse) {
+                if (animator.isRunning()) {
+                    float f = animator.getTimingFraction();
+                    animator.stop();
+                    animator.setInitialFraction(f);
+                } else {
+                    animator.setInitialFraction(0f);
+                }
+            }
+            if (animator.isRunning()) {
+                animator.stop();
+            }
+            animator.setDirection(Animator.Direction.FORWARD);
+            fire();
+        } else if (triggerEvent != null && 
+                currentEvent == triggerEvent.getOppositeEvent()) {
+            // Opposite event occurred - run reverse anim if autoReverse
+            if (autoReverse) {
+                if (animator.isRunning()) {
+                    float f = animator.getTimingFraction();
+                    animator.stop();
+                    animator.setInitialFraction(f);
+                } else {
+                    animator.setInitialFraction(1f - 
+                            animator.getInitialFraction());
+                }
+                animator.setDirection(Animator.Direction.BACKWARD);
+                fire();
+            }
         }
     }
     
     /**
-     * This method must be implemented by subclasses, which will create
-     * the appropriate EventListener object and call Trigger.setupListener()
-     * to do the rest.
+     * Utility method called by subclasses to start the animator.  This variant
+     * assumes that there need be no check of the TriggerEvent that fired,
+     * which is useful for subclasses with simple events.
      */
-    abstract protected void setupListener(Animator timer, 
-                Object source, TriggerAction action, TriggerEvent event);
+    protected void fire() {
+        if (disarmed) {
+            return;
+        }
+        if (animator.isRunning()) {
+            animator.stop();
+        }
+        animator.start();
+    }
     
-    /**
-     * Utility method called by subclass' setupListener() implementation;
-     * after creating the appropriate EventListener object, the
-     * subclass calls this method with that listener object to create the
-     * Method reference and add the listener.
-     */
-    protected void setupListener(Object object, Object listener, 
-            String methodName, Class listenerClass) 
-            throws NoSuchMethodException, IllegalAccessException, 
-            java.lang.reflect.InvocationTargetException
-    {
-        Method addListenerMethod = object.getClass().getMethod(methodName,
-                listenerClass);
-        addListenerMethod.invoke(object, listener);
-    }    
 }

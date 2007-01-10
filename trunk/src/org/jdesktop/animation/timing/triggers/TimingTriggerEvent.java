@@ -32,7 +32,8 @@
 package org.jdesktop.animation.timing.triggers;
 
 /**
- * Timing events
+ * Timing events; TimingTriggers can be set to fire when an animator 
+ * starts, stops, or repeats.
  *
  * @author Chet
  */
@@ -50,7 +51,7 @@ public class TimingTriggerEvent extends TriggerEvent {
     public static final TimingTriggerEvent REPEAT = 
             new TimingTriggerEvent("Repeat");
 
-    protected TimingTriggerEvent(String name) {
+    private TimingTriggerEvent(String name) {
         super(name);
     }
 
