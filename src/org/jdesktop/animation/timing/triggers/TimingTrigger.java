@@ -34,78 +34,104 @@ package org.jdesktop.animation.timing.triggers;
 import org.jdesktop.animation.timing.*;
 
 /**
- * TimingTrigger handles timing events and fires the appropriate
- * TriggerAction when those events occur.
- *
+ * TimingTrigger handles timing events and starts the animator
+ * when those events occur. This class can be useful in sequencing different
+ * Animators.  For example, one Animator can be set to start when another
+ * ends using this Trigger.  For example, to have anim2 start when anim1 ends,
+ * one might write the following:
+ * <pre>
+ *     TimingTrigger trigger = 
+ *         TimingTrigger.createTrigger(anim2, TimingTriggerEvent.STOP);
+ *     anim2.addTarget(trigger);
+ * </pre>
+ * 
+ * 
+ * 
  * @author Chet
  */
-public class TimingTrigger extends Trigger {
+public class TimingTrigger extends Trigger implements TimingTarget {
+
+    private Animator source;
+    private TimingTriggerEvent event;
+    
     /**
-     * Creates a new instance of TimingTrigger
+     * Creates a non-auto-reversing TimingTrigger, which should be added
+     * to an Animator which will generate the events sent to the
+     * trigger. The specified event will cause <code>targetAnimator</code> 
+     * to start.
      * 
-     * @param timer the Animator that will perform the action
-     * when the event occurs
-     * @param source the Animator object that will be listened to
-     * for timing events
-     * @param action the TriggerAction that will be fired on timer when
-     * the event occurs
-     * @param event the TimingTriggerEvent that will cause the action
-     * to be fired
+     * 
+     * @param animator the Animator that will start when the event occurs
+     * @param event the TimingTriggerEvent that will cause targetAnimator
+     * to start
+     * @return TimingTrigger the resulting trigger
+     * @see org.jdesktop.animation.timing.Animator#addTarget(TimingTarget)
      */
-    public TimingTrigger(Animator timer, Animator source, 
-            TriggerAction action, TimingTriggerEvent event) {
-        setupListener(timer, source, action, event);
+    public static TimingTrigger createTrigger(Animator animator, 
+            TimingTriggerEvent event) {
+        return new TimingTrigger(animator, event, false);
     }
 
     /**
-     * Utility constructor that assumes: TriggerAction.START is the
-     * action to fire upon the TimingTriggerEvent, TriggerAction.STOP
-     * will be fired upon opposite the opposite TimingTriggerEvent, non-null
-     * stopTimer will set up that animation to start and stop in
-     * reverse order
+     * Creates a TimingTrigger, which should be added
+     * to an Animator which will generate the events sent to the
+     * trigger. The specified event will cause <code>targetAnimator</code> 
+     * to start.
+     * 
+     * 
+     * @param animator the Animator that will start when the event occurs
+     * @param event the TimingTriggerEvent that will cause targetAnimator
+     * to start
+     * @param autoReverse flag to determine whether the animator should
+     * stop and reverse based on opposite triggerEvents.
+     * @return TimingTrigger the resulting trigger
+     * @see org.jdesktop.animation.timing.Animator#addTarget(TimingTarget)
      */
-    public TimingTrigger(Animator startTimer, Animator source, 
-            TimingTriggerEvent event, Animator stopTimer) {
-        super(startTimer, source, event, stopTimer);
+    public static TimingTrigger createTrigger(Animator animator, 
+            TimingTriggerEvent event, boolean autoReverse) {
+        return new TimingTrigger(animator, event, autoReverse);
     }
     
-    protected void setupListener(Animator timer, Object source, 
-            TriggerAction action, TriggerEvent event) {
-        try {
-            listener = new TimingTriggerListener(timer, 
-                    action, (TimingTriggerEvent)event);
-            setupListener(source, listener, "addTarget", 
-                    TimingTarget.class);
-        } catch (Exception e) {
-            System.out.println("Exception creating " +
-                "timing listener for object " + source + ": " + e);
-        }
+    /**
+     * Private constructor that does the work of the factory methods
+     */
+    private TimingTrigger(Animator animator,
+            TimingTriggerEvent event, boolean autoReverse) {
+        super(animator, event, autoReverse);
+    }
+    
+    // 
+    // TimingTarget implementation methods
+    //
+    
+    /**
+     * Implementation of TimingTarget method; this method does nothing
+     * in this implementation since the events of TimingTrigger are limited
+     * to START, STOP, and REPEAT
+     */
+    public void timingEvent(float fraction) {}
+    
+    /**
+     * Called by Animator when starting. Sends the TimingTriggerEvent.START
+     * event to the Trigger.
+     */
+    public void begin() {
+        fire(TimingTriggerEvent.START);
+    }
+    
+    /**
+     * Called by Animator when ending. Sends the TimingTriggerEvent.STOP
+     * event to the Trigger.
+     */
+    public void end() {
+        fire(TimingTriggerEvent.STOP);
     }
 
-    class TimingTriggerListener extends TriggerListener 
-            implements TimingTarget {
-        TimingTriggerEvent event;
-        protected TimingTriggerListener(Animator timer, 
-                TriggerAction action, TimingTriggerEvent event) {
-            super(timer, action);
-            this.event = event;
-        }
-        public void timingEvent(float fraction) {}
-        
-        public void begin() {
-            if (event == TimingTriggerEvent.START) {
-                pullTrigger();
-            }
-        }
-        public void end() {
-            if (event == TimingTriggerEvent.STOP) {
-                pullTrigger();
-            }
-        }
-        public void repeat() {
-            if (event == TimingTriggerEvent.REPEAT) {
-                pullTrigger();
-            }
-        }
-    }    
+    /**
+     * Called by Animator when repeating. Sends the TimingTriggerEvent.REPEAT
+     * event to the Trigger.
+     */
+    public void repeat() {
+        fire(TimingTriggerEvent.REPEAT);
+    }
 }

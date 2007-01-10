@@ -188,6 +188,10 @@ public class KeyFrames {
      * interpolated fraction is (from the Interpolator for the interval),
      * and what the final interpolated intermediate value is (using the
      * appropriate Evaluator).
+     * This method will call into the Interpolator for the time interval
+     * to get the interpolated method. To ensure that future operations
+     * succeed, the value received from the interpolation will be clamped
+     * to the interval [0,1].
      */
     Object getValue(float fraction) {
         // First, figure out the real fraction to use, given the
@@ -197,6 +201,12 @@ public class KeyFrames {
         float t1 = keyTimes.getTime(interval + 1);
         float t = (fraction - t0) / (t1 - t0);
         float interpolatedT = interpolators.interpolate(interval, t);
+        // clamp to avoid problems with buggy Interpolators
+        if (interpolatedT < 0f) {
+            interpolatedT = 0f;
+        } else if (interpolatedT > 1f) {
+            interpolatedT = 1f;
+        }
         return keyValues.getValue(interval, (interval+1), interpolatedT);
     }
     

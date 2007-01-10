@@ -31,49 +31,45 @@
 
 package org.jdesktop.animation.timing.triggers;
 
-import org.jdesktop.animation.timing.*;
-import org.jdesktop.animation.timing.triggers.Trigger.TriggerAction;
-import org.jdesktop.animation.timing.triggers.TriggerEvent;
-
-
 /**
- * Abstract superclass of all listeners for triggers.  This class caches the
- * timer and action to be performed on the trigger and implements the utility
- * method pullTrigger() that is called by subclasses upon a valid trigger
- * event.
+ * Armed and Rollover button events
  *
  * @author Chet
  */
-public abstract class TriggerListener {
-    Animator timer;
-    TriggerAction action;
-    boolean canceled = false;
-    
-    protected TriggerListener(Animator timer, TriggerAction action) {
-        this.timer = timer;
-        this.action = action;
+public class StateTriggerEvent extends TriggerEvent {
+    /** Event fired when Button becomes Armed */
+    public static final StateTriggerEvent ARMED = 
+            new StateTriggerEvent("Armed");
+    /** Event fired when Button becomes Disarmed */
+    public static final StateTriggerEvent DISARMED = 
+            new StateTriggerEvent("Disarmed");
+    /** Event fired when Button gets rollover state */
+    public static final StateTriggerEvent ROLLOVER = 
+            new StateTriggerEvent("Rollover");
+    /** Event fired when Button loses rollover state */
+    public static final StateTriggerEvent ROLLOFF = 
+            new StateTriggerEvent("Rolloff");
+
+    private StateTriggerEvent(String name) {
+        super(name);
     }
-    
+
     /**
-     * Utility method to start or stop the timer based on the specified
-     * TriggerAction that the listener was created with
+     * This method finds the opposite of the current event.: ARMED ->
+     * DISARMED, DISARMED -> ARMED, ROLLOVER -> ROLLOFF, ROLLOFF ->
+     * ROLLOVER.
      */
-    protected void pullTrigger() {
-        if (canceled) {
-            return;
+    public TriggerEvent getOppositeEvent() {
+        if (this.equals(StateTriggerEvent.ARMED)) {
+            return StateTriggerEvent.DISARMED;
+        } else if (this.equals(StateTriggerEvent.DISARMED)) {
+            return StateTriggerEvent.ARMED;
+        } else if (this.equals(StateTriggerEvent.ROLLOVER)) {
+            return StateTriggerEvent.ROLLOFF;
+        } else if (this.equals(StateTriggerEvent.ROLLOFF)) {
+            return StateTriggerEvent.ROLLOVER;
         }
-        if (action == TriggerAction.START) {
-            timer.start();
-        } else {
-            timer.stop();
-        }
-    }
-    
-    /**
-     * Canceling a listener causes a later call to pullTrigger to noop; this
-     * mechanism is used by {@link Trigger#disarm} to disable a Trigger.
-     */
-    public void cancel() {
-        canceled = true;
-    }
+        // Should not reach here
+        return this;
+    }   
 }

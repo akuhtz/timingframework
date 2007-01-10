@@ -34,53 +34,46 @@ package org.jdesktop.animation.timing.triggers;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.lang.reflect.Method;
-import javax.swing.AbstractButton;
 import org.jdesktop.animation.timing.*;
 
 /**
- * ActionTrigger handles action events on a given Object and
- * fires the appropriate TriggerAction when actions occur.
+ * ActionTrigger handles action events  and
+ * starts the animator when actions occur.
+ * For example, to have anim start when a button is clicked, 
+ * one might write the following:
+ * <pre>
+ *     ActionTrigger trigger = ActionTrigger.createTrigger(anim);
+ *     button.addActionListener(trigger);
+ * </pre>
  *
  * @author Chet
  */
-public class ActionTrigger extends Trigger {
-
+public class ActionTrigger extends Trigger implements ActionListener {
+    
     /**
-     * Creates a new instance of ActionTrigger 
-     * 
-     * @param timer the Animator that will perform the action
-     * when the event occurs
-     * @param source the Object that will be listened to for ActionEvents;
-     * this must be an object that has an addActionListener() method on it
-     * @param action the TriggerAction that will be fired on timer when
-     * the event occurs
+     * Creates an ActionTrigger, which handles ActionEvents on the
+     * objects to which this trigger is listening.
+     *
+     * @param animator the Animator that start when the event occurs
+     * @return ActionTrigger the resulting trigger
      */
-    public ActionTrigger(Animator timer, Object source, 
-            TriggerAction action) {
-        setupListener(timer, source, action, null);
+    public static ActionTrigger createTrigger(Animator animator) {
+        return new ActionTrigger(animator);
     }
     
-    protected void setupListener(Animator timer, Object source, 
-            TriggerAction action, TriggerEvent event) {
-        try {
-            listener = new ActionTriggerListener(timer, action);
-            setupListener(source, listener, "addActionListener",
-                    ActionListener.class);
-        } catch (Exception e) {
-            System.out.println("Exception creating " +
-                "action listener for object " + source + ": " + e);
-        }
+    /**
+     * Private constructor that does the work of the factory method
+     */
+    private ActionTrigger(Animator animator) {
+        super(animator);
     }
-
-    class ActionTriggerListener extends TriggerListener 
-            implements ActionListener {
-        protected ActionTriggerListener(Animator timer, 
-                TriggerAction action) {
-            super(timer, action);
-        }
-        public void actionPerformed(ActionEvent ae) {
-            pullTrigger();
-        }
+    
+    /**
+     * Called by an object generating ActionEvents to which this
+     * trigger was added as an ActionListener. This starts the Animator.
+     */
+    public void actionPerformed(ActionEvent ae) {
+        fire();
     }
     
 }

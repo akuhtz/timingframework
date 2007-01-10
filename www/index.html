@@ -78,7 +78,8 @@
             <p>
             <b>Triggers</b> contain support
             for easy starting/stopping of animations based on events.  Triggers
-            basically wrap EventListener handling for and simplify things
+            basically wrap event listener handling and simplify sequencing
+            animations based on events
             substantially.  Instead of writing various listeners to track
             events and fire off animations appropriately in your code, 
             you can set up Triggers to do the listening and starting/stopping
@@ -195,6 +196,24 @@
             <p>
             <a name="Changes"><b>Change Log:</b></a>
             </p>
+            <p>January 10, 2007, Version 0.53: Triggers Rock! (plus minor bug fixes)</p>
+            <p>Triggers: After crying myself to sleep for weeks on end over the
+            impending loss of Triggers (see the 12/20/06 change log for the
+            reasons), I decided to re-work them into a much simpler model.
+            I stripped out a lot of the API and all (I hope) of the internal
+            ugliness, and created a very simple mechanism for using and
+            extending triggers.  Check them out, and the Triggers demo
+            app to see what they're about now. This means they'll make 
+            version 1.0 and the book!</p>
+            <p>Minor bug fixes:</p>
+            <ul>
+                <li>Animator: now starts from initialFraction correctly depending
+                on whether it is moving FORWARD or in REVERSE</li>
+                <li>Interpolator: spec now reads that return values from
+                interpolate() may be clamped to [0,1]; this was necessary 
+                to make KeyFrames not blow up on illegal values due to 
+                round-off errors</li>
+            </ul>
             <p>December 20, 2006, Version 0.52: Minor API and demo enhancements, plus news</p>
             <p>But first, the <b>news</b>: I plan to freeze a version of the TimingFramework
             soon and call it, for lack of a more catchy name, "1.0".  It will be fairly close

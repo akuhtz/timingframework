@@ -52,7 +52,7 @@ public interface Interpolator {
      * interval between two KeyTimes, depending on where this Interpolator has
      * been set)
      * @return a value between 0 and 1.  Values outside of this boundary may
-     * cause undefined results.
+     * be clamped to the interval [0,1] and cause undefined results.
      */
     public float interpolate(float fraction);
     
