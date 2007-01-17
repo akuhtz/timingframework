@@ -9,7 +9,7 @@
  *   * Redistributions of source code must retain the above copyright
  *     notice, this list of conditions and the following disclaimer.
  *   * Redistributions in binary form must reproduce the above
- *     copyright notice, this list of conditions and the following
+ *     copyright notice, this list of conditions and ttihe following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
  *   * Neither the name of the TimingFramework project nor the names of its
@@ -35,15 +35,14 @@ import java.awt.*;
 import javax.swing.*;
 import org.jdesktop.animation.timing.*;
 import org.jdesktop.animation.timing.interpolation.PropertySetter;
-import org.jdesktop.animation.timing.triggers.ButtonStateEvent;
+import org.jdesktop.animation.timing.triggers.StateTriggerEvent;
 import org.jdesktop.animation.timing.Animator.EndBehavior;
-import org.jdesktop.animation.timing.Animator.Direction;
-import org.jdesktop.animation.timing.triggers.ComponentFocusEvent;
+import org.jdesktop.animation.timing.triggers.FocusTriggerEvent;
 import org.jdesktop.animation.timing.triggers.ActionTrigger;
-import org.jdesktop.animation.timing.triggers.ButtonStateTrigger;
-import org.jdesktop.animation.timing.triggers.ComponentFocusTrigger;
-import org.jdesktop.animation.timing.triggers.Trigger;
-import org.jdesktop.animation.timing.triggers.Trigger.TriggerAction;
+import org.jdesktop.animation.timing.triggers.StateTrigger;
+import org.jdesktop.animation.timing.triggers.FocusTrigger;
+import org.jdesktop.animation.timing.triggers.TimingTrigger;
+import org.jdesktop.animation.timing.triggers.TimingTriggerEvent;
 
 /**
  * Demonstrates simple animation effects triggered by events.  Events
@@ -52,10 +51,21 @@ import org.jdesktop.animation.timing.triggers.Trigger.TriggerAction;
  * 
  * @author Chet
  */
-public class Triggers {
+public class Triggers extends JComponent {
+    
+    private int animatingValue = 0;
     
     /** Creates a new instance of Triggers */
     public Triggers() {
+    }
+    
+    protected void paintComponent(Graphics g) {
+        g.drawString(Integer.toString(animatingValue), 20, 100);
+    }
+    
+    public void setAnimatingValue(int animatingValue) {
+        this.animatingValue = animatingValue;
+        repaint();
     }
     
     private static void createAndShowGUI() {
@@ -66,15 +76,15 @@ public class Triggers {
         
         // Create panel with buttons
         f.setSize(300, 300);
-        JPanel panel = new JPanel();
+        Triggers panel = new Triggers();
         panel.setLayout(null);
-        setupButtons(panel);
+        panel.setupButtons(panel);
         
         f.add(panel, BorderLayout.CENTER);
         f.setVisible(true);
     }
     
-    private static void setupButtons(JPanel panel) {
+    private void setupButtons(JComponent panel) {
         Color inactiveColor = Color.lightGray;
         Color activeColor = Color.yellow;
         // Create and add them to the panel
@@ -108,46 +118,45 @@ public class Triggers {
         panel.add(armed);
         
         // Create a hover effect for button1
-        PropertySetter modifier = new PropertySetter(rollover, "background",
-                activeColor);
-        Animator timerStart = new Animator(1000, modifier);
-        modifier = new PropertySetter(rollover, "background", 
-                inactiveColor);
-        Animator timerStop = new Animator(1000, modifier);
-        Trigger trigger = new ButtonStateTrigger(timerStart, button, 
-                ButtonStateEvent.ROLLOVER,
-                timerStop);
+        Animator animator = PropertySetter.createAnimator(1000, rollover, 
+                "background", inactiveColor, activeColor);
+        StateTrigger stateTrigger = StateTrigger.createTrigger(animator, button, 
+                StateTriggerEvent.ROLLOVER, true);
+        button.addChangeListener(stateTrigger);
 
         // Create a click effect
-        modifier = new PropertySetter(action, "background", activeColor);
-        int duration = 1000;
-        int resolution = 30;
-        int repeatCount = 1;
-        int begin = 0;
-        Animator timer = new Animator(duration, modifier);
-        timer.setEndBehavior(EndBehavior.RESET);
-        trigger = new ActionTrigger(timer, button, TriggerAction.START);
+        animator = PropertySetter.createAnimator(1000, action, "background", 
+                activeColor);
+        animator.setEndBehavior(EndBehavior.RESET);
+        ActionTrigger actionTrigger = ActionTrigger.createTrigger(animator);
+        button.addActionListener(actionTrigger);
 
         // Create a focus effect
-        modifier = new PropertySetter(focus, "background", 
-                activeColor);
-        timerStart = new Animator(1000, modifier);
-        modifier = new PropertySetter(focus, "background", inactiveColor);
-        timerStop = new Animator(1000, modifier);
-        trigger = new ComponentFocusTrigger(timerStart, button, 
-                ComponentFocusEvent.FOCUS_IN, 
-                timerStop);
+        animator = PropertySetter.createAnimator(1000, focus, "background", 
+                inactiveColor, activeColor);
+        FocusTrigger focusTrigger = FocusTrigger.createTrigger(animator, 
+                FocusTriggerEvent.FOCUS_IN, true);
+        button.addFocusListener(focusTrigger);
 
         // Create an armed effect
-        modifier = new PropertySetter(armed, "background", activeColor);
-        timerStart = new Animator(1000, modifier);
-        modifier = new PropertySetter(armed, "background", inactiveColor);
-        timerStop = new Animator(1000, modifier);
-        trigger = new ButtonStateTrigger(timerStart, button, 
-                ButtonStateEvent.ARMED, 
-                timerStop);
+        animator = PropertySetter.createAnimator(1000, armed, "background", 
+                inactiveColor, activeColor);
+        stateTrigger = StateTrigger.createTrigger(animator, button, 
+                StateTriggerEvent.ARMED, true);
+        button.addChangeListener(stateTrigger);
+        
+        // Create a TimingTrigger sequence to animate animatingValue
+        Animator animatePositive = PropertySetter.createAnimator(1000,
+                this, "animatingValue", 0, 100);
+        Animator animateNegative = PropertySetter.createAnimator(1000,
+                this, "animatingValue", 0, -100);
+        TimingTrigger trigger = TimingTrigger.createTrigger(animateNegative,
+                TimingTriggerEvent.STOP);
+        animatePositive.addTarget(trigger);
+        actionTrigger = ActionTrigger.createTrigger(animatePositive);
+        button.addActionListener(actionTrigger);
     }
-
+    
     public static void main(String[] args) {
         // Need to do GUI stuff like making the JFrame visible on the
         // Event Dispatch Thread; do this via invokeLater()
