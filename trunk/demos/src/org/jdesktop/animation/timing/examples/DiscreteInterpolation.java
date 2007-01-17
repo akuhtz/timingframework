@@ -46,7 +46,6 @@ import org.jdesktop.animation.timing.interpolation.KeyTimes;
 import org.jdesktop.animation.timing.interpolation.KeyValues;
 import org.jdesktop.animation.timing.interpolation.PropertySetter;
 import org.jdesktop.animation.timing.triggers.ActionTrigger;
-import org.jdesktop.animation.timing.triggers.Trigger.TriggerAction;
 
 /**
  * This is a simple demonstration of discrete interpolation, where the
@@ -108,7 +107,8 @@ public class DiscreteInterpolation extends JComponent {
                 (int)(totalTime * 1000), setter);
         
         // Now set up Trigger to start animation
-        new ActionTrigger(timer, button, TriggerAction.START);
+        ActionTrigger trigger = ActionTrigger.createTrigger(timer);
+        button.addActionListener(trigger);
     }
     
     public void paintComponent(Graphics g) {
