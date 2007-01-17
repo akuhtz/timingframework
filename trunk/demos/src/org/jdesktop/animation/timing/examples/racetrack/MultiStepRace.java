@@ -32,6 +32,8 @@
 package org.jdesktop.animation.timing.examples.racetrack;
 
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.SwingUtilities;
 import org.jdesktop.animation.timing.Animator;
@@ -44,7 +46,6 @@ import org.jdesktop.animation.timing.interpolation.PropertySetter;
 import org.jdesktop.animation.timing.interpolation.SplineInterpolator;
 import org.jdesktop.animation.timing.triggers.ActionTrigger;
 import org.jdesktop.animation.timing.triggers.Trigger;
-import org.jdesktop.animation.timing.triggers.Trigger.TriggerAction;
 
 /**
  * The full-blown demo with all of the bells and whistles.  This one uses
@@ -142,10 +143,21 @@ public class MultiStepRace {
         // the work by setting up a trigger
         JButton goButton = basicGUI.getControlPanel().getGoButton();
         JButton stopButton = basicGUI.getControlPanel().getStopButton();
-        Trigger trigger = new ActionTrigger(timer, goButton, TriggerAction.START);
-        trigger = new ActionTrigger(timer, stopButton, TriggerAction.STOP);
+        ActionTrigger trigger = ActionTrigger.createTrigger(timer);
+        goButton.addActionListener(trigger);
+        stopButton.addActionListener(new Stopper(timer));
     }
     
+    private class Stopper implements ActionListener {
+        Animator timer;
+        Stopper(Animator timer) {
+            this.timer = timer;
+        }
+        public void actionPerformed(ActionEvent ae) {
+            timer.stop();
+        }
+    }
+
     public static void main(String args[]) {
         Runnable doCreateAndShowGUI = new Runnable() {
             public void run() {
