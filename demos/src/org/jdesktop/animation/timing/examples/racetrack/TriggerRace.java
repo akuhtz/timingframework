@@ -31,13 +31,13 @@
 
 package org.jdesktop.animation.timing.examples.racetrack;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.SwingUtilities;
 import org.jdesktop.animation.timing.Animator;
 import org.jdesktop.animation.timing.interpolation.PropertySetter;
 import org.jdesktop.animation.timing.triggers.ActionTrigger;
-import org.jdesktop.animation.timing.triggers.Trigger;
-import org.jdesktop.animation.timing.triggers.Trigger.TriggerAction;
 
 /**
  * Exactly like SetterRace, only this version uses Triggers to
@@ -66,9 +66,21 @@ public class TriggerRace {
         
         // Instead of manually tracking the events, have the framework do
         // the work by setting up a trigger
-        Trigger trigger = new ActionTrigger(timer, goButton, TriggerAction.START);
-        trigger = new ActionTrigger(timer, stopButton, TriggerAction.STOP);
+        ActionTrigger trigger = ActionTrigger.createTrigger(timer);
+        goButton.addActionListener(trigger);
+        stopButton.addActionListener(new Stopper(timer));
     }
+    
+    private class Stopper implements ActionListener {
+        Animator timer;
+        Stopper(Animator timer) {
+            this.timer = timer;
+        }
+        public void actionPerformed(ActionEvent ae) {
+            timer.stop();
+        }
+    }
+        
     
     public static void main(String args[]) {
         Runnable doCreateAndShowGUI = new Runnable() {
