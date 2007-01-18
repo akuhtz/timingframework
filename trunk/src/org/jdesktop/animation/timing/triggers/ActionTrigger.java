@@ -37,13 +37,12 @@ import java.lang.reflect.Method;
 import org.jdesktop.animation.timing.*;
 
 /**
- * ActionTrigger handles action events  and
+ * ActionTrigger handles action events and
  * starts the animator when actions occur.
  * For example, to have anim start when a button is clicked, 
  * one might write the following:
  * <pre>
- *     ActionTrigger trigger = ActionTrigger.createTrigger(anim);
- *     button.addActionListener(trigger);
+ *     ActionTrigger trigger = ActionTrigger.addTrigger(button, anim);
  * </pre>
  *
  * @author Chet
@@ -51,20 +50,36 @@ import org.jdesktop.animation.timing.*;
 public class ActionTrigger extends Trigger implements ActionListener {
     
     /**
-     * Creates an ActionTrigger, which handles ActionEvents on the
-     * objects to which this trigger is listening.
+     * Creates an ActionTrigger and adds it as a listener to object.
      *
+     * @param object an object that will be used as an event source for
+     * this trigger. This object must have the method addActionListener.
      * @param animator the Animator that start when the event occurs
      * @return ActionTrigger the resulting trigger
+     * @throws IllegalArgumentException if object has no 
+     * <code>addActionListener()</code>
      */
-    public static ActionTrigger createTrigger(Animator animator) {
-        return new ActionTrigger(animator);
+    public static ActionTrigger addTrigger(Object object, Animator animator) {
+        ActionTrigger trigger = new ActionTrigger(animator);
+        try {
+            Method addListenerMethod = 
+                    object.getClass().getMethod("addActionListener",
+                    ActionListener.class);
+            addListenerMethod.invoke(object, trigger);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Problem adding listener" +
+                    " to object: " + e);
+        }
+        return trigger;
     }
     
     /**
-     * Private constructor that does the work of the factory method
+     * Creates an ActionTrigger that will start the animator upon receiving
+     * any ActionEvents. It should be added to any suitable object with
+     * an addActionListener method.
+     * @param animator the Animator that start when the event occurs
      */
-    private ActionTrigger(Animator animator) {
+    public ActionTrigger(Animator animator) {
         super(animator);
     }
     

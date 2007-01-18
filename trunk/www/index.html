@@ -196,6 +196,46 @@
             <p>
             <a name="Changes"><b>Change Log:</b></a>
             </p>
+            <p>January 18, 2007, Version 0.54: Triggers Rock More!</p>
+            <p>
+                I fixed two things about the Triggers API that have been bugging
+                me:
+                <ul>
+                    <li>
+                        StateTrigger: <b>GONE!</b>  It was too painful to have to listen
+                        for ChangeEvents, which really have no information in them
+                        at all.  This meant that you had to supply a Button to
+                        the StateTrigger factor, just so that the Trigger would know
+                        the initial values of the ROLLOVER and ARMED states.  Yuck.
+                        In its place, I implemented a new MouseTrigger (see below).
+                    </li>
+                    <li>
+                        MouseTrigger: This new trigger listens
+                        for simple enter/exit/press/release/click events on
+                        any MouseEvent generating thing.  This is not exactly the
+                        same thing as a StateTrigger, but should cover basically
+                        the same territory, in a much more API-friendly way.
+                        (Thanks for the idea, Stephen).
+                    </li>
+                    <li>
+                        Factories + constructors: Triggers originally (and secretly)
+                        created a listener and added it to some object that you
+                        passed in.  This seemed too mysterious, so the last fix
+                        to the API put the responsibility on the caller to actually
+                        add the trigger to whatever object (or objects) they wanted.
+                        The API was cleaner, but it meant an extra line of code
+                        in creating and using a Trigger.<br/>
+                        The new approach combines these: each trigger has 
+                        constructors, which don't know anything about objects
+                        that generate the events (callers must add the trigger
+                        to appropriate objects), and factories, which take an
+                        object that the trigger will add itself as a listener to.
+                        Now the API is clean, but there is a utility method for
+                        real use.
+                    </li>
+                </ul>
+                Getting closer to 1.0...
+            </p>
             <p>January 10, 2007, Version 0.53: Triggers Rock! (plus minor bug fixes)</p>
             <p>Triggers: After crying myself to sleep for weeks on end over the
             impending loss of Triggers (see the 12/20/06 change log for the

@@ -143,8 +143,7 @@ public class MultiStepRace {
         // the work by setting up a trigger
         JButton goButton = basicGUI.getControlPanel().getGoButton();
         JButton stopButton = basicGUI.getControlPanel().getStopButton();
-        ActionTrigger trigger = ActionTrigger.createTrigger(timer);
-        goButton.addActionListener(trigger);
+        ActionTrigger trigger = ActionTrigger.addTrigger(goButton, timer);
         stopButton.addActionListener(new Stopper(timer));
     }
     
