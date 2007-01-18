@@ -40,32 +40,31 @@ public class FocusTriggerEvent extends TriggerEvent {
     /**
      * Event fired when Component receives focus
      */
-    public static final FocusTriggerEvent FOCUS_IN = 
+    public static final FocusTriggerEvent IN = 
             new FocusTriggerEvent("FocusIn");
     /**
      * Event fired when Component loses focus
      */
-    public static final FocusTriggerEvent FOCUS_OUT = 
+    public static final FocusTriggerEvent OUT = 
             new FocusTriggerEvent("FocusOut");
 
     /**
-     * Protected constructor; this helps ensure type-safe use of 
-     * pre-define TriggerEvent objects.
+     * Private constructor; this helps ensure type-safe use of 
+     * pre-defined TriggerEvent objects.
      */
     private FocusTriggerEvent(String name) {
         super(name);
     }
 
     /**
-     * This method finds the opposite of the current event.: FOCUS_IN ->
-     * FOCUS_OUT and FOCUS_OUT -> FOCUS_IN.
-     * 
+     * This method finds the opposite of the current event.: IN ->
+     * OUT and OUT -> IN.
      */
     public TriggerEvent getOppositeEvent() {
-        if (this == FocusTriggerEvent.FOCUS_IN) {
-            return FocusTriggerEvent.FOCUS_OUT;
+        if (this == FocusTriggerEvent.IN) {
+            return FocusTriggerEvent.OUT;
         } else {
-            return FocusTriggerEvent.FOCUS_IN;
+            return FocusTriggerEvent.IN;
         }
     }
     

@@ -41,8 +41,7 @@ import org.jdesktop.animation.timing.*;
  * one might write the following:
  * <pre>
  *     TimingTrigger trigger = 
- *         TimingTrigger.createTrigger(anim2, TimingTriggerEvent.STOP);
- *     anim2.addTarget(trigger);
+ *         TimingTrigger.addTrigger(anim1, anim2, TimingTriggerEvent.STOP);
  * </pre>
  * 
  * 
@@ -55,31 +54,30 @@ public class TimingTrigger extends Trigger implements TimingTarget {
     private TimingTriggerEvent event;
     
     /**
-     * Creates a non-auto-reversing TimingTrigger, which should be added
-     * to an Animator which will generate the events sent to the
-     * trigger. The specified event will cause <code>targetAnimator</code> 
-     * to start.
+     * Creates a non-auto-reversing TimingTrigger and adds it as a target
+     * to the source Animator.
      * 
-     * 
-     * @param animator the Animator that will start when the event occurs
+     * @param source the Animator that will be listened to for events
+     * to start the target Animator
+     * @param target the Animator that will start when the event occurs
      * @param event the TimingTriggerEvent that will cause targetAnimator
      * to start
      * @return TimingTrigger the resulting trigger
      * @see org.jdesktop.animation.timing.Animator#addTarget(TimingTarget)
      */
-    public static TimingTrigger createTrigger(Animator animator, 
+    public static TimingTrigger addTrigger(Animator source, Animator target, 
             TimingTriggerEvent event) {
-        return new TimingTrigger(animator, event, false);
+        return addTrigger(source, target, event, false);
     }
 
     /**
-     * Creates a TimingTrigger, which should be added
-     * to an Animator which will generate the events sent to the
-     * trigger. The specified event will cause <code>targetAnimator</code> 
-     * to start.
+     * Creates a TimingTrigger and adds it as a target
+     * to the source Animator.
      * 
      * 
-     * @param animator the Animator that will start when the event occurs
+     * @param source the Animator that will be listened to for events
+     * to start the target Animator
+     * @param target the Animator that will start when the event occurs
      * @param event the TimingTriggerEvent that will cause targetAnimator
      * to start
      * @param autoReverse flag to determine whether the animator should
@@ -87,16 +85,29 @@ public class TimingTrigger extends Trigger implements TimingTarget {
      * @return TimingTrigger the resulting trigger
      * @see org.jdesktop.animation.timing.Animator#addTarget(TimingTarget)
      */
-    public static TimingTrigger createTrigger(Animator animator, 
+    public static TimingTrigger addTrigger(Animator source, Animator target, 
             TimingTriggerEvent event, boolean autoReverse) {
-        return new TimingTrigger(animator, event, autoReverse);
+        TimingTrigger trigger = new TimingTrigger(target, event, autoReverse);
+        source.addTarget(trigger);
+        return trigger;
     }
     
     /**
-     * Private constructor that does the work of the factory methods
+     * Creates a non-auto-reversing TimingTrigger, which should be added
+     * to an Animator which will generate the events sent to the
+     * trigger.
      */
-    private TimingTrigger(Animator animator,
-            TimingTriggerEvent event, boolean autoReverse) {
+    public TimingTrigger(Animator animator, TimingTriggerEvent event) {
+        this(animator, event, false);
+    }
+    
+    /**
+     * Creates a TimingTrigger, which should be added
+     * to an Animator which will generate the events sent to the
+     * trigger.
+     */
+    public TimingTrigger(Animator animator, TimingTriggerEvent event, 
+            boolean autoReverse) {
         super(animator, event, autoReverse);
     }
     

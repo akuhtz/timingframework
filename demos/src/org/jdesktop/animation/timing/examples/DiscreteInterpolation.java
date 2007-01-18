@@ -103,12 +103,10 @@ public class DiscreteInterpolation extends JComponent {
         
         // Run the timer for totalTime (in ms), with modifier as the
         // TimingTarget
-        Animator timer = new Animator(
-                (int)(totalTime * 1000), setter);
+        Animator timer = new Animator((int)(totalTime * 1000), setter);
         
         // Now set up Trigger to start animation
-        ActionTrigger trigger = ActionTrigger.createTrigger(timer);
-        button.addActionListener(trigger);
+        ActionTrigger trigger = ActionTrigger.addTrigger(button, timer);
     }
     
     public void paintComponent(Graphics g) {

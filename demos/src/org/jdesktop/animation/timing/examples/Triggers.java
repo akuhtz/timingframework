@@ -35,12 +35,12 @@ import java.awt.*;
 import javax.swing.*;
 import org.jdesktop.animation.timing.*;
 import org.jdesktop.animation.timing.interpolation.PropertySetter;
-import org.jdesktop.animation.timing.triggers.StateTriggerEvent;
 import org.jdesktop.animation.timing.Animator.EndBehavior;
 import org.jdesktop.animation.timing.triggers.FocusTriggerEvent;
 import org.jdesktop.animation.timing.triggers.ActionTrigger;
-import org.jdesktop.animation.timing.triggers.StateTrigger;
 import org.jdesktop.animation.timing.triggers.FocusTrigger;
+import org.jdesktop.animation.timing.triggers.MouseTrigger;
+import org.jdesktop.animation.timing.triggers.MouseTriggerEvent;
 import org.jdesktop.animation.timing.triggers.TimingTrigger;
 import org.jdesktop.animation.timing.triggers.TimingTriggerEvent;
 
@@ -96,10 +96,10 @@ public class Triggers extends JComponent {
         otherButton.setBounds(0, 40, 150, 30);
         
         // Create the labels where the effects will animate
-        JLabel rollover = new JLabel("Rollover");
-        rollover.setBounds(200, 0, 100, 50);
-        rollover.setOpaque(true);
-        rollover.setBackground(inactiveColor);
+        JLabel enter = new JLabel("Enter");
+        enter.setBounds(200, 0, 100, 50);
+        enter.setOpaque(true);
+        enter.setBackground(inactiveColor);
         JLabel focus = new JLabel("Focus");
         focus.setBounds(200, 50, 100, 50);
         focus.setOpaque(true);
@@ -108,53 +108,47 @@ public class Triggers extends JComponent {
         action.setBounds(200, 100, 100, 50);
         action.setOpaque(true);
         action.setBackground(inactiveColor);
-        JLabel armed = new JLabel("Armed");
-        armed.setBounds(200, 150, 100, 50);
-        armed.setOpaque(true);
-        armed.setBackground(inactiveColor);
-        panel.add(rollover);
+        JLabel press = new JLabel("Press");
+        press.setBounds(200, 150, 100, 50);
+        press.setOpaque(true);
+        press.setBackground(inactiveColor);
+        panel.add(enter);
         panel.add(focus);
         panel.add(action);
-        panel.add(armed);
+        panel.add(press);
         
         // Create a hover effect for button1
-        Animator animator = PropertySetter.createAnimator(1000, rollover, 
+        Animator animator = PropertySetter.createAnimator(1000, enter, 
                 "background", inactiveColor, activeColor);
-        StateTrigger stateTrigger = StateTrigger.createTrigger(animator, button, 
-                StateTriggerEvent.ROLLOVER, true);
-        button.addChangeListener(stateTrigger);
+        MouseTrigger mouseTrigger = MouseTrigger.addTrigger(button, animator,
+                MouseTriggerEvent.ENTER, true);
 
         // Create a click effect
         animator = PropertySetter.createAnimator(1000, action, "background", 
                 activeColor);
         animator.setEndBehavior(EndBehavior.RESET);
-        ActionTrigger actionTrigger = ActionTrigger.createTrigger(animator);
-        button.addActionListener(actionTrigger);
+        ActionTrigger actionTrigger = ActionTrigger.addTrigger(button, animator);
 
         // Create a focus effect
         animator = PropertySetter.createAnimator(1000, focus, "background", 
                 inactiveColor, activeColor);
-        FocusTrigger focusTrigger = FocusTrigger.createTrigger(animator, 
-                FocusTriggerEvent.FOCUS_IN, true);
-        button.addFocusListener(focusTrigger);
+        FocusTrigger focusTrigger = FocusTrigger.addTrigger(button, animator, 
+                FocusTriggerEvent.IN, true);
 
-        // Create an armed effect
-        animator = PropertySetter.createAnimator(1000, armed, "background", 
+        // Create a pressed effect
+        animator = PropertySetter.createAnimator(1000, press, "background", 
                 inactiveColor, activeColor);
-        stateTrigger = StateTrigger.createTrigger(animator, button, 
-                StateTriggerEvent.ARMED, true);
-        button.addChangeListener(stateTrigger);
+        mouseTrigger = MouseTrigger.addTrigger(button, animator, 
+                MouseTriggerEvent.PRESS, true);
         
         // Create a TimingTrigger sequence to animate animatingValue
         Animator animatePositive = PropertySetter.createAnimator(1000,
                 this, "animatingValue", 0, 100);
         Animator animateNegative = PropertySetter.createAnimator(1000,
                 this, "animatingValue", 0, -100);
-        TimingTrigger trigger = TimingTrigger.createTrigger(animateNegative,
-                TimingTriggerEvent.STOP);
-        animatePositive.addTarget(trigger);
-        actionTrigger = ActionTrigger.createTrigger(animatePositive);
-        button.addActionListener(actionTrigger);
+        TimingTrigger trigger = TimingTrigger.addTrigger(animatePositive,
+                animateNegative, TimingTriggerEvent.STOP);
+        actionTrigger = ActionTrigger.addTrigger(button, animatePositive);
     }
     
     public static void main(String[] args) {

@@ -66,8 +66,7 @@ public class TriggerRace {
         
         // Instead of manually tracking the events, have the framework do
         // the work by setting up a trigger
-        ActionTrigger trigger = ActionTrigger.createTrigger(timer);
-        goButton.addActionListener(trigger);
+        ActionTrigger trigger = ActionTrigger.addTrigger(goButton, timer);
         stopButton.addActionListener(new Stopper(timer));
     }
     
