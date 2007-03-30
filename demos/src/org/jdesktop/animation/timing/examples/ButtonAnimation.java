@@ -192,8 +192,8 @@ class ControlPanel extends JPanel implements ActionListener {
         animation.setResolution(resolution);
         animation.setStartDelay(begin);
         animation.setEndBehavior(behavior);
-        animation.setInitialFraction((float)initialFraction);
-        animation.setDirection(direction);
+        animation.setStartFraction((float)initialFraction);
+        animation.setStartDirection(direction);
         
         // Now add another TimingTarget to the animation; this will track
         // and display the animation fraction

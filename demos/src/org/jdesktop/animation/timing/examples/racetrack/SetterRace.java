@@ -59,10 +59,8 @@ public class SetterRace implements ActionListener {
         
         // Now set up an animation that will automatically
         // run itself with PropertySetter
-        
-        PropertySetter modifier = new PropertySetter(basicGUI.getTrack(), 
+        timer = PropertySetter.createAnimator(RACE_TIME, basicGUI.getTrack(), 
                 "carPosition", TrackView.START_POS, TrackView.FIRST_TURN_START);
-        timer = new Animator(RACE_TIME, modifier);
         basicGUI.getControlPanel().addListener(this);
     }
     

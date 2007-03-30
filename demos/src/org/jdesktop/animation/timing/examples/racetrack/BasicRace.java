@@ -31,15 +31,12 @@
 
 package org.jdesktop.animation.timing.examples.racetrack;
 
-import java.awt.BorderLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
 import org.jdesktop.animation.timing.Animator;
-import org.jdesktop.animation.timing.TimingTarget;
+import org.jdesktop.animation.timing.TimingTargetAdapter;
 
 /**
  * The simplest version of the animation; set up a Animator to
@@ -48,23 +45,29 @@ import org.jdesktop.animation.timing.TimingTarget;
  * 
  * @author Chet
  */
-public class BasicRace implements ActionListener, TimingTarget {
+public class BasicRace extends TimingTargetAdapter implements ActionListener {
     
-    Animator timer;
-    RaceGUI basicGUI;
+    public static final int RACE_TIME = 2000;    
+    Point start = TrackView.START_POS;
+    Point end = TrackView.FIRST_TURN_START;
+    Point current = new Point();
+    protected Animator animator;
     TrackView track;
+    RaceControlPanel controlPanel;
     
     /** Creates a new instance of BasicRace */
-    public BasicRace() {
-        basicGUI = new RaceGUI("Basic Race");
-        basicGUI.getControlPanel().addListener(this);
+    public BasicRace(String appName) {
+        RaceGUI basicGUI = new RaceGUI(appName);
+        controlPanel = basicGUI.getControlPanel();
+        controlPanel.addListener(this);
         track = basicGUI.getTrack();
+        animator = new Animator(RACE_TIME, this);
     }
     
     public static void main(String args[]) {
         Runnable doCreateAndShowGUI = new Runnable() {
             public void run() {
-                BasicRace race = new BasicRace();
+                BasicRace race = new BasicRace("BasicRace");
             }
         };
         SwingUtilities.invokeLater(doCreateAndShowGUI);
@@ -74,54 +77,28 @@ public class BasicRace implements ActionListener, TimingTarget {
     // Events
     //
     
-    public static final int RACE_TIME = 2000;
-    
     /**
      * This receives the Go/Stop events that should start/stop the animation
      */
     public void actionPerformed(ActionEvent ae) {
         if (ae.getActionCommand().equals("Go")) {
-            if (timer != null) {
-                timer.stop();
-                timer.start();
-            } else {
-                // Here's where the animation is created, using the
-                // simple utility constructor that takes the animation
-                // duration and the TimingTarget.  The actual work of the
-                // animation is done in the timingEvent method below
-                timer = new Animator(RACE_TIME, this);
-                timer.start();
-            }
+            animator.stop();
+            animator.start();
         } else if (ae.getActionCommand().equals("Stop")) {
-            if (timer != null) {
-                timer.stop();
-            }
+            animator.stop();
         }
     }
             
     // TimingTarget methods
     
-    Point start = TrackView.START_POS;
-    Point end = TrackView.FIRST_TURN_START;
-    Point current = new Point();
-    
-    public void begin() {
-        track.setCarPosition(start);
-    }
     
     public void timingEvent(float fraction) {
-        // Simple linear calculation of position using parametric equation
+        // Simple linear interpolation to find current position
         current.x = (int)(start.x + (end.x - start.x) * fraction);
         current.y = (int)(start.y + (end.y - start.y) * fraction);
         
         // set the new position; this will force a repaint in TrackView
         // and will display the car in the new position
         track.setCarPosition(current);
-    }
-    
-    public void end() {
-    }
-    
-    public void repeat() {
     }
 }
