@@ -142,6 +142,7 @@
                 <li>org.jdesktop.animation.timing.examples.ButtonAnimation</li>
                 <li>org.jdesktop.animation.timing.examples.DiscreteInterpolation</li>
                 <li>org.jdesktop.animation.timing.examples.Triggers</li>
+                <li>org.jdesktop.animation.timing.examples.ExternalTimer</li>
                 <li>org.jdesktop.animation.timing.examples.racetrack.BasicRace</li>
                 <li>org.jdesktop.animation.timing.examples.racetrack.SetterRace</li>
                 <li>org.jdesktop.animation.timing.examples.racetrack.TriggerRace</li>
@@ -196,6 +197,54 @@
             <p>
             <a name="Changes"><b>Change Log:</b></a>
             </p>
+            <p>March 30, 2007, Version 0.55: External Timers, minor API tweaks</p>
+            <p>
+            <ul>
+                <li>API tweaks: Fixed inconsistencies in naming of initialFraction,
+                    direction, and startDelay (now all named start*).
+                </li>
+                <li>
+                    External Timers: Some people asked for the ability to change
+                    the timer that Aniamtor uses (currently the Swing timer).
+                    This could be useful in different situations, such as:
+                    <ul><li>
+                        High-resolution: Some animations might require higher 
+                        resolution times than the Swing timer can provide by
+                        default. This mechanism allows an application to set up
+                        an external timer to provide high-resolution times and
+                        tick the Animator more frequently.
+                            
+                    </li>
+                    <li>
+                        Non-visual: Animations could be run on back-end or
+                        non-visual applications, in which case the Swing timer
+                        might not be desired. The original intent of the 
+                        TimingFramework was to simplify GUI animations, but
+                        if the lack of a non-GUI timer is holding it up from
+                        being used elsewhere, this feature removes that
+                        constraint. Now another timer, such as java.util.Timer,
+                        may be used instead, without the dependency on Swing.
+                    </li>
+                    <li>
+                        Synchronized Animators: Some situations may call for
+                        several simultaneous Animators to have synchronized timing
+                        events. Instead of each Animator having its own timer
+                        set up internally, which is the default, this feature
+                        allows a single external TimingSource to send timing 
+                        events to several Animators.
+                    </li>
+                </ul>
+                    <p>
+                        To use this new feature, create a TimingSource object with
+                        your own timer and call Animator.setTimer(TimingSource) to
+                        cause Animator to receive events from that external timer
+                        instead of its internal timer.
+                    </p>
+                    <p>
+                        Note that I added a new ExternalTimer demo to the
+                        demos package to try this out.
+                </li>
+            </ul>
             <p>January 18, 2007, Version 0.54: Triggers Rock More!</p>
             <p>
                 I fixed two things about the Triggers API that have been bugging
