@@ -132,15 +132,15 @@ public abstract class Trigger {
                 if (animator.isRunning()) {
                     float f = animator.getTimingFraction();
                     animator.stop();
-                    animator.setInitialFraction(f);
+                    animator.setStartFraction(f);
                 } else {
-                    animator.setInitialFraction(0f);
+                    animator.setStartFraction(0f);
                 }
             }
             if (animator.isRunning()) {
                 animator.stop();
             }
-            animator.setDirection(Animator.Direction.FORWARD);
+            animator.setStartDirection(Animator.Direction.FORWARD);
             fire();
         } else if (triggerEvent != null && 
                 currentEvent == triggerEvent.getOppositeEvent()) {
@@ -149,12 +149,12 @@ public abstract class Trigger {
                 if (animator.isRunning()) {
                     float f = animator.getTimingFraction();
                     animator.stop();
-                    animator.setInitialFraction(f);
+                    animator.setStartFraction(f);
                 } else {
-                    animator.setInitialFraction(1f - 
-                            animator.getInitialFraction());
+                    animator.setStartFraction(1f - 
+                            animator.getStartFraction());
                 }
-                animator.setDirection(Animator.Direction.BACKWARD);
+                animator.setStartDirection(Animator.Direction.BACKWARD);
                 fire();
             }
         }

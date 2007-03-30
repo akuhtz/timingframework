@@ -39,7 +39,7 @@ import org.jdesktop.animation.timing.interpolation.Interpolator;
 import org.jdesktop.animation.timing.interpolation.LinearInterpolator;
 
 /**
- * This class is a controls animations.  Its constructors and various
+ * This class controls animations.  Its constructors and various
  * set methods control the parameters under which animations are run,
  * and the other methods support starting and stopping the animation.
  * The parameters of this class use the concepts of a "cycle" (the base
@@ -74,7 +74,7 @@ import org.jdesktop.animation.timing.interpolation.LinearInterpolator;
  */
 public final class Animator {
 
-    private Timer timer;    // Currently uses Swing timer.  This could change
+    private TimingSource timer;    // Currently uses Swing timer.  This could change
 			    // in the future to use a more general mechanism
 			    // (and one of better timing resolution). An 
                             // important advantage to the Swing timer is that
@@ -82,7 +82,9 @@ public final class Animator {
                             // events on the Event Dispatch Thread, which makes
                             // it easier to use the framework for GUI
                             // animations.
-
+    private TimingSource swingTimer;
+    private TimingSourceTarget timingSourceTarget;
+    
     private ArrayList<TimingTarget> targets = new ArrayList<TimingTarget>();    // Animators may have 
                                                     // multiple targets
 
@@ -95,6 +97,7 @@ public final class Animator {
                                             // fraction calculation
     private boolean hasBegun = false;
     private long pauseBeginTime = 0;        // Used for pause/resume
+    private boolean running = false;        // Used for isRunning()
     
     // Private variables to hold the internal "envelope" values that control
     // how the cycle is started, ended, and repeated.
@@ -106,10 +109,10 @@ public final class Animator {
     // Private variables to hold the internal values of the base
     // animation (the cycle)
     private int duration;
-    private int resolution;    
+    private int resolution = 20;    
     private float acceleration = 0;
     private float deceleration = 0.0f;
-    private float initialFraction = 0.0f;
+    private float startFraction = 0.0f;
     private Direction direction = Direction.FORWARD; // Direction of each cycle
     private Interpolator interpolator = LinearInterpolator.getInstance();
     
@@ -127,7 +130,8 @@ public final class Animator {
     /**
      * Direction is used to set the initial direction in which the
      * animation starts.
-     * @see #setDirection
+     * 
+     * @see #setStartDirection
      */
     public static enum Direction {
         /**
@@ -208,8 +212,8 @@ public final class Animator {
 	java.awt.Toolkit tk = java.awt.Toolkit.getDefaultToolkit();	
 
 	// Create internal Timer object
-	TimerTarget timerTarget = new TimerTarget();
-	timer = new Timer(resolution, timerTarget);
+        swingTimer = new SwingTimingSource();
+        timer = swingTimer;
     }
     
     /**
@@ -252,22 +256,23 @@ public final class Animator {
      * Returns the initial direction for the animation.
      * @return direction that the initial animation cycle will be moving
      */
-    public Direction getDirection() {
+    public Direction getStartDirection() {
         return direction;
     }
     
     /**
-     * Sets the direction for the initial animation cycle.  The default 
-     * direction is {@link Direction#FORWARD FORWARD}.
-     * @param direction initial animation cycle direction
+     * Sets the startDirection for the initial animation cycle.  The default 
+     * startDirection is {@link Direction#FORWARD FORWARD}.
+     * 
+     * @param startDirection initial animation cycle direction
+     * @see #isRunning()
      * @throws IllegalStateException if animation is already running; this
      * parameter may only be changed prior to starting the animation or 
      * after the animation has ended
-     * @see #isRunning()
      */
-    public void setDirection(Direction direction) {
+    public void setStartDirection(Direction startDirection) {
         throwExceptionIfRunning();
-        this.direction = direction;
+        this.direction = startDirection;
     }
     
     /**
@@ -439,7 +444,7 @@ public final class Animator {
         }
         throwExceptionIfRunning();
         this.resolution = resolution;
-        timer.setDelay(resolution);
+        timer.setResolution(resolution);
     }
     
     /**
@@ -527,7 +532,7 @@ public final class Animator {
         }
         throwExceptionIfRunning();
         this.startDelay = startDelay;
-        timer.setInitialDelay(startDelay);
+        timer.setStartDelay(startDelay);
     }
 
     /**
@@ -586,28 +591,28 @@ public final class Animator {
      * Returns the fraction that the first cycle will start at.
      * @return fraction between 0 and 1 at which the first cycle will start.
      */
-    public float getInitialFraction() {
-        return initialFraction;
+    public float getStartFraction() {
+        return startFraction;
     }
     
     /**
      * Sets the initial fraction at which the first animation cycle will
      * begin.  The default value is 0.
-     * @param initialFraction
-     * @throws IllegalArgumentException if initialFraction is less than 0
+     * @param startFraction
+     * @see #isRunning()
+     * @throws IllegalArgumentException if startFraction is less than 0
      * or greater than 1
      * @throws IllegalStateException if animation is already running; this
      * parameter may only be changed prior to starting the animation or 
      * after the animation has ended
-     * @see #isRunning()
      */
-    public void setInitialFraction(float initialFraction) {
-        if (initialFraction < 0 || initialFraction > 1.0f) {
+    public void setStartFraction(float startFraction) {
+        if (startFraction < 0 || startFraction > 1.0f) {
             throw new IllegalArgumentException("initialFraction must be " +
                     "between 0 and 1");
         }
         throwExceptionIfRunning();
-        this.initialFraction = initialFraction;
+        this.startFraction = startFraction;
     }
     
     /**
@@ -619,13 +624,14 @@ public final class Animator {
     public void start() {
         throwExceptionIfRunning();
         hasBegun = false;
+        running = true;
 	// Initialize start time variables to current time
 	startTime = (System.nanoTime() / 1000000) + getStartDelay();
         if (duration != INFINITE &&
-                ((direction == Direction.FORWARD && initialFraction > 0.0f) ||
-                 (direction == Direction.BACKWARD && initialFraction < 1.0f))) {
+                ((direction == Direction.FORWARD && startFraction > 0.0f) ||
+                 (direction == Direction.BACKWARD && startFraction < 1.0f))) {
             float offsetFraction = (direction == Direction.FORWARD) ?
-                initialFraction : (1.0f - initialFraction);
+                startFraction : (1.0f - startFraction);
             long startDelta = (long)(duration * offsetFraction);
             startTime -= startDelta;
         }
@@ -637,7 +643,7 @@ public final class Animator {
      * Returns whether this Animator object is currently running
      */
     public boolean isRunning() {
-	return timer.isRunning();
+	return running;
     }
 
     /**
@@ -653,6 +659,7 @@ public final class Animator {
 	timer.stop();
         end();
         timeToStop = false;
+        running = false;
         pauseBeginTime = 0;
     }
 
@@ -666,12 +673,13 @@ public final class Animator {
     public void cancel() {
         timer.stop();
         timeToStop = false;
+        running = false;
         pauseBeginTime = 0;
     }
     
     /**
      * This method pauses a running animation.  No further events are sent to
-     * TimingTargets. A paused animation may be resumed again by calling the
+     * TimingTargets. A paused animation may be d again by calling the
      * {@link #resume} method.  Pausing a non-running animation has no effect.
      * 
      * @see #resume()
@@ -680,6 +688,7 @@ public final class Animator {
     public void pause() {
         if (isRunning()) {
             pauseBeginTime = System.nanoTime();
+            running = false;
             timer.stop();
         }
     }
@@ -697,6 +706,7 @@ public final class Animator {
             currentStartTime += pauseDelta;
             timer.start();
             pauseBeginTime = 0;
+            running = true;
         }
     }
     
@@ -937,10 +947,92 @@ public final class Animator {
     }
     
     /**
+     * Sets a new TimingSource that will supply the timing 
+     * events to this Animator. Animator uses an internal
+     * TimingSource by default and most developers will probably not
+     * need to change this default behavior. But for those wishing to
+     * supply their own timer, this method can be called to
+     * tell Animator to use a different TimingSource instead. Setting a
+     * new TimingSource implicitly removes this Animator as a listener
+     * to any previously-set TimingSource object.
+     * 
+     * @param timer the object that will provide the
+     * timing events to Animator. A value of <code>null</code> is
+     * equivalent to telling Animator to use its default internal
+     * TimingSource object.
+     * @throws IllegalStateException if animation is already running; this
+     * parameter may only be changed prior to starting the animation or 
+     * after the animation has ended.
+     */
+    public synchronized void setTimer(TimingSource timer) {
+        throwExceptionIfRunning();
+        if (this.timer != swingTimer) {
+            // Remove this Animator from any previously-set external timer
+            this.timer.removeEventListener(timingSourceTarget);
+        }
+        if (timer == null) {
+            this.timer = swingTimer;
+        } else {
+            this.timer = timer;
+            if (timingSourceTarget == null) {
+                timingSourceTarget = new TimingSourceTarget();
+            }
+            timer.addEventListener(timingSourceTarget);
+        }
+        // sync this new timer with existing timer properties
+        this.timer.setResolution(resolution);
+        this.timer.setStartDelay(startDelay);
+    }
+        
+    /**
+     * This package-private class will be called by TimingSource.timingEvent()
+     * when a timer sends in timing events to this Animator.
+     */
+    class TimingSourceTarget implements TimingEventListener {
+        public void timingSourceEvent(TimingSource timingSource) {
+            // Make sure that we are being called by the current timer
+            // and that the animation is actually running
+            if ((timer == timingSource) && running) {
+                timingEvent(getTimingFraction());
+            }
+        }
+    }
+    
+    /**
+     * Implementation of internal timer, which uses the Swing Timer class.
+     * Note that we do not bother going through the TimingSource.timingEvent()
+     * class with our timing events; they go through the TimerTarget
+     * ActionListener implementation and then directly to timingEvent(fraction).
+     */
+    private class SwingTimingSource extends TimingSource {
+        Timer timer; // Swing timer
+        
+        public SwingTimingSource() {
+            timer = new Timer(resolution, new TimerTarget());
+        }
+        
+        public void start() {
+            timer.start();
+        }
+        
+        public void stop() {
+            timer.stop();
+        }
+        
+        public void setResolution(int resolution) {
+            timer.setDelay(resolution);
+        }
+        
+        public void setStartDelay(int delay) {
+            timer.setInitialDelay(delay);
+        }
+    }
+    
+    /**
      * Internal implementation detail: we happen to use javax.swing.Timer
      * currently, which sends its timing events to an ActionListener.
      * This internal private class is our ActionListener that traps
-     * these calls and forwards them to the Animator.timingEvent()
+     * these calls and forwards them to the Animator.timingEvent(fraction)
      * method.
      */
     private class TimerTarget implements ActionListener {

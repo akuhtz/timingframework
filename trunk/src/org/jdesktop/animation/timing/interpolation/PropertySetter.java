@@ -349,7 +349,9 @@ public class PropertySetter extends TimingTargetAdapter {
         try {
             method.invoke(object, keyFrames.getValue(fraction));
         } catch (Exception e) {
-            System.out.println("Problem invoking method in setValue:" + e);
+            System.out.println("Problem invoking method " +
+                    propertySetter + " in object " + object + 
+                    " in setValue" + e);
         }
     }
         
