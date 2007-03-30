@@ -60,7 +60,7 @@ import org.jdesktop.animation.timing.triggers.Trigger;
  */
 public class MultiStepRace {
     
-    protected Animator timer;
+    protected Animator animator;
     private SoundEffects soundEffects;
     public static final int RACE_TIME = 10000;
     
@@ -117,7 +117,7 @@ public class MultiStepRace {
                 "carPosition", keyFrames);
         
         // Now create the timing controller to run this.  Make it repeating
-        timer = new Animator(RACE_TIME, Animator.INFINITE,
+        animator = new Animator(RACE_TIME, Animator.INFINITE,
                 RepeatBehavior.LOOP, modifier);
         
         // Now create similar keyframes for rotation of car
@@ -131,20 +131,18 @@ public class MultiStepRace {
                 straightawayTurnSpline, curveTurnSpline);
         modifier = new PropertySetter(basicGUI.getTrack(), "carRotation", 
                 keyFrames);
-        timer.addTarget(modifier);
+        animator.addTarget(modifier);
         
-        // Finally, add sound effects, triggered by the same timer
+        // Finally, add sound effects, triggered by the same animator
         soundEffects = new SoundEffects(keyFrames);
-        timer.addTarget(soundEffects);
+        animator.addTarget(soundEffects);
         
-        timer.addTarget(modifier);
-
         // Instead of manually tracking the events, have the framework do
         // the work by setting up a trigger
         JButton goButton = basicGUI.getControlPanel().getGoButton();
         JButton stopButton = basicGUI.getControlPanel().getStopButton();
-        ActionTrigger trigger = ActionTrigger.addTrigger(goButton, timer);
-        stopButton.addActionListener(new Stopper(timer));
+        ActionTrigger trigger = ActionTrigger.addTrigger(goButton, animator);
+        stopButton.addActionListener(new Stopper(animator));
     }
     
     private class Stopper implements ActionListener {

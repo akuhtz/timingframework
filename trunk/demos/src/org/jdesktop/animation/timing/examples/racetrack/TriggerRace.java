@@ -32,7 +32,6 @@
 package org.jdesktop.animation.timing.examples.racetrack;
 
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.SwingUtilities;
 import org.jdesktop.animation.timing.Animator;
@@ -46,37 +45,18 @@ import org.jdesktop.animation.timing.triggers.ActionTrigger;
  *
  * @author Chet
  */
-public class TriggerRace {
+public class TriggerRace extends NonLinearRace {
     
-    public static final int RACE_TIME = 2000;
-
     /** Creates a new instance of TriggerRace */
     public TriggerRace(String appName) {
-        RaceGUI basicGUI = new RaceGUI(appName);
-        
-        // Now set up an animation that will automatically
-        // run itself with PropertySetter
-        
-        PropertySetter modifier = new PropertySetter(basicGUI.getTrack(), 
-                "carPosition", 
-                TrackView.START_POS, TrackView.FIRST_TURN_START);
-        Animator timer = new Animator(RACE_TIME, modifier);
-        JButton goButton = basicGUI.getControlPanel().getGoButton();
-        JButton stopButton = basicGUI.getControlPanel().getStopButton();
-        
-        // Instead of manually tracking the events, have the framework do
-        // the work by setting up a trigger
-        ActionTrigger trigger = ActionTrigger.addTrigger(goButton, timer);
-        stopButton.addActionListener(new Stopper(timer));
+        super(appName);
+        JButton goButton = controlPanel.getGoButton();
+        ActionTrigger trigger = ActionTrigger.addTrigger(goButton, animator);
     }
     
-    private class Stopper implements ActionListener {
-        Animator timer;
-        Stopper(Animator timer) {
-            this.timer = timer;
-        }
-        public void actionPerformed(ActionEvent ae) {
-            timer.stop();
+    public void actionPerformed(ActionEvent ae) {
+        if (ae.getActionCommand().equals("Stop")) {
+            animator.stop();
         }
     }
         

@@ -39,12 +39,13 @@ import javax.swing.SwingUtilities;
  *
  * @author Chet
  */
-public class NonLinearRace extends SetterRace {
+public class NonLinearRace extends BasicRace {
     
     /** Creates a new instance of NonLinearRace */
     public NonLinearRace(String appName) {
         super(appName);
-        timer.setAcceleration(.7f);
+        animator.setAcceleration(.5f);
+        animator.setDeceleration(.1f);
     }
     
     public static void main(String args[]) {
