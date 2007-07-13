@@ -197,6 +197,23 @@
             <p>
             <a name="Changes"><b>Change Log:</b></a>
             </p>
+            <p>XXX YY, 2007, Version 0.56: Bug Fixes</p>
+            <p>
+                <ul>
+                    <li>Initial Delay: The default timer used by Animator was
+                    inadvertently being initialized with a start delay equal to
+                    the default resolution (20 ms, now). This is actually
+                    correct according to how the Swing Timer works; the initial
+                    delay is set according to the resolution with which the 
+                    Timer is created. But it's not the behavior that Animator
+                    wants, and it causes a delay to the call to 
+                    TimingTarget.begin() until after that initial delay 
+                    completes.<br/>
+                    Now there is no initial delay by default and
+                    calls to begin() happen very shortly after the call
+                    to start().
+                </ul>
+            </p>
             <p>March 30, 2007, Version 0.55: External Timers, minor API tweaks</p>
             <p>
             <ul>

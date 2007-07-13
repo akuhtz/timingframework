@@ -1009,6 +1009,7 @@ public final class Animator {
         
         public SwingTimingSource() {
             timer = new Timer(resolution, new TimerTarget());
+            timer.setInitialDelay(0);
         }
         
         public void start() {
