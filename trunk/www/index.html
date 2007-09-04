@@ -19,6 +19,20 @@
             were published.
         </p>
         <p>
+            <i>
+                Note: The 1.0 version of this library is fully documented in
+                chapters 14-15 of the book <a href="http://filthyrichclients.org">
+                Filthy Rich Clients</a>. So if you need something beyond the
+                JavaDocs, examples, and source code found here, you might try
+                that book. Okay, so it's a shameless plug for the book. But it's
+                also the reality that I just haven't had time to document
+                the latest version of the library in the past few months of
+                finishing up the book.  So look to the book for now, and
+                look for more information on the project site eventually, when
+                I get to it.
+            </i>
+        </p>
+        <p>
             Ongoing changes to the library are documented in the <a href="#Changes">Changes</a> 
             section below.  <a href="https://timingframework.dev.java.net/servlets/ProjectForumView">Forums</a> 
             are now active for questions, bugs, and suggestions.
@@ -196,6 +210,56 @@
         <P>
             <p>
             <a name="Changes"><b>Change Log:</b></a>
+            </p>
+            <p>September 4, 2007, Version 1.0: [Very] Minor Fixes, and
+            the Long-Awaited Declaration of <b>Version 1.0</b>!
+            <p>
+                This version is exactly like the previous .56 version, with
+                minor fixes to two error messages in PropertySetter (the
+                messages will now hopefully be more correct and helpful).
+            </p>
+            <p>
+                The main reason for this version is to finally declar 1.0 -
+                for anyone looking for a stable version of the library, please
+                use this one.  In fact, the library has been very stable
+                for months now. Some of this was by design: I did not want to
+                perturb things too much between documenting the library
+                in <a href="http://filthyrichclients.org">the book</a> and
+                actually releasing the book. But also, the refactoring we
+                did in late 2006 has worked well and, apart from minor bugs
+                that have since been fixed, things seem to be working well.
+                So I think that version 1.0 is, in fact, a good, solid, stable
+                version of the library to use.
+            </p>
+            <p>
+                This doesn't mean that we're done. Various feature ideas have 
+                come up in the last few months that I would like to play with.
+                For example, we've had a concept of a TimeLine for some time,
+                but have not yet done anything about it in the API. (You can
+                get this kind of functionality by dasiy-chaining Animators
+                together using TimingTrigger, but there has to be a better way...).
+                I would also like to change some of the base assumptions and
+                defaults of the library. For example, while linear interpolation
+                makes all the sense in the world from an analytical standpoint
+                (if we default to non-linear behavior, what parameters would
+                we use?), it doesn't make for great default animations. In fact,
+                every time I create an Animator, I also set the acceleration/
+                deceleration factors.  Too much code. Gotta simplify that by
+                using reasonable defaults.
+            </p>
+            <p>
+                But I think that these things can wait - first we get this 
+                version out there.  Then we continue to improve it. It's the
+                way of all things - first we get the concept out into the world,
+                then people start using it, then we improve it in parallel.
+                It worked for Windows. It worked for the iPod. It worked for
+                the Barbie doll. Now, we'll apply it to animation libraries.
+            </p>
+            <p>
+                By the way, I'd like to thank everyone that's been asking and
+                answering questions on the forums. The ideas there feed directly
+                into current and future feature ideas (or just plain bug fixes)
+                for the library.  Keep 'em coming!
             </p>
             <p>XXX YY, 2007, Version 0.56: Bug Fixes</p>
             <p>

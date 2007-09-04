@@ -307,7 +307,8 @@ public class PropertySetter extends TimingTargetAdapter {
             try {
                 setStartValue(propertyGetter.invoke(object));
             } catch (Exception e) {
-                System.out.println("Problem with propertySetter in ObjectModifier");
+                System.out.println("Problem setting start value on object " +
+                        object + ": " + e);
             }
         }
     }
@@ -326,7 +327,8 @@ public class PropertySetter extends TimingTargetAdapter {
         try {
             setValue(object, propertySetter, fraction);
         } catch (Exception e) {
-            System.out.println("Problem in ObjectModifier.timingEvent: " + e);
+            System.out.println("Problem calling setValue in " +
+                    "PropertySetter.timingEvent: " + e);
         }
     }
     
