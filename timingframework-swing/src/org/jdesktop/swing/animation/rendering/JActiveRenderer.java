@@ -49,12 +49,12 @@ import org.jdesktop.core.animation.timing.sources.ActiveRendererTimingSource;
  * The {@link JRendererTarget} implementation is called according to the
  * following protocol.
  * <ul>
- * <li>{@link JRendererTarget#renderSetup(GraphicsConfiguration)} is called once
- * when <tt>on</tt> is made visible. It allows the client to perform any
- * necessary setup.</li>
+ * <li>{@link JRendererTarget#renderSetup(Object)} is called once when
+ * <tt>on</tt> is made visible. It allows the client to perform any necessary
+ * setup.</li>
  * <li>{@link JRendererTarget#renderUpdate()} is called at the start of each
  * rendering cycle to allow the client to update its state prior to rendering.</li>
- * <li>{@link JRendererTarget#render(Graphics2D, int, int)} is called after
+ * <li>{@link JRendererTarget#render(Object, int, int)} is called after
  * <tt>renderUpdate()</tt> during each rendering cycle to allow the client to
  * control what is displayed on-screen.</li>
  * <li>{@link JRendererTarget#renderShutdown()} is called once after
@@ -69,8 +69,8 @@ import org.jdesktop.core.animation.timing.sources.ActiveRendererTimingSource;
  * and (2) the Swing Event Dispatch Thread (EDT). When the passed
  * {@link JComponent} is made visible this is detected in the EDT and two tasks
  * are submitted to be executed in the rendering thread: (1) The
- * {@link JRendererTarget#renderSetup(GraphicsConfiguration)} method is called
- * to let the client perform its setup. (2) The rendering loop is started.
+ * {@link JRendererTarget#renderSetup(Object)} method is called to let the
+ * client perform its setup. (2) The rendering loop is started.
  * <p>
  * The rendering thread runs the following sequence as fast as it can:
  * <ul>
@@ -79,7 +79,7 @@ import org.jdesktop.core.animation.timing.sources.ActiveRendererTimingSource;
  * <li>Internally, {@link CountDownLatch#await()} is called on the latch that is
  * waiting for the EDT thread to finish painting (skipped during the first
  * iteration).</li>
- * <li>A call is made to {@link JRendererTarget#render(Graphics2D, int, int)} to
+ * <li>A call is made to {@link JRendererTarget#render(Object, int, int)} to
  * allow the client to render onto an off-screen image.</li>
  * <li>A call to {@link SwingUtilities#invokeLater(Runnable)} asks the EDT
  * thread to paint the off-screen image on the screen.</li>
@@ -125,7 +125,7 @@ import org.jdesktop.core.animation.timing.sources.ActiveRendererTimingSource;
  * average, it took the EDT to paint the off-screen image to the screen.</li>
  * <li>{@link #getAverageRenderTimeNanos()} provides how many nanoseconds, on
  * average, it took the rendering thread to render to the off-screen image (by
- * calling {@link JRendererTarget#render(Graphics2D, int, int)}).</li>
+ * calling {@link JRendererTarget#render(Object, int, int)}).</li>
  * <li>{@link #getAveragePaintWaitTimeNanos()} provides how many nanoseconds, on
  * average, the rendering thread "blocked" waiting for the EDT to finish
  * painting to the screen. Because the rendering thread invokes
@@ -138,9 +138,9 @@ import org.jdesktop.core.animation.timing.sources.ActiveRendererTimingSource;
  * </ul>
  * <p>
  * Adding Swing components as children of <tt>on</tt> is supported. Ensure that
- * <tt>true</tt> is passed as the second argument to
- * {@link #ActiveRenderer(JComponent, boolean, JRendererTarget)}. The children
- * are drawn in the EDT and never accessed in the rendering thread.
+ * <tt>true</tt> is passed as the third argument to
+ * {@link #JActiveRenderer(JRendererPanel, JRendererTarget, boolean)}. The
+ * children are drawn in the EDT and never accessed in the rendering thread.
  * <p>
  * Use of the Timing Framework is supported via a
  * {@link ActiveRendererTimingSource} that can be obtained via
@@ -319,7 +319,7 @@ public final class JActiveRenderer implements JRenderer<JRendererPanel> {
 	/**
 	 * Calculates the average time spent rendering in the rendering thread. This
 	 * is the time spent in the call to
-	 * {@link JRendererTarget#render(Graphics2D, int, int)}.
+	 * {@link JRendererTarget#render(Object, int, int)}.
 	 * <p>
 	 * Safe to be called at any time within any thread.
 	 * 
