@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="timingframework-classic" default="build-release-classic" basedir="..">
+
+	<property name="tf-version" value="1.0" />
+	<property name="fs" value="${file.separator}" />
+
+	<property name="classic" location="${basedir}${fs}timingframework-classic" />
+	<property name="classic-src" location="${classic}${fs}src" />
+	<property name="classic-lib" location="${classic}${fs}lib" />
+	<property name="classic-release" location="${classic}${fs}release" />
+	<property name="classic-release-work" location="${classic-release}${fs}timingframework-classic-${tf-version}" />
+	<property name="classic-jar" value="timingframework-classic-${tf-version}.jar" />
+
+	<target name="build-release-classic">
+		<delete dir="${release}" quiet="true" />
+
+		<mkdir dir="${classic-release}" />
+		<mkdir dir="${classic-release-work}" />
+		<mkdir dir="${classic-release-work}${fs}lib" />
+
+		<copy todir="${classic-release-work}${fs}src">
+			<fileset dir="${classic-src}" />
+		</copy>
+
+		<mkdir dir="${classic-release-work}${fs}bin" />
+		<javac srcdir="${classic-release-work}${fs}src" destdir="${classic-release-work}${fs}bin" classpath="${classic-release-work}${fs}lib${fs}${promises-jar}" debug="on" source="1.6" target="1.6" />
+		<jar destfile="${classic-release-work}${fs}lib${fs}${classic-jar}">
+			<fileset dir="${classic-release-work}${fs}bin" />
+			<manifest />
+		</jar>
+		<jar destfile="${classic-release-work}${fs}lib${fs}${classic-jar}" update="true">
+			<fileset dir="${classic-release-work}${fs}src" />
+			<manifest>
+				<attribute name="Main-Class" value="org.jdesktop.animation.timing.demos.MultiStepRace" />
+			</manifest>
+		</jar>
+		<delete quiet="true" dir="${classic-release-work}${fs}bin" />
+
+		<javadoc access="public" destdir="${classic-release-work}${fs}/javadoc" source="1.6" sourcepath="${classic-release-work}${fs}src" excludepackagenames="**.demos" notree="true" nodeprecatedlist="true" />
+
+		<zip destfile="${classic-release}${fs}timingframework-classic-${tf-version}.zip" basedir="${classic-release-work}" />
+	</target>
+</project>

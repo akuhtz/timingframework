@@ -90,7 +90,6 @@ public final class Animator {
 
     private long startTime;	    // Tracks original Animator start time
     private long currentStartTime;  // Tracks start time of current cycle
-    private int currentCycle = 0;   // Tracks number of cycles so far
     private boolean intRepeatCount = true;  // for typical cases
                                             // of repeated cycles
     private boolean timeToStop = false;     // This gets triggered during
@@ -201,7 +200,7 @@ public final class Animator {
         this.duration = duration;
         addTarget(target);
 
-        /**
+    /**
 	 * hack workaround for starting the Toolkit thread before any Timer stuff
 	 * javax.swing.Timer uses the Event Dispatch Thread, which is not
 	 * created until the Toolkit thread starts up.  Using the Swing
@@ -209,7 +208,7 @@ public final class Animator {
 	 * results (such as taking a long time before the first timer
 	 * event).
 	 */
-	java.awt.Toolkit tk = java.awt.Toolkit.getDefaultToolkit();	
+	java.awt.Toolkit.getDefaultToolkit();	
 
 	// Create internal Timer object
         swingTimer = new SwingTimingSource();
@@ -782,7 +781,6 @@ public final class Animator {
         if (acceleration != 0 || deceleration != 0.0f) {
             // See the SMIL 2.0 specification for details on this
             // calculation
-            float oldFraction = fraction;
             float runRate = 1.0f / (1.0f - acceleration/2.0f - 
                     deceleration/2.0f);
             if (fraction < acceleration) {
