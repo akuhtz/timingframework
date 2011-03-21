@@ -5,7 +5,7 @@ package org.jdesktop.core.animation.rendering;
  * either active or passive rendering.
  * <p>
  * All of these methods are invoked within the context of the rendering thread
- * of the {@link JActiveRenderer} this implementation is controlling.
+ * of the {@link JRenderer} this implementation is controlling.
  * 
  * @author Tim Halloran
  * 
@@ -25,7 +25,7 @@ public interface JRendererTarget<D, G> {
 	 * The passed screen information allows the the creation of compatible
 	 * images.
 	 * 
-	 * @param display
+	 * @param d
 	 *            describes the characteristics of the screen.
 	 */
 	void renderSetup(D d);
