@@ -1,0 +1,114 @@
+<html>
+<body>
+<p>The Timing Framework is a set of utility classes that enables you to create
+powerful animations in your Java applications.</p>
+
+<pre>
+  _______            _
+ /_  __(_)____ ___  (_)____  ____ _
+  / / / // __ `__ \/ // __ \/ __ `/
+ / / / // / / / / / // / / / /_/ /
+/_/ /_//_/ /_/ /_/_//_/ /_/\__, /
+                          /____/
+    ______                                              __
+   / ____/_________ _____ ___  ___ _      ______  _____/ /__
+  / /_   / ___/ __ `/ __ `__ \/ _ \ | /| / / __ \/ ___/ //_/
+ / __/  / /  / /_/ / / / / / /  __/ |/ |/ / /_/ / /  / ,<
+/_/    /_/   \__,_/_/ /_/ /_/\___/|__/|__/\____/_/  /_/|_| 
+</pre>
+
+<p>The Timing Framework was implemented by Chet Haase and introduced in the book
+<i>Filthy Rich Clients</i> (Haase and Guy, Addison-Wesley, 2008).</p>
+
+<p>Improvements to Haase's release were implemented by Tim Halloran beginning
+in 2011. These improvements include</p>
+
+<ul>
+<li>A separation of generic Java code from Swing-specific code.
+This allows the Timing Framework to be useful for a wide-variety of graphical
+interface libraries. For example, Swing, <a href="http://www.eclipse.org/swt/">SWT</a>,
+and <a href="http://developer.android.com">Android</a>. The original
+implementation was, in places, quite Swing-specific. Generic Java code is placed in
+packages under <tt>org.jdesktop.core</tt>. Swing-specific code is placed in
+packages under <tt>org.jdesktop.swing</tt>.</li>
+
+<li>Support for the <a href="http://www.eclipse.org/swt/">SWT</a> graphical interface
+library. A competitor to Swing that is used by the popular
+<a href="http://www.eclipse.org/">Eclipse</a> platform. Swing-specific code is placed in
+packages under <tt>org.jdesktop.swt</tt>.</li>
+
+<li>Use of the builder pattern to construct animations. This avoids the mix of passing some
+parameters to an <tt>Animator</tt> constructor and some to "set" methods. For example,
+The following animation will run a five second animation four times on <tt>myTarget</tt>:
+<pre>
+Animator animator = new AnimatorBuilder().setDuration(5, TimeUnit.SECONDS)
+                                         .setRepeatCount(4)
+                                         .addTarget(myTarget)
+                                         .build();
+animator.start();
+</pre>
+</li> 
+
+<li>The ability to support a single timing source as advocated by Chet Haase
+in the JavaOne 2008 talk <i>Filty Rich Clients: Filthier Richer Clientier</i>.
+This is done by setting a default timing source on the <tt>AnimatorBuilder</tt>
+class. For example, the following snippet of code creates a Swing timer and sets
+it as the default for all animations.
+<pre>
+TimingSource source = new SwingTimerTimingSource(15, TimeUnit.MILLISECONDS);
+AnimatorBuilder.setDefaultTimingSource(source); // shared timing source
+source.init(); // starts the timer
+...
+source.dispose(); // stops the timer
+</pre>
+</li>
+
+<li>Support for active rendering by using the <tt>ActiveRenderingTimingSource</tt>.
+This timer can be manually "ticked" during an active rendering loop. In Swing,
+the <tt>ActiveRender</tt> class can be used to manage active rendering of a Swing
+component.</li>
+
+<li>A multi-thread safe implementation that takes advantage of the
+<tt>util.concurrent</tt> library.</li>
+</ul>
+
+
+<p>The original Timing Framework implementation was released under
+following terms:
+
+<pre>
+Copyright (c) 2007, Sun Microsystems, Inc
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+
+   * Redistributions of source code must retain the above copyright
+     notice, this list of conditions and the following disclaimer.
+   * Redistributions in binary form must reproduce the above
+     copyright notice, this list of conditions and the following 
+     disclaimer in the documentation and/or other materials provided 
+     with the distribution.
+
+   * Neither the name of the Timing Framework project nor the names of
+     its contributors may be used to endorse or promote products derived 
+     from this software without specific prior written permission.
+
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+</pre>
+
+<p>The enhancements to the original implementation are released under
+the <a href="http://www.apache.org/licenses/LICENSE-2.0.html">Apache License, Version 2.0</a>.</p>
+</body>
+</html>

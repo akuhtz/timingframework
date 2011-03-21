@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="timingframework-swt" default="build-release-swt" basedir="..">
+
+	<import file="${basedir}${file.separator}timingframework-core${file.separator}build-release.xml" />
+
+	<property name="swt" location="${basedir}${fs}timingframework-swt" />
+	<property name="swt-src" location="${swt}${fs}src" />
+	<property name="swt-lib" location="${swt}${fs}lib" />
+	<property name="swt-release" location="${swt}${fs}release" />
+	<property name="swt-release-work" location="${swt-release}${fs}timingframework-swt-${tf-version}" />
+	<property name="swt-jar" value="timingframework-swt-${tf-version}.jar" />
+
+	<property name="org.eclipse.swt-jar" location="org.eclipse.swt${fs}swt.jar" />
+
+	<target name="build-release-swt">
+		<delete dir="${release}" quiet="true" />
+
+		<mkdir dir="${swt-release}" />
+		<mkdir dir="${swt-release-work}" />
+		<mkdir dir="${swt-release-work}${fs}lib" />
+
+		<copy file="${core-lib}${fs}${promises-jar}" tofile="${swt-release-work}${fs}lib${fs}${promises-jar}" />
+		<copy todir="${swt-release-work}${fs}src">
+			<fileset dir="${core-src}" />
+			<fileset dir="${swt-src}" />
+		</copy>
+
+		<mkdir dir="${swt-release-work}${fs}bin" />
+		<javac srcdir="${swt-release-work}${fs}src" destdir="${swt-release-work}${fs}bin" classpath="${org.eclipse.swt-jar}${path.separator}${swt-release-work}${fs}lib${fs}${promises-jar}" debug="on" source="1.6" target="1.6" />
+		<jar destfile="${swt-release-work}${fs}lib${fs}${swt-jar}">
+			<fileset dir="${swt-release-work}${fs}bin" />
+			<manifest />
+		</jar>
+		<jar destfile="${swt-release-work}${fs}lib${fs}${swt-jar}" update="true">
+			<fileset dir="${swt-release-work}${fs}src" />
+			<manifest>
+				<attribute name="Main-Class" value="org.jdesktop.swt.animation.timing.demos.javaone2008.TooManyBalls" />
+			</manifest>
+		</jar>
+		<delete quiet="true" dir="${swt-release-work}${fs}bin" />
+
+		<javadoc access="public" destdir="${swt-release-work}${fs}/javadoc" classpath="${org.eclipse.swt-jar}${path.separator}${swt-release-work}${fs}lib${fs}${promises-jar}" source="1.6" sourcepath="${swt-release-work}${fs}src" Overview="${core-lib}${fs}javadoc-overview.html" excludepackagenames="**.demos.*" notree="true" nodeprecatedlist="true" />
+
+		<zip destfile="${swt-release}${fs}timingframework-swt-${tf-version}.zip" basedir="${swt-release-work}" />
+	</target>
+</project>

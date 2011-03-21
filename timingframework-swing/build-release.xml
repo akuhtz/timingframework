@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="timingframework-swing" default="build-release-swing" basedir="..">
+
+	<import file="${basedir}${file.separator}timingframework-core${file.separator}build-release.xml" />
+
+	<property name="swing" location="${basedir}${fs}timingframework-swing" />
+	<property name="swing-src" location="${swing}${fs}src" />
+	<property name="swing-lib" location="${swing}${fs}lib" />
+	<property name="swing-release" location="${swing}${fs}release" />
+	<property name="swing-release-work" location="${swing-release}${fs}timingframework-swing-${tf-version}" />
+	<property name="swing-jar" value="timingframework-swing-${tf-version}.jar" />
+
+	<target name="build-release-swing">
+		<delete dir="${release}" quiet="true" />
+
+		<mkdir dir="${swing-release}" />
+		<mkdir dir="${swing-release-work}" />
+		<mkdir dir="${swing-release-work}${fs}lib" />
+
+		<copy file="${core-lib}${fs}${promises-jar}" tofile="${swing-release-work}${fs}lib${fs}${promises-jar}" />
+		<copy todir="${swing-release-work}${fs}src">
+			<fileset dir="${core-src}" />
+			<fileset dir="${swing-src}" />
+		</copy>
+
+		<mkdir dir="${swing-release-work}${fs}bin" />
+		<javac srcdir="${swing-release-work}${fs}src" destdir="${swing-release-work}${fs}bin" classpath="${swing-release-work}${fs}lib${fs}${promises-jar}" debug="on" source="1.6" target="1.6" />
+		<jar destfile="${swing-release-work}${fs}lib${fs}${swing-jar}">
+			<fileset dir="${swing-release-work}${fs}bin" />
+			<manifest />
+		</jar>
+		<jar destfile="${swing-release-work}${fs}lib${fs}${swing-jar}" update="true">
+			<fileset dir="${swing-release-work}${fs}src" />
+			<manifest>
+				<attribute name="Main-Class" value="org.jdesktop.swing.animation.timing.demos.javaone2008.TooManyBallsActiveRendering" />
+			</manifest>
+		</jar>
+		<delete quiet="true" dir="${swing-release-work}${fs}bin" />
+
+		<javadoc access="public" destdir="${swing-release-work}${fs}/javadoc" classpath="${swing-release-work}${fs}lib${fs}${promises-jar}" source="1.6" sourcepath="${swing-release-work}${fs}src" Overview="${core-lib}${fs}javadoc-overview.html" excludepackagenames="**.demos.*,**.splineeditor" notree="true" nodeprecatedlist="true" />
+
+		<zip destfile="${swing-release}${fs}timingframework-swing-${tf-version}.zip" basedir="${swing-release-work}" />
+	</target>
+</project>
