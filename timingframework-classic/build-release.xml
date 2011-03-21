@@ -36,7 +36,7 @@
 		</jar>
 		<delete quiet="true" dir="${classic-release-work}${fs}bin" />
 
-		<javadoc access="public" destdir="${classic-release-work}${fs}/javadoc" source="1.6" sourcepath="${classic-release-work}${fs}src" excludepackagenames="**.demos" notree="true" nodeprecatedlist="true" />
+		<javadoc access="public" destdir="${classic-release-work}${fs}/javadoc" source="1.6" sourcepath="${classic-release-work}${fs}src" Overview="${classic}${fs}javadoc-overview.html" excludepackagenames="**.demos" notree="true" nodeprecatedlist="true" />
 
 		<zip destfile="${classic-release}${fs}timingframework-classic-${tf-version}.zip" basedir="${classic-release-work}" />
 	</target>
