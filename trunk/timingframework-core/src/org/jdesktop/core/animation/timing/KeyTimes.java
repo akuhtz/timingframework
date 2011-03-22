@@ -61,10 +61,6 @@ public class KeyTimes {
 		f_times = Collections.unmodifiableList(timesList);
 	}
 
-	List<Double> getTimes() {
-		return f_times;
-	}
-
 	int getSize() {
 		return f_times.size();
 	}
@@ -88,5 +84,9 @@ public class KeyTimes {
 
 	double getTime(int index) {
 		return f_times.get(index);
+	}
+
+	List<Double> getTimes() {
+		return f_times;
 	}
 }
