@@ -624,8 +624,8 @@ public final class Animator {
         throwExceptionIfRunning();
         hasBegun = false;
         running = true;
-	// Initialize start time variables to current time
-	startTime = (System.nanoTime() / 1000000) + getStartDelay();
+        // Initialize start time variables to current time
+        startTime = (System.nanoTime() / 1000000) + getStartDelay();
         if (duration != INFINITE &&
                 ((direction == Direction.FORWARD && startFraction > 0.0f) ||
                  (direction == Direction.BACKWARD && startFraction < 1.0f))) {
