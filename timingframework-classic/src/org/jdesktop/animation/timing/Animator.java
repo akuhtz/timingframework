@@ -1034,10 +1034,10 @@ public final class Animator {
      * these calls and forwards them to the Animator.timingEvent(fraction)
      * method.
      */
-    private class TimerTarget implements ActionListener {
-	public void actionPerformed(ActionEvent e) {
-            timingEvent(getTimingFraction());
+	private class TimerTarget implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			timingEvent(getTimingFraction());
+		}
 	}
-    }
 
 }
