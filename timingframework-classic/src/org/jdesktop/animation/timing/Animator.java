@@ -112,7 +112,8 @@ public final class Animator {
     private float acceleration = 0;
     private float deceleration = 0.0f;
     private float startFraction = 0.0f;
-    private Direction direction = Direction.FORWARD; // Direction of each cycle
+    private Direction startDirection = Direction.FORWARD; // Direction of each cycle
+    private Direction direction;
     private Interpolator interpolator = LinearInterpolator.getInstance();
     
     /**
@@ -256,7 +257,7 @@ public final class Animator {
      * @return direction that the initial animation cycle will be moving
      */
     public Direction getStartDirection() {
-        return direction;
+        return startDirection;
     }
     
     /**
@@ -271,7 +272,7 @@ public final class Animator {
      */
     public void setStartDirection(Direction startDirection) {
         throwExceptionIfRunning();
-        this.direction = startDirection;
+        this.startDirection = startDirection;
     }
     
     /**
@@ -624,6 +625,7 @@ public final class Animator {
         throwExceptionIfRunning();
         hasBegun = false;
         running = true;
+        direction = startDirection;
         // Initialize start time variables to current time
         startTime = (System.nanoTime() / 1000000) + getStartDelay();
         if (duration != INFINITE &&
@@ -1039,5 +1041,4 @@ public final class Animator {
 			timingEvent(getTimingFraction());
 		}
 	}
-
 }
