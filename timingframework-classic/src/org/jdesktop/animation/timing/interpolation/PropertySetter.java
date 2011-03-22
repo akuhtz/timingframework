@@ -33,6 +33,8 @@ package org.jdesktop.animation.timing.interpolation;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
+import java.util.Locale;
+
 import org.jdesktop.animation.timing.Animator;
 import org.jdesktop.animation.timing.TimingTargetAdapter;
 
@@ -272,14 +274,14 @@ public class PropertySetter extends TimingTargetAdapter {
             String firstChar = propertyName.substring(0, 1);
             String remainder = propertyName.substring(1);
             Class propertyType = getType();
-            String propertySetterName = "set" + firstChar.toUpperCase() + remainder;
+            String propertySetterName = "set" + firstChar.toUpperCase(Locale.ENGLISH) + remainder;
 
             PropertyDescriptor prop = new PropertyDescriptor(propertyName, object.getClass(),
                     null, propertySetterName);
             propertySetter = prop.getWriteMethod();
             if (isToAnimation()) {
                 // Only need the getter for "to" animations
-                String propertyGetterName = "get" + firstChar.toUpperCase() + 
+                String propertyGetterName = "get" + firstChar.toUpperCase(Locale.ENGLISH) + 
                         remainder;
                 prop = new PropertyDescriptor(propertyName, 
                         object.getClass(), propertyGetterName, null);
