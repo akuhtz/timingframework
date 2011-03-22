@@ -2,6 +2,7 @@ package org.jdesktop.core.animation.timing;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
+import java.util.Locale;
 
 import org.jdesktop.core.animation.timing.Animator.Direction;
 import org.jdesktop.core.animation.timing.evaluators.KnownEvaluators;
@@ -180,8 +181,8 @@ public class PropertySetter extends TimingTargetAdapter {
 	private void setupMethodInfo() throws Exception {
 		final String firstChar = f_propertyName.substring(0, 1);
 		final String remainder = f_propertyName.substring(1);
-		final String propertySetterName = "set" + firstChar.toUpperCase()
-				+ remainder;
+		final String propertySetterName = "set"
+				+ firstChar.toUpperCase(Locale.ENGLISH) + remainder;
 
 		PropertyDescriptor prop = new PropertyDescriptor(f_propertyName,
 				f_object.getClass(), null, propertySetterName);
@@ -190,8 +191,8 @@ public class PropertySetter extends TimingTargetAdapter {
 			/*
 			 * Only need the getter for "to" animations
 			 */
-			String propertyGetterName = "get" + firstChar.toUpperCase()
-					+ remainder;
+			String propertyGetterName = "get"
+					+ firstChar.toUpperCase(Locale.ENGLISH) + remainder;
 			prop = new PropertyDescriptor(f_propertyName, f_object.getClass(),
 					propertyGetterName, null);
 			f_propertyGetter = prop.getReadMethod();
