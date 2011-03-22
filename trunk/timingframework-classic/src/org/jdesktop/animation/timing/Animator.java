@@ -46,7 +46,7 @@ import org.jdesktop.animation.timing.interpolation.LinearInterpolator;
  * animation) and an "envelope" that controls how the cycle is started,
  * ended, and repeated.
  * <p>
- * Most of the methods here are simle getters/setters for the properties
+ * Most of the methods here are simple getters/setters for the properties
  * used by Animator.  Typical animations will simply use one of the 
  * two constructors (depending on whether you are constructing a repeating
  * animation), optionally call any of the <code>set*</code> methods to alter
