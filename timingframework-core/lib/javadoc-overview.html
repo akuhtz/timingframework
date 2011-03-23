@@ -58,7 +58,7 @@ animator.start();
 </li> 
 
 <li>The ability to support a single timing source as advocated by Chet Haase
-in the JavaOne 2008 talk <i>Filty Rich Clients: Filthier Richer Clientier</i>.
+in the JavaOne 2008 talk <i>Filthy Rich Clients: Filthier Richer Clientier</i>.
 This is done by setting a default timing source on the <tt>AnimatorBuilder</tt>
 class. For example, the following snippet of code creates a Swing timer and sets
 it as the default for all animations.
@@ -67,6 +67,8 @@ TimingSource source = new SwingTimerTimingSource(15, TimeUnit.MILLISECONDS);
 AnimatorBuilder.setDefaultTimingSource(source); // shared timing source
 source.init(); // starts the timer
 ...
+// create, use, and dispose lots of Animator instances
+...
 source.dispose(); // stops the timer
 </pre>
 </li>
@@ -74,6 +76,73 @@ source.dispose(); // stops the timer
 <li>A multi-thread safe implementation that takes advantage of the
 <tt>util.concurrent</tt> library.</li>
 </ul>
+
+<hr>
+
+<p>The Swing and SWT releases contain several demonstration programs that can be run from the
+release Jar file or built from source code. Many of these demonstration programs are updated
+versions of the programs presented in <i>Filthy Rich Clients</i> and they are organized by
+chapter, e.g., <tt>ch14</tt> for Chapter 14. Each demonstration is described in the book
+and within its source code.
+
+<p>The Swing demonstrations are:
+
+<ul>
+<li><tt>org.jdesktop.swing.animation.timing.demos.ch12.TimingSourceResolution</tt></li>
+<li><tt>org.jdesktop.swing.animation.timing.demos.ch14.FadingButtonTF</tt></li>
+<li><tt>org.jdesktop.swing.animation.timing.demos.ch14.BasicRace</tt></li>
+<li><tt>org.jdesktop.swing.animation.timing.demos.ch14.NonLinearRace</tt></li>
+<li><tt>org.jdesktop.swing.animation.timing.demos.ch14.SplineInterpolatorTest</tt></li>
+<li><tt>org.jdesktop.swing.animation.timing.demos.ch15.Triggers</tt></li>
+<li><tt>org.jdesktop.swing.animation.timing.demos.ch15.ClickAndGo</tt> (not in the book&mdash;demonstrates non-trivial property setters)</li>
+<li><tt>org.jdesktop.swing.animation.timing.demos.ch15.DiscreteInterpolation</tt> (console)</li>
+<li><tt>org.jdesktop.swing.animation.timing.demos.ch15.MultiStepRace</tt></li>
+<li><tt>org.jdesktop.swing.animation.timing.demos.javaone2008.TooManyBallsBroken</tt> (illustrates the Swing timer issues Chet Haase discussed at JavaOne 2008)</li>
+<li><tt>org.jdesktop.swing.animation.timing.demos.javaone2008.TooManyBalls</tt> (fixed version&mdash;this demonstration is the Jar's <tt>Main-Class</tt>)</li>
+</ul>
+
+<p>To run one of the demonstrations from the release Jar file use:
+
+<p><tt>java -cp timingframework-swing-2.0.jar <i>classname</i></tt>
+
+<p>The Swing <tt>TooManyBalls</tt> demonstration can be changed from passive rendering to game-like active
+rendering (see the <tt>JActiveRenderer</tt> class) by defining the <tt>org.jdesktop.renderer.active</tt> property. For example, use:
+
+<p><tt>java -cp timingframework-swing-2.0.jar -Dorg.jdesktop.renderer.active=true org.jdesktop.swing.animation.timing.demos.javaone2008.TooManyBalls</tt>
+
+<p>On some computers active rendering looks smoother, but has the cost of using two processors and lots of memory. It is perhaps
+more appropriate for a game than a desktop application. It is, however, straightforward to write programs that can change from passive
+to active rendering, like <tt>TooManyBalls</tt> does, by implementing <tt>JRendererTarget</tt>.
+
+<p>The Swing distribution also includes <tt>org.jdesktop.swing.animation.timing.splineeditor.SplineEditor</tt>
+(from Chapter 14) which can be used to design and preview a particular spline interpolation.
+
+<p>The SWT demonstrations are:
+
+<ul>
+<li><tt>org.jdesktop.swt.animation.timing.demos.ch12.TimingSourceResolution</tt></li>
+<li><tt>org.jdesktop.swt.animation.timing.demos.ch14.FadingButtonTF</tt> (fades the background not the button because SWT doesn't support transparent components)</li>
+<li><tt>org.jdesktop.swt.animation.timing.demos.ch14.BasicRace</tt></li>
+<li><tt>org.jdesktop.swt.animation.timing.demos.ch14.NonLinearRace</tt></li>
+<li><tt>org.jdesktop.swt.animation.timing.demos.ch14.SplineInterpolatorTest</tt></li>
+<li><tt>org.jdesktop.swt.animation.timing.demos.ch15.Triggers</tt></li>
+<li><tt>org.jdesktop.swt.animation.timing.demos.ch15.ClickAndGo</tt> (not in the book&mdash;demonstrates non-trivial property setters)</li>
+<li><tt>org.jdesktop.swt.animation.timing.demos.ch15.DiscreteInterpolation</tt> (console)</li>
+<li><tt>org.jdesktop.swt.animation.timing.demos.ch15.MultiStepRace</tt></li>
+<li><tt>org.jdesktop.swt.animation.timing.demos.javaone2008.TooManyBalls</tt> (SWT version&mdash;this demonstration is the Jar's <tt>Main-Class</tt>)</li>
+</ul>
+
+<p>To run one of the SWT demonstrations from the release Jar file use:
+
+<p><tt>java -cp "timingframework-swt-2.0.jar;swt.jar" <i>classname</i></tt>
+
+<p>In the example above I copied the <tt>swt.jar</tt> for my platform into the
+same directory, but you can reference it within another directory (the command above
+worked on Windows under Cygwin).
+
+<p>Neither the spline editor nor active rendering are currently implemented under SWT.</p>
+
+<hr>
 
 <p>The original Timing Framework implementation was released under
 following terms:
