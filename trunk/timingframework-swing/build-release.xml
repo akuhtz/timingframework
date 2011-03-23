@@ -32,7 +32,7 @@
 		<jar destfile="${swing-release-work}${fs}lib${fs}${swing-jar}" update="true">
 			<fileset dir="${swing-release-work}${fs}src" />
 			<manifest>
-				<attribute name="Main-Class" value="org.jdesktop.swing.animation.timing.demos.javaone2008.TooManyBallsActiveRendering" />
+				<attribute name="Main-Class" value="org.jdesktop.swing.animation.timing.demos.javaone2008.TooManyBalls" />
 			</manifest>
 		</jar>
 		<delete quiet="true" dir="${swing-release-work}${fs}bin" />
