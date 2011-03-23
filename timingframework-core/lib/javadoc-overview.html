@@ -26,16 +26,24 @@ in 2011. These improvements include</p>
 <ul>
 <li>A separation of generic Java code from Swing-specific code.
 This allows the Timing Framework to be useful for a wide-variety of graphical
-interface libraries. For example, Swing, <a href="http://www.eclipse.org/swt/">SWT</a>,
-and <a href="http://developer.android.com">Android</a>. The original
+interface libraries. Two are currently supported: Swing and
+<a href="http://www.eclipse.org/swt/">SWT</a>. The original
 implementation was, in places, quite Swing-specific. Generic Java code is placed in
-packages under <tt>org.jdesktop.core</tt>. Swing-specific code is placed in
-packages under <tt>org.jdesktop.swing</tt>.</li>
+packages under <tt>org.jdesktop.core</tt> and released (stand-alone) as the
+<tt>timingframework-core</tt> distribution at
+<a href="http://java.net/projects/timingframework/">java.net</a>.</li>
+
+<li>Improved support for the AWT/Swing graphical interface library.
+Swing-specific code is placed in packages under <tt>org.jdesktop.swing</tt>
+and released (combined with the core code) as the <tt>timingframework-swing</tt>
+distribution at <a href="http://java.net/projects/timingframework/">java.net</a>.</li>
 
 <li>Support for the <a href="http://www.eclipse.org/swt/">SWT</a> graphical interface
 library. A competitor to Swing that is used by the popular
-<a href="http://www.eclipse.org/">Eclipse</a> platform. Swing-specific code is placed in
-packages under <tt>org.jdesktop.swt</tt>.</li>
+<a href="http://www.eclipse.org/">Eclipse</a> platform. SWT-specific code is placed in
+packages under <tt>org.jdesktop.swt</tt> and released (combined with the core code) as
+the <tt>timingframework-swt</tt> distribution at
+<a href="http://java.net/projects/timingframework/">java.net</a>.</li>
 
 <li>Use of the builder pattern to construct animations. This avoids the mix of passing some
 parameters to an <tt>Animator</tt> constructor and some to "set" methods. For example,
@@ -63,15 +71,9 @@ source.dispose(); // stops the timer
 </pre>
 </li>
 
-<li>Support for active rendering by using the <tt>ActiveRenderingTimingSource</tt>.
-This timer can be manually "ticked" during an active rendering loop. In Swing,
-the <tt>ActiveRender</tt> class can be used to manage active rendering of a Swing
-component.</li>
-
 <li>A multi-thread safe implementation that takes advantage of the
 <tt>util.concurrent</tt> library.</li>
 </ul>
-
 
 <p>The original Timing Framework implementation was released under
 following terms:
