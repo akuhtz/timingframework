@@ -13,13 +13,13 @@ import com.surelogic.Immutable;
 @Immutable
 public final class EvaluatorByte implements Evaluator<Byte> {
 
-	@Override
-	public Byte evaluate(Byte v0, Byte v1, double fraction) {
-		return (byte) (v0 + (byte) ((v1 - v0) * fraction));
-	}
+  @Override
+  public Byte evaluate(Byte v0, Byte v1, double fraction) {
+    return (byte) (v0 + (byte) ((v1 - v0) * fraction));
+  }
 
-	@Override
-	public Class<Byte> getEvaluatorClass() {
-		return Byte.class;
-	}
+  @Override
+  public Class<Byte> getEvaluatorClass() {
+    return Byte.class;
+  }
 }

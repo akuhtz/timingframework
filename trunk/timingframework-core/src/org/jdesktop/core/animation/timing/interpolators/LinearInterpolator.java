@@ -17,33 +17,33 @@ import com.surelogic.Immutable;
 @Immutable
 public final class LinearInterpolator implements Interpolator {
 
-	private static LinearInterpolator INSTANCE = new LinearInterpolator();
+  private static LinearInterpolator INSTANCE = new LinearInterpolator();
 
-	private LinearInterpolator() {
-		// singleton
-	}
+  private LinearInterpolator() {
+    // singleton
+  }
 
-	/**
-	 * Gets the single {@link LinearInterpolator} object.
-	 * 
-	 * @return the single {@link LinearInterpolator} object.
-	 */
-	public static LinearInterpolator getInstance() {
-		return INSTANCE;
-	}
+  /**
+   * Gets the single {@link LinearInterpolator} object.
+   * 
+   * @return the single {@link LinearInterpolator} object.
+   */
+  public static LinearInterpolator getInstance() {
+    return INSTANCE;
+  }
 
-	/**
-	 * This method always returns the value it was given, which will cause
-	 * callers to calculate a linear interpolation between boundary values.
-	 * 
-	 * @param fraction
-	 *            a value between 0 and 1, representing the elapsed fraction of
-	 *            a time interval (either an entire animation cycle or an
-	 *            interval between two KeyTimes, depending on where this
-	 *            {@link Interpolator} has been set)
-	 * @return the value passed in as the <code>fraction</code> parameter.
-	 */
-	public double interpolate(double fraction) {
-		return fraction;
-	}
+  /**
+   * This method always returns the value it was given, which will cause callers
+   * to calculate a linear interpolation between boundary values.
+   * 
+   * @param fraction
+   *          a value between 0 and 1, representing the elapsed fraction of a
+   *          time interval (either an entire animation cycle or an interval
+   *          between two KeyTimes, depending on where this {@link Interpolator}
+   *          has been set)
+   * @return the value passed in as the <code>fraction</code> parameter.
+   */
+  public double interpolate(double fraction) {
+    return fraction;
+  }
 }

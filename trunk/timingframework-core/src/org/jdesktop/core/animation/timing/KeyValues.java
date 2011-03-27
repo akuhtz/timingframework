@@ -116,7 +116,7 @@ public class KeyValues<T> {
 	 * @return a Class value representing the type of values stored in this
 	 *         object
 	 */
-	Class<T> getType() {
+  Class<T> getType() {
 		return f_type;
 	}
 

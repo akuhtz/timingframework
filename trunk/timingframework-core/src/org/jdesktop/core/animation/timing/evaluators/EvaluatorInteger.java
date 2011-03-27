@@ -13,13 +13,13 @@ import com.surelogic.Immutable;
 @Immutable
 public final class EvaluatorInteger implements Evaluator<Integer> {
 
-	@Override
-	public Integer evaluate(Integer v0, Integer v1, double fraction) {
-		return v0 + (int) ((v1 - v0) * fraction);
-	}
+  @Override
+  public Integer evaluate(Integer v0, Integer v1, double fraction) {
+    return v0 + (int) ((v1 - v0) * fraction);
+  }
 
-	@Override
-	public Class<Integer> getEvaluatorClass() {
-		return Integer.class;
-	}
+  @Override
+  public Class<Integer> getEvaluatorClass() {
+    return Integer.class;
+  }
 }

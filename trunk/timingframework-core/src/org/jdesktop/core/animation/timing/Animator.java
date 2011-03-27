@@ -501,7 +501,7 @@ public final class Animator implements TickListener {
 	 *            the current value of the most precise available system timer,
 	 *            in nanoseconds.
 	 */
-	private void notifyListenersAboutATimingSourceTick(long nanoTime) {
+  private void notifyListenersAboutATimingSourceTick(long nanoTime) {
 		/*
 		 * We can't hold f_lock when we invoke callbacks so we calculate results
 		 * from the mutable state and save it in local variables.
