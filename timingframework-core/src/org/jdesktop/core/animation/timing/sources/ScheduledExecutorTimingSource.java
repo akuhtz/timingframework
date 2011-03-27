@@ -28,60 +28,58 @@ import org.jdesktop.core.animation.timing.TimingSource;
  */
 public final class ScheduledExecutorTimingSource extends TimingSource {
 
-	private final ScheduledExecutorService f_executor;
-	private final long f_period;
-	private final TimeUnit f_periodTimeUnit;
+  private final ScheduledExecutorService f_executor;
+  private final long f_period;
+  private final TimeUnit f_periodTimeUnit;
 
-	/**
-	 * Constructs a new instance. The {@link #init()} must be called on the new
-	 * instance to start the timer. The {@link #dispose()} method should be
-	 * called to stop the timer.
-	 * 
-	 * @param notificationContext
-	 *            the context that the listeners will be notified within. A
-	 *            value of {@code null} uses the default notification context.
-	 * @param period
-	 *            the period of time between "tick" events.
-	 * @param unit
-	 *            the time unit of period parameter.
-	 */
-	public ScheduledExecutorTimingSource(
-			TickListenerNotificationContext notificationContext, long period,
-			TimeUnit unit) {
-		super(notificationContext);
-		f_period = period;
-		f_periodTimeUnit = unit;
-		f_executor = Executors.newSingleThreadScheduledExecutor();
-	}
+  /**
+   * Constructs a new instance. The {@link #init()} must be called on the new
+   * instance to start the timer. The {@link #dispose()} method should be called
+   * to stop the timer.
+   * 
+   * @param notificationContext
+   *          the context that the listeners will be notified within. A value of
+   *          {@code null} uses the default notification context.
+   * @param period
+   *          the period of time between "tick" events.
+   * @param unit
+   *          the time unit of period parameter.
+   */
+  public ScheduledExecutorTimingSource(TickListenerNotificationContext notificationContext, long period, TimeUnit unit) {
+    super(notificationContext);
+    f_period = period;
+    f_periodTimeUnit = unit;
+    f_executor = Executors.newSingleThreadScheduledExecutor();
+  }
 
-	/**
-	 * Constructs a new instance. The {@link #init()} must be called on the new
-	 * instance to start the timer. The {@link #dispose()} method should be
-	 * called to stop the timer.
-	 * <p>
-	 * The constructed timer uses the default notification context.
-	 * 
-	 * @param period
-	 *            the period of time between "tick" events.
-	 * @param unit
-	 *            the time unit of period parameter.
-	 */
-	public ScheduledExecutorTimingSource(long period, TimeUnit unit) {
-		this(null, period, unit);
-	}
+  /**
+   * Constructs a new instance. The {@link #init()} must be called on the new
+   * instance to start the timer. The {@link #dispose()} method should be called
+   * to stop the timer.
+   * <p>
+   * The constructed timer uses the default notification context.
+   * 
+   * @param period
+   *          the period of time between "tick" events.
+   * @param unit
+   *          the time unit of period parameter.
+   */
+  public ScheduledExecutorTimingSource(long period, TimeUnit unit) {
+    this(null, period, unit);
+  }
 
-	@Override
-	public void init() {
-		f_executor.scheduleAtFixedRate(new Runnable() {
-			@Override
-			public void run() {
-				contextAwareNotifyTickListeners();
-			}
-		}, 0, f_period, f_periodTimeUnit);
-	}
+  @Override
+  public void init() {
+    f_executor.scheduleAtFixedRate(new Runnable() {
+      @Override
+      public void run() {
+        contextAwareNotifyTickListeners();
+      }
+    }, 0, f_period, f_periodTimeUnit);
+  }
 
-	@Override
-	public void dispose() {
-		f_executor.shutdown();
-	}
+  @Override
+  public void dispose() {
+    f_executor.shutdown();
+  }
 }

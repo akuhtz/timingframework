@@ -54,7 +54,7 @@ public class KeyFrames<T> {
 	 *             since these structures are meant to have corresponding
 	 *             entries; an exception is thrown otherwise.
 	 */
-	public static <T> KeyFrames<T> build(KeyValues<T> keyValues,
+  public static <T> KeyFrames<T> build(KeyValues<T> keyValues,
 			KeyTimes keyTimes) {
 		return new KeyFrames<T>(keyValues, keyTimes, (Interpolator) null);
 	}
@@ -139,7 +139,7 @@ public class KeyFrames<T> {
 			f_keyTimes = keyTimes;
 		}
 		f_keyValues = keyValues;
-		if (numFrames != f_keyTimes.getSize()) {
+		if (numFrames != f_keyTimes.size()) {
 			throw new IllegalArgumentException("keyValues and keyTimes"
 					+ " must be of equal size");
 		}
@@ -195,8 +195,8 @@ public class KeyFrames<T> {
 		 * type and keyTimes.
 		 */
 		int interval = getInterval(fraction);
-		double t0 = f_keyTimes.getTime(interval);
-		double t1 = f_keyTimes.getTime(interval + 1);
+		double t0 = f_keyTimes.get(interval);
+		double t1 = f_keyTimes.get(interval + 1);
 		double t = (fraction - t0) / (t1 - t0);
 		double interpolatedT = f_interpolators.get(interval).interpolate(t);
 		/*

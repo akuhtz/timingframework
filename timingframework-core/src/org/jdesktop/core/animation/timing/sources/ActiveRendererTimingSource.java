@@ -16,24 +16,24 @@ import org.jdesktop.core.animation.timing.TimingSource;
  */
 public final class ActiveRendererTimingSource extends TimingSource {
 
-	public ActiveRendererTimingSource() {
-		super(null);
-	}
+  public ActiveRendererTimingSource() {
+    super(null);
+  }
 
-	@Override
-	public void init() {
-		// nothing to do
-	}
+  @Override
+  public void init() {
+    // nothing to do
+  }
 
-	/**
-	 * Called from the active rendering loop to "tick" time along.
-	 */
-	public void tick() {
-		notifyTickListeners();
-	}
+  /**
+   * Called from the active rendering loop to "tick" time along.
+   */
+  public void tick() {
+    notifyTickListeners();
+  }
 
-	@Override
-	public void dispose() {
-		// nothing to do
-	}
+  @Override
+  public void dispose() {
+    // nothing to do
+  }
 }

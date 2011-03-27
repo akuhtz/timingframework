@@ -14,51 +14,48 @@ package org.jdesktop.core.animation.timing;
  */
 public interface TimingTarget {
 
-	/**
-	 * Called when the animation begins. This provides a chance for targets to
-	 * perform any setup required at animation start time.
-	 * 
-	 * @param source
-	 *            the animation.
-	 */
-	public void begin(Animator source);
+  /**
+   * Called when the animation begins. This provides a chance for targets to
+   * perform any setup required at animation start time.
+   * 
+   * @param source
+   *          the animation.
+   */
+  public void begin(Animator source);
 
-	/**
-	 * Called when the animation ends.
-	 * 
-	 * @param source
-	 *            the animation.
-	 */
-	public void end(Animator source);
+  /**
+   * Called when the animation ends.
+   * 
+   * @param source
+   *          the animation.
+   */
+  public void end(Animator source);
 
-	/**
-	 * Called when the animation repeats the animation cycle.
-	 * 
-	 * @param source
-	 *            the animation.
-	 */
-	public void repeat(Animator source);
+  /**
+   * Called when the animation repeats the animation cycle.
+   * 
+   * @param source
+   *          the animation.
+   */
+  public void repeat(Animator source);
 
-	/**
-	 * This method will receive all of the timing events during an animation.
-	 * The fraction is the percent elapsed (0 to 1) of the current animation
-	 * cycle.
-	 * 
-	 * @param fraction
-	 *            the fraction of completion between the start and end of the
-	 *            current cycle. Note that on reversing cycles (
-	 *            {@link Animator.Direction#BACKWARD}) the fraction decreases
-	 *            from 1.0 to 0 on backwards-running cycles. Note also that
-	 *            animations with a duration of {@link Animator#INFINITE
-	 *            INFINITE} will have an undefined value for the fraction, since
-	 *            there is no fraction that makes sense if the animation has no
-	 *            defined length.
-	 * @param direction
-	 *            the current direction of the animation.
-	 * @param source
-	 *            the animation.
-	 * @see Animator.Direction
-	 */
-	public void timingEvent(double fraction, Animator.Direction direction,
-			Animator source);
+  /**
+   * This method will receive all of the timing events during an animation. The
+   * fraction is the percent elapsed (0 to 1) of the current animation cycle.
+   * 
+   * @param fraction
+   *          the fraction of completion between the start and end of the
+   *          current cycle. Note that on reversing cycles (
+   *          {@link Animator.Direction#BACKWARD}) the fraction decreases from
+   *          1.0 to 0 on backwards-running cycles. Note also that animations
+   *          with a duration of {@link Animator#INFINITE INFINITE} will have an
+   *          undefined value for the fraction, since there is no fraction that
+   *          makes sense if the animation has no defined length.
+   * @param direction
+   *          the current direction of the animation.
+   * @param source
+   *          the animation.
+   * @see Animator.Direction
+   */
+  public void timingEvent(double fraction, Animator.Direction direction, Animator source);
 }

@@ -15,26 +15,25 @@ import org.jdesktop.core.animation.timing.Animator.Direction;
  */
 public class TimingTargetAdapter implements TimingTarget {
 
-	@Override
-	public void begin(Animator source) {
-		// default is to do nothing
-	}
+  @Override
+  public void begin(Animator source) {
+    // default is to do nothing
+  }
 
-	@Override
-	public void end(Animator source) {
-		// default is to do nothing
+  @Override
+  public void end(Animator source) {
+    // default is to do nothing
 
-	}
+  }
 
-	@Override
-	public void repeat(Animator source) {
-		// default is to do nothing
+  @Override
+  public void repeat(Animator source) {
+    // default is to do nothing
 
-	}
+  }
 
-	@Override
-	public void timingEvent(double fraction, Direction direction,
-			Animator source) {
-		// default is to do nothing
-	}
+  @Override
+  public void timingEvent(double fraction, Direction direction, Animator source) {
+    // default is to do nothing
+  }
 }

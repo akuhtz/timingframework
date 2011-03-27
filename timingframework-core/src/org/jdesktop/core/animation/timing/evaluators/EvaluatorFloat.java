@@ -13,13 +13,13 @@ import com.surelogic.Immutable;
 @Immutable
 public final class EvaluatorFloat implements Evaluator<Float> {
 
-	@Override
-	public Float evaluate(Float v0, Float v1, double fraction) {
-		return v0 + ((v1 - v0) * (float) fraction);
-	}
+  @Override
+  public Float evaluate(Float v0, Float v1, double fraction) {
+    return v0 + ((v1 - v0) * (float) fraction);
+  }
 
-	@Override
-	public Class<Float> getEvaluatorClass() {
-		return Float.class;
-	}
+  @Override
+  public Class<Float> getEvaluatorClass() {
+    return Float.class;
+  }
 }

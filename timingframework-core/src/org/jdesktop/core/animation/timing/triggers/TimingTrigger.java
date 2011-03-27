@@ -12,114 +12,109 @@ import org.jdesktop.core.animation.timing.TimingTarget;
  * write the following:
  * 
  * <pre>
- * TimingTrigger trigger = TimingTrigger.addTrigger(anim1, anim2,
- * 		TimingTriggerEvent.STOP);
+ * TimingTrigger trigger = TimingTrigger.addTrigger(anim1, anim2, TimingTriggerEvent.STOP);
  * </pre>
  * 
  * @author Chet Haase
  */
 public class TimingTrigger extends Trigger implements TimingTarget {
 
-	/**
-	 * Creates a non-auto-reversing TimingTrigger and adds it as a target to the
-	 * source Animator.
-	 * 
-	 * @param source
-	 *            the Animator that will be listened to for events to start the
-	 *            target Animator
-	 * @param target
-	 *            the Animator that will start when the event occurs
-	 * @param event
-	 *            the TimingTriggerEvent that will cause targetAnimator to start
-	 * @return TimingTrigger the resulting trigger
-	 * 
-	 * @see Animator#addTarget(TimingTarget)
-	 */
-	public static TimingTrigger addTrigger(Animator source, Animator target,
-			TimingTriggerEvent event) {
-		return addTrigger(source, target, event, false);
-	}
+  /**
+   * Creates a non-auto-reversing TimingTrigger and adds it as a target to the
+   * source Animator.
+   * 
+   * @param source
+   *          the Animator that will be listened to for events to start the
+   *          target Animator
+   * @param target
+   *          the Animator that will start when the event occurs
+   * @param event
+   *          the TimingTriggerEvent that will cause targetAnimator to start
+   * @return TimingTrigger the resulting trigger
+   * 
+   * @see Animator#addTarget(TimingTarget)
+   */
+  public static TimingTrigger addTrigger(Animator source, Animator target, TimingTriggerEvent event) {
+    return addTrigger(source, target, event, false);
+  }
 
-	/**
-	 * Creates a TimingTrigger and adds it as a target to the source Animator.
-	 * 
-	 * 
-	 * @param source
-	 *            the Animator that will be listened to for events to start the
-	 *            target Animator
-	 * @param target
-	 *            the Animator that will start when the event occurs
-	 * @param event
-	 *            the TimingTriggerEvent that will cause targetAnimator to start
-	 * @param autoReverse
-	 *            flag to determine whether the animator should stop and reverse
-	 *            based on opposite triggerEvents.
-	 * @return TimingTrigger the resulting trigger
-	 * 
-	 * @see Animator#addTarget(TimingTarget)
-	 */
-	public static TimingTrigger addTrigger(Animator source, Animator target,
-			TimingTriggerEvent event, boolean autoReverse) {
-		TimingTrigger trigger = new TimingTrigger(target, event, autoReverse);
-		source.addTarget(trigger);
-		return trigger;
-	}
+  /**
+   * Creates a TimingTrigger and adds it as a target to the source Animator.
+   * 
+   * 
+   * @param source
+   *          the Animator that will be listened to for events to start the
+   *          target Animator
+   * @param target
+   *          the Animator that will start when the event occurs
+   * @param event
+   *          the TimingTriggerEvent that will cause targetAnimator to start
+   * @param autoReverse
+   *          flag to determine whether the animator should stop and reverse
+   *          based on opposite triggerEvents.
+   * @return TimingTrigger the resulting trigger
+   * 
+   * @see Animator#addTarget(TimingTarget)
+   */
+  public static TimingTrigger addTrigger(Animator source, Animator target, TimingTriggerEvent event, boolean autoReverse) {
+    TimingTrigger trigger = new TimingTrigger(target, event, autoReverse);
+    source.addTarget(trigger);
+    return trigger;
+  }
 
-	/**
-	 * Creates a non-auto-reversing TimingTrigger, which should be added to an
-	 * Animator which will generate the events sent to the trigger.
-	 */
-	public TimingTrigger(Animator animator, TimingTriggerEvent event) {
-		this(animator, event, false);
-	}
+  /**
+   * Creates a non-auto-reversing TimingTrigger, which should be added to an
+   * Animator which will generate the events sent to the trigger.
+   */
+  public TimingTrigger(Animator animator, TimingTriggerEvent event) {
+    this(animator, event, false);
+  }
 
-	/**
-	 * Creates a TimingTrigger, which should be added to an Animator which will
-	 * generate the events sent to the trigger.
-	 */
-	public TimingTrigger(Animator animator, TimingTriggerEvent event,
-			boolean autoReverse) {
-		super(animator, event, autoReverse);
-	}
+  /**
+   * Creates a TimingTrigger, which should be added to an Animator which will
+   * generate the events sent to the trigger.
+   */
+  public TimingTrigger(Animator animator, TimingTriggerEvent event, boolean autoReverse) {
+    super(animator, event, autoReverse);
+  }
 
-	//
-	// TimingTarget implementation methods
-	//
+  //
+  // TimingTarget implementation methods
+  //
 
-	/**
-	 * Called by Animator when starting. Sends the
-	 * {@link TimingTriggerEvent#START} event to the Trigger.
-	 */
-	@Override
-	public void begin(Animator source) {
-		fire(TimingTriggerEvent.START);
-	}
+  /**
+   * Called by Animator when starting. Sends the
+   * {@link TimingTriggerEvent#START} event to the Trigger.
+   */
+  @Override
+  public void begin(Animator source) {
+    fire(TimingTriggerEvent.START);
+  }
 
-	/**
-	 * Called by Animator when ending. Sends the {@link TimingTriggerEvent#STOP}
-	 * event to the Trigger.
-	 */
-	@Override
-	public void end(Animator source) {
-		fire(TimingTriggerEvent.STOP);
-	}
+  /**
+   * Called by Animator when ending. Sends the {@link TimingTriggerEvent#STOP}
+   * event to the Trigger.
+   */
+  @Override
+  public void end(Animator source) {
+    fire(TimingTriggerEvent.STOP);
+  }
 
-	/**
-	 * Called by Animator when repeating. Sends the
-	 * {@link TimingTriggerEvent#REPEAT} event to the Trigger.
-	 */
-	@Override
-	public void repeat(Animator source) {
-		fire(TimingTriggerEvent.REPEAT);
-	}
+  /**
+   * Called by Animator when repeating. Sends the
+   * {@link TimingTriggerEvent#REPEAT} event to the Trigger.
+   */
+  @Override
+  public void repeat(Animator source) {
+    fire(TimingTriggerEvent.REPEAT);
+  }
 
-	/**
-	 * This method does nothing in this implementation because the events of
-	 * {@link TimingTrigger} are limited to START, STOP, and REPEAT
-	 */
-	@Override
-	public void timingEvent(double fraction, Direction direction,
-			Animator source) {
-		// Nothing to do
-	}
+  /**
+   * This method does nothing in this implementation because the events of
+   * {@link TimingTrigger} are limited to START, STOP, and REPEAT
+   */
+  @Override
+  public void timingEvent(double fraction, Direction direction, Animator source) {
+    // Nothing to do
+  }
 }

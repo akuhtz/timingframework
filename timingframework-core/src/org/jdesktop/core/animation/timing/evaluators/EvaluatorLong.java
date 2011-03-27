@@ -13,13 +13,13 @@ import com.surelogic.Immutable;
 @Immutable
 public final class EvaluatorLong implements Evaluator<Long> {
 
-	@Override
-	public Long evaluate(Long v0, Long v1, double fraction) {
-		return v0 + (long) ((v1 - v0) * fraction);
-	}
+  @Override
+  public Long evaluate(Long v0, Long v1, double fraction) {
+    return v0 + (long) ((v1 - v0) * fraction);
+  }
 
-	@Override
-	public Class<Long> getEvaluatorClass() {
-		return Long.class;
-	}
+  @Override
+  public Class<Long> getEvaluatorClass() {
+    return Long.class;
+  }
 }

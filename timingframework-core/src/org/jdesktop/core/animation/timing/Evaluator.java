@@ -9,36 +9,36 @@ import com.surelogic.ThreadSafe;
  * @author Tim Halloran
  * 
  * @param <T>
- *            the type the implementation evaluates.
+ *          the type the implementation evaluates.
  */
 @ThreadSafe
 public interface Evaluator<T> {
 
-	/**
-	 * Evaluates between two boundary values. Typically implementations use
-	 * linear parametric evaluation:
-	 * 
-	 * <pre>
-	 * v = v0 + (v1 - v0) * fraction
-	 * </pre>
-	 * 
-	 * Implementations of {@link Evaluator} will need to override this method
-	 * and do something similar for their own types.
-	 * <p>
-	 * Note that this mechanism may be used to create non-linear interpolators
-	 * for specific value types, although it may be simpler to just use the
-	 * linear/parametric interpolation technique here and perform non-linear
-	 * interpolation through a custom {@link Interpolator} rather than perform
-	 * custom calculations in this method. The point of this class is to allow
-	 * calculations with new/unknown types, not to provide another mechanism for
-	 * non-linear interpolation.
-	 */
-	T evaluate(T v0, T v1, double fraction);
+  /**
+   * Evaluates between two boundary values. Typically implementations use linear
+   * parametric evaluation:
+   * 
+   * <pre>
+   * v = v0 + (v1 - v0) * fraction
+   * </pre>
+   * 
+   * Implementations of {@link Evaluator} will need to override this method and
+   * do something similar for their own types.
+   * <p>
+   * Note that this mechanism may be used to create non-linear interpolators for
+   * specific value types, although it may be simpler to just use the
+   * linear/parametric interpolation technique here and perform non-linear
+   * interpolation through a custom {@link Interpolator} rather than perform
+   * custom calculations in this method. The point of this class is to allow
+   * calculations with new/unknown types, not to provide another mechanism for
+   * non-linear interpolation.
+   */
+  T evaluate(T v0, T v1, double fraction);
 
-	/**
-	 * Gets the class that the evaluator provides an implementation.
-	 * 
-	 * @return the class that the evaluator provides an implementation.
-	 */
-	Class<T> getEvaluatorClass();
+  /**
+   * Gets the class that the evaluator provides an implementation.
+   * 
+   * @return the class that the evaluator provides an implementation.
+   */
+  Class<T> getEvaluatorClass();
 }

@@ -22,40 +22,40 @@ import com.surelogic.Immutable;
 @Immutable
 public final class DiscreteInterpolator implements Interpolator {
 
-	private static final DiscreteInterpolator INSTANCE = new DiscreteInterpolator();;
+  private static final DiscreteInterpolator INSTANCE = new DiscreteInterpolator();;
 
-	private DiscreteInterpolator() {
-		// singleton
-	}
+  private DiscreteInterpolator() {
+    // singleton
+  }
 
-	/**
-	 * Gets the single {@link DiscreteInterpolator} object.
-	 * 
-	 * @return the single {@link DiscreteInterpolator} object.
-	 */
-	public static DiscreteInterpolator getInstance() {
-		return INSTANCE;
-	}
+  /**
+   * Gets the single {@link DiscreteInterpolator} object.
+   * 
+   * @return the single {@link DiscreteInterpolator} object.
+   */
+  public static DiscreteInterpolator getInstance() {
+    return INSTANCE;
+  }
 
-	/**
-	 * This method always returns 0 for inputs less than 1, which will force
-	 * users of this interpolation to assign a value equal to the value at the
-	 * beginning of this timing interval, which is the desired behavior for
-	 * discrete animations. An input of 1 will return 1, since this means the
-	 * end of the current interval (and start to the next interval).
-	 * 
-	 * @param fraction
-	 *            a value between 0 and 1, representing the elapsed fraction of
-	 *            a time interval (either an entire animation cycle or an
-	 *            interval between two KeyTimes, depending on where this
-	 *            Interpolator has been set)
-	 * @return a number representing the start of the current interval, usually
-	 *         {@code 0}, but if {@code fraction == 1}, returns {@code 1}.
-	 */
-	public double interpolate(double fraction) {
-		if (fraction < 1) {
-			return 0;
-		}
-		return 1;
-	}
+  /**
+   * This method always returns 0 for inputs less than 1, which will force users
+   * of this interpolation to assign a value equal to the value at the beginning
+   * of this timing interval, which is the desired behavior for discrete
+   * animations. An input of 1 will return 1, since this means the end of the
+   * current interval (and start to the next interval).
+   * 
+   * @param fraction
+   *          a value between 0 and 1, representing the elapsed fraction of a
+   *          time interval (either an entire animation cycle or an interval
+   *          between two KeyTimes, depending on where this Interpolator has
+   *          been set)
+   * @return a number representing the start of the current interval, usually
+   *         {@code 0}, but if {@code fraction == 1}, returns {@code 1}.
+   */
+  public double interpolate(double fraction) {
+    if (fraction < 1) {
+      return 0;
+    }
+    return 1;
+  }
 }
