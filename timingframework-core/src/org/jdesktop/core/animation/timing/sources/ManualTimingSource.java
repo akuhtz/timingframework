@@ -1,22 +1,19 @@
 package org.jdesktop.core.animation.timing.sources;
 
-import org.jdesktop.core.animation.timing.Animator;
 import org.jdesktop.core.animation.timing.TimingSource;
 
 /**
- * A timing source when an active rendering loop is used. This timer can be
- * called manually at every loop by invoking the {@link #tick()} method. This
- * implementation allows use of {@link Animator}s when using an active rendering
- * loop.
+ * A timing source where ticks are manually controlled via invocation of the
+ * {@link #tick()} method.
  * <p>
  * The {@link #init()} and {@link #dispose()} methods do nothing in this
  * implementation and do not need to be invoked.
  * 
  * @author Tim Halloran
  */
-public final class ActiveRendererTimingSource extends TimingSource {
+public final class ManualTimingSource extends TimingSource {
 
-  public ActiveRendererTimingSource() {
+  public ManualTimingSource() {
     super(null);
   }
 
@@ -26,7 +23,7 @@ public final class ActiveRendererTimingSource extends TimingSource {
   }
 
   /**
-   * Called from the active rendering loop to "tick" time along.
+   * Called to "tick" time along.
    */
   public void tick() {
     notifyTickListeners();

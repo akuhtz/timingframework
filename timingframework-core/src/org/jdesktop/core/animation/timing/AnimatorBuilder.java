@@ -5,6 +5,8 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.jdesktop.core.animation.i18n.I18N;
+
 import com.surelogic.NotThreadSafe;
 
 /**
@@ -62,7 +64,7 @@ public class AnimatorBuilder {
    */
   public AnimatorBuilder(TimingSource timingSource) {
     if (timingSource == null)
-      throw new IllegalArgumentException("timingSource must be non-null");
+      throw new IllegalArgumentException(I18N.err(11));
     f_timingSource = timingSource;
   }
 
@@ -106,7 +108,7 @@ public class AnimatorBuilder {
    */
   public AnimatorBuilder setDuration(long value, TimeUnit unit) {
     if (value < 1 && value != Animator.INFINITE) {
-      throw new IllegalArgumentException(String.format("Duration of %d is <=0.", value));
+      throw new IllegalArgumentException(I18N.err(10, value));
     }
     f_duration = value;
     f_durationTimeUnit = unit != null ? unit : TimeUnit.SECONDS;
@@ -169,7 +171,7 @@ public class AnimatorBuilder {
    */
   public AnimatorBuilder setRepeatCount(long value) {
     if (value < 1 && value != Animator.INFINITE) {
-      throw new IllegalArgumentException(String.format("Duration of %d is <=0.", value));
+      throw new IllegalArgumentException(I18N.err(10, value));
     }
     f_repeatCount = value;
     return this;
