@@ -275,7 +275,7 @@ public final class Animator implements TickListener {
   public void start() {
     synchronized (f_lock) {
       if (f_running)
-        throw new IllegalStateException(I18N.err(12));
+        throw new IllegalStateException(I18N.err(12, "start()"));
 
       f_startTimeNanos = f_cycleStartTimeNanos = System.nanoTime();
       f_listenersToldAboutBegin = f_timeToStop = f_tellListenersAboutRepeat = false;
@@ -296,7 +296,7 @@ public final class Animator implements TickListener {
   public void startReverse() {
     synchronized (f_lock) {
       if (f_running)
-        throw new IllegalStateException("start() can't be invoked on a running animation.");
+        throw new IllegalStateException(I18N.err(12, "startReverse()"));
 
       f_startTimeNanos = f_cycleStartTimeNanos = System.nanoTime();
       f_listenersToldAboutBegin = f_timeToStop = f_tellListenersAboutRepeat = false;
@@ -389,7 +389,7 @@ public final class Animator implements TickListener {
   public void reverseNow() {
     synchronized (f_lock) {
       if (!f_running)
-        throw new IllegalStateException("reverseNow() can only be invoked on a running animation.");
+        throw new IllegalStateException(I18N.err(13, "reverseNow()"));
 
       final long now = System.nanoTime();
       final long cycleElapsedTimeNanos = getCycleElapsedTime(now);
@@ -578,8 +578,7 @@ public final class Animator implements TickListener {
         fraction = 0;
         break;
       default:
-        throw new IllegalStateException(String.format("switch on %s can't handle case %s.", EndBehavior.class.getName(),
-            f_endBehavior.toString()));
+        throw new IllegalStateException(I18N.err(2, EndBehavior.class.getName(), f_endBehavior.toString()));
       }
       f_timeToStop = true;
     } else if ((f_duration != INFINITE) && (cycleElapsedTimeNanos > durationNanos)) {
