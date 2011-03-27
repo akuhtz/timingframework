@@ -1,9 +1,12 @@
 package org.jdesktop.core.animation.timing;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+
+import org.jdesktop.core.animation.i18n.I18N;
 
 import com.surelogic.Immutable;
 
@@ -56,15 +59,15 @@ public class KeyTimes implements Iterable<Double> {
   private KeyTimes(double... times) {
     final List<Double> timesList = new ArrayList<Double>();
     if (times[0] != 0) {
-      throw new IllegalArgumentException("First time value must be zero");
+      throw new IllegalArgumentException(I18N.err(14));
     }
     if (times[times.length - 1] != 1.0f) {
-      throw new IllegalArgumentException("Last time value must be one");
+      throw new IllegalArgumentException(I18N.err(15));
     }
     double prevTime = 0;
     for (double time : times) {
       if (time < prevTime) {
-        throw new IllegalArgumentException("Time values must be in increasing order");
+        throw new IllegalArgumentException(I18N.err(16, Arrays.toString(times)));
       }
       timesList.add(time);
       prevTime = time;
