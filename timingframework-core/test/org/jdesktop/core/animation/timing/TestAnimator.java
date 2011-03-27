@@ -29,4 +29,31 @@ public class TestAnimator {
     a.start();
     a.start();
   }
+
+  @Test(expected = IllegalStateException.class)
+  public void start2() {
+    Animator a = new AnimatorBuilder(new ManualTimingSource()).build();
+    a.startReverse();
+    a.start();
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void startReverse1() {
+    Animator a = new AnimatorBuilder(new ManualTimingSource()).build();
+    a.startReverse();
+    a.startReverse();
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void startReverse2() {
+    Animator a = new AnimatorBuilder(new ManualTimingSource()).build();
+    a.start();
+    a.startReverse();
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void reverseNow() {
+    Animator a = new AnimatorBuilder(new ManualTimingSource()).build();
+    a.reverseNow();
+  }
 }
