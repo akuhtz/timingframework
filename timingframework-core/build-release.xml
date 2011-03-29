@@ -9,18 +9,16 @@
 	<property name="core" location="${basedir}${fs}timingframework-core" />
 	<property name="core-src" location="${core}${fs}src" />
 	<property name="core-lib" location="${core}${fs}lib" />
+	<property file="${core-lib}${fs}release.properties" />
 	<property name="core-release" location="${core}${fs}release" />
+	<property name="core-release-work" location="${core-release}${fs}timingframework-core-${release-version}" />
+	<property name="core-jar" value="timingframework-core-${release-version}.jar" />
 
 	<target name="build-release-core">
 		<delete quiet="true" includeemptydirs="true">
 			<fileset dir="${core-release}" includes="*/**" defaultexcludes="no" />
 		</delete>
 		<echo message="${core-release} deleted..." />
-
-		<property file="${core-lib}${fs}release.properties" />
-
-		<property name="core-release-work" location="${core-release}${fs}timingframework-core-${release-version}" />
-		<property name="core-jar" value="timingframework-core-${release-version}.jar" />
 
 		<mkdir dir="${core-release}" />
 		<mkdir dir="${core-release-work}" />
