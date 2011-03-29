@@ -7,24 +7,27 @@
 	<property name="swing-src" location="${swing}${fs}src" />
 	<property name="swing-lib" location="${swing}${fs}lib" />
 	<property name="swing-release" location="${swing}${fs}release" />
-	<property name="swing-release-work" location="${swing-release}${fs}timingframework-swing-${tf-version}" />
-	<property name="swing-jar" value="timingframework-swing-${tf-version}.jar" />
+	<property name="swing-release-work" location="${swing-release}${fs}timingframework-swing-${release-version}" />
+	<property name="swing-jar" value="timingframework-swing-${release-version}.jar" />
 
 	<target name="build-release-swing">
-		<delete dir="${release}" quiet="true" />
+		<delete quiet="true" includeemptydirs="true">
+			<fileset dir="${swing-release}" includes="*/**" defaultexcludes="no" />
+		</delete>
+		<echo message="${swing-release} deleted..." />
 
 		<mkdir dir="${swing-release}" />
 		<mkdir dir="${swing-release-work}" />
 		<mkdir dir="${swing-release-work}${fs}lib" />
 
-		<copy file="${core-lib}${fs}${promises-jar}" tofile="${swing-release-work}${fs}lib${fs}${promises-jar}" />
 		<copy todir="${swing-release-work}${fs}src">
+			<fileset dir="${promises-src}" />
 			<fileset dir="${core-src}" />
 			<fileset dir="${swing-src}" />
 		</copy>
 
 		<mkdir dir="${swing-release-work}${fs}bin" />
-		<javac srcdir="${swing-release-work}${fs}src" destdir="${swing-release-work}${fs}bin" classpath="${swing-release-work}${fs}lib${fs}${promises-jar}" debug="on" source="1.6" target="1.6" />
+		<javac srcdir="${swing-release-work}${fs}src" destdir="${swing-release-work}${fs}bin" debug="on" source="1.6" target="1.6" />
 		<jar destfile="${swing-release-work}${fs}lib${fs}${swing-jar}">
 			<fileset dir="${swing-release-work}${fs}bin" />
 			<manifest />
@@ -37,8 +40,8 @@
 		</jar>
 		<delete quiet="true" dir="${swing-release-work}${fs}bin" />
 
-		<javadoc access="public" destdir="${swing-release-work}${fs}/javadoc" classpath="${swing-release-work}${fs}lib${fs}${promises-jar}" source="1.6" sourcepath="${swing-release-work}${fs}src" Overview="${core-lib}${fs}javadoc-overview.html" excludepackagenames="**.demos.*,**.splineeditor" notree="true" nodeprecatedlist="true" />
+		<javadoc access="public" destdir="${swing-release-work}${fs}/javadoc" source="1.6" sourcepath="${swing-release-work}${fs}src" Overview="${core-lib}${fs}javadoc-overview.html" excludepackagenames="**.demos.*,**.splineeditor" notree="true" nodeprecatedlist="true" />
 
-		<zip destfile="${swing-release}${fs}timingframework-swing-${tf-version}.zip" basedir="${swing-release-work}" />
+		<zip destfile="${swing-release}${fs}timingframework-swing-${release-version}.zip" basedir="${swing-release-work}" />
 	</target>
 </project>
