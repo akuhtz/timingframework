@@ -1,7 +1,6 @@
 package org.jdesktop.core.animation.timing;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -14,13 +13,19 @@ import com.surelogic.NotThreadSafe;
 @NotThreadSafe
 public class KeyFramesBuilder<T> {
 
-  private Evaluator<T> f_evaluator;
+  private Evaluator<T> f_evaluator = null;
   private final List<T> f_values = new ArrayList<T>();
   private final LinkedList<Double> f_times = new LinkedList<Double>();
   private final List<Interpolator> f_interpolators = new ArrayList<Interpolator>();
 
   public KeyFramesBuilder() {
-    f_evaluator = null;
+    // Nothing to do
+  }
+
+  public KeyFramesBuilder(T startValue) {
+    f_values.add(startValue);
+    f_times.add(Double.valueOf(0));
+    f_interpolators.add(null);
   }
 
   public KeyFramesBuilder<T> addFrame(T value) {
@@ -42,25 +47,6 @@ public class KeyFramesBuilder<T> {
     f_values.add(value);
     f_times.add(atTime);
     f_interpolators.add(interpolator);
-    return this;
-  }
-
-  public KeyFramesBuilder<T> setFrames(T... values) {
-    f_values.clear();
-    f_values.addAll(Arrays.asList(values));
-    return this;
-  }
-
-  public KeyFramesBuilder<T> setTimes(double... times) {
-    f_times.clear();
-    for (double time : times)
-      f_times.add(time);
-    return this;
-  }
-
-  public KeyFramesBuilder<T> setInterpolators(Interpolator... interpolators) {
-    f_interpolators.clear();
-    f_interpolators.addAll(Arrays.asList(interpolators));
     return this;
   }
 
@@ -97,17 +83,24 @@ public class KeyFramesBuilder<T> {
     index = 0;
     final Interpolator[] interpolators = new Interpolator[frameCount];
     for (Interpolator interpolator : f_interpolators) {
-      if (interpolator == null)
+      if (index != 0 && interpolator == null)
         throw new IllegalArgumentException(I18N.err(25, index));
-      interpolators[index] = interpolator;
+      interpolators[index] = index == 0 ? null : interpolator;
       index++;
+    }
+    /*
+     * Change the first key time to zero, unless it already is zero.
+     */
+    if (f_times.getFirst() != 0) {
+      f_times.removeFirst();
+      f_times.addFirst(Double.valueOf(0));
     }
     /*
      * Change the last key time to one, unless it already is one.
      */
     if (f_times.getLast() != 1) {
       f_times.removeLast();
-      f_times.add(Double.valueOf(1));
+      f_times.addLast(Double.valueOf(1));
     }
     /*
      * Check that key times are less than one and that they increase.
