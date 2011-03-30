@@ -25,61 +25,58 @@ import org.jdesktop.swt.animation.timing.demos.DemoResources;
  */
 public class SpherePanel extends Canvas {
 
-	private static final int PADDING = 5;
-	private static final int PANEL_HEIGHT = 300;
+  private static final int PADDING = 5;
+  private static final int PANEL_HEIGHT = 300;
 
-	private final Image f_sphereImage;
-	private final int f_sphereX = PADDING;
-	private final Animator f_bouncer;
-	private final String f_label;
+  private final Image f_sphereImage;
+  private final int f_sphereX = PADDING;
+  private final Animator f_bouncer;
+  private final String f_label;
 
-	private int f_sphereY = 20; // mutable
+  private int f_sphereY = 20; // mutable
 
-	/**
-	 * The animation changes the location of the sphere over time through this
-	 * property setter. We force a repaint to display the sphere in its new
-	 * location.
-	 */
-	public void setSphereY(int sphereY) {
-		this.f_sphereY = sphereY;
-		redraw();
-	}
+  /**
+   * The animation changes the location of the sphere over time through this
+   * property setter. We force a repaint to display the sphere in its new
+   * location.
+   */
+  public void setSphereY(int sphereY) {
+    this.f_sphereY = sphereY;
+    redraw();
+  }
 
-	/**
-	 * Load the named image and create the animator that will bounce the image
-	 * down and back up in this panel.
-	 */
-	SpherePanel(Composite parent, int style, String resourceName, String label) {
-		super(parent, style);
-		f_sphereImage = DemoResources.getImage(resourceName,
-				parent.getDisplay());
-		final PropertySetter ps = new PropertySetter(this, "sphereY", 20,
-				(PANEL_HEIGHT - f_sphereImage.getBounds().height), 20);
-		f_bouncer = new AnimatorBuilder().addTarget(ps)
-				.setDuration(2, TimeUnit.SECONDS)
-				.setInterpolator(new AccelerationInterpolator(.5, .5)).build();
-		f_label = label;
-		addPaintListener(new PaintListener() {
-			@Override
-			public void paintControl(PaintEvent e) {
-				final GC gc = e.gc;
-				gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_WHITE));
-				gc.fillRectangle(0, 0, getBounds().width, getBounds().height);
-				gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_BLUE));
-				gc.drawString(f_label, f_sphereX, 5);
-				gc.drawImage(f_sphereImage, f_sphereX, f_sphereY);
-			}
-		});
-	}
+  /**
+   * Load the named image and create the animator that will bounce the image
+   * down and back up in this panel.
+   */
+  SpherePanel(Composite parent, int style, String resourceName, String label) {
+    super(parent, style);
+    f_sphereImage = DemoResources.getImage(resourceName, parent.getDisplay());
+    final PropertySetter<Integer> ps = PropertySetter.build(this, "sphereY", 20, (PANEL_HEIGHT - f_sphereImage.getBounds().height),
+        20);
+    f_bouncer = new AnimatorBuilder().addTarget(ps).setDuration(2, TimeUnit.SECONDS)
+        .setInterpolator(new AccelerationInterpolator(.5, .5)).build();
+    f_label = label;
+    addPaintListener(new PaintListener() {
+      @Override
+      public void paintControl(PaintEvent e) {
+        final GC gc = e.gc;
+        gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_WHITE));
+        gc.fillRectangle(0, 0, getBounds().width, getBounds().height);
+        gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_BLUE));
+        gc.drawString(f_label, f_sphereX, 5);
+        gc.drawImage(f_sphereImage, f_sphereX, f_sphereY);
+      }
+    });
+  }
 
-	@Override
-	public Point computeSize(int wHint, int hHint, boolean changed) {
-		final Point result = new Point(f_sphereImage.getBounds().width + 2
-				* PADDING, PANEL_HEIGHT);
-		return result;
-	}
+  @Override
+  public Point computeSize(int wHint, int hHint, boolean changed) {
+    final Point result = new Point(f_sphereImage.getBounds().width + 2 * PADDING, PANEL_HEIGHT);
+    return result;
+  }
 
-	Animator getAnimator() {
-		return f_bouncer;
-	}
+  Animator getAnimator() {
+    return f_bouncer;
+  }
 }

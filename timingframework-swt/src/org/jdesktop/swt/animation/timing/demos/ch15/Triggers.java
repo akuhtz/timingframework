@@ -34,86 +34,71 @@ import org.jdesktop.swt.animation.timing.triggers.MouseTrigger;
  */
 public class Triggers extends Composite {
 
-	public static void main(String[] args) {
-		final Display display = Display.getDefault();
-		final Shell shell = new Shell(display);
-		shell.setText("SWT Triggers");
+  public static void main(String[] args) {
+    final Display display = Display.getDefault();
+    final Shell shell = new Shell(display);
+    shell.setText("SWT Triggers");
 
-		final TimingSource ts = new SWTTimingSource(15, TimeUnit.MILLISECONDS,
-				display);
-		AnimatorBuilder.setDefaultTimingSource(ts);
-		ts.init();
+    final TimingSource ts = new SWTTimingSource(15, TimeUnit.MILLISECONDS, display);
+    AnimatorBuilder.setDefaultTimingSource(ts);
+    ts.init();
 
-		createAndShowGUI(shell);
+    createAndShowGUI(shell);
 
-		shell.pack();
-		shell.open();
-		while (!shell.isDisposed()) {
-			if (!display.readAndDispatch())
-				display.sleep();
-		}
-		ts.dispose();
-		display.dispose();
-	}
+    shell.pack();
+    shell.open();
+    while (!shell.isDisposed()) {
+      if (!display.readAndDispatch())
+        display.sleep();
+    }
+    ts.dispose();
+    display.dispose();
+  }
 
-	SpherePanel armed, over, action, focus, timing;
-	static Button triggerButton;
+  SpherePanel armed, over, action, focus, timing;
+  static Button triggerButton;
 
-	/** Creates a new instance of Triggers */
-	public Triggers(Composite parent, int style) {
-		super(parent, style);
-		setBackground(getDisplay().getSystemColor(SWT.COLOR_WHITE));
-		final RowLayout layout = new RowLayout(SWT.HORIZONTAL);
-		layout.fill = true;
-		layout.wrap = false;
-		layout.spacing = 0;
-		setLayout(layout);
-		action = new SpherePanel(this, SWT.DOUBLE_BUFFERED,
-				DemoResources.YELLOW_SPHERE, "B-Click");
-		focus = new SpherePanel(this, SWT.DOUBLE_BUFFERED,
-				DemoResources.BLUE_SPHERE, "Key-Foc");
-		armed = new SpherePanel(this, SWT.DOUBLE_BUFFERED,
-				DemoResources.RED_SPHERE, "M-Press");
-		over = new SpherePanel(this, SWT.DOUBLE_BUFFERED,
-				DemoResources.GREEN_SPHERE, "M-Enter");
-		timing = new SpherePanel(this, SWT.DOUBLE_BUFFERED,
-				DemoResources.GRAY_SPHERE, "1-Stop");
+  /** Creates a new instance of Triggers */
+  public Triggers(Composite parent, int style) {
+    super(parent, style);
+    setBackground(getDisplay().getSystemColor(SWT.COLOR_WHITE));
+    final RowLayout layout = new RowLayout(SWT.HORIZONTAL);
+    layout.fill = true;
+    layout.wrap = false;
+    layout.spacing = 0;
+    setLayout(layout);
+    action = new SpherePanel(this, SWT.DOUBLE_BUFFERED, DemoResources.YELLOW_SPHERE, "B-Click");
+    focus = new SpherePanel(this, SWT.DOUBLE_BUFFERED, DemoResources.BLUE_SPHERE, "Key-Foc");
+    armed = new SpherePanel(this, SWT.DOUBLE_BUFFERED, DemoResources.RED_SPHERE, "M-Press");
+    over = new SpherePanel(this, SWT.DOUBLE_BUFFERED, DemoResources.GREEN_SPHERE, "M-Enter");
+    timing = new SpherePanel(this, SWT.DOUBLE_BUFFERED, DemoResources.GRAY_SPHERE, "1-Stop");
 
-		/*
-		 * Add triggers for each sphere, depending on what we want to trigger
-		 * them.
-		 */
-		EventTrigger.addTrigger(triggerButton, SWT.Selection,
-				action.getAnimator());
-		FocusTrigger.addTrigger(triggerButton, focus.getAnimator(),
-				FocusTriggerEvent.IN);
-		MouseTrigger.addTrigger(triggerButton, armed.getAnimator(),
-				MouseTriggerEvent.PRESS);
-		MouseTrigger.addTrigger(triggerButton, over.getAnimator(),
-				MouseTriggerEvent.ENTER);
-		TimingTrigger.addTrigger(action.getAnimator(), timing.getAnimator(),
-				TimingTriggerEvent.STOP);
-	}
+    /*
+     * Add triggers for each sphere, depending on what we want to trigger them.
+     */
+    EventTrigger.addTrigger(triggerButton, SWT.Selection, action.getAnimator());
+    FocusTrigger.addTrigger(triggerButton, focus.getAnimator(), FocusTriggerEvent.IN);
+    MouseTrigger.addTrigger(triggerButton, armed.getAnimator(), MouseTriggerEvent.PRESS);
+    MouseTrigger.addTrigger(triggerButton, over.getAnimator(), MouseTriggerEvent.ENTER);
+    TimingTrigger.addTrigger(action.getAnimator(), timing.getAnimator(), TimingTriggerEvent.STOP);
+  }
 
-	private static void createAndShowGUI(Shell shell) {
-		shell.setLayout(new GridLayout());
-		final Composite buttonPanel = new Composite(shell, SWT.NONE);
-		buttonPanel
-				.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-		buttonPanel.setLayout(new GridLayout());
-		// Note: "Other Button" exists only to provide another component to
-		// move focus from/to, in order to show how FocusTrigger works
-		final Button otherButton = new Button(buttonPanel, SWT.PUSH);
-		otherButton.setText("Other Button");
-		otherButton
-				.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+  private static void createAndShowGUI(Shell shell) {
+    shell.setLayout(new GridLayout());
+    final Composite buttonPanel = new Composite(shell, SWT.NONE);
+    buttonPanel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+    buttonPanel.setLayout(new GridLayout());
+    // Note: "Other Button" exists only to provide another component to
+    // move focus from/to, in order to show how FocusTrigger works
+    final Button otherButton = new Button(buttonPanel, SWT.PUSH);
+    otherButton.setText("Other Button");
+    otherButton.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
-		triggerButton = new Button(buttonPanel, SWT.PUSH);
-		triggerButton.setText("Trigger");
-		triggerButton.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
-				false));
+    triggerButton = new Button(buttonPanel, SWT.PUSH);
+    triggerButton.setText("Trigger");
+    triggerButton.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
-		final Composite c = new Triggers(shell, SWT.NONE);
-		c.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-	}
+    final Composite c = new Triggers(shell, SWT.NONE);
+    c.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+  }
 }

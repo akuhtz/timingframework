@@ -13,18 +13,16 @@ import org.jdesktop.swt.animation.timing.sources.SWTTimingSource;
 
 public final class JRendererFactory {
 
-	public static JRenderer<Canvas> getDefaultRenderer(Canvas on,
-			JRendererTarget<Display, GC> target, boolean hasChildren) {
-		final JRenderer<Canvas> result;
-		final TimingSource timingSource = new SWTTimingSource(15,
-				TimeUnit.MILLISECONDS, on.getDisplay());
-		result = new JPassiveRenderer(on, target, timingSource);
-		timingSource.init();
-		AnimatorBuilder.setDefaultTimingSource(result.getTimingSource());
-		return result;
-	}
+  public static JRenderer<Canvas> getDefaultRenderer(Canvas on, JRendererTarget<Display, GC> target, boolean hasChildren) {
+    final JRenderer<Canvas> result;
+    final TimingSource timingSource = new SWTTimingSource(15, TimeUnit.MILLISECONDS, on.getDisplay());
+    result = new JPassiveRenderer(on, target, timingSource);
+    timingSource.init();
+    AnimatorBuilder.setDefaultTimingSource(result.getTimingSource());
+    return result;
+  }
 
-	private JRendererFactory() {
-		// no instances
-	}
+  private JRendererFactory() {
+    // no instances
+  }
 }

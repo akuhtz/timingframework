@@ -24,37 +24,34 @@ import org.jdesktop.swt.animation.timing.sources.SWTTimingSource;
  */
 public class NonLinearRace extends BasicRace {
 
-	public static void main(String args[]) {
-		final Display display = Display.getDefault();
-		final Shell shell = new Shell(display);
-		shell.setLayout(new FillLayout());
+  public static void main(String args[]) {
+    final Display display = Display.getDefault();
+    final Shell shell = new Shell(display);
+    shell.setLayout(new FillLayout());
 
-		final TimingSource ts = new SWTTimingSource(15, TimeUnit.MILLISECONDS,
-				display);
-		AnimatorBuilder.setDefaultTimingSource(ts);
-		ts.init();
+    final TimingSource ts = new SWTTimingSource(15, TimeUnit.MILLISECONDS, display);
+    AnimatorBuilder.setDefaultTimingSource(ts);
+    ts.init();
 
-		new NonLinearRace(shell, "SWT Non-Linear Race");
+    new NonLinearRace(shell, "SWT Non-Linear Race");
 
-		shell.pack();
-		shell.open();
-		while (!shell.isDisposed()) {
-			if (!display.readAndDispatch())
-				display.sleep();
-		}
-		ts.dispose();
-		display.dispose();
-	}
+    shell.pack();
+    shell.open();
+    while (!shell.isDisposed()) {
+      if (!display.readAndDispatch())
+        display.sleep();
+    }
+    ts.dispose();
+    display.dispose();
+  }
 
-	public NonLinearRace(Shell shell, String appName) {
-		super(shell, appName);
-	}
+  public NonLinearRace(Shell shell, String appName) {
+    super(shell, appName);
+  }
 
-	@Override
-	protected Animator getAnimator() {
-		return new AnimatorBuilder()
-				.setDuration(RACE_TIME, TimeUnit.MILLISECONDS)
-				.setInterpolator(new AccelerationInterpolator(0.5, 0.2))
-				.addTarget(this).build();
-	}
+  @Override
+  protected Animator getAnimator() {
+    return new AnimatorBuilder().setDuration(RACE_TIME, TimeUnit.MILLISECONDS)
+        .setInterpolator(new AccelerationInterpolator(0.5, 0.2)).addTarget(this).build();
+  }
 }
