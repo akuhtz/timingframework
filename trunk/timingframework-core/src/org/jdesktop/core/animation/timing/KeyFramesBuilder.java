@@ -17,6 +17,7 @@ public class KeyFramesBuilder<T> {
   private final List<T> f_values = new ArrayList<T>();
   private final LinkedList<Double> f_timeFractions = new LinkedList<Double>();
   private final List<Interpolator> f_interpolators = new ArrayList<Interpolator>();
+  private Interpolator f_interpolator = null;
 
   public KeyFramesBuilder() {
     // Nothing to do
@@ -30,14 +31,8 @@ public class KeyFramesBuilder<T> {
 
   public KeyFramesBuilder<T> addFrame(T value) {
     f_values.add(value);
-    if (f_timeFractions.isEmpty()) {
-      f_timeFractions.add(Double.valueOf(0));
-      f_interpolators.add(null);
-    } else {
-      final double atTime = f_timeFractions.getLast();
-      f_timeFractions.add(atTime + ((1.0 - atTime) / 2.0));
-      f_interpolators.add(LinearInterpolator.getInstance());
-    }
+    f_timeFractions.add(null);
+    f_interpolators.add(LinearInterpolator.getInstance());
     return this;
   }
 
@@ -54,10 +49,22 @@ public class KeyFramesBuilder<T> {
     return this;
   }
 
+  public KeyFramesBuilder<T> addFrame(T value, Interpolator interpolator) {
+    f_values.add(value);
+    f_timeFractions.add(null);
+    f_interpolators.add(interpolator);
+    return this;
+  }
+
   public KeyFramesBuilder<T> addFrame(T value, double atTimeFraction, Interpolator interpolator) {
     f_values.add(value);
     f_timeFractions.add(atTimeFraction);
     f_interpolators.add(interpolator);
+    return this;
+  }
+
+  public KeyFramesBuilder<T> setInterpolator(Interpolator interpolator) {
+    f_interpolator = interpolator;
     return this;
   }
 
@@ -80,17 +87,44 @@ public class KeyFramesBuilder<T> {
     /*
      * Change the first key time to zero, unless it already is zero.
      */
-    if (f_timeFractions.getFirst() != 0) {
+    if (f_timeFractions.getFirst() == null || f_timeFractions.getFirst() != 0) {
       f_timeFractions.removeFirst();
       f_timeFractions.addFirst(Double.valueOf(0));
     }
     /*
      * Change the last key time to one, unless it already is one.
      */
-    if (f_timeFractions.getLast() != 1) {
+    if (f_timeFractions.getLast() == null || f_timeFractions.getLast() != 1) {
       f_timeFractions.removeLast();
       f_timeFractions.addLast(Double.valueOf(1));
     }
+    /*
+     * For any unspecified (null) time fractions we compute a linear
+     * interpolated value from the previous and next specified fractions.
+     */
+    List<Integer> fillList = new ArrayList<Integer>();
+    double prev = -1;
+    for (int i = 0; i < f_timeFractions.size(); i++) {
+      Double curr = f_timeFractions.get(i);
+      if (curr == null) {
+        if (prev == -1)
+          throw new IllegalStateException(I18N.err(3, "Time fraction of the first key frame is null, it should be zero"));
+        fillList.add(i);
+      } else {
+        if (!fillList.isEmpty()) {
+          final double delta = (curr.doubleValue() - prev) / (fillList.size() + 1);
+          int count = 1;
+          for (int j : fillList) {
+            final double timeFraction = prev + (count * delta);
+            f_timeFractions.set(j, timeFraction);
+            count++;
+          }
+          fillList.clear();
+        }
+        prev = curr.doubleValue();
+      }
+    }
+
     /*
      * Construct an array of frames and perform null checks.
      */
@@ -103,7 +137,8 @@ public class KeyFramesBuilder<T> {
       final Double atTimeFraction = f_timeFractions.get(i);
       if (atTimeFraction == null)
         throw new IllegalArgumentException(I18N.err(24, i));
-      final Interpolator interpolator = i == 0 ? null : f_interpolators.get(i);
+      final Interpolator canidate = f_interpolator == null ? f_interpolators.get(i) : f_interpolator;
+      final Interpolator interpolator = i == 0 ? null : canidate;
       if (i != 0 && interpolator == null)
         throw new IllegalArgumentException(I18N.err(25, i));
 
