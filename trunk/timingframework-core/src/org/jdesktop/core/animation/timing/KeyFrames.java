@@ -28,12 +28,12 @@ public class KeyFrames<T> implements Iterable<Frame<T>> {
   @Immutable
   public static class Frame<T> {
     private final T f_value;
-    private final double f_atTime;
+    private final double f_timeFraction;
     private final Interpolator f_interpolator;
 
-    public Frame(T value, double atTime, Interpolator interpolator) {
+    public Frame(T value, double atTimeFraction, Interpolator interpolator) {
       this.f_value = value;
-      this.f_atTime = atTime;
+      this.f_timeFraction = atTimeFraction;
       this.f_interpolator = interpolator;
     }
 
@@ -41,8 +41,8 @@ public class KeyFrames<T> implements Iterable<Frame<T>> {
       return f_value;
     }
 
-    public double getAtTime() {
-      return f_atTime;
+    public double getTimeFraction() {
+      return f_timeFraction;
     }
 
     public Interpolator getInterpolator() {
@@ -121,9 +121,9 @@ public class KeyFrames<T> implements Iterable<Frame<T>> {
    * <table border="1">
    * <tr>
    * <th><i>f<i></th>
-   * <th><i>i</i><tt>=k.getInterval(</tt><i>f</i><tt>)</tt></th>
-   * <th><tt>k.getTime(</tt><i>i</i><tt>)</tt></th>
-   * <th><tt>k.getTime(</tt><i>i</i><tt>+1)</tt></th>
+   * <th><i>i</i><tt>=k.getStartFrameIndexAt(</tt><i>f</i><tt>)</tt></th>
+   * <th><tt>k.getFrame(</tt><i>i</i><tt>).getTimeFraction()</tt></th>
+   * <th><tt>k.getFrame(</tt><i>i</i><tt>+1).getTimeFraction()</tt></th>
    * </tr>
    * <tr>
    * <td align="right">-1*</td>
@@ -195,23 +195,23 @@ public class KeyFrames<T> implements Iterable<Frame<T>> {
    * @return the index of the start key time of the interval the passed fraction
    *         falls within.
    */
-  public int getInterval(double fraction) {
+  public int getStartFrameIndexAt(double fraction) {
     final int size = size();
     for (int i = 1; i < size; ++i) {
-      if (fraction <= f_frames[i].getAtTime())
+      if (fraction <= f_frames[i].getTimeFraction())
         return i - 1;
     }
     return size - 2;
   }
 
-  public T getInterpolatedValue(double fraction) {
-    final int interval = getInterval(fraction);
+  public T getInterpolatedValueAt(double fraction) {
+    final int interval = getStartFrameIndexAt(fraction);
     /*
      * First, figure out the real fraction to use, given the interpolation type
      * and start and end time of the interval.
      */
-    final double t0 = f_frames[interval].getAtTime();
-    final double t1 = f_frames[interval + 1].getAtTime();
+    final double t0 = f_frames[interval].getTimeFraction();
+    final double t1 = f_frames[interval + 1].getTimeFraction();
     final double t = (fraction - t0) / (t1 - t0);
     double iFraction = f_frames[interval + 1].getInterpolator().interpolate(t);
     /*
