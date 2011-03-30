@@ -1,11 +1,5 @@
 package org.jdesktop.core.animation.timing;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import org.jdesktop.core.animation.timing.interpolators.LinearInterpolator;
-
 import com.surelogic.Immutable;
 
 /**
@@ -24,11 +18,15 @@ public class KeyFrames<T> {
 
   private final T[] f_values;
   private final double[] f_times;
+  /**
+   * <tt>f_interpolators[0] = null</tt> because be store the interpolator for a
+   * time interval with the end time (not the start time).
+   */
   private final Interpolator[] f_interpolators;
   private final Evaluator<T> f_evaluator;
 
   /**
-   * Constructs an list of key frames.
+   * Constructs a list of key frames.
    * <p>
    * This constructor should only be called from
    * {@link KeyFramesBuilder#build()}.
@@ -40,65 +38,149 @@ public class KeyFrames<T> {
     f_evaluator = evaluator;
   }
 
+  public int size() {
+    return f_values.length;
+  }
+
+  public T getValue(int index) {
+    return f_values[index];
+  }
+
+  public double getTime(int index) {
+    return f_times[index];
+  }
+
+  public Interpolator getInterpolator(int index) {
+    return f_interpolators[index];
+  }
+
+  /**
+   * Returns interval of time, 0 to {@link KeyFrames#size()} - 2, that contains
+   * this time fraction. The interval returned is the index of the start key
+   * time of the interval the passed fraction falls within.
+   * <p>
+   * The returned interval is <i>i</i> if <tt>fraction</tt> is within the range
+   * (<tt>getKeyTime(</tt><i>i</i><tt>)</tt>, <tt>getKeyTime(</tt> <i>i</i>
+   * <tt>+1)</tt>] unless <i>i</i>=0 in which case <tt>fraction</tt> is within
+   * the range [0, <tt>getKeyTime(</tt><i>i</i><tt>+1)</tt>] (i.e., zero
+   * inclusive).
+   * <p>
+   * For example, consider the following instance:
+   * 
+   * <pre>
+   * KeyFrames k = TODO.build(0, 0.1, 0.2, 0.5, 1);
+   * </pre>
+   * 
+   * The table below shows the results obtained from calls on this instance.
+   * <p>
+   * <table border="1">
+   * <tr>
+   * <th><i>f<i></th>
+   * <th><i>i</i><tt>=k.getInterval(</tt><i>f</i><tt>)</tt></th>
+   * <th><tt>k.getTime(</tt><i>i</i><tt>)</tt></th>
+   * <th><tt>k.getTime(</tt><i>i</i><tt>+1)</tt></th>
+   * </tr>
+   * <tr>
+   * <td align="right">-1*</td>
+   * <td align="right">0</td>
+   * <td align="right">0.0</td>
+   * <td align="right">0.1</td>
+   * </tr>
+   * <tr>
+   * <td align="right">0</td>
+   * <td align="right">0</td>
+   * <td align="right">0.0</td>
+   * <td align="right">0.1</td>
+   * </tr>
+   * <tr>
+   * <td align="right">0.1</td>
+   * <td align="right">0</td>
+   * <td align="right">0.0</td>
+   * <td align="right">0.1</td>
+   * </tr>
+   * <tr>
+   * <td align="right">0.11</td>
+   * <td align="right">1</td>
+   * <td align="right">0.1</td>
+   * <td align="right">0.2</td>
+   * </tr>
+   * <tr>
+   * <td align="right">0.2</td>
+   * <td align="right">1</td>
+   * <td align="right">0.1</td>
+   * <td align="right">0.2</td>
+   * </tr>
+   * <tr>
+   * <td align="right">0.34</td>
+   * <td align="right">2</td>
+   * <td align="right">0.2</td>
+   * <td align="right">0.5</td>
+   * </tr>
+   * <tr>
+   * <td align="right">0.5</td>
+   * <td align="right">2</td>
+   * <td align="right">0.2</td>
+   * <td align="right">0.5</td>
+   * </tr>
+   * <tr>
+   * <td align="right">0.6</td>
+   * <td align="right">3</td>
+   * <td align="right">0.5</td>
+   * <td align="right">1.0</td>
+   * </tr>
+   * <tr>
+   * <td align="right">1</td>
+   * <td align="right">3</td>
+   * <td align="right">0.5</td>
+   * <td align="right">1.0</td>
+   * </tr>
+   * <tr>
+   * <td align="right">2*</td>
+   * <td align="right">3</td>
+   * <td align="right">0.5</td>
+   * <td align="right">1.0</td>
+   * </tr>
+   * </table>
+   * 
+   * * The first and the last entries, -1 and 2, are outside the range [0,1],
+   * however the implementation clamps them to [0,1] and returns a valid result.
+   * 
+   * @param fraction
+   *          a time fraction in the range [0,1].
+   * @return the index of the start key time of the interval the passed fraction
+   *         falls within.
+   */
   public int getInterval(double fraction) {
-    int i = 0;
-    while (i < f_times.length) {
+    for (int i = 1; i < f_times.length; ++i) {
       if (fraction <= f_times[i])
-        return i;
-      else
-        i++;
+        return i - 1;
     }
-    return i;
+    return f_times.length - 2;
   }
 
-  /**
-   * Returns value calculated from the value at the lower index, the value at
-   * the upper index, the fraction elapsed between these endpoints, and the
-   * evaluator set up by this object at construction time.
-   */
-  private T getValue(int i0, int i1, double fraction) {
-    T value;
-    T lowerValue = f_values[i0];
-    if (i0 == i1) {
-      // trivial case
-      value = lowerValue;
-    } else {
-      T v0 = lowerValue;
-      T v1 = f_values[i1];
-      value = f_evaluator.evaluate(v0, v1, fraction);
-    }
-    return value;
-  }
-
-  /**
-   * Returns a value for the given fraction elapsed of the animation cycle.
-   * Given the fraction, this method will determine what interval the fraction
-   * lies within, how much of that interval has elapsed, what the boundary
-   * values are (from KeyValues), what the interpolated fraction is (from the
-   * Interpolator for the interval), and what the final interpolated
-   * intermediate value is (using the appropriate Evaluator). This method will
-   * call into the Interpolator for the time interval to get the interpolated
-   * method. To ensure that future operations succeed, the value received from
-   * the interpolation will be clamped to the interval [0,1].
-   */
   public T getValue(double fraction) {
+    final int interval = getInterval(fraction);
     /*
      * First, figure out the real fraction to use, given the interpolation type
-     * and keyTimes.
+     * and start and end time of the interval.
      */
-    int interval = getInterval(fraction);
-    final double t0 = interval == 0 ? 0.0 : f_times[interval - 1];
-    final double t1 = f_times[interval];
+    final double t0 = f_times[interval];
+    final double t1 = f_times[interval + 1];
     final double t = (fraction - t0) / (t1 - t0);
-    double interpolatedT = f_interpolators[interval].interpolate(t);
+    double iFraction = f_interpolators[interval + 1].interpolate(t);
     /*
-     * Clamp to avoid problems with buggy interpolators.
+     * Clamp to [0,1] to any avoid problems with buggy interpolators.
      */
-    if (interpolatedT < 0) {
-      interpolatedT = 0;
-    } else if (interpolatedT > 1) {
-      interpolatedT = 1;
+    if (iFraction < 0) {
+      iFraction = 0;
+    } else if (iFraction > 1) {
+      iFraction = 1;
     }
-    return getValue(interval, interval + 1, interpolatedT);
+    /*
+     * Second interpolate between the two key values.
+     */
+    final T v0 = f_values[interval];
+    final T v1 = f_values[interval + 1];
+    return f_evaluator.evaluate(v0, v1, iFraction);
   }
 }
