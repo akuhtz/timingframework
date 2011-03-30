@@ -7,30 +7,28 @@ import java.util.List;
 
 public abstract class AbstractEquation implements Equation {
 
-	protected final List<PropertyChangeListener> listeners;
+  protected final List<PropertyChangeListener> listeners;
 
-	protected AbstractEquation() {
-		this.listeners = new LinkedList<PropertyChangeListener>();
-	}
+  protected AbstractEquation() {
+    this.listeners = new LinkedList<PropertyChangeListener>();
+  }
 
-	public void addPropertyChangeListener(PropertyChangeListener listener) {
-		if (listener != null && !listeners.contains(listener)) {
-			listeners.add(listener);
-		}
-	}
+  public void addPropertyChangeListener(PropertyChangeListener listener) {
+    if (listener != null && !listeners.contains(listener)) {
+      listeners.add(listener);
+    }
+  }
 
-	public void removePropertyChangeListener(PropertyChangeListener listener) {
-		if (listener != null) {
-			listeners.remove(listener);
-		}
-	}
+  public void removePropertyChangeListener(PropertyChangeListener listener) {
+    if (listener != null) {
+      listeners.remove(listener);
+    }
+  }
 
-	protected void firePropertyChange(String propertyName, double oldValue,
-			double newValue) {
-		PropertyChangeEvent changeEvent = new PropertyChangeEvent(this,
-				propertyName, oldValue, newValue);
-		for (PropertyChangeListener listener : listeners) {
-			listener.propertyChange(changeEvent);
-		}
-	}
+  protected void firePropertyChange(String propertyName, double oldValue, double newValue) {
+    PropertyChangeEvent changeEvent = new PropertyChangeEvent(this, propertyName, oldValue, newValue);
+    for (PropertyChangeListener listener : listeners) {
+      listener.propertyChange(changeEvent);
+    }
+  }
 }

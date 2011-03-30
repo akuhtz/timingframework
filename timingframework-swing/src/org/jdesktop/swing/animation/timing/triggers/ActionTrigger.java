@@ -20,51 +20,48 @@ import org.jdesktop.core.animation.timing.triggers.Trigger;
  */
 public class ActionTrigger extends Trigger implements ActionListener {
 
-	/**
-	 * Creates an {@link ActionTrigger} and adds it as a listener to the passed
-	 * object.
-	 * 
-	 * @param object
-	 *            an object that will be used as an event source for this
-	 *            trigger. This object must have an {@code addActionListener()}
-	 *            method.
-	 * @param animator
-	 *            the animation to start when the event occurs.
-	 * @return the resulting trigger.
-	 * @throws IllegalArgumentException
-	 *             if the passed object has no {@code addActionListener()}.
-	 */
-	public static ActionTrigger addTrigger(Object object, Animator animator) {
-		final ActionTrigger trigger = new ActionTrigger(animator);
-		try {
-			Method addListenerMethod = object.getClass().getMethod(
-					"addActionListener", ActionListener.class);
-			addListenerMethod.invoke(object, trigger);
-		} catch (Exception e) {
-			throw new IllegalArgumentException("Problem adding listener"
-					+ " to object: " + e);
-		}
-		return trigger;
-	}
+  /**
+   * Creates an {@link ActionTrigger} and adds it as a listener to the passed
+   * object.
+   * 
+   * @param object
+   *          an object that will be used as an event source for this trigger.
+   *          This object must have an {@code addActionListener()} method.
+   * @param animator
+   *          the animation to start when the event occurs.
+   * @return the resulting trigger.
+   * @throws IllegalArgumentException
+   *           if the passed object has no {@code addActionListener()}.
+   */
+  public static ActionTrigger addTrigger(Object object, Animator animator) {
+    final ActionTrigger trigger = new ActionTrigger(animator);
+    try {
+      Method addListenerMethod = object.getClass().getMethod("addActionListener", ActionListener.class);
+      addListenerMethod.invoke(object, trigger);
+    } catch (Exception e) {
+      throw new IllegalArgumentException("Problem adding listener" + " to object: " + e);
+    }
+    return trigger;
+  }
 
-	/**
-	 * Creates an {@link ActionTrigger} that will start the animator upon
-	 * receiving any ActionEvents. It should be added to any suitable object
-	 * with an {@code addActionListener()} method.
-	 * 
-	 * @param animator
-	 *            the Animator that start when the event occurs
-	 */
-	public ActionTrigger(Animator animator) {
-		super(animator);
-	}
+  /**
+   * Creates an {@link ActionTrigger} that will start the animator upon
+   * receiving any ActionEvents. It should be added to any suitable object with
+   * an {@code addActionListener()} method.
+   * 
+   * @param animator
+   *          the Animator that start when the event occurs
+   */
+  public ActionTrigger(Animator animator) {
+    super(animator);
+  }
 
-	/**
-	 * Called by an object generating {@link ActionEvent}s to which this trigger
-	 * was added as an {@link ActionListener}. This starts the animation passed
-	 * at object construction.
-	 */
-	public void actionPerformed(ActionEvent ae) {
-		fire();
-	}
+  /**
+   * Called by an object generating {@link ActionEvent}s to which this trigger
+   * was added as an {@link ActionListener}. This starts the animation passed at
+   * object construction.
+   */
+  public void actionPerformed(ActionEvent ae) {
+    fire();
+  }
 }

@@ -34,71 +34,65 @@ import org.jdesktop.swing.animation.timing.triggers.MouseTrigger;
  */
 public class Triggers extends JComponent {
 
-	SpherePanel armed, over, action, focus, timing;
-	static JButton triggerButton;
+  SpherePanel armed, over, action, focus, timing;
+  static JButton triggerButton;
 
-	/** Creates a new instance of Triggers */
-	public Triggers() {
-		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-		action = new SpherePanel(DemoResources.YELLOW_SPHERE, "B-Click");
-		focus = new SpherePanel(DemoResources.BLUE_SPHERE, "Key-Foc");
-		armed = new SpherePanel(DemoResources.RED_SPHERE, "M-Press");
-		over = new SpherePanel(DemoResources.GREEN_SPHERE, "M-Enter");
-		timing = new SpherePanel(DemoResources.GRAY_SPHERE, "1-Stop");
+  /** Creates a new instance of Triggers */
+  public Triggers() {
+    setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+    action = new SpherePanel(DemoResources.YELLOW_SPHERE, "B-Click");
+    focus = new SpherePanel(DemoResources.BLUE_SPHERE, "Key-Foc");
+    armed = new SpherePanel(DemoResources.RED_SPHERE, "M-Press");
+    over = new SpherePanel(DemoResources.GREEN_SPHERE, "M-Enter");
+    timing = new SpherePanel(DemoResources.GRAY_SPHERE, "1-Stop");
 
-		add(action);
-		add(focus);
-		add(armed);
-		add(over);
-		add(timing);
+    add(action);
+    add(focus);
+    add(armed);
+    add(over);
+    add(timing);
 
-		/*
-		 * Add triggers for each sphere, depending on what we want to trigger
-		 * them.
-		 */
-		ActionTrigger.addTrigger(triggerButton, action.getAnimator());
-		FocusTrigger.addTrigger(triggerButton, focus.getAnimator(),
-				FocusTriggerEvent.IN);
-		MouseTrigger.addTrigger(triggerButton, armed.getAnimator(),
-				MouseTriggerEvent.PRESS);
-		MouseTrigger.addTrigger(triggerButton, over.getAnimator(),
-				MouseTriggerEvent.ENTER);
-		TimingTrigger.addTrigger(action.getAnimator(), timing.getAnimator(),
-				TimingTriggerEvent.STOP);
-	}
+    /*
+     * Add triggers for each sphere, depending on what we want to trigger them.
+     */
+    ActionTrigger.addTrigger(triggerButton, action.getAnimator());
+    FocusTrigger.addTrigger(triggerButton, focus.getAnimator(), FocusTriggerEvent.IN);
+    MouseTrigger.addTrigger(triggerButton, armed.getAnimator(), MouseTriggerEvent.PRESS);
+    MouseTrigger.addTrigger(triggerButton, over.getAnimator(), MouseTriggerEvent.ENTER);
+    TimingTrigger.addTrigger(action.getAnimator(), timing.getAnimator(), TimingTriggerEvent.STOP);
+  }
 
-	private static void createAndShowGUI() {
-		JFrame f = new JFrame("Triggers");
-		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		f.setLayout(new BorderLayout());
-		JPanel buttonPanel = new JPanel();
-		buttonPanel.setLayout(new BorderLayout());
-		// Note: "Other Button" exists only to provide another component to
-		// move focus from/to, in order to show how FocusTrigger works
-		buttonPanel.add(new JButton("Other Button"), BorderLayout.NORTH);
-		triggerButton = new JButton("Trigger");
-		buttonPanel.add(triggerButton, BorderLayout.SOUTH);
-		f.add(buttonPanel, BorderLayout.NORTH);
-		f.add(new Triggers(), BorderLayout.CENTER);
-		f.pack();
-		f.setVisible(true);
-	}
+  private static void createAndShowGUI() {
+    JFrame f = new JFrame("Triggers");
+    f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    f.setLayout(new BorderLayout());
+    JPanel buttonPanel = new JPanel();
+    buttonPanel.setLayout(new BorderLayout());
+    // Note: "Other Button" exists only to provide another component to
+    // move focus from/to, in order to show how FocusTrigger works
+    buttonPanel.add(new JButton("Other Button"), BorderLayout.NORTH);
+    triggerButton = new JButton("Trigger");
+    buttonPanel.add(triggerButton, BorderLayout.SOUTH);
+    f.add(buttonPanel, BorderLayout.NORTH);
+    f.add(new Triggers(), BorderLayout.CENTER);
+    f.pack();
+    f.setVisible(true);
+  }
 
-	public static void main(String args[]) {
-		System.setProperty("swing.defaultlaf",
-				"com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+  public static void main(String args[]) {
+    System.setProperty("swing.defaultlaf", "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
 
-		TimingSource ts = new SwingTimerTimingSource(10, TimeUnit.MILLISECONDS);
-		AnimatorBuilder.setDefaultTimingSource(ts);
-		ts.init();
+    TimingSource ts = new SwingTimerTimingSource(10, TimeUnit.MILLISECONDS);
+    AnimatorBuilder.setDefaultTimingSource(ts);
+    ts.init();
 
-		Runnable doCreateAndShowGUI = new Runnable() {
-			public void run() {
-				createAndShowGUI();
-			}
-		};
-		SwingUtilities.invokeLater(doCreateAndShowGUI);
-	}
+    Runnable doCreateAndShowGUI = new Runnable() {
+      public void run() {
+        createAndShowGUI();
+      }
+    };
+    SwingUtilities.invokeLater(doCreateAndShowGUI);
+  }
 
-	private static final long serialVersionUID = -907905936402755070L;
+  private static final long serialVersionUID = -907905936402755070L;
 }

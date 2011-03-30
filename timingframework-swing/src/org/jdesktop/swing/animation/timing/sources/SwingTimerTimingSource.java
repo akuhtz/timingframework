@@ -31,41 +31,41 @@ import org.jdesktop.core.animation.timing.TimingSource;
  */
 public final class SwingTimerTimingSource extends TimingSource {
 
-	private final Timer f_timer;
+  private final Timer f_timer;
 
-	/**
-	 * Constructs a new instance. The {@link #init()} must be called on the new
-	 * instance to start the timer. The {@link #dispose()} method should be
-	 * called to stop the timer.
-	 * <p>
-	 * The Swing timer requires a period of at least 1 millisecond. If the
-	 * period passed is smaller it is rounded up to 1 millisecond.
-	 * 
-	 * @param period
-	 *            the period of time between "tick" events.
-	 * @param unit
-	 *            the time unit of period parameter.
-	 */
-	public SwingTimerTimingSource(long period, TimeUnit unit) {
-		super(null);
-		int periodMillis = (int) unit.toMillis(period);
-		if (periodMillis != unit.toMillis(period))
-			periodMillis = 1;
-		f_timer = new Timer(periodMillis, new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				contextAwareNotifyTickListeners();
-			}
-		});
-	}
+  /**
+   * Constructs a new instance. The {@link #init()} must be called on the new
+   * instance to start the timer. The {@link #dispose()} method should be called
+   * to stop the timer.
+   * <p>
+   * The Swing timer requires a period of at least 1 millisecond. If the period
+   * passed is smaller it is rounded up to 1 millisecond.
+   * 
+   * @param period
+   *          the period of time between "tick" events.
+   * @param unit
+   *          the time unit of period parameter.
+   */
+  public SwingTimerTimingSource(long period, TimeUnit unit) {
+    super(null);
+    int periodMillis = (int) unit.toMillis(period);
+    if (periodMillis != unit.toMillis(period))
+      periodMillis = 1;
+    f_timer = new Timer(periodMillis, new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        contextAwareNotifyTickListeners();
+      }
+    });
+  }
 
-	@Override
-	public void init() {
-		f_timer.start();
-	}
+  @Override
+  public void init() {
+    f_timer.start();
+  }
 
-	@Override
-	public void dispose() {
-		f_timer.stop();
-	}
+  @Override
+  public void dispose() {
+    f_timer.stop();
+  }
 }

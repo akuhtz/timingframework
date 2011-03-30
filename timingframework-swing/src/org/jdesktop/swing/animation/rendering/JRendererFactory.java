@@ -12,30 +12,27 @@ import org.jdesktop.swing.animation.timing.sources.SwingTimerTimingSource;
 
 public final class JRendererFactory {
 
-	public static JRenderer<JRendererPanel> getDefaultRenderer(
-			JRendererPanel on,
-			JRendererTarget<GraphicsConfiguration, Graphics2D> target,
-			boolean hasChildren) {
-		final JRenderer<JRendererPanel> result;
-		if (useActiveRenderer()) {
-			result = new JActiveRenderer(on, target, hasChildren);
-		} else {
-			final TimingSource timingSource = new SwingTimerTimingSource(15,
-					TimeUnit.MILLISECONDS);
-			result = new JPassiveRenderer(on, target, timingSource);
-			timingSource.init();
-		}
-		AnimatorBuilder.setDefaultTimingSource(result.getTimingSource());
-		return result;
-	}
+  public static JRenderer<JRendererPanel> getDefaultRenderer(JRendererPanel on,
+      JRendererTarget<GraphicsConfiguration, Graphics2D> target, boolean hasChildren) {
+    final JRenderer<JRendererPanel> result;
+    if (useActiveRenderer()) {
+      result = new JActiveRenderer(on, target, hasChildren);
+    } else {
+      final TimingSource timingSource = new SwingTimerTimingSource(15, TimeUnit.MILLISECONDS);
+      result = new JPassiveRenderer(on, target, timingSource);
+      timingSource.init();
+    }
+    AnimatorBuilder.setDefaultTimingSource(result.getTimingSource());
+    return result;
+  }
 
-	public static final String PROPERTY = "org.jdesktop.renderer.active";
+  public static final String PROPERTY = "org.jdesktop.renderer.active";
 
-	public static boolean useActiveRenderer() {
-		return System.getProperty(PROPERTY) != null;
-	}
+  public static boolean useActiveRenderer() {
+    return System.getProperty(PROPERTY) != null;
+  }
 
-	private JRendererFactory() {
-		// no instances
-	}
+  private JRendererFactory() {
+    // no instances
+  }
 }

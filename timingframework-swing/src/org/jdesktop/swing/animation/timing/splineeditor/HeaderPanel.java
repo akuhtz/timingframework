@@ -20,63 +20,62 @@ import javax.swing.border.EmptyBorder;
 
 class HeaderPanel extends JPanel {
 
-	private ImageIcon icon;
+  private ImageIcon icon;
 
-	HeaderPanel(ImageIcon icon, String title, String help1, String help2) {
-		super(new BorderLayout());
+  HeaderPanel(ImageIcon icon, String title, String help1, String help2) {
+    super(new BorderLayout());
 
-		this.icon = icon;
+    this.icon = icon;
 
-		JPanel titlesPanel = new JPanel(new GridLayout(3, 1));
-		titlesPanel.setOpaque(false);
-		titlesPanel.setBorder(new EmptyBorder(12, 0, 12, 0));
+    JPanel titlesPanel = new JPanel(new GridLayout(3, 1));
+    titlesPanel.setOpaque(false);
+    titlesPanel.setBorder(new EmptyBorder(12, 0, 12, 0));
 
-		JLabel headerTitle = new JLabel(title);
-		Font police = headerTitle.getFont().deriveFont(Font.BOLD);
-		headerTitle.setFont(police);
-		headerTitle.setBorder(new EmptyBorder(0, 12, 0, 0));
-		titlesPanel.add(headerTitle);
+    JLabel headerTitle = new JLabel(title);
+    Font police = headerTitle.getFont().deriveFont(Font.BOLD);
+    headerTitle.setFont(police);
+    headerTitle.setBorder(new EmptyBorder(0, 12, 0, 0));
+    titlesPanel.add(headerTitle);
 
-		JLabel message;
+    JLabel message;
 
-		titlesPanel.add(message = new JLabel(help1));
-		police = headerTitle.getFont().deriveFont(Font.PLAIN);
-		message.setFont(police);
-		message.setBorder(new EmptyBorder(0, 24, 0, 0));
+    titlesPanel.add(message = new JLabel(help1));
+    police = headerTitle.getFont().deriveFont(Font.PLAIN);
+    message.setFont(police);
+    message.setBorder(new EmptyBorder(0, 24, 0, 0));
 
-		titlesPanel.add(message = new JLabel(help2));
-		police = headerTitle.getFont().deriveFont(Font.PLAIN);
-		message.setFont(police);
-		message.setBorder(new EmptyBorder(0, 24, 0, 0));
+    titlesPanel.add(message = new JLabel(help2));
+    police = headerTitle.getFont().deriveFont(Font.PLAIN);
+    message.setFont(police);
+    message.setBorder(new EmptyBorder(0, 24, 0, 0));
 
-		message = new JLabel(this.icon);
-		message.setBorder(new EmptyBorder(0, 0, 0, 12));
+    message = new JLabel(this.icon);
+    message.setBorder(new EmptyBorder(0, 0, 0, 12));
 
-		add(BorderLayout.WEST, titlesPanel);
-		add(BorderLayout.EAST, message);
-		add(BorderLayout.SOUTH, new JSeparator(JSeparator.HORIZONTAL));
+    add(BorderLayout.WEST, titlesPanel);
+    add(BorderLayout.EAST, message);
+    add(BorderLayout.SOUTH, new JSeparator(JSeparator.HORIZONTAL));
 
-		setPreferredSize(new Dimension(500, this.icon.getIconHeight() + 24));
-	}
+    setPreferredSize(new Dimension(500, this.icon.getIconHeight() + 24));
+  }
 
-	public void paintComponent(Graphics g) {
-		super.paintComponent(g);
-		if (!isOpaque()) {
-			return;
-		}
+  public void paintComponent(Graphics g) {
+    super.paintComponent(g);
+    if (!isOpaque()) {
+      return;
+    }
 
-		Rectangle bounds = g.getClipBounds();
+    Rectangle bounds = g.getClipBounds();
 
-		Color control = UIManager.getColor("control");
-		int width = getWidth();
+    Color control = UIManager.getColor("control");
+    int width = getWidth();
 
-		Graphics2D g2 = (Graphics2D) g;
-		Paint storedPaint = g2.getPaint();
-		g2.setPaint(new GradientPaint(this.icon.getIconWidth(), 0, Color.white,
-				width, 0, control));
-		g2.fillRect(bounds.x, bounds.y, bounds.width, bounds.height);
-		g2.setPaint(storedPaint);
-	}
+    Graphics2D g2 = (Graphics2D) g;
+    Paint storedPaint = g2.getPaint();
+    g2.setPaint(new GradientPaint(this.icon.getIconWidth(), 0, Color.white, width, 0, control));
+    g2.fillRect(bounds.x, bounds.y, bounds.width, bounds.height);
+    g2.setPaint(storedPaint);
+  }
 
-	private static final long serialVersionUID = -3238096725182573034L;
+  private static final long serialVersionUID = -3238096725182573034L;
 }

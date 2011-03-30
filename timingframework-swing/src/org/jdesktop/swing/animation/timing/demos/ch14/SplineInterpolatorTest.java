@@ -41,104 +41,98 @@ import org.jdesktop.swing.animation.timing.sources.SwingTimerTimingSource;
  */
 public class SplineInterpolatorTest extends TimingTargetAdapter {
 
-	public static void main(String args[]) {
-		System.setProperty("swing.defaultlaf",
-				"com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+  public static void main(String args[]) {
+    System.setProperty("swing.defaultlaf", "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
 
-		TimingSource ts = new SwingTimerTimingSource(DURATION / 10,
-				TimeUnit.MILLISECONDS);
-		AnimatorBuilder.setDefaultTimingSource(ts);
-		ts.init();
+    TimingSource ts = new SwingTimerTimingSource(DURATION / 10, TimeUnit.MILLISECONDS);
+    AnimatorBuilder.setDefaultTimingSource(ts);
+    ts.init();
 
-		SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				setupGUI();
-			}
-		});
-	}
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        setupGUI();
+      }
+    });
+  }
 
-	private static final JTextArea f_benchmarkOutput = new JTextArea("");
+  private static final JTextArea f_benchmarkOutput = new JTextArea("");
 
-	/**
-	 * This method outputs the string to the GUI {@link #f_benchmarkOutput}.
-	 * 
-	 * @param s
-	 *            a string to append to the output.
-	 */
-	private static void out(final String s) {
-		final Runnable addToTextArea = new Runnable() {
-			@Override
-			public void run() {
-				final StringBuffer b = new StringBuffer(
-						f_benchmarkOutput.getText());
-				b.append(s);
-				b.append("\n");
-				f_benchmarkOutput.setText(b.toString());
-			}
-		};
-		if (SwingUtilities.isEventDispatchThread()) {
-			addToTextArea.run();
-		} else {
-			SwingUtilities.invokeLater(addToTextArea);
-		}
-	}
+  /**
+   * This method outputs the string to the GUI {@link #f_benchmarkOutput}.
+   * 
+   * @param s
+   *          a string to append to the output.
+   */
+  private static void out(final String s) {
+    final Runnable addToTextArea = new Runnable() {
+      @Override
+      public void run() {
+        final StringBuffer b = new StringBuffer(f_benchmarkOutput.getText());
+        b.append(s);
+        b.append("\n");
+        f_benchmarkOutput.setText(b.toString());
+      }
+    };
+    if (SwingUtilities.isEventDispatchThread()) {
+      addToTextArea.run();
+    } else {
+      SwingUtilities.invokeLater(addToTextArea);
+    }
+  }
 
-	/**
-	 * Sets up the simple text output window and then starts a thread to perform
-	 * the benchmark runs.
-	 */
-	private static void setupGUI() {
-		JFrame frame = new JFrame("Swing SplineInterpolator Test");
-		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-		frame.addWindowListener(new WindowAdapter() {
-			@Override
-			public void windowClosed(WindowEvent e) {
-				super.windowClosed(e);
-				System.exit(0);
-			}
-		});
-		f_benchmarkOutput.setEditable(false);
-		final Font fixed = new Font("Courier", Font.PLAIN, 14);
-		f_benchmarkOutput.setFont(fixed);
-		f_benchmarkOutput.setBackground(Color.black);
-		f_benchmarkOutput.setForeground(Color.green);
-		JScrollPane scrollPane = new JScrollPane(f_benchmarkOutput);
-		frame.add(scrollPane);
+  /**
+   * Sets up the simple text output window and then starts a thread to perform
+   * the benchmark runs.
+   */
+  private static void setupGUI() {
+    JFrame frame = new JFrame("Swing SplineInterpolator Test");
+    frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+    frame.addWindowListener(new WindowAdapter() {
+      @Override
+      public void windowClosed(WindowEvent e) {
+        super.windowClosed(e);
+        System.exit(0);
+      }
+    });
+    f_benchmarkOutput.setEditable(false);
+    final Font fixed = new Font("Courier", Font.PLAIN, 14);
+    f_benchmarkOutput.setFont(fixed);
+    f_benchmarkOutput.setBackground(Color.black);
+    f_benchmarkOutput.setForeground(Color.green);
+    JScrollPane scrollPane = new JScrollPane(f_benchmarkOutput);
+    frame.add(scrollPane);
 
-		frame.setMinimumSize(new Dimension(250, 500));
-		frame.pack();
-		frame.setVisible(true);
+    frame.setMinimumSize(new Dimension(250, 500));
+    frame.pack();
+    frame.setVisible(true);
 
-		SplineInterpolator si = new SplineInterpolator(1, 0, 0, 1);
-		Animator animator = new AnimatorBuilder()
-				.setDuration(DURATION, TimeUnit.MILLISECONDS)
-				.setInterpolator(si).addTarget(new SplineInterpolatorTest())
-				.build();
-		animator.start();
-	}
+    SplineInterpolator si = new SplineInterpolator(1, 0, 0, 1);
+    Animator animator = new AnimatorBuilder().setDuration(DURATION, TimeUnit.MILLISECONDS).setInterpolator(si)
+        .addTarget(new SplineInterpolatorTest()).build();
+    animator.start();
+  }
 
-	private long startTime;
-	private final static int DURATION = 5000; // milliseconds
+  private long startTime;
+  private final static int DURATION = 5000; // milliseconds
 
-	@Override
-	public void begin(Animator source) {
-		startTime = System.nanoTime() / 1000000;
-		out("real  interpolated");
-		out("----  ------------");
-	}
+  @Override
+  public void begin(Animator source) {
+    startTime = System.nanoTime() / 1000000;
+    out("real  interpolated");
+    out("----  ------------");
+  }
 
-	/**
-	 * TimingTarget implementation: Calculate the real fraction elapsed and
-	 * output that along with the fraction parameter, which has been
-	 * non-linearly interpolated.
-	 */
-	@Override
-	public void timingEvent(double fraction, Direction direction,
-			Animator source) {
-		long currentTime = System.nanoTime() / 1000000;
-		long elapsedTime = currentTime - startTime;
-		float realFraction = (float) elapsedTime / DURATION;
-		out(String.format("%.2f          %.2f", realFraction, fraction));
-	}
+  /**
+   * TimingTarget implementation: Calculate the real fraction elapsed and output
+   * that along with the fraction parameter, which has been non-linearly
+   * interpolated.
+   */
+  @Override
+  public void timingEvent(double fraction, Direction direction, Animator source) {
+    long currentTime = System.nanoTime() / 1000000;
+    long elapsedTime = currentTime - startTime;
+    float realFraction = (float) elapsedTime / DURATION;
+    out(String.format("%.2f          %.2f", realFraction, fraction));
+  }
 }
