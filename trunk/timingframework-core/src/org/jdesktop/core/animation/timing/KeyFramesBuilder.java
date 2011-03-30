@@ -30,9 +30,20 @@ public class KeyFramesBuilder<T> {
 
   public KeyFramesBuilder<T> addFrame(T value) {
     f_values.add(value);
-    final double atTime = f_times.getLast();
-    f_times.add(atTime + ((1.0 - atTime) / 2.0));
-    f_interpolators.add(LinearInterpolator.getInstance());
+    if (f_times.isEmpty()) {
+      f_times.add(Double.valueOf(0));
+      f_interpolators.add(null);
+    } else {
+      final double atTime = f_times.getLast();
+      f_times.add(atTime + ((1.0 - atTime) / 2.0));
+      f_interpolators.add(LinearInterpolator.getInstance());
+    }
+    return this;
+  }
+
+  public KeyFramesBuilder<T> addFrames(T... values) {
+    for (T value : values)
+      addFrame(value);
     return this;
   }
 

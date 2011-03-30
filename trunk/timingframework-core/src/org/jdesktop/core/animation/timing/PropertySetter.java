@@ -57,6 +57,19 @@ import org.jdesktop.core.animation.timing.Animator.Direction;
  */
 public class PropertySetter<T> extends TimingTargetAdapter {
 
+  public static <T> PropertySetter<T> build(Object object, String propertyName, KeyFrames<T> keyFrames) {
+    return new PropertySetter<T>(object, propertyName, keyFrames, null);
+  }
+
+  public static <T> PropertySetter<T> build(Object object, String propertyName, T... values) {
+    final KeyFrames<T> keyFrames = new KeyFramesBuilder<T>().addFrames(values).build();
+    return new PropertySetter<T>(object, propertyName, keyFrames, null);
+  }
+
+  public static <T> PropertySetter<T> buildTo(Object object, String propertyName, T... values) {
+    return new PropertySetter<T>(object, propertyName, null, values);
+  }
+
   private final Object f_object;
   private final String f_propertyName;
   // TODO NOT THREAD SAFE
@@ -66,7 +79,11 @@ public class PropertySetter<T> extends TimingTargetAdapter {
   private final Method f_propertyGetter;
 
   public PropertySetter(Object object, String propertyName, KeyFrames<T> keyFrames, T[] toValues) {
+    if (object == null)
+      throw new IllegalArgumentException(I18N.err(1, "object"));
     f_object = object;
+    if (propertyName == null)
+      throw new IllegalArgumentException(I18N.err(1, "propertyName"));
     f_propertyName = propertyName;
 
     if ((keyFrames == null && toValues == null) || (keyFrames != null && toValues != null))
@@ -112,11 +129,7 @@ public class PropertySetter<T> extends TimingTargetAdapter {
       try {
         @SuppressWarnings("unchecked")
         final T startValue = (T) f_propertyGetter.invoke(f_object);
-        final KeyFramesBuilder<T> builder = new KeyFramesBuilder<T>(startValue);
-        for (T value : f_toValues) {
-          builder.addFrame(value);
-        }
-        f_keyFrames = builder.build();
+        f_keyFrames = new KeyFramesBuilder<T>(startValue).addFrames(f_toValues).build();
       } catch (Exception e) {
         throw new IllegalStateException(I18N.err(32, f_propertyGetter.getName(), f_object.toString()), e);
       }
