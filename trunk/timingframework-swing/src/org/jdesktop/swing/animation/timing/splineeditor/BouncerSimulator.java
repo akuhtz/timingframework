@@ -11,59 +11,57 @@ import javax.imageio.ImageIO;
 
 public class BouncerSimulator extends AbstractSimulator {
 
-	private static final Color COLOR_BACKGROUND = Color.WHITE;
+  private static final Color COLOR_BACKGROUND = Color.WHITE;
 
-	private BufferedImage image;
+  private BufferedImage image;
 
-	public BouncerSimulator() {
-		try {
-			image = ImageIO.read(Thread.currentThread().getContextClassLoader()
-					.getResource(SplineEditor.PREFIX + "item.png"));
-		} catch (Exception e) {
-		}
-	}
+  public BouncerSimulator() {
+    try {
+      image = ImageIO.read(Thread.currentThread().getContextClassLoader().getResource(SplineEditor.PREFIX + "item.png"));
+    } catch (Exception e) {
+    }
+  }
 
-	@Override
-	protected void paintComponent(Graphics g) {
-		if (!isVisible()) {
-			return;
-		}
+  @Override
+  protected void paintComponent(Graphics g) {
+    if (!isVisible()) {
+      return;
+    }
 
-		Graphics2D g2 = (Graphics2D) g;
+    Graphics2D g2 = (Graphics2D) g;
 
-		setupGraphics(g2);
-		drawBackground(g2);
-		drawItem(g2);
-	}
+    setupGraphics(g2);
+    drawBackground(g2);
+    drawItem(g2);
+  }
 
-	private void drawItem(Graphics2D g2) {
-		double position = f_time;
-		double xPos = position * getWidth() / 2;
+  private void drawItem(Graphics2D g2) {
+    double position = f_time;
+    double xPos = position * getWidth() / 2;
 
-		int width = getWidth() * 2 / 3;
-		int x = (getWidth() - width) / 2;
-		x += xPos;
-		int y = getHeight() / 2;
-		y -= image.getHeight() / 2;
+    int width = getWidth() * 2 / 3;
+    int x = (getWidth() - width) / 2;
+    x += xPos;
+    int y = getHeight() / 2;
+    y -= image.getHeight() / 2;
 
-		g2.drawImage(image, null, x, y);
-	}
+    g2.drawImage(image, null, x, y);
+  }
 
-	private void setupGraphics(Graphics2D g2) {
-		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-				RenderingHints.VALUE_ANTIALIAS_ON);
-	}
+  private void setupGraphics(Graphics2D g2) {
+    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+  }
 
-	private void drawBackground(Graphics2D g2) {
-		g2.setColor(COLOR_BACKGROUND);
-		g2.fill(g2.getClipBounds());
-	}
+  private void drawBackground(Graphics2D g2) {
+    g2.setColor(COLOR_BACKGROUND);
+    g2.fill(g2.getClipBounds());
+  }
 
-	@Override
-	public Dimension getPreferredSize() {
-		return new Dimension(150, 100);
-	}
+  @Override
+  public Dimension getPreferredSize() {
+    return new Dimension(150, 100);
+  }
 
-	private static final long serialVersionUID = -3963863642907761767L;
+  private static final long serialVersionUID = -3963863642907761767L;
 
 }

@@ -12,31 +12,31 @@ import javax.swing.JFrame;
  */
 public class RaceGUI {
 
-	private TrackView track;
-	private RaceControlPanel controlPanel;
+  private TrackView track;
+  private RaceControlPanel controlPanel;
 
-	public RaceGUI(String appName) {
-		JFrame f = new JFrame(appName);
-		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		f.setLayout(new BorderLayout());
+  public RaceGUI(String appName) {
+    JFrame f = new JFrame(appName);
+    f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    f.setLayout(new BorderLayout());
 
-		// Add Track view
-		track = new TrackView();
-		f.add(track, BorderLayout.CENTER);
+    // Add Track view
+    track = new TrackView();
+    f.add(track, BorderLayout.CENTER);
 
-		// Add control panel
-		controlPanel = new RaceControlPanel();
-		f.add(controlPanel, BorderLayout.SOUTH);
+    // Add control panel
+    controlPanel = new RaceControlPanel();
+    f.add(controlPanel, BorderLayout.SOUTH);
 
-		f.pack();
-		f.setVisible(true);
-	}
+    f.pack();
+    f.setVisible(true);
+  }
 
-	public TrackView getTrack() {
-		return track;
-	}
+  public TrackView getTrack() {
+    return track;
+  }
 
-	public RaceControlPanel getControlPanel() {
-		return controlPanel;
-	}
+  public RaceControlPanel getControlPanel() {
+    return controlPanel;
+  }
 }

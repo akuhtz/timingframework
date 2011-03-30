@@ -12,36 +12,36 @@ import javax.swing.JPanel;
  */
 public class RaceControlPanel extends JPanel {
 
-	JButton goButton = new JButton("Go");
-	JButton pauseResumeButton = new JButton("Pause/Resume");
-	JButton stopButton = new JButton("Stop");
+  JButton goButton = new JButton("Go");
+  JButton pauseResumeButton = new JButton("Pause/Resume");
+  JButton stopButton = new JButton("Stop");
 
-	/**
-	 * Creates a new instance of RaceControlPanel
-	 */
-	public RaceControlPanel() {
-		add(goButton);
-		add(pauseResumeButton);
-		add(stopButton);
-	}
+  /**
+   * Creates a new instance of RaceControlPanel
+   */
+  public RaceControlPanel() {
+    add(goButton);
+    add(pauseResumeButton);
+    add(stopButton);
+  }
 
-	public JButton getGoButton() {
-		return goButton;
-	}
+  public JButton getGoButton() {
+    return goButton;
+  }
 
-	public JButton getPauseResumeButton() {
-		return pauseResumeButton;
-	}
+  public JButton getPauseResumeButton() {
+    return pauseResumeButton;
+  }
 
-	public JButton getStopButton() {
-		return stopButton;
-	}
+  public JButton getStopButton() {
+    return stopButton;
+  }
 
-	public void addListener(ActionListener listener) {
-		goButton.addActionListener(listener);
-		pauseResumeButton.addActionListener(listener);
-		stopButton.addActionListener(listener);
-	}
+  public void addListener(ActionListener listener) {
+    goButton.addActionListener(listener);
+    pauseResumeButton.addActionListener(listener);
+    stopButton.addActionListener(listener);
+  }
 
-	private static final long serialVersionUID = -4156188778768009687L;
+  private static final long serialVersionUID = -4156188778768009687L;
 }

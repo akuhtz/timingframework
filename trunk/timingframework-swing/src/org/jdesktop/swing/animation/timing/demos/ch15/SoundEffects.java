@@ -15,109 +15,106 @@ import org.jdesktop.swing.animation.timing.demos.DemoResources;
  */
 public class SoundEffects implements TimingTarget {
 
-	AudioClip f_drivingClip;
-	AudioClip f_turningClip;
-	KeyFrames<Integer> f_keyFrames;
+  AudioClip f_drivingClip;
+  AudioClip f_turningClip;
+  KeyFrames<Integer> f_keyFrames;
 
-	/** Creates a new instance of SoundEffects */
-	public SoundEffects(KeyFrames<Integer> keyFrames) {
-		f_keyFrames = keyFrames;
-		try {
-			f_drivingClip = java.applet.Applet.newAudioClip(DemoResources
-					.getResource(DemoResources.VROOM));
-			f_turningClip = java.applet.Applet.newAudioClip(DemoResources
-					.getResource(DemoResources.DRIFT));
-		} catch (Exception e) {
-			System.out.println("Problem loading track/car images: " + e);
-		}
-	}
+  /** Creates a new instance of SoundEffects */
+  public SoundEffects(KeyFrames<Integer> keyFrames) {
+    f_keyFrames = keyFrames;
+    try {
+      f_drivingClip = java.applet.Applet.newAudioClip(DemoResources.getResource(DemoResources.VROOM));
+      f_turningClip = java.applet.Applet.newAudioClip(DemoResources.getResource(DemoResources.DRIFT));
+    } catch (Exception e) {
+      System.out.println("Problem loading track/car images: " + e);
+    }
+  }
 
-	/**
-	 * Plays the driving clip
-	 */
-	public void drive() {
-		if (f_drivingClip != null) {
-			f_drivingClip.loop();
-		}
-	}
+  /**
+   * Plays the driving clip
+   */
+  public void drive() {
+    if (f_drivingClip != null) {
+      f_drivingClip.loop();
+    }
+  }
 
-	/**
-	 * Stops current clips
-	 */
-	public void stop() {
-		if (f_drivingClip != null) {
-			f_drivingClip.stop();
-		}
-		if (f_turningClip != null) {
-			f_turningClip.stop();
-		}
-	}
+  /**
+   * Stops current clips
+   */
+  public void stop() {
+    if (f_drivingClip != null) {
+      f_drivingClip.stop();
+    }
+    if (f_turningClip != null) {
+      f_turningClip.stop();
+    }
+  }
 
-	/**
-	 * Plays the turning clip
-	 */
-	public void turn() {
-		if (f_turningClip != null) {
-			f_turningClip.play();
-		}
-	}
+  /**
+   * Plays the turning clip
+   */
+  public void turn() {
+    if (f_turningClip != null) {
+      f_turningClip.play();
+    }
+  }
 
-	// TimingTarget implementation
+  // TimingTarget implementation
 
-	boolean pastFirstTurn = false;
-	boolean pastSecondTurn = false;
-	boolean pastThirdTurn = false;
-	boolean pastFourthTurn = false;
+  boolean pastFirstTurn = false;
+  boolean pastSecondTurn = false;
+  boolean pastThirdTurn = false;
+  boolean pastFourthTurn = false;
 
-	@Override
-	public void begin(Animator source) {
-		drive();
-		pastFirstTurn = false;
-		pastSecondTurn = false;
-		pastThirdTurn = false;
-		pastFourthTurn = false;
-	}
+  @Override
+  public void begin(Animator source) {
+    drive();
+    pastFirstTurn = false;
+    pastSecondTurn = false;
+    pastThirdTurn = false;
+    pastFourthTurn = false;
+  }
 
-	@Override
-	public void end(Animator source) {
-		stop();
-	}
+  @Override
+  public void end(Animator source) {
+    stop();
+  }
 
-	@Override
-	public void repeat(Animator source) {
-		pastFirstTurn = false;
-		pastSecondTurn = false;
-		pastThirdTurn = false;
-		pastFourthTurn = false;
-	}
+  @Override
+  public void repeat(Animator source) {
+    pastFirstTurn = false;
+    pastSecondTurn = false;
+    pastThirdTurn = false;
+    pastFourthTurn = false;
+  }
 
-	/**
-	 * This method figures out when the car hits one of the turns and plays the
-	 * turn clip appropriately
-	 */
-	@Override
-	public void timingEvent(double fraction, Direction direction,
-			Animator source) {
-		if (!pastFirstTurn) {
-			if (f_keyFrames.getInterval(fraction) == 1) {
-				turn();
-				pastFirstTurn = true;
-			}
-		} else if (!pastSecondTurn) {
-			if (f_keyFrames.getInterval(fraction) == 3) {
-				turn();
-				pastSecondTurn = true;
-			}
-		} else if (!pastThirdTurn) {
-			if (f_keyFrames.getInterval(fraction) == 5) {
-				turn();
-				pastThirdTurn = true;
-			}
-		} else if (!pastFourthTurn) {
-			if (f_keyFrames.getInterval(fraction) == 7) {
-				turn();
-				pastFourthTurn = true;
-			}
-		}
-	}
+  /**
+   * This method figures out when the car hits one of the turns and plays the
+   * turn clip appropriately
+   */
+  @Override
+  public void timingEvent(double fraction, Direction direction, Animator source) {
+    if (!pastFirstTurn) {
+      if (f_keyFrames.getStartFrameIndexAt(fraction) == 1) {
+        turn();
+        pastFirstTurn = true;
+      }
+    } else if (!pastSecondTurn) {
+      if (f_keyFrames.getStartFrameIndexAt(fraction) == 3) {
+        turn();
+        pastSecondTurn = true;
+      }
+    } else if (!pastThirdTurn) {
+      if (f_keyFrames.getStartFrameIndexAt(fraction) == 5) {
+        turn();
+        pastThirdTurn = true;
+      }
+    } else if (!pastFourthTurn) {
+      if (f_keyFrames.getStartFrameIndexAt(fraction) == 7) {
+        turn();
+        pastFourthTurn = true;
+      }
+    }
+  }
 }

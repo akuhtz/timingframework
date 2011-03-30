@@ -22,31 +22,28 @@ import org.jdesktop.swing.animation.timing.sources.SwingTimerTimingSource;
  */
 public class NonLinearRace extends BasicRace {
 
-	public static void main(String args[]) {
-		System.setProperty("swing.defaultlaf",
-				"com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+  public static void main(String args[]) {
+    System.setProperty("swing.defaultlaf", "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
 
-		TimingSource ts = new SwingTimerTimingSource(10, TimeUnit.MILLISECONDS);
-		AnimatorBuilder.setDefaultTimingSource(ts);
-		ts.init();
+    TimingSource ts = new SwingTimerTimingSource(10, TimeUnit.MILLISECONDS);
+    AnimatorBuilder.setDefaultTimingSource(ts);
+    ts.init();
 
-		Runnable doCreateAndShowGUI = new Runnable() {
-			public void run() {
-				new NonLinearRace("Non-Linear Race");
-			}
-		};
-		SwingUtilities.invokeLater(doCreateAndShowGUI);
-	}
+    Runnable doCreateAndShowGUI = new Runnable() {
+      public void run() {
+        new NonLinearRace("Non-Linear Race");
+      }
+    };
+    SwingUtilities.invokeLater(doCreateAndShowGUI);
+  }
 
-	public NonLinearRace(String appName) {
-		super(appName);
-	}
+  public NonLinearRace(String appName) {
+    super(appName);
+  }
 
-	@Override
-	protected Animator getAnimator() {
-		return new AnimatorBuilder()
-				.setDuration(RACE_TIME, TimeUnit.MILLISECONDS)
-				.setInterpolator(new AccelerationInterpolator(0.5, 0.2))
-				.addTarget(this).build();
-	}
+  @Override
+  protected Animator getAnimator() {
+    return new AnimatorBuilder().setDuration(RACE_TIME, TimeUnit.MILLISECONDS)
+        .setInterpolator(new AccelerationInterpolator(0.5, 0.2)).addTarget(this).build();
+  }
 }

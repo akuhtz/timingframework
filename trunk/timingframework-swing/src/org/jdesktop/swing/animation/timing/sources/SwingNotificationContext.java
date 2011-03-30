@@ -18,8 +18,7 @@ import org.jdesktop.core.animation.timing.sources.ScheduledExecutorTimingSource;
  * a {@link TickListener} object, would be
  * 
  * <pre>
- * TimingSource ts = new ScheduledExecutorTimingSource(
- * 		new SwingNotificationContext(), 15, TimeUnit.MILLISECONDS);
+ * TimingSource ts = new ScheduledExecutorTimingSource(new SwingNotificationContext(), 15, TimeUnit.MILLISECONDS);
  * ts.init(); // starts the timer
  * 
  * ts.addListener(tl); // tl gets tick notifications in the Swing EDT
@@ -31,19 +30,18 @@ import org.jdesktop.core.animation.timing.sources.ScheduledExecutorTimingSource;
  * 
  * @author Tim Halloran
  */
-public final class SwingNotificationContext implements
-		TickListenerNotificationContext {
+public final class SwingNotificationContext implements TickListenerNotificationContext {
 
-	@Override
-	public void notifyTickListeners(final TimingSource source) {
-		SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				/*
-				 * Notify listeners within the thread context of the Swing EDT.
-				 */
-				source.notifyTickListeners();
-			}
-		});
-	}
+  @Override
+  public void notifyTickListeners(final TimingSource source) {
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        /*
+         * Notify listeners within the thread context of the Swing EDT.
+         */
+        source.notifyTickListeners();
+      }
+    });
+  }
 }
