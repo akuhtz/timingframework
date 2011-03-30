@@ -25,7 +25,7 @@ import org.jdesktop.core.animation.timing.Animator;
 import org.jdesktop.core.animation.timing.AnimatorBuilder;
 import org.jdesktop.core.animation.timing.Interpolator;
 import org.jdesktop.core.animation.timing.KeyFrames;
-import org.jdesktop.core.animation.timing.KeyValues;
+import org.jdesktop.core.animation.timing.KeyFramesBuilder;
 import org.jdesktop.core.animation.timing.PropertySetter;
 import org.jdesktop.core.animation.timing.TimingSource;
 import org.jdesktop.core.animation.timing.TimingSource.TickListener;
@@ -52,274 +52,266 @@ import org.jdesktop.swt.animation.timing.sources.SWTTimingSource;
  */
 public class TooManyBalls implements JRendererTarget<Display, GC> {
 
-	public static void main(String[] args) {
-		new TooManyBalls();
-	}
+  public static void main(String[] args) {
+    new TooManyBalls();
+  }
 
-	private static final Interpolator ACCEL_4_4 = new AccelerationInterpolator(
-			0.4, 0.4);
-	private static final Interpolator SPLINE_0_1_1_0 = new SplineInterpolator(
-			0.00, 1.00, 1.00, 1.00);
-	private static final Interpolator SPLINE_1_0_1_1 = new SplineInterpolator(
-			1.00, 0.00, 1.00, 1.00);
+  private static final Interpolator ACCEL_4_4 = new AccelerationInterpolator(0.4, 0.4);
+  private static final Interpolator SPLINE_0_1_1_0 = new SplineInterpolator(0.00, 1.00, 1.00, 1.00);
+  private static final Interpolator SPLINE_1_0_1_1 = new SplineInterpolator(1.00, 0.00, 1.00, 1.00);
 
-	private final Label f_infoLabel;
-	private final Canvas f_panel;
-	private final Random f_die = new Random();
-	private Image[] f_ballImages;
+  private final Label f_infoLabel;
+  private final Canvas f_panel;
+  private final Random f_die = new Random();
+  private Image[] f_ballImages;
 
-	public class Ball {
-		int x, y;
-		int imageIndex;
-		Animator animator;
+  public class Ball {
+    int x, y;
+    int imageIndex;
+    Animator animator;
 
-		public void setX(int x) {
-			this.x = x;
-		}
+    public void setX(int x) {
+      this.x = x;
+    }
 
-		public void setY(int y) {
-			this.y = y;
-		}
-	}
+    public void setY(int y) {
+      this.y = y;
+    }
+  }
 
-	private final List<Ball> f_balls = new ArrayList<Ball>();
+  private final List<Ball> f_balls = new ArrayList<Ball>();
 
-	long f_paintCount = 0;
-	long f_lastPaintNanos = 0;
-	long f_totalPaintTimeNanos = 0;
+  long f_paintCount = 0;
+  long f_lastPaintNanos = 0;
+  long f_totalPaintTimeNanos = 0;
 
-	private long getFPS() {
-		if (f_paintCount < 1)
-			return 0;
-		final long avgCycleTime = f_totalPaintTimeNanos / f_paintCount;
-		if (avgCycleTime != 0) {
-			return TimeUnit.SECONDS.toNanos(1) / avgCycleTime;
-		} else
-			return 0;
-	}
+  private long getFPS() {
+    if (f_paintCount < 1)
+      return 0;
+    final long avgCycleTime = f_totalPaintTimeNanos / f_paintCount;
+    if (avgCycleTime != 0) {
+      return TimeUnit.SECONDS.toNanos(1) / avgCycleTime;
+    } else
+      return 0;
+  }
 
-	public TooManyBalls() {
-		final Display display = Display.getDefault();
-		final Shell shell = new Shell(display);
-		shell.setText("Too Many Balls! - SWT Passive Rendering");
+  public TooManyBalls() {
+    final Display display = Display.getDefault();
+    final Shell shell = new Shell(display);
+    shell.setText("Too Many Balls! - SWT Passive Rendering");
 
-		/**
-		 * Used for ball animations.
-		 */
-		final TimingSource animationTimer = new SWTTimingSource(15,
-				TimeUnit.MILLISECONDS, display);
-		AnimatorBuilder.setDefaultTimingSource(animationTimer);
+    /**
+     * Used for ball animations.
+     */
+    final TimingSource animationTimer = new SWTTimingSource(15, TimeUnit.MILLISECONDS, display);
+    AnimatorBuilder.setDefaultTimingSource(animationTimer);
 
-		/**
-		 * Used to update the FPS display once a second.
-		 */
-		final TimingSource infoTimer = new SWTTimingSource(1, TimeUnit.SECONDS,
-				display);
+    /**
+     * Used to update the FPS display once a second.
+     */
+    final TimingSource infoTimer = new SWTTimingSource(1, TimeUnit.SECONDS, display);
 
-		final GridLayout panelLayout = new GridLayout(2, false);
-		shell.setLayout(panelLayout);
-		GridData gridData;
+    final GridLayout panelLayout = new GridLayout(2, false);
+    shell.setLayout(panelLayout);
+    GridData gridData;
 
-		final Composite topPanel = new Composite(shell, SWT.NONE);
-		gridData = new GridData(SWT.LEFT, SWT.FILL, false, false);
-		topPanel.setLayoutData(gridData);
-		final RowLayout topPanelLayout = new RowLayout();
-		topPanel.setLayout(topPanelLayout);
+    final Composite topPanel = new Composite(shell, SWT.NONE);
+    gridData = new GridData(SWT.LEFT, SWT.FILL, false, false);
+    topPanel.setLayoutData(gridData);
+    final RowLayout topPanelLayout = new RowLayout();
+    topPanel.setLayout(topPanelLayout);
 
-		final Button addBall = new Button(topPanel, SWT.PUSH);
-		addBall.setText("Add Ball");
-		addBall.addListener(SWT.Selection, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				addBall();
-				updateBallCount();
-			}
-		});
-		final Button add10Balls = new Button(topPanel, SWT.PUSH);
-		add10Balls.setText("Add 10 Balls");
-		add10Balls.addListener(SWT.Selection, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				addBall();
-				addBall();
-				addBall();
-				addBall();
-				addBall();
-				addBall();
-				addBall();
-				addBall();
-				addBall();
-				addBall();
-				updateBallCount();
-			}
-		});
+    final Button addBall = new Button(topPanel, SWT.PUSH);
+    addBall.setText("Add Ball");
+    addBall.addListener(SWT.Selection, new Listener() {
+      @Override
+      public void handleEvent(Event event) {
+        addBall();
+        updateBallCount();
+      }
+    });
+    final Button add10Balls = new Button(topPanel, SWT.PUSH);
+    add10Balls.setText("Add 10 Balls");
+    add10Balls.addListener(SWT.Selection, new Listener() {
+      @Override
+      public void handleEvent(Event event) {
+        addBall();
+        addBall();
+        addBall();
+        addBall();
+        addBall();
+        addBall();
+        addBall();
+        addBall();
+        addBall();
+        addBall();
+        updateBallCount();
+      }
+    });
 
-		final Button removeBall = new Button(topPanel, SWT.PUSH);
-		removeBall.setText("Remove Ball");
-		removeBall.addListener(SWT.Selection, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				removeBall();
-				updateBallCount();
-			}
-		});
-		final Button remove10Balls = new Button(topPanel, SWT.PUSH);
-		remove10Balls.setText("Remove 10 Balls");
-		remove10Balls.addListener(SWT.Selection, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				removeBall();
-				removeBall();
-				removeBall();
-				removeBall();
-				removeBall();
-				removeBall();
-				removeBall();
-				removeBall();
-				removeBall();
-				removeBall();
-				updateBallCount();
-			}
-		});
+    final Button removeBall = new Button(topPanel, SWT.PUSH);
+    removeBall.setText("Remove Ball");
+    removeBall.addListener(SWT.Selection, new Listener() {
+      @Override
+      public void handleEvent(Event event) {
+        removeBall();
+        updateBallCount();
+      }
+    });
+    final Button remove10Balls = new Button(topPanel, SWT.PUSH);
+    remove10Balls.setText("Remove 10 Balls");
+    remove10Balls.addListener(SWT.Selection, new Listener() {
+      @Override
+      public void handleEvent(Event event) {
+        removeBall();
+        removeBall();
+        removeBall();
+        removeBall();
+        removeBall();
+        removeBall();
+        removeBall();
+        removeBall();
+        removeBall();
+        removeBall();
+        updateBallCount();
+      }
+    });
 
-		f_infoLabel = new Label(shell, SWT.RIGHT);
-		gridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
-		f_infoLabel.setLayoutData(gridData);
-		updateBallCount();
+    f_infoLabel = new Label(shell, SWT.RIGHT);
+    gridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
+    f_infoLabel.setLayoutData(gridData);
+    updateBallCount();
 
-		f_panel = new Canvas(shell, SWT.DOUBLE_BUFFERED);
-		gridData = new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1);
-		f_panel.setLayoutData(gridData);
-		f_panel.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
+    f_panel = new Canvas(shell, SWT.DOUBLE_BUFFERED);
+    gridData = new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1);
+    f_panel.setLayoutData(gridData);
+    f_panel.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
 
-		JRenderer<Canvas> renderer = JRendererFactory.getDefaultRenderer(
-				f_panel, this, false);
+    JRenderer<Canvas> renderer = JRendererFactory.getDefaultRenderer(f_panel, this, false);
 
-		infoTimer.addTickListener(new TickListener() {
-			@Override
-			public void timingSourceTick(TimingSource source, long nanoTime) {
-				updateBallCount();
-			}
-		});
+    infoTimer.addTickListener(new TickListener() {
+      @Override
+      public void timingSourceTick(TimingSource source, long nanoTime) {
+        updateBallCount();
+      }
+    });
 
-		animationTimer.init();
-		infoTimer.init();
+    animationTimer.init();
+    infoTimer.init();
 
-		shell.setSize(800, 600);
-		shell.open();
-		while (!shell.isDisposed()) {
-			if (!display.readAndDispatch())
-				display.sleep();
-		}
-		renderer.getTimingSource().dispose();
-		renderer.shutdown();
-		animationTimer.dispose();
-		infoTimer.dispose();
-		display.dispose();
-	}
+    shell.setSize(800, 600);
+    shell.open();
+    while (!shell.isDisposed()) {
+      if (!display.readAndDispatch())
+        display.sleep();
+    }
+    renderer.getTimingSource().dispose();
+    renderer.shutdown();
+    animationTimer.dispose();
+    infoTimer.dispose();
+    display.dispose();
+  }
 
-	private void updateBallCount() {
-		f_infoLabel
-				.setText("Balls: " + f_balls.size() + "    FPS: " + getFPS());
-	}
+  private void updateBallCount() {
+    f_infoLabel.setText("Balls: " + f_balls.size() + "    FPS: " + getFPS());
+  }
 
-	/*
-	 * Renderer thread methods and state
-	 */
+  /*
+   * Renderer thread methods and state
+   */
 
-	private void addBall() {
-		Ball ball = new Ball();
-		ball.imageIndex = f_die.nextInt(5);
-		Image ballImage = f_ballImages[ball.imageIndex];
+  private void addBall() {
+    Ball ball = new Ball();
+    ball.imageIndex = f_die.nextInt(5);
+    Image ballImage = f_ballImages[ball.imageIndex];
 
-		ball.x = f_die.nextInt(f_panel.getSize().x
-				- ballImage.getBounds().width);
-		ball.y = f_die.nextInt(f_panel.getSize().y
-				- ballImage.getBounds().height);
+    ball.x = f_die.nextInt(f_panel.getSize().x - ballImage.getBounds().width);
+    ball.y = f_die.nextInt(f_panel.getSize().y - ballImage.getBounds().height);
 
-		final int duration = 4 + f_die.nextInt(10);
+    final int duration = 4 + f_die.nextInt(10);
 
-		/*
-		 * Create a circular movement.
-		 */
-		int radiusX = f_die.nextInt(400);
-		if (f_die.nextBoolean())
-			radiusX = -radiusX;
-		int radiusY = f_die.nextInt(300);
-		if (f_die.nextBoolean())
-			radiusY = -radiusY;
-		KeyFrames<Integer> framesX = KeyFrames.build(
-				KeyValues.build(ball.x, ball.x + radiusX, ball.x, ball.x
-						- radiusX, ball.x), SPLINE_0_1_1_0, SPLINE_1_0_1_1,
-				SPLINE_0_1_1_0, SPLINE_1_0_1_1);
-		KeyFrames<Integer> framesY = KeyFrames.build(
-				KeyValues.build(ball.y, ball.y + radiusY, ball.y
-						+ (2 * radiusY), ball.y + radiusY, ball.y),
-				SPLINE_1_0_1_1, SPLINE_0_1_1_0, SPLINE_1_0_1_1, SPLINE_0_1_1_0);
-		final PropertySetter psx = new PropertySetter(ball, "x", framesX);
-		final PropertySetter psy = new PropertySetter(ball, "y", framesY);
-		/*
-		 * Sometimes go at a constant rate, sometimes accelerate and decelerate.
-		 */
-		final Interpolator i = f_die.nextBoolean() ? ACCEL_4_4 : null;
-		ball.animator = new AnimatorBuilder()
-				.setDuration(duration, TimeUnit.SECONDS).addTarget(psx)
-				.addTarget(psy).setRepeatCount(Animator.INFINITE)
-				.setRepeatBehavior(Animator.RepeatBehavior.LOOP)
-				.setInterpolator(i).build();
-		ball.animator.start();
+    /*
+     * Create a circular movement.
+     */
+    int radiusX = f_die.nextInt(400);
+    if (f_die.nextBoolean())
+      radiusX = -radiusX;
+    int radiusY = f_die.nextInt(300);
+    if (f_die.nextBoolean())
+      radiusY = -radiusY;
+    KeyFramesBuilder<Integer> builder = new KeyFramesBuilder<Integer>(ball.x);
+    builder.addFrame(ball.x + radiusX, SPLINE_0_1_1_0);
+    builder.addFrame(ball.x, SPLINE_1_0_1_1);
+    builder.addFrame(ball.x - radiusX, SPLINE_0_1_1_0);
+    builder.addFrame(ball.x, SPLINE_1_0_1_1);
+    KeyFrames<Integer> framesX = builder.build();
+    builder = new KeyFramesBuilder<Integer>(ball.y);
+    builder.addFrame(ball.y + radiusY, SPLINE_1_0_1_1);
+    builder.addFrame(ball.y + (2 * radiusY), SPLINE_0_1_1_0);
+    builder.addFrame(ball.y + radiusY, SPLINE_1_0_1_1);
+    builder.addFrame(ball.y, SPLINE_0_1_1_0);
+    KeyFrames<Integer> framesY = builder.build();
+    final PropertySetter<Integer> psx = PropertySetter.build(ball, "x", framesX);
+    final PropertySetter<Integer> psy = PropertySetter.build(ball, "y", framesY);
+    /*
+     * Sometimes go at a constant rate, sometimes accelerate and decelerate.
+     */
+    final Interpolator i = f_die.nextBoolean() ? ACCEL_4_4 : null;
+    ball.animator = new AnimatorBuilder().setDuration(duration, TimeUnit.SECONDS).addTarget(psx).addTarget(psy)
+        .setRepeatCount(Animator.INFINITE).setRepeatBehavior(Animator.RepeatBehavior.LOOP).setInterpolator(i).build();
+    ball.animator.start();
 
-		f_balls.add(ball);
-	}
+    f_balls.add(ball);
+  }
 
-	private void removeBall() {
-		if (f_balls.isEmpty())
-			return;
+  private void removeBall() {
+    if (f_balls.isEmpty())
+      return;
 
-		Ball ball = f_balls.remove(0);
-		if (ball != null) {
-			ball.animator.stop();
-		}
-	}
+    Ball ball = f_balls.remove(0);
+    if (ball != null) {
+      ball.animator.stop();
+    }
+  }
 
-	@Override
-	public void renderSetup(Display d) {
-		f_ballImages = new Image[DemoResources.SPHERES.length];
-		int index = 0;
-		for (String resourceName : DemoResources.SPHERES) {
-			f_ballImages[index++] = DemoResources.getImage(resourceName, d);
-		}
-	}
+  @Override
+  public void renderSetup(Display d) {
+    f_ballImages = new Image[DemoResources.SPHERES.length];
+    int index = 0;
+    for (String resourceName : DemoResources.SPHERES) {
+      f_ballImages[index++] = DemoResources.getImage(resourceName, d);
+    }
+  }
 
-	@Override
-	public void renderUpdate() {
-		// Nothing to do
-	}
+  @Override
+  public void renderUpdate() {
+    // Nothing to do
+  }
 
-	@Override
-	public void render(GC g, int width, int height) {
-		final Display display = f_panel.getDisplay();
+  @Override
+  public void render(GC g, int width, int height) {
+    final Display display = f_panel.getDisplay();
 
-		g.setForeground(display.getSystemColor(SWT.COLOR_WHITE));
-		g.fillRectangle(0, 0, width, height);
+    g.setForeground(display.getSystemColor(SWT.COLOR_WHITE));
+    g.fillRectangle(0, 0, width, height);
 
-		for (Ball ball : f_balls) {
-			g.drawImage(f_ballImages[ball.imageIndex], ball.x, ball.y);
-		}
+    for (Ball ball : f_balls) {
+      g.drawImage(f_ballImages[ball.imageIndex], ball.x, ball.y);
+    }
 
-		// Statistics
-		final long now = System.nanoTime();
-		if (f_lastPaintNanos == 0) {
-			f_lastPaintNanos = now;
-		} else {
-			f_paintCount++;
-			f_totalPaintTimeNanos += now - f_lastPaintNanos;
-			f_lastPaintNanos = now;
-		}
-	}
+    // Statistics
+    final long now = System.nanoTime();
+    if (f_lastPaintNanos == 0) {
+      f_lastPaintNanos = now;
+    } else {
+      f_paintCount++;
+      f_totalPaintTimeNanos += now - f_lastPaintNanos;
+      f_lastPaintNanos = now;
+    }
+  }
 
-	@Override
-	public void renderShutdown() {
-		// Nothing to do
-	}
+  @Override
+  public void renderShutdown() {
+    // Nothing to do
+  }
 }

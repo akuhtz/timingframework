@@ -46,178 +46,159 @@ import org.jdesktop.swt.animation.timing.sources.SWTTimingSource;
  */
 public class TimingSourceResolution {
 
-	private static Display f_display;
-	private static Text f_benchmarkOutput;
+  private static Display f_display;
+  private static Text f_benchmarkOutput;
 
-	public static void main(String args[]) {
-		f_display = Display.getDefault();
-		final Shell f_shell = new Shell(f_display);
-		f_shell.setText("SWT TimingSource Resolution Benchmark");
-		f_shell.setLayout(new FillLayout());
-		f_benchmarkOutput = new Text(f_shell, SWT.MULTI | SWT.READ_ONLY
-				| SWT.H_SCROLL | SWT.V_SCROLL);
-		f_benchmarkOutput.setEditable(false);
-		Font fixed = new Font(f_display, "Courier", 11, SWT.NONE);
-		f_benchmarkOutput.setFont(fixed);
-		f_benchmarkOutput.setBackground(f_display
-				.getSystemColor(SWT.COLOR_BLACK));
-		f_benchmarkOutput.setForeground(f_display
-				.getSystemColor(SWT.COLOR_GREEN));
+  public static void main(String args[]) {
+    f_display = Display.getDefault();
+    final Shell f_shell = new Shell(f_display);
+    f_shell.setText("SWT TimingSource Resolution Benchmark");
+    f_shell.setLayout(new FillLayout());
+    f_benchmarkOutput = new Text(f_shell, SWT.MULTI | SWT.READ_ONLY | SWT.H_SCROLL | SWT.V_SCROLL);
+    f_benchmarkOutput.setEditable(false);
+    Font fixed = new Font(f_display, "Courier", 11, SWT.NONE);
+    f_benchmarkOutput.setFont(fixed);
+    f_benchmarkOutput.setBackground(f_display.getSystemColor(SWT.COLOR_BLACK));
+    f_benchmarkOutput.setForeground(f_display.getSystemColor(SWT.COLOR_GREEN));
 
-		f_shell.setSize(450, 600);
-		f_shell.open();
+    f_shell.setSize(450, 600);
+    f_shell.open();
 
-		/*
-		 * Run the benchmarks in a thread outside the SWT UI thread.
-		 */
-		new Thread(f_runBenchmarks).start();
+    /*
+     * Run the benchmarks in a thread outside the SWT UI thread.
+     */
+    new Thread(f_runBenchmarks).start();
 
-		while (!f_shell.isDisposed()) {
-			if (!f_display.readAndDispatch())
-				f_display.sleep();
-		}
-		f_display.dispose();
-		System.exit(0);
-	}
+    while (!f_shell.isDisposed()) {
+      if (!f_display.readAndDispatch())
+        f_display.sleep();
+    }
+    f_display.dispose();
+    System.exit(0);
+  }
 
-	/**
-	 * This method outputs the string to the GUI {@link #f_benchmarkOutput}.
-	 * 
-	 * @param s
-	 *            a string to append to the output.
-	 */
-	private static void out(final String s) {
-		final Runnable addToTextArea = new Runnable() {
-			@Override
-			public void run() {
-				final StringBuffer b = new StringBuffer(
-						f_benchmarkOutput.getText());
-				b.append(s);
-				b.append(Text.DELIMITER);
-				f_benchmarkOutput.setText(b.toString());
-				f_benchmarkOutput.setSelection(b.length());
-			}
-		};
-		if (f_display.getThread().equals(Thread.currentThread())) {
-			addToTextArea.run();
-		} else {
-			f_display.asyncExec(addToTextArea);
-		}
-	}
+  /**
+   * This method outputs the string to the GUI {@link #f_benchmarkOutput}.
+   * 
+   * @param s
+   *          a string to append to the output.
+   */
+  private static void out(final String s) {
+    final Runnable addToTextArea = new Runnable() {
+      @Override
+      public void run() {
+        final StringBuffer b = new StringBuffer(f_benchmarkOutput.getText());
+        b.append(s);
+        b.append(Text.DELIMITER);
+        f_benchmarkOutput.setText(b.toString());
+        f_benchmarkOutput.setSelection(b.length());
+      }
+    };
+    if (f_display.getThread().equals(Thread.currentThread())) {
+      addToTextArea.run();
+    } else {
+      f_display.asyncExec(addToTextArea);
+    }
+  }
 
-	/**
-	 * This method measures the accuracy of a timing source, which is internally
-	 * dependent upon both the internal timing mechanisms.
-	 */
-	public void measureTimingSource(TimingSourceFactory factory,
-			String testName, final boolean edt) {
-		final AtomicInteger timerIteration = new AtomicInteger();
+  /**
+   * This method measures the accuracy of a timing source, which is internally
+   * dependent upon both the internal timing mechanisms.
+   */
+  public void measureTimingSource(TimingSourceFactory factory, String testName, final boolean edt) {
+    final AtomicInteger timerIteration = new AtomicInteger();
 
-		out("BENCHMARK: " + testName);
-		out("                          measured");
-		out("period  iterations  total time  per-tick");
-		out("------  ----------  --------------------");
-		for (int periodMillis = 1; periodMillis <= 20; periodMillis++) {
-			final long startTime = System.nanoTime();
-			final int thisPeriodMillis = periodMillis;
-			final int iterations = 1000 / periodMillis;
-			timerIteration.set(1);
-			final TimingSource source = factory.getTimingSource(periodMillis);
-			final CountDownLatch testComplete = new CountDownLatch(1);
-			final AtomicBoolean outputResults = new AtomicBoolean(true);
-			source.addTickListener(new TickListener() {
-				@Override
-				public void timingSourceTick(TimingSource source, long nanoTime) {
-					if (edt
-							&& !f_display.getThread().equals(
-									Thread.currentThread())) {
-						out("!! We are not in the SWT UI thread when we should be !!");
-					}
-					if (timerIteration.incrementAndGet() > iterations) {
-						if (outputResults.get()) {
-							outputResults.set(false); // only output once
+    out("BENCHMARK: " + testName);
+    out("                          measured");
+    out("period  iterations  total time  per-tick");
+    out("------  ----------  --------------------");
+    for (int periodMillis = 1; periodMillis <= 20; periodMillis++) {
+      final long startTime = System.nanoTime();
+      final int thisPeriodMillis = periodMillis;
+      final int iterations = 1000 / periodMillis;
+      timerIteration.set(1);
+      final TimingSource source = factory.getTimingSource(periodMillis);
+      final CountDownLatch testComplete = new CountDownLatch(1);
+      final AtomicBoolean outputResults = new AtomicBoolean(true);
+      source.addTickListener(new TickListener() {
+        @Override
+        public void timingSourceTick(TimingSource source, long nanoTime) {
+          if (edt && !f_display.getThread().equals(Thread.currentThread())) {
+            out("!! We are not in the SWT UI thread when we should be !!");
+          }
+          if (timerIteration.incrementAndGet() > iterations) {
+            if (outputResults.get()) {
+              outputResults.set(false); // only output once
 
-							source.dispose(); // end timer
+              source.dispose(); // end timer
 
-							final long endTime = System.nanoTime();
-							final long totalTime = TimeUnit.NANOSECONDS
-									.toMillis(endTime - startTime);
-							final float calculatedDelayTime = totalTime
-									/ (float) iterations;
-							out(String.format(
-									" %2d ms       %5d    %5d ms  %5.2f ms",
-									thisPeriodMillis, iterations, totalTime,
-									calculatedDelayTime));
-							testComplete.countDown();
-						}
-					}
-				}
-			});
-			source.init();
-			try {
-				testComplete.await();
-			} catch (InterruptedException e) {
-				// should not happen
-				e.printStackTrace();
-			}
-		}
-		out("\n");
-	}
+              final long endTime = System.nanoTime();
+              final long totalTime = TimeUnit.NANOSECONDS.toMillis(endTime - startTime);
+              final float calculatedDelayTime = totalTime / (float) iterations;
+              out(String.format(" %2d ms       %5d    %5d ms  %5.2f ms", thisPeriodMillis, iterations, totalTime,
+                  calculatedDelayTime));
+              testComplete.countDown();
+            }
+          }
+        }
+      });
+      source.init();
+      try {
+        testComplete.await();
+      } catch (InterruptedException e) {
+        // should not happen
+        e.printStackTrace();
+      }
+    }
+    out("\n");
+  }
 
-	/*
-	 * Factories to provide timing sources to the benchmark code.
-	 */
+  /*
+   * Factories to provide timing sources to the benchmark code.
+   */
 
-	interface TimingSourceFactory {
-		TimingSource getTimingSource(int periodMillis);
-	}
+  interface TimingSourceFactory {
+    TimingSource getTimingSource(int periodMillis);
+  }
 
-	static class SWTTimerFactory implements TimingSourceFactory {
-		@Override
-		public TimingSource getTimingSource(int periodMillis) {
-			return new SWTTimingSource(periodMillis, TimeUnit.MILLISECONDS);
-		}
-	}
+  static class SWTTimerFactory implements TimingSourceFactory {
+    @Override
+    public TimingSource getTimingSource(int periodMillis) {
+      return new SWTTimingSource(periodMillis, TimeUnit.MILLISECONDS);
+    }
+  }
 
-	static class SWTScheduledExecutorFactory implements TimingSourceFactory {
-		@Override
-		public TimingSource getTimingSource(int periodMillis) {
-			return new ScheduledExecutorTimingSource(
-					new SWTNotificationContext(), periodMillis,
-					TimeUnit.MILLISECONDS);
-		}
-	}
+  static class SWTScheduledExecutorFactory implements TimingSourceFactory {
+    @Override
+    public TimingSource getTimingSource(int periodMillis) {
+      return new ScheduledExecutorTimingSource(new SWTNotificationContext(), periodMillis, TimeUnit.MILLISECONDS);
+    }
+  }
 
-	static class ScheduledExecutorFactory implements TimingSourceFactory {
-		@Override
-		public TimingSource getTimingSource(int periodMillis) {
-			return new ScheduledExecutorTimingSource(periodMillis,
-					TimeUnit.MILLISECONDS);
-		}
-	}
+  static class ScheduledExecutorFactory implements TimingSourceFactory {
+    @Override
+    public TimingSource getTimingSource(int periodMillis) {
+      return new ScheduledExecutorTimingSource(periodMillis, TimeUnit.MILLISECONDS);
+    }
+  }
 
-	/**
-	 * Invokes the benchmark runs.
-	 */
-	private static final Runnable f_runBenchmarks = new Runnable() {
-		@Override
-		public void run() {
-			TimingSourceResolution timeResolution = new TimingSourceResolution();
+  /**
+   * Invokes the benchmark runs.
+   */
+  private static final Runnable f_runBenchmarks = new Runnable() {
+    @Override
+    public void run() {
+      TimingSourceResolution timeResolution = new TimingSourceResolution();
 
-			out(String.format("%d processors available on this machine\n",
-					Runtime.getRuntime().availableProcessors()));
+      out(String.format("%d processors available on this machine\n", Runtime.getRuntime().availableProcessors()));
 
-			timeResolution.measureTimingSource(new SWTTimerFactory(),
-					"SWTTimingSource (Calls in SWT UI thread)", true);
-			timeResolution.measureTimingSource(
-					new SWTScheduledExecutorFactory(),
-					"ScheduledExecutorTimingSource (Calls in SWT UI thread)",
-					true);
-			timeResolution.measureTimingSource(new ScheduledExecutorFactory(),
-					"ScheduledExecutorTimingSource (Calls in timer thread)",
-					false);
+      timeResolution.measureTimingSource(new SWTTimerFactory(), "SWTTimingSource (Calls in SWT UI thread)", true);
+      timeResolution.measureTimingSource(new SWTScheduledExecutorFactory(),
+          "ScheduledExecutorTimingSource (Calls in SWT UI thread)", true);
+      timeResolution.measureTimingSource(new ScheduledExecutorFactory(), "ScheduledExecutorTimingSource (Calls in timer thread)",
+          false);
 
-			out("Runs complete...");
-		}
-	};
+      out("Runs complete...");
+    }
+  };
 }

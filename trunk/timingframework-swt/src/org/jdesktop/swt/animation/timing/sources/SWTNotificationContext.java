@@ -17,8 +17,7 @@ import org.jdesktop.core.animation.timing.sources.ScheduledExecutorTimingSource;
  * is a {@link TickListener} object, would be
  * 
  * <pre>
- * TimingSource ts = new ScheduledExecutorTimingSource(
- * 		new SWTNotificationContext(), 15, TimeUnit.MILLISECONDS);
+ * TimingSource ts = new ScheduledExecutorTimingSource(new SWTNotificationContext(), 15, TimeUnit.MILLISECONDS);
  * ts.init(); // starts the timer
  * 
  * ts.addListener(tl); // tl gets tick notifications in the SWT UI thread
@@ -30,19 +29,18 @@ import org.jdesktop.core.animation.timing.sources.ScheduledExecutorTimingSource;
  * 
  * @author Tim Halloran
  */
-public final class SWTNotificationContext implements
-		TickListenerNotificationContext {
+public final class SWTNotificationContext implements TickListenerNotificationContext {
 
-	@Override
-	public void notifyTickListeners(final TimingSource source) {
-		Display.getDefault().asyncExec(new Runnable() {
-			@Override
-			public void run() {
-				/*
-				 * Notify listeners within the thread context of the Swing EDT.
-				 */
-				source.notifyTickListeners();
-			}
-		});
-	}
+  @Override
+  public void notifyTickListeners(final TimingSource source) {
+    Display.getDefault().asyncExec(new Runnable() {
+      @Override
+      public void run() {
+        /*
+         * Notify listeners within the thread context of the Swing EDT.
+         */
+        source.notifyTickListeners();
+      }
+    });
+  }
 }

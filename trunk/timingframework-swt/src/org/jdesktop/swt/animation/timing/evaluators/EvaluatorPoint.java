@@ -14,16 +14,16 @@ import com.surelogic.Immutable;
 @Immutable
 public final class EvaluatorPoint implements Evaluator<Point> {
 
-	@Override
-	public Point evaluate(Point v0, Point v1, double fraction) {
-		double x = v0.x + ((v1.x - v0.x) * fraction);
-		double y = v0.y + ((v1.y - v0.y) * fraction);
-		Point value = new Point((int) x, (int) y);
-		return value;
-	}
+  @Override
+  public Point evaluate(Point v0, Point v1, double fraction) {
+    double x = v0.x + ((v1.x - v0.x) * fraction);
+    double y = v0.y + ((v1.y - v0.y) * fraction);
+    Point value = new Point((int) x, (int) y);
+    return value;
+  }
 
-	@Override
-	public Class<Point> getEvaluatorClass() {
-		return Point.class;
-	}
+  @Override
+  public Class<Point> getEvaluatorClass() {
+    return Point.class;
+  }
 }

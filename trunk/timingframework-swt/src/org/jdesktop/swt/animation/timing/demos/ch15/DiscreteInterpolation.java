@@ -6,7 +6,7 @@ import java.util.concurrent.TimeUnit;
 import org.jdesktop.core.animation.timing.Animator;
 import org.jdesktop.core.animation.timing.AnimatorBuilder;
 import org.jdesktop.core.animation.timing.KeyFrames;
-import org.jdesktop.core.animation.timing.KeyValues;
+import org.jdesktop.core.animation.timing.KeyFramesBuilder;
 import org.jdesktop.core.animation.timing.PropertySetter;
 import org.jdesktop.core.animation.timing.TimingSource;
 import org.jdesktop.core.animation.timing.TimingTargetAdapter;
@@ -31,47 +31,48 @@ import org.jdesktop.swt.animation.timing.sources.SWTTimingSource;
  */
 public class DiscreteInterpolation extends TimingTargetAdapter {
 
-	private final CountDownLatch f_done = new CountDownLatch(1);
-	private int f_intValue;
+  private final CountDownLatch f_done = new CountDownLatch(1);
+  private int f_intValue;
 
-	/** Creates a new instance of DiscreteInterpolation */
-	public DiscreteInterpolation() {
-	}
+  /** Creates a new instance of DiscreteInterpolation */
+  public DiscreteInterpolation() {
+  }
 
-	public void setIntValue(int intValue) {
-		f_intValue = intValue;
-		System.out.println("intValue = " + f_intValue);
-	}
+  public void setIntValue(int intValue) {
+    f_intValue = intValue;
+    System.out.println("intValue = " + f_intValue);
+  }
 
-	@Override
-	public void end(Animator source) {
-		f_done.countDown();
-	}
+  @Override
+  public void end(Animator source) {
+    f_done.countDown();
+  }
 
-	public static void main(String[] args) {
-		TimingSource ts = new ScheduledExecutorTimingSource(100,
-				TimeUnit.MILLISECONDS);
-		AnimatorBuilder.setDefaultTimingSource(ts);
-		ts.init();
+  public static void main(String[] args) {
+    TimingSource ts = new ScheduledExecutorTimingSource(100, TimeUnit.MILLISECONDS);
+    AnimatorBuilder.setDefaultTimingSource(ts);
+    ts.init();
 
-		DiscreteInterpolation object = new DiscreteInterpolation();
+    DiscreteInterpolation object = new DiscreteInterpolation();
 
-		final KeyValues<Integer> keyValues = KeyValues.build(2, 6, 3, 5, 4);
-		final KeyFrames<Integer> keyFrames = KeyFrames.build(keyValues,
-				DiscreteInterpolator.getInstance());
-		final PropertySetter ps = new PropertySetter(object, "intValue",
-				keyFrames);
+    final KeyFrames<Integer> keyFrames = new KeyFramesBuilder<Integer>().addFrames(2, 6, 3, 5, 4)
+        .setInterpolator(DiscreteInterpolator.getInstance()).build();
+    System.out.println("-- Key Frames --");
+    int i = 0;
+    for (KeyFrames.Frame<Integer> frame : keyFrames) {
+      final String s = frame.getInterpolator() == null ? "null" : frame.getInterpolator().getClass().getSimpleName();
+      System.out.printf("Frame %d: value=%d timeFraction=%f interpolator=%s\n", i++, frame.getValue(), frame.getTimeFraction(), s);
+    }
+    final PropertySetter<Integer> ps = PropertySetter.build(object, "intValue", keyFrames);
+    final Animator anim = new AnimatorBuilder().setDuration(3, TimeUnit.SECONDS).addTarget(ps).addTarget(object).build();
+    System.out.println("-- Animation --");
+    anim.start();
 
-		final Animator anim = new AnimatorBuilder()
-				.setDuration(3, TimeUnit.SECONDS).addTarget(ps)
-				.addTarget(object).build();
-		anim.start();
-
-		try {
-			object.f_done.await();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		ts.dispose();
-	}
+    try {
+      object.f_done.await();
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+    ts.dispose();
+  }
 }
