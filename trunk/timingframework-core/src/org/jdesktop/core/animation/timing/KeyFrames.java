@@ -1,6 +1,15 @@
 package org.jdesktop.core.animation.timing;
 
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import org.jdesktop.core.animation.i18n.I18N;
+import org.jdesktop.core.animation.timing.KeyFrames.Frame;
+
 import com.surelogic.Immutable;
+import com.surelogic.ThreadSafe;
+import com.surelogic.Vouch;
 
 /**
  * KeyFrames holds information about the times at which values are sampled and
@@ -13,16 +22,37 @@ import com.surelogic.Immutable;
  * @author Chet Haase
  * @author Tim Halloran
  */
-@Immutable
-public class KeyFrames<T> {
+@ThreadSafe
+public class KeyFrames<T> implements Iterable<Frame<T>> {
 
-  private final T[] f_values;
-  private final double[] f_times;
-  /**
-   * <tt>f_interpolators[0] = null</tt> because be store the interpolator for a
-   * time interval with the end time (not the start time).
-   */
-  private final Interpolator[] f_interpolators;
+  @Immutable
+  public static class Frame<T> {
+    private final T f_value;
+    private final double f_atTime;
+    private final Interpolator f_interpolator;
+
+    public Frame(T value, double atTime, Interpolator interpolator) {
+      this.f_value = value;
+      this.f_atTime = atTime;
+      this.f_interpolator = interpolator;
+    }
+
+    public T getValue() {
+      return f_value;
+    }
+
+    public double getAtTime() {
+      return f_atTime;
+    }
+
+    public Interpolator getInterpolator() {
+      return f_interpolator;
+    }
+  }
+
+  @Vouch("Immutable")
+  private final Frame<T>[] f_frames;
+
   private final Evaluator<T> f_evaluator;
 
   /**
@@ -31,27 +61,42 @@ public class KeyFrames<T> {
    * This constructor should only be called from
    * {@link KeyFramesBuilder#build()}.
    */
-  KeyFrames(T[] values, double[] times, Interpolator[] interpolators, Evaluator<T> evaluator) {
-    f_values = values;
-    f_times = times;
-    f_interpolators = interpolators;
+  KeyFrames(Frame<T>[] frames, Evaluator<T> evaluator) {
+    f_frames = frames;
     f_evaluator = evaluator;
   }
 
   public int size() {
-    return f_values.length;
+    return f_frames.length;
   }
 
-  public T getValue(int index) {
-    return f_values[index];
+  public Frame<T> getFrame(int index) {
+    return f_frames[index];
   }
 
-  public double getTime(int index) {
-    return f_times[index];
-  }
+  @Override
+  public Iterator<Frame<T>> iterator() {
+    final Iterator<Frame<T>> result = new Iterator<Frame<T>>() {
 
-  public Interpolator getInterpolator(int index) {
-    return f_interpolators[index];
+      final AtomicInteger f_index = new AtomicInteger(0);
+
+      public boolean hasNext() {
+        return f_index.get() < size();
+      }
+
+      public Frame<T> next() {
+        if (!hasNext())
+          throw new NoSuchElementException(I18N.err(27));
+        final int index = f_index.getAndIncrement();
+        final Frame<T> result = f_frames[index];
+        return result;
+      }
+
+      public void remove() {
+        throw new UnsupportedOperationException(I18N.err(28));
+      }
+    };
+    return result;
   }
 
   /**
@@ -151,23 +196,24 @@ public class KeyFrames<T> {
    *         falls within.
    */
   public int getInterval(double fraction) {
-    for (int i = 1; i < f_times.length; ++i) {
-      if (fraction <= f_times[i])
+    final int size = size();
+    for (int i = 1; i < size; ++i) {
+      if (fraction <= f_frames[i].getAtTime())
         return i - 1;
     }
-    return f_times.length - 2;
+    return size - 2;
   }
 
-  public T getValue(double fraction) {
+  public T getInterpolatedValue(double fraction) {
     final int interval = getInterval(fraction);
     /*
      * First, figure out the real fraction to use, given the interpolation type
      * and start and end time of the interval.
      */
-    final double t0 = f_times[interval];
-    final double t1 = f_times[interval + 1];
+    final double t0 = f_frames[interval].getAtTime();
+    final double t1 = f_frames[interval + 1].getAtTime();
     final double t = (fraction - t0) / (t1 - t0);
-    double iFraction = f_interpolators[interval + 1].interpolate(t);
+    double iFraction = f_frames[interval + 1].getInterpolator().interpolate(t);
     /*
      * Clamp to [0,1] to any avoid problems with buggy interpolators.
      */
@@ -179,8 +225,8 @@ public class KeyFrames<T> {
     /*
      * Second interpolate between the two key values.
      */
-    final T v0 = f_values[interval];
-    final T v1 = f_values[interval + 1];
+    final T v0 = f_frames[interval].getValue();
+    final T v1 = f_frames[interval + 1].getValue();
     return f_evaluator.evaluate(v0, v1, iFraction);
   }
 }
