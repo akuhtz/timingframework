@@ -68,37 +68,15 @@ public class KeyFramesBuilder<T> {
 
   public KeyFrames<T> build() {
     final int frameCount = f_values.size();
+    /*
+     * There must be at least two frames and the lists must be the same size.
+     */
     if (frameCount < 2)
       throw new IllegalArgumentException(I18N.err(20));
     if (f_times.size() != frameCount)
       throw new IllegalArgumentException(I18N.err(21, frameCount, f_times.size()));
     if (f_interpolators.size() != frameCount)
       throw new IllegalArgumentException(I18N.err(22, frameCount, f_interpolators.size()));
-    /*
-     * Check for nulls
-     */
-    int index = 0;
-    for (T value : f_values) {
-      if (value == null)
-        throw new IllegalArgumentException(I18N.err(23, index));
-      index++;
-    }
-    index = 0;
-    final double[] times = new double[frameCount];
-    for (Double time : f_times) {
-      if (time == null)
-        throw new IllegalArgumentException(I18N.err(24, index));
-      times[index] = time;
-      index++;
-    }
-    index = 0;
-    final Interpolator[] interpolators = new Interpolator[frameCount];
-    for (Interpolator interpolator : f_interpolators) {
-      if (index != 0 && interpolator == null)
-        throw new IllegalArgumentException(I18N.err(25, index));
-      interpolators[index] = index == 0 ? null : interpolator;
-      index++;
-    }
     /*
      * Change the first key time to zero, unless it already is zero.
      */
@@ -114,24 +92,45 @@ public class KeyFramesBuilder<T> {
       f_times.addLast(Double.valueOf(1));
     }
     /*
+     * Construct an array of frames and perform null checks.
+     */
+    @SuppressWarnings("unchecked")
+    final KeyFrames.Frame<T>[] frames = new KeyFrames.Frame[frameCount];
+    for (int i = 0; i < frameCount; i++) {
+      final T value = f_values.get(i);
+      if (value == null)
+        throw new IllegalArgumentException(I18N.err(23, i));
+      final Double atTime = f_times.get(i);
+      if (atTime == null)
+        throw new IllegalArgumentException(I18N.err(24, i));
+      final Interpolator interpolator = i == 0 ? null : f_interpolators.get(i);
+      if (i != 0 && interpolator == null)
+        throw new IllegalArgumentException(I18N.err(25, i));
+
+      frames[i] = new KeyFrames.Frame<T>(value, atTime, interpolator);
+    }
+
+    /*
      * Check that key times are less than one and that they increase.
      */
     double prevTime = 0;
-    for (double time : times) {
-      if (time < prevTime)
+    for (KeyFrames.Frame<T> frame : frames) {
+      final double atTime = frame.getAtTime();
+      if (atTime < prevTime)
         throw new IllegalArgumentException(I18N.err(26, f_times.toString()));
-      prevTime = time;
+      prevTime = atTime;
     }
+
     /*
      * Try to find an evaluator unless one was set.
      */
     if (f_evaluator == null) {
       @SuppressWarnings("unchecked")
-      final Class<T> c = (Class<T>) f_values.get(0).getClass();
+      final Class<T> c = (Class<T>) frames[0].getValue().getClass();
       f_evaluator = KnownEvaluators.getInstance().getEvaluatorFor(c);
     }
-    @SuppressWarnings("unchecked")
-    final KeyFrames<T> result = new KeyFrames<T>((T[]) f_values.toArray(), times, interpolators, f_evaluator);
+
+    final KeyFrames<T> result = new KeyFrames<T>(frames, f_evaluator);
     return result;
   }
 }

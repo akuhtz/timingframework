@@ -4,9 +4,12 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.jdesktop.core.animation.i18n.I18N;
 import org.jdesktop.core.animation.timing.Animator.Direction;
+
+import com.surelogic.ThreadSafe;
 
 /**
  * A {@link TimingTarget} that enables automating animation of object
@@ -55,6 +58,7 @@ import org.jdesktop.core.animation.timing.Animator.Direction;
  * @author Chet Haase
  * @author Tim Halloran
  */
+@ThreadSafe
 public class PropertySetter<T> extends TimingTargetAdapter {
 
   public static <T> PropertySetter<T> build(Object object, String propertyName, KeyFrames<T> keyFrames) {
@@ -62,8 +66,7 @@ public class PropertySetter<T> extends TimingTargetAdapter {
   }
 
   public static <T> PropertySetter<T> build(Object object, String propertyName, T... values) {
-    final KeyFrames<T> keyFrames = new KeyFramesBuilder<T>().addFrames(values).build();
-    return new PropertySetter<T>(object, propertyName, keyFrames, null);
+    return new PropertySetter<T>(object, propertyName, new KeyFramesBuilder<T>().addFrames(values).build(), null);
   }
 
   public static <T> PropertySetter<T> buildTo(Object object, String propertyName, T... values) {
@@ -72,13 +75,12 @@ public class PropertySetter<T> extends TimingTargetAdapter {
 
   private final Object f_object;
   private final String f_propertyName;
-  // TODO NOT THREAD SAFE
-  private KeyFrames<T> f_keyFrames;
+  private final AtomicReference<KeyFrames<T>> f_keyFrames = new AtomicReference<KeyFrames<T>>();
   private final T[] f_toValues;
   private final Method f_propertySetter;
   private final Method f_propertyGetter;
 
-  public PropertySetter(Object object, String propertyName, KeyFrames<T> keyFrames, T[] toValues) {
+  private PropertySetter(Object object, String propertyName, KeyFrames<T> keyFrames, T[] toValues) {
     if (object == null)
       throw new IllegalArgumentException(I18N.err(1, "object"));
     f_object = object;
@@ -88,10 +90,13 @@ public class PropertySetter<T> extends TimingTargetAdapter {
 
     if ((keyFrames == null && toValues == null) || (keyFrames != null && toValues != null))
       throw new IllegalArgumentException(I18N.err(31));
-
-    f_keyFrames = keyFrames;
+    if (keyFrames != null)
+      f_keyFrames.set(keyFrames);
     f_toValues = toValues;
 
+    /*
+     * Find the setter method.
+     */
     final String firstChar = f_propertyName.substring(0, 1);
     final String remainder = f_propertyName.substring(1);
     final String propertySetterName = "set" + firstChar.toUpperCase(Locale.ENGLISH) + remainder;
@@ -101,10 +106,10 @@ public class PropertySetter<T> extends TimingTargetAdapter {
     } catch (IntrospectionException e) {
       throw new IllegalArgumentException(I18N.err(30, propertySetterName, propertyName, object.toString()), e);
     }
+    /*
+     * Find the getter method, but we only need it for "to" animations
+     */
     if (isToAnimation()) {
-      /*
-       * Only need the getter for "to" animations
-       */
       final String propertyGetterName = "get" + firstChar.toUpperCase(Locale.ENGLISH) + remainder;
       try {
         final PropertyDescriptor pd = new PropertyDescriptor(f_propertyName, f_object.getClass(), propertyGetterName, null);
@@ -129,7 +134,7 @@ public class PropertySetter<T> extends TimingTargetAdapter {
       try {
         @SuppressWarnings("unchecked")
         final T startValue = (T) f_propertyGetter.invoke(f_object);
-        f_keyFrames = new KeyFramesBuilder<T>(startValue).addFrames(f_toValues).build();
+        f_keyFrames.set(new KeyFramesBuilder<T>(startValue).addFrames(f_toValues).build());
       } catch (Exception e) {
         throw new IllegalStateException(I18N.err(32, f_propertyGetter.getName(), f_object.toString()), e);
       }
@@ -147,7 +152,7 @@ public class PropertySetter<T> extends TimingTargetAdapter {
   @Override
   public void timingEvent(double fraction, Direction direction, Animator source) {
     try {
-      f_propertySetter.invoke(f_object, f_keyFrames.getValue(fraction));
+      f_propertySetter.invoke(f_object, f_keyFrames.get().getInterpolatedValue(fraction));
     } catch (Exception e) {
       throw new IllegalStateException(I18N.err(32, f_propertySetter.getName(), f_object.toString()), e);
     }
