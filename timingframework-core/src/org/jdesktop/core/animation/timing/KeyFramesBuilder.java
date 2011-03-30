@@ -15,7 +15,7 @@ public class KeyFramesBuilder<T> {
 
   private Evaluator<T> f_evaluator = null;
   private final List<T> f_values = new ArrayList<T>();
-  private final LinkedList<Double> f_times = new LinkedList<Double>();
+  private final LinkedList<Double> f_timeFractions = new LinkedList<Double>();
   private final List<Interpolator> f_interpolators = new ArrayList<Interpolator>();
 
   public KeyFramesBuilder() {
@@ -24,18 +24,18 @@ public class KeyFramesBuilder<T> {
 
   public KeyFramesBuilder(T startValue) {
     f_values.add(startValue);
-    f_times.add(Double.valueOf(0));
+    f_timeFractions.add(Double.valueOf(0));
     f_interpolators.add(null);
   }
 
   public KeyFramesBuilder<T> addFrame(T value) {
     f_values.add(value);
-    if (f_times.isEmpty()) {
-      f_times.add(Double.valueOf(0));
+    if (f_timeFractions.isEmpty()) {
+      f_timeFractions.add(Double.valueOf(0));
       f_interpolators.add(null);
     } else {
-      final double atTime = f_times.getLast();
-      f_times.add(atTime + ((1.0 - atTime) / 2.0));
+      final double atTime = f_timeFractions.getLast();
+      f_timeFractions.add(atTime + ((1.0 - atTime) / 2.0));
       f_interpolators.add(LinearInterpolator.getInstance());
     }
     return this;
@@ -47,16 +47,16 @@ public class KeyFramesBuilder<T> {
     return this;
   }
 
-  public KeyFramesBuilder<T> addFrame(T value, double atTime) {
+  public KeyFramesBuilder<T> addFrame(T value, double atTimeFraction) {
     f_values.add(value);
-    f_times.add(atTime);
+    f_timeFractions.add(atTimeFraction);
     f_interpolators.add(LinearInterpolator.getInstance());
     return this;
   }
 
-  public KeyFramesBuilder<T> addFrame(T value, double atTime, Interpolator interpolator) {
+  public KeyFramesBuilder<T> addFrame(T value, double atTimeFraction, Interpolator interpolator) {
     f_values.add(value);
-    f_times.add(atTime);
+    f_timeFractions.add(atTimeFraction);
     f_interpolators.add(interpolator);
     return this;
   }
@@ -73,23 +73,23 @@ public class KeyFramesBuilder<T> {
      */
     if (frameCount < 2)
       throw new IllegalArgumentException(I18N.err(20));
-    if (f_times.size() != frameCount)
-      throw new IllegalArgumentException(I18N.err(21, frameCount, f_times.size()));
+    if (f_timeFractions.size() != frameCount)
+      throw new IllegalArgumentException(I18N.err(21, frameCount, f_timeFractions.size()));
     if (f_interpolators.size() != frameCount)
       throw new IllegalArgumentException(I18N.err(22, frameCount, f_interpolators.size()));
     /*
      * Change the first key time to zero, unless it already is zero.
      */
-    if (f_times.getFirst() != 0) {
-      f_times.removeFirst();
-      f_times.addFirst(Double.valueOf(0));
+    if (f_timeFractions.getFirst() != 0) {
+      f_timeFractions.removeFirst();
+      f_timeFractions.addFirst(Double.valueOf(0));
     }
     /*
      * Change the last key time to one, unless it already is one.
      */
-    if (f_times.getLast() != 1) {
-      f_times.removeLast();
-      f_times.addLast(Double.valueOf(1));
+    if (f_timeFractions.getLast() != 1) {
+      f_timeFractions.removeLast();
+      f_timeFractions.addLast(Double.valueOf(1));
     }
     /*
      * Construct an array of frames and perform null checks.
@@ -100,14 +100,14 @@ public class KeyFramesBuilder<T> {
       final T value = f_values.get(i);
       if (value == null)
         throw new IllegalArgumentException(I18N.err(23, i));
-      final Double atTime = f_times.get(i);
-      if (atTime == null)
+      final Double atTimeFraction = f_timeFractions.get(i);
+      if (atTimeFraction == null)
         throw new IllegalArgumentException(I18N.err(24, i));
       final Interpolator interpolator = i == 0 ? null : f_interpolators.get(i);
       if (i != 0 && interpolator == null)
         throw new IllegalArgumentException(I18N.err(25, i));
 
-      frames[i] = new KeyFrames.Frame<T>(value, atTime, interpolator);
+      frames[i] = new KeyFrames.Frame<T>(value, atTimeFraction, interpolator);
     }
 
     /*
@@ -115,9 +115,9 @@ public class KeyFramesBuilder<T> {
      */
     double prevTime = 0;
     for (KeyFrames.Frame<T> frame : frames) {
-      final double atTime = frame.getAtTime();
+      final double atTime = frame.getTimeFraction();
       if (atTime < prevTime)
-        throw new IllegalArgumentException(I18N.err(26, f_times.toString()));
+        throw new IllegalArgumentException(I18N.err(26, f_timeFractions.toString()));
       prevTime = atTime;
     }
 
