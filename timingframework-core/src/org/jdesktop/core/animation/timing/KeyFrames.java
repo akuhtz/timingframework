@@ -74,7 +74,7 @@ public class KeyFrames<T> implements Iterable<Frame<T>> {
      * @param value
      *          the value of this key frame.
      * @param atTimeFraction
-     *          the time fraction in the range [0,1] when that value should
+     *          the time fraction in the range [0,1] when the value should
      *          occur. A negative value indicates, to the
      *          {@link KeyFramesBuilder} that this instance is passed to, that
      *          the time fraction when this fame occurs should be calculated,
@@ -111,7 +111,7 @@ public class KeyFrames<T> implements Iterable<Frame<T>> {
      * @param value
      *          the value of this key frame.
      * @param atTimeFraction
-     *          the time fraction in the range [0,1] when that value should
+     *          the time fraction in the range [0,1] when the value should
      *          occur. A negative value indicates, to the
      *          {@link KeyFramesBuilder} that this instance is passed to, that
      *          the time fraction when this fame occurs should be calculated,
