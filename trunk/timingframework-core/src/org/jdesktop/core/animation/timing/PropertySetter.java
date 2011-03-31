@@ -3,6 +3,8 @@ package org.jdesktop.core.animation.timing;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -67,26 +69,43 @@ public class PropertySetter extends TimingTargetAdapter {
   }
 
   public static <T> PropertySetter build(Object object, String propertyName, T... values) {
-    return new PropertySetter(object, propertyName, new KeyFramesBuilder<T>().addFrames(values).build(), null, null);
+    final KeyFrames<T> keyFrames = new KeyFramesBuilder<T>().addFrames(values).build();
+    return build(object, propertyName, keyFrames);
   }
 
-  public static <T> PropertySetter buildTo(Object object, String propertyName, T... values) {
-    return new PropertySetter(object, propertyName, null, null, values);
+  public static <T> PropertySetter build(Object object, String propertyName, Interpolator interpolator, T... values) {
+    final KeyFrames<T> keyFrames = new KeyFramesBuilder<T>().setInterpolator(interpolator).addFrames(values).build();
+    return build(object, propertyName, keyFrames);
+  }
+
+  public static <T> PropertySetter buildTo(Object object, String propertyName, Interpolator interpolator,
+      KeyFrames.Frame<T>... values) {
+    return new PropertySetter(object, propertyName, null, interpolator, values);
   }
 
   public static <T> PropertySetter buildTo(Object object, String propertyName, Interpolator interpolator, T... values) {
-    return new PropertySetter(object, propertyName, null, interpolator, values);
+    final List<KeyFrames.Frame<T>> frames = new ArrayList<KeyFrames.Frame<T>>();
+    for (T value : values)
+      frames.add(new KeyFrames.Frame<T>(value));
+    @SuppressWarnings("unchecked")
+    final KeyFrames.Frame<T>[] framesArray = frames.toArray(new KeyFrames.Frame[frames.size()]);
+    return buildTo(object, propertyName, interpolator, framesArray);
+  }
+
+  public static <T> PropertySetter buildTo(Object object, String propertyName, T... values) {
+    return buildTo(object, propertyName, null, values);
   }
 
   private final Object f_object;
   private final String f_propertyName;
-  private final AtomicReference<KeyFrames<?>> f_keyFrames = new AtomicReference<KeyFrames<?>>();
-  private final Object[] f_toValues;
+  private final AtomicReference<KeyFrames<Object>> f_keyFrames = new AtomicReference<KeyFrames<Object>>();
+  private final KeyFrames.Frame<Object>[] f_toFrames;
   private final Interpolator f_toInterpolator;
   private final Method f_propertySetter;
   private final Method f_propertyGetter;
 
-  private PropertySetter(Object object, String propertyName, KeyFrames<?> keyFrames, Interpolator toInterpolator, Object[] toValues) {
+  private PropertySetter(Object object, String propertyName, KeyFrames<?> keyFrames, Interpolator toInterpolator,
+      KeyFrames.Frame<?>[] toFrames) {
     if (object == null)
       throw new IllegalArgumentException(I18N.err(1, "object"));
     f_object = object;
@@ -94,15 +113,19 @@ public class PropertySetter extends TimingTargetAdapter {
       throw new IllegalArgumentException(I18N.err(1, "propertyName"));
     f_propertyName = propertyName;
 
-    if ((keyFrames == null && toValues == null) || (keyFrames != null && toValues != null))
+    if ((keyFrames == null && toFrames == null) || (keyFrames != null && toFrames != null))
       throw new IllegalArgumentException(I18N.err(31));
     if (keyFrames != null) {
-      f_keyFrames.set(keyFrames);
+      @SuppressWarnings("unchecked")
+      final KeyFrames<Object> copyKeyFrames = (KeyFrames<Object>) keyFrames;
+      f_keyFrames.set(copyKeyFrames);
       f_toInterpolator = null;
-      f_toValues = null;
+      f_toFrames = null;
     } else {
       f_toInterpolator = toInterpolator == null ? LinearInterpolator.getInstance() : toInterpolator;
-      f_toValues = toValues;
+      @SuppressWarnings("unchecked")
+      final KeyFrames.Frame<Object>[] copyToFrames = (KeyFrames.Frame<Object>[]) toFrames;
+      f_toFrames = copyToFrames;
     }
 
     /*
@@ -144,7 +167,7 @@ public class PropertySetter extends TimingTargetAdapter {
     if (isToAnimation()) {
       try {
         final Object startValue = f_propertyGetter.invoke(f_object);
-        f_keyFrames.set(new KeyFramesBuilder<Object>(startValue).setInterpolator(f_toInterpolator).addFrames(f_toValues).build());
+        f_keyFrames.set(new KeyFramesBuilder<Object>(startValue).setInterpolator(f_toInterpolator).addFrames(f_toFrames).build());
       } catch (Exception e) {
         throw new IllegalStateException(I18N.err(32, f_propertyGetter.getName(), f_object.toString()), e);
       }
@@ -172,6 +195,6 @@ public class PropertySetter extends TimingTargetAdapter {
    * Utility method for determining whether this is a "to" animation.
    */
   private boolean isToAnimation() {
-    return (f_toValues != null);
+    return (f_toFrames != null);
   }
 }
