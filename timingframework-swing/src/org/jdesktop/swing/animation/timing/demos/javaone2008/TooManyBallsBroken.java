@@ -34,6 +34,7 @@ import org.jdesktop.core.animation.timing.PropertySetter;
 import org.jdesktop.core.animation.timing.TimingSource;
 import org.jdesktop.core.animation.timing.TimingSource.PostTickListener;
 import org.jdesktop.core.animation.timing.TimingSource.TickListener;
+import org.jdesktop.core.animation.timing.TimingTarget;
 import org.jdesktop.core.animation.timing.interpolators.AccelerationInterpolator;
 import org.jdesktop.core.animation.timing.interpolators.SplineInterpolator;
 import org.jdesktop.swing.animation.timing.demos.DemoResources;
@@ -257,8 +258,8 @@ public class TooManyBallsBroken {
     builder.addFrame(ball.y, SPLINE_0_1_1_0);
     KeyFrames<Integer> framesY = builder.build();
 
-    final PropertySetter psx = PropertySetter.build(ball, "x", framesX);
-    final PropertySetter psy = PropertySetter.build(ball, "y", framesY);
+    final TimingTarget psx = PropertySetter.build(ball, "x", framesX);
+    final TimingTarget psy = PropertySetter.build(ball, "y", framesY);
     /*
      * Sometimes go at a constant rate, sometimes accelerate and decelerate.
      */

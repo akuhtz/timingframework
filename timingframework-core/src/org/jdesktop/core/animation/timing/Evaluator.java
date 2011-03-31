@@ -1,6 +1,6 @@
 package org.jdesktop.core.animation.timing;
 
-import com.surelogic.ThreadSafe;
+import com.surelogic.Immutable;
 
 /**
  * Evaluates between values of a particular type.
@@ -11,7 +11,7 @@ import com.surelogic.ThreadSafe;
  * @param <T>
  *          the type the implementation evaluates.
  */
-@ThreadSafe
+@Immutable
 public interface Evaluator<T> {
 
   /**
