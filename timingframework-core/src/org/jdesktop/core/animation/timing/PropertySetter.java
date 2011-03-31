@@ -8,6 +8,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.jdesktop.core.animation.i18n.I18N;
 import org.jdesktop.core.animation.timing.Animator.Direction;
+import org.jdesktop.core.animation.timing.interpolators.LinearInterpolator;
 
 import com.surelogic.ThreadSafe;
 
@@ -62,25 +63,30 @@ import com.surelogic.ThreadSafe;
 public class PropertySetter extends TimingTargetAdapter {
 
   public static PropertySetter build(Object object, String propertyName, KeyFrames<?> keyFrames) {
-    return new PropertySetter(object, propertyName, keyFrames, null);
+    return new PropertySetter(object, propertyName, keyFrames, null, null);
   }
 
   public static <T> PropertySetter build(Object object, String propertyName, T... values) {
-    return new PropertySetter(object, propertyName, new KeyFramesBuilder<T>().addFrames(values).build(), null);
+    return new PropertySetter(object, propertyName, new KeyFramesBuilder<T>().addFrames(values).build(), null, null);
   }
 
   public static <T> PropertySetter buildTo(Object object, String propertyName, T... values) {
-    return new PropertySetter(object, propertyName, null, values);
+    return new PropertySetter(object, propertyName, null, null, values);
+  }
+
+  public static <T> PropertySetter buildTo(Object object, String propertyName, Interpolator interpolator, T... values) {
+    return new PropertySetter(object, propertyName, null, interpolator, values);
   }
 
   private final Object f_object;
   private final String f_propertyName;
   private final AtomicReference<KeyFrames<?>> f_keyFrames = new AtomicReference<KeyFrames<?>>();
   private final Object[] f_toValues;
+  private final Interpolator f_toInterpolator;
   private final Method f_propertySetter;
   private final Method f_propertyGetter;
 
-  private PropertySetter(Object object, String propertyName, KeyFrames<?> keyFrames, Object[] toValues) {
+  private PropertySetter(Object object, String propertyName, KeyFrames<?> keyFrames, Interpolator toInterpolator, Object[] toValues) {
     if (object == null)
       throw new IllegalArgumentException(I18N.err(1, "object"));
     f_object = object;
@@ -90,9 +96,14 @@ public class PropertySetter extends TimingTargetAdapter {
 
     if ((keyFrames == null && toValues == null) || (keyFrames != null && toValues != null))
       throw new IllegalArgumentException(I18N.err(31));
-    if (keyFrames != null)
+    if (keyFrames != null) {
       f_keyFrames.set(keyFrames);
-    f_toValues = toValues;
+      f_toInterpolator = null;
+      f_toValues = null;
+    } else {
+      f_toInterpolator = toInterpolator == null ? LinearInterpolator.getInstance() : toInterpolator;
+      f_toValues = toValues;
+    }
 
     /*
      * Find the setter method.
@@ -133,7 +144,7 @@ public class PropertySetter extends TimingTargetAdapter {
     if (isToAnimation()) {
       try {
         final Object startValue = f_propertyGetter.invoke(f_object);
-        f_keyFrames.set(new KeyFramesBuilder<Object>(startValue).addFrames(f_toValues).build());
+        f_keyFrames.set(new KeyFramesBuilder<Object>(startValue).setInterpolator(f_toInterpolator).addFrames(f_toValues).build());
       } catch (Exception e) {
         throw new IllegalStateException(I18N.err(32, f_propertyGetter.getName(), f_object.toString()), e);
       }
