@@ -103,6 +103,7 @@ import com.surelogic.ThreadSafe;
 public class PropertySetter extends TimingTargetAdapter {
 
   /**
+   * Constructs a timing target that changes an object's property over time.
    * 
    * @param object
    *          an object.
@@ -118,6 +119,7 @@ public class PropertySetter extends TimingTargetAdapter {
   }
 
   /**
+   * Constructs a timing target that changes an object's property over time.
    * 
    * @param <T>
    * @param object
@@ -131,6 +133,7 @@ public class PropertySetter extends TimingTargetAdapter {
   }
 
   /**
+   * Constructs a timing target that changes an object's property over time.
    * 
    * @param <T>
    * @param object
@@ -145,6 +148,8 @@ public class PropertySetter extends TimingTargetAdapter {
   }
 
   /**
+   * Constructs a timing target that changes an object's property from its
+   * current value over time. This is referred to as a "to" animation.
    * 
    * @param <T>
    * @param object
@@ -159,6 +164,8 @@ public class PropertySetter extends TimingTargetAdapter {
   }
 
   /**
+   * Constructs a timing target that changes an object's property from its
+   * current value over time. This is referred to as a "to" animation.
    * 
    * @param <T>
    * @param object
@@ -177,6 +184,8 @@ public class PropertySetter extends TimingTargetAdapter {
   }
 
   /**
+   * Constructs a timing target that changes an object's property from its
+   * current value over time. This is referred to as a "to" animation.
    * 
    * @param <T>
    * @param object
