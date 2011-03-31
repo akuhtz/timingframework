@@ -44,6 +44,7 @@ import org.jdesktop.core.animation.timing.Interpolator;
 import org.jdesktop.core.animation.timing.KeyFrames;
 import org.jdesktop.core.animation.timing.KeyFramesBuilder;
 import org.jdesktop.core.animation.timing.PropertySetter;
+import org.jdesktop.core.animation.timing.TimingTarget;
 import org.jdesktop.core.animation.timing.interpolators.SplineInterpolator;
 
 class SplineControlPanel extends JPanel {
@@ -238,8 +239,8 @@ class SplineControlPanel extends JPanel {
         (float) control2.getY());
     KeyFrames<Double> frames = new KeyFramesBuilder<Double>().setInterpolator(splines).addFrames(0.0, 1.0).build();
 
-    PropertySetter dropModifier = PropertySetter.build(dropSimulator, "time", frames);
-    PropertySetter bounceModifier = PropertySetter.build(bounceSimulator, "time", frames);
+    TimingTarget dropModifier = PropertySetter.build(dropSimulator, "time", frames);
+    TimingTarget bounceModifier = PropertySetter.build(bounceSimulator, "time", frames);
 
     controller = new AnimatorBuilder().setDuration(2, TimeUnit.SECONDS).setRepeatBehavior(Animator.RepeatBehavior.REVERSE)
         .addTarget(dropModifier).addTarget(bounceModifier).build();
@@ -259,8 +260,8 @@ class SplineControlPanel extends JPanel {
           controller.stop();
         }
 
-        PropertySetter control1 = PropertySetter.build(display, "control1", display.getControl1(), template.getControl1());
-        PropertySetter control2 = PropertySetter.build(display, "control2", display.getControl2(), template.getControl2());
+        TimingTarget control1 = PropertySetter.build(display, "control1", display.getControl1(), template.getControl1());
+        TimingTarget control2 = PropertySetter.build(display, "control2", display.getControl2(), template.getControl2());
         controller = new AnimatorBuilder().setDuration(300, TimeUnit.MILLISECONDS).addTarget(control1).addTarget(control2).build();
         controller.start();
       }
