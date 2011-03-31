@@ -55,7 +55,7 @@ public class SpherePanel extends JPanel {
       throw new IllegalStateException("Problem loading image " + resourceName, e);
     }
     setPreferredSize(new Dimension(f_sphereImage.getWidth() + 2 * PADDING, PANEL_HEIGHT));
-    final PropertySetter<Integer> ps = PropertySetter.build(this, "sphereY", 20, (PANEL_HEIGHT - f_sphereImage.getHeight()), 20);
+    final PropertySetter ps = PropertySetter.build(this, "sphereY", 20, (PANEL_HEIGHT - f_sphereImage.getHeight()), 20);
     f_bouncer = new AnimatorBuilder().addTarget(ps).setDuration(2, TimeUnit.SECONDS)
         .setInterpolator(new AccelerationInterpolator(.5, .5)).build();
     f_label = label;

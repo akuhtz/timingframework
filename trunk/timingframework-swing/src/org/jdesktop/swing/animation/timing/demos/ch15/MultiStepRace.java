@@ -56,6 +56,9 @@ public final class MultiStepRace {
   public MultiStepRace(String appName) {
     RaceGUI basicGUI = new RaceGUI(appName);
 
+    animator = new AnimatorBuilder().setDuration(RACE_TIME, TimeUnit.MILLISECONDS).setRepeatCount(Animator.INFINITE)
+        .setRepeatBehavior(RepeatBehavior.LOOP).build();
+
     // We're going to need a more involved PropertyRange object
     // that has all curves of the track in it, as well as
     // non-linear movement around the curves
@@ -102,9 +105,8 @@ public final class MultiStepRace {
      * This PropertySetter enables the animation for the car movement all the
      * way around the track.
      */
-    final PropertySetter<Point> modifier = PropertySetter.build(basicGUI.getTrack(), "carPosition", keyFrames);
-    animator = new AnimatorBuilder().setDuration(RACE_TIME, TimeUnit.MILLISECONDS).setRepeatCount(Animator.INFINITE)
-        .setRepeatBehavior(RepeatBehavior.LOOP).addTarget(modifier).build();
+    final PropertySetter modifier = PropertySetter.build(basicGUI.getTrack(), "carPosition", keyFrames);
+    animator.addTarget(modifier);
 
     /*
      * Now create similar keyframes for rotation of car.
@@ -119,7 +121,7 @@ public final class MultiStepRace {
       rotationBuilder.addFrame(rotationKeyValues[i], times[i], rotationInterps[i]);
     }
     KeyFrames<Integer> rotationKeyFrames = rotationBuilder.build();
-    final PropertySetter<Integer> rotationModifier = PropertySetter.build(basicGUI.getTrack(), "carRotation", rotationKeyFrames);
+    final PropertySetter rotationModifier = PropertySetter.build(basicGUI.getTrack(), "carRotation", rotationKeyFrames);
     animator.addTarget(rotationModifier);
 
     /*

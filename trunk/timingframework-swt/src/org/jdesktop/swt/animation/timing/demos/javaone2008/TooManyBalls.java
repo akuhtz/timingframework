@@ -245,14 +245,16 @@ public class TooManyBalls implements JRendererTarget<Display, GC> {
     builder.addFrame(ball.x - radiusX, SPLINE_0_1_1_0);
     builder.addFrame(ball.x, SPLINE_1_0_1_1);
     KeyFrames<Integer> framesX = builder.build();
+
     builder = new KeyFramesBuilder<Integer>(ball.y);
     builder.addFrame(ball.y + radiusY, SPLINE_1_0_1_1);
     builder.addFrame(ball.y + (2 * radiusY), SPLINE_0_1_1_0);
     builder.addFrame(ball.y + radiusY, SPLINE_1_0_1_1);
     builder.addFrame(ball.y, SPLINE_0_1_1_0);
     KeyFrames<Integer> framesY = builder.build();
-    final PropertySetter<Integer> psx = PropertySetter.build(ball, "x", framesX);
-    final PropertySetter<Integer> psy = PropertySetter.build(ball, "y", framesY);
+
+    final PropertySetter psx = PropertySetter.build(ball, "x", framesX);
+    final PropertySetter psy = PropertySetter.build(ball, "y", framesY);
     /*
      * Sometimes go at a constant rate, sometimes accelerate and decelerate.
      */

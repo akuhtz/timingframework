@@ -36,12 +36,6 @@ public class KeyFramesBuilder<T> {
     return this;
   }
 
-  public KeyFramesBuilder<T> addFrames(T... values) {
-    for (T value : values)
-      addFrame(value);
-    return this;
-  }
-
   public KeyFramesBuilder<T> addFrame(T value, double atTimeFraction) {
     f_values.add(value);
     f_timeFractions.add(atTimeFraction);
@@ -60,6 +54,25 @@ public class KeyFramesBuilder<T> {
     f_values.add(value);
     f_timeFractions.add(atTimeFraction);
     f_interpolators.add(interpolator);
+    return this;
+  }
+
+  public KeyFramesBuilder<T> addFrame(KeyFrames.Frame<T> frame) {
+    f_values.add(frame.getValue());
+    f_timeFractions.add(frame.getTimeFraction());
+    f_interpolators.add(frame.getInterpolator());
+    return this;
+  }
+
+  public KeyFramesBuilder<T> addFrames(T... values) {
+    for (T value : values)
+      addFrame(value);
+    return this;
+  }
+
+  public KeyFramesBuilder<T> addFrames(KeyFrames.Frame<T>... frames) {
+    for (KeyFrames.Frame<T> frame : frames)
+      addFrame(frame);
     return this;
   }
 

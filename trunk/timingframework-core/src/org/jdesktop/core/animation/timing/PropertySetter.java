@@ -59,28 +59,28 @@ import com.surelogic.ThreadSafe;
  * @author Tim Halloran
  */
 @ThreadSafe
-public class PropertySetter<T> extends TimingTargetAdapter {
+public class PropertySetter extends TimingTargetAdapter {
 
-  public static <T> PropertySetter<T> build(Object object, String propertyName, KeyFrames<T> keyFrames) {
-    return new PropertySetter<T>(object, propertyName, keyFrames, null);
+  public static PropertySetter build(Object object, String propertyName, KeyFrames<?> keyFrames) {
+    return new PropertySetter(object, propertyName, keyFrames, null);
   }
 
-  public static <T> PropertySetter<T> build(Object object, String propertyName, T... values) {
-    return new PropertySetter<T>(object, propertyName, new KeyFramesBuilder<T>().addFrames(values).build(), null);
+  public static <T> PropertySetter build(Object object, String propertyName, T... values) {
+    return new PropertySetter(object, propertyName, new KeyFramesBuilder<T>().addFrames(values).build(), null);
   }
 
-  public static <T> PropertySetter<T> buildTo(Object object, String propertyName, T... values) {
-    return new PropertySetter<T>(object, propertyName, null, values);
+  public static <T> PropertySetter buildTo(Object object, String propertyName, T... values) {
+    return new PropertySetter(object, propertyName, null, values);
   }
 
   private final Object f_object;
   private final String f_propertyName;
-  private final AtomicReference<KeyFrames<T>> f_keyFrames = new AtomicReference<KeyFrames<T>>();
-  private final T[] f_toValues;
+  private final AtomicReference<KeyFrames<?>> f_keyFrames = new AtomicReference<KeyFrames<?>>();
+  private final Object[] f_toValues;
   private final Method f_propertySetter;
   private final Method f_propertyGetter;
 
-  private PropertySetter(Object object, String propertyName, KeyFrames<T> keyFrames, T[] toValues) {
+  private PropertySetter(Object object, String propertyName, KeyFrames<?> keyFrames, Object[] toValues) {
     if (object == null)
       throw new IllegalArgumentException(I18N.err(1, "object"));
     f_object = object;
@@ -132,9 +132,8 @@ public class PropertySetter<T> extends TimingTargetAdapter {
   public void begin(Animator source) {
     if (isToAnimation()) {
       try {
-        @SuppressWarnings("unchecked")
-        final T startValue = (T) f_propertyGetter.invoke(f_object);
-        f_keyFrames.set(new KeyFramesBuilder<T>(startValue).addFrames(f_toValues).build());
+        final Object startValue = f_propertyGetter.invoke(f_object);
+        f_keyFrames.set(new KeyFramesBuilder<Object>(startValue).addFrames(f_toValues).build());
       } catch (Exception e) {
         throw new IllegalStateException(I18N.err(32, f_propertyGetter.getName(), f_object.toString()), e);
       }
