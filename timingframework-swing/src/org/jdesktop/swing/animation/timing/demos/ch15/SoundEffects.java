@@ -96,22 +96,22 @@ public class SoundEffects implements TimingTarget {
   @Override
   public void timingEvent(double fraction, Direction direction, Animator source) {
     if (!pastFirstTurn) {
-      if (f_keyFrames.getStartFrameIndexAt(fraction) == 1) {
+      if (f_keyFrames.getFrameIndexAt(fraction) == 1) {
         turn();
         pastFirstTurn = true;
       }
     } else if (!pastSecondTurn) {
-      if (f_keyFrames.getStartFrameIndexAt(fraction) == 3) {
+      if (f_keyFrames.getFrameIndexAt(fraction) == 3) {
         turn();
         pastSecondTurn = true;
       }
     } else if (!pastThirdTurn) {
-      if (f_keyFrames.getStartFrameIndexAt(fraction) == 5) {
+      if (f_keyFrames.getFrameIndexAt(fraction) == 5) {
         turn();
         pastThirdTurn = true;
       }
     } else if (!pastFourthTurn) {
-      if (f_keyFrames.getStartFrameIndexAt(fraction) == 7) {
+      if (f_keyFrames.getFrameIndexAt(fraction) == 7) {
         turn();
         pastFourthTurn = true;
       }
