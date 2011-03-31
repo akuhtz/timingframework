@@ -54,6 +54,14 @@ public class KeyFramesBuilder<T> {
 
   /**
    * Adds a frame to the list of key frames being built.
+   * <p>
+   * The time fraction when this fame occurs will be calculated, linearly, from
+   * the previous and next specified time fractions.
+   * <p>
+   * The interpolator between the previous key frame and the one being added is
+   * set with {@link #setInterpolator(Interpolator)} or the default
+   * {@link LinearInterpolator} will be used. The first key frame does not have
+   * an interpolator.
    * 
    * @param value
    *          the value for the key frame.
@@ -68,9 +76,19 @@ public class KeyFramesBuilder<T> {
 
   /**
    * Adds a frame to the list of key frames being built.
+   * <p>
+   * The interpolator between the previous key frame and the one being added is
+   * set with {@link #setInterpolator(Interpolator)} or the default
+   * {@link LinearInterpolator} will be used. The first key frame does not have
+   * an interpolator.
    * 
    * @param value
+   *          the value for the key frame.
    * @param atTimeFraction
+   *          the time fraction in the range [0,1] when the value should occur.
+   *          A negative value indicates that the time fraction when this fame
+   *          occurs should be calculated, linearly, from the previous and next
+   *          specified time fractions.
    * @return this builder (to allow chained operations).
    */
   public KeyFramesBuilder<T> addFrame(T value, double atTimeFraction) {
@@ -82,9 +100,20 @@ public class KeyFramesBuilder<T> {
 
   /**
    * Adds a frame to the list of key frames being built.
+   * <p>
+   * The time fraction when this fame occurs will be calculated, linearly, from
+   * the previous and next specified time fractions.
    * 
    * @param value
+   *          the value for the key frame.
    * @param interpolator
+   *          the interpolator that should be used between the previous key
+   *          frame and the one being added. A {@code null} value indicates that
+   *          either the interpolator set with
+   *          {@link #setInterpolator(Interpolator)} or the default
+   *          {@link LinearInterpolator} should be used for this key frame. The
+   *          first key frame does not have an interpolator&mdash;if set, it
+   *          will be ignored.
    * @return this builder (to allow chained operations).
    */
   public KeyFramesBuilder<T> addFrame(T value, Interpolator interpolator) {
@@ -98,8 +127,20 @@ public class KeyFramesBuilder<T> {
    * Adds a frame to the list of key frames being built.
    * 
    * @param value
+   *          the value for the key frame.
    * @param atTimeFraction
+   *          the time fraction in the range [0,1] when the value should occur.
+   *          A negative value indicates that the time fraction when this fame
+   *          occurs should be calculated, linearly, from the previous and next
+   *          specified time fractions.
    * @param interpolator
+   *          the interpolator that should be used between the previous key
+   *          frame and the one being added. A {@code null} value indicates that
+   *          either the interpolator set with
+   *          {@link #setInterpolator(Interpolator)} or the default
+   *          {@link LinearInterpolator} should be used for this key frame. The
+   *          first key frame does not have an interpolator&mdash;if set, it
+   *          will be ignored.
    * @return this builder (to allow chained operations).
    */
   public KeyFramesBuilder<T> addFrame(T value, double atTimeFraction, Interpolator interpolator) {
@@ -113,7 +154,10 @@ public class KeyFramesBuilder<T> {
    * Adds a frame to the list of key frames being built.
    * 
    * @param frame
+   *          a frame.
    * @return this builder (to allow chained operations).
+   * 
+   * @see KeyFrames.Frame
    */
   public KeyFramesBuilder<T> addFrame(KeyFrames.Frame<T> frame) {
     f_values.add(frame.getValue());
@@ -124,8 +168,12 @@ public class KeyFramesBuilder<T> {
 
   /**
    * Adds a list of frames to the list of key frames being built.
+   * <p>
+   * This is a convenience method that invokes {@link #addFrame(Object)} for
+   * each of the passed values.
    * 
    * @param values
+   *          a series values.
    * @return this builder (to allow chained operations).
    */
   public KeyFramesBuilder<T> addFrames(T... values) {
@@ -136,9 +184,15 @@ public class KeyFramesBuilder<T> {
 
   /**
    * Adds a list of frames to the list of key frames being built.
+   * <p>
+   * This is a convenience method that invokes
+   * {@link #addFrame(KeyFrames.Frame)} for each of the passed values.
    * 
    * @param frames
+   *          a series of frames.
    * @return this builder (to allow chained operations).
+   * 
+   * @see KeyFrames.Frame
    */
   public KeyFramesBuilder<T> addFrames(KeyFrames.Frame<T>... frames) {
     for (KeyFrames.Frame<T> frame : frames)
@@ -147,11 +201,16 @@ public class KeyFramesBuilder<T> {
   }
 
   /**
-   * Sets the key frame-wide interpolator to be used for the list of key frames
-   * being built. This value will override any interpolators set on individual
-   * frames.
+   * Sets the global interpolator to be used for the list of key frames being
+   * built. This value will override any interpolators set on individual frames.
+   * <p>
+   * A value of {@code null} will clear the global interpolator, if any, that
+   * was previously set via a call to this method and use the interpolators set
+   * on individual frames.
    * 
    * @param interpolator
+   *          a global interpolator, or {@code null} to clear any previously set
+   *          global interpolator.
    * @return this builder (to allow chained operations).
    */
   public KeyFramesBuilder<T> setInterpolator(Interpolator interpolator) {
@@ -160,8 +219,26 @@ public class KeyFramesBuilder<T> {
   }
 
   /**
+   * Sets the evaluator between values for the list of key frames being built.
+   * <p>
+   * Typically, this method does not need to be called because {@link #build()}
+   * obtains an {@link Evaluator} instance by examining the type of the values
+   * the {@link KeyFrames} instance constructed by this builder will hold and
+   * calling {@link KnownEvaluators#getEvaluatorFor(Class)}.
+   * <p>
+   * If the type of the values the {@link KeyFrames} instance constructed by
+   * this builder will hold is not known, then you will have to implement a
+   * custom evaluator for that type and pass it to this method&mdash;or to
+   * {@link KnownEvaluators#register(Evaluator)}.
+   * <p>
+   * A value of {@code null} will clear the evaluator, if any, that was
+   * previously set via a call to this method and have {@link #build()} invoke
+   * {@link KnownEvaluators#getEvaluatorFor(Class)} to obtain an
+   * {@link Evaluator} instance.
    * 
    * @param evaluator
+   *          an evaluator, or {@code null} to clear any previously set
+   *          evaluator.
    * @return this builder (to allow chained operations).
    * 
    * @see KnownEvaluators
