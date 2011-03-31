@@ -31,6 +31,7 @@ import org.jdesktop.core.animation.timing.KeyFrames;
 import org.jdesktop.core.animation.timing.PropertySetter;
 import org.jdesktop.core.animation.timing.TimingSource;
 import org.jdesktop.core.animation.timing.TimingSource.PostTickListener;
+import org.jdesktop.core.animation.timing.interpolators.AccelerationInterpolator;
 import org.jdesktop.swing.animation.timing.demos.DemoResources;
 import org.jdesktop.swing.animation.timing.evaluators.EvaluatorPoint2D;
 import org.jdesktop.swing.animation.timing.sources.SwingTimerTimingSource;
@@ -151,7 +152,7 @@ public final class ClickAndGo extends JPanel {
         f_ball.animator = new AnimatorBuilder().setDuration(2, TimeUnit.SECONDS).build();
 
         final Point clickPoint = new Point(e.getX(), e.getY());
-        f_ball.animator.addTarget(PropertySetter.buildTo(f_ball, "location", clickPoint));
+        f_ball.animator.addTarget(PropertySetter.buildTo(f_ball, "location", new AccelerationInterpolator(0.5, 0.5), clickPoint));
 
         final int rectSize = f_ball.image.getWidth();
         final Rectangle clickRect = new Rectangle(e.getX(), e.getY(), rectSize * (f_die.nextInt(4) + 1), rectSize
