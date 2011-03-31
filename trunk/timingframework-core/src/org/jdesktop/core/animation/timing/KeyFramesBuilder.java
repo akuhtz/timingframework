@@ -10,6 +10,19 @@ import org.jdesktop.core.animation.timing.interpolators.LinearInterpolator;
 
 import com.surelogic.NotThreadSafe;
 
+/**
+ * This class is used to construct {@link KeyFrames} instances.
+ * <p>
+ * Instances of this class are not thread safe and are intended to be
+ * thread-confined. However, the {@link KeyFrames} objects produces are
+ * thread-safe.
+ * 
+ * @param <T>
+ *          the type of the values the {@link KeyFrames} instance constructed by
+ *          this builder will hold.
+ * 
+ * @author Tim Halloran
+ */
 @NotThreadSafe
 public class KeyFramesBuilder<T> {
 
@@ -19,16 +32,33 @@ public class KeyFramesBuilder<T> {
   private final List<Interpolator> f_interpolators = new ArrayList<Interpolator>();
   private Interpolator f_interpolator = null;
 
+  /**
+   * Constructs an key frames builder instance.
+   */
   public KeyFramesBuilder() {
     // Nothing to do
   }
 
+  /**
+   * Constructs an key frames builder instance and specifies the first, or
+   * starting, key frame.
+   * 
+   * @param startValue
+   *          the key frame value at zero.
+   */
   public KeyFramesBuilder(T startValue) {
     f_values.add(startValue);
     f_timeFractions.add(Double.valueOf(0));
     f_interpolators.add(null);
   }
 
+  /**
+   * Adds a frame to the list of key frames being built.
+   * 
+   * @param value
+   *          the value for the key frame.
+   * @return this builder (to allow chained operations).
+   */
   public KeyFramesBuilder<T> addFrame(T value) {
     f_values.add(value);
     f_timeFractions.add(null);
@@ -36,6 +66,13 @@ public class KeyFramesBuilder<T> {
     return this;
   }
 
+  /**
+   * Adds a frame to the list of key frames being built.
+   * 
+   * @param value
+   * @param atTimeFraction
+   * @return this builder (to allow chained operations).
+   */
   public KeyFramesBuilder<T> addFrame(T value, double atTimeFraction) {
     f_values.add(value);
     f_timeFractions.add(atTimeFraction);
@@ -43,6 +80,13 @@ public class KeyFramesBuilder<T> {
     return this;
   }
 
+  /**
+   * Adds a frame to the list of key frames being built.
+   * 
+   * @param value
+   * @param interpolator
+   * @return this builder (to allow chained operations).
+   */
   public KeyFramesBuilder<T> addFrame(T value, Interpolator interpolator) {
     f_values.add(value);
     f_timeFractions.add(null);
@@ -50,6 +94,14 @@ public class KeyFramesBuilder<T> {
     return this;
   }
 
+  /**
+   * Adds a frame to the list of key frames being built.
+   * 
+   * @param value
+   * @param atTimeFraction
+   * @param interpolator
+   * @return this builder (to allow chained operations).
+   */
   public KeyFramesBuilder<T> addFrame(T value, double atTimeFraction, Interpolator interpolator) {
     f_values.add(value);
     f_timeFractions.add(atTimeFraction);
@@ -57,6 +109,12 @@ public class KeyFramesBuilder<T> {
     return this;
   }
 
+  /**
+   * Adds a frame to the list of key frames being built.
+   * 
+   * @param frame
+   * @return this builder (to allow chained operations).
+   */
   public KeyFramesBuilder<T> addFrame(KeyFrames.Frame<T> frame) {
     f_values.add(frame.getValue());
     f_timeFractions.add(frame.getTimeFraction() < 0 ? null : frame.getTimeFraction());
@@ -64,28 +122,64 @@ public class KeyFramesBuilder<T> {
     return this;
   }
 
+  /**
+   * Adds a list of frames to the list of key frames being built.
+   * 
+   * @param values
+   * @return this builder (to allow chained operations).
+   */
   public KeyFramesBuilder<T> addFrames(T... values) {
     for (T value : values)
       addFrame(value);
     return this;
   }
 
+  /**
+   * Adds a list of frames to the list of key frames being built.
+   * 
+   * @param frames
+   * @return this builder (to allow chained operations).
+   */
   public KeyFramesBuilder<T> addFrames(KeyFrames.Frame<T>... frames) {
     for (KeyFrames.Frame<T> frame : frames)
       addFrame(frame);
     return this;
   }
 
+  /**
+   * Sets the key frame-wide interpolator to be used for the list of key frames
+   * being built. This value will override any interpolators set on individual
+   * frames.
+   * 
+   * @param interpolator
+   * @return this builder (to allow chained operations).
+   */
   public KeyFramesBuilder<T> setInterpolator(Interpolator interpolator) {
     f_interpolator = interpolator;
     return this;
   }
 
+  /**
+   * 
+   * @param evaluator
+   * @return this builder (to allow chained operations).
+   * 
+   * @see KnownEvaluators
+   */
   public KeyFramesBuilder<T> setEvaluator(Evaluator<T> evaluator) {
     f_evaluator = evaluator;
     return this;
   }
 
+  /**
+   * Constructs a key frames instance with the settings defined by this builder.
+   * 
+   * @return a key frames instance.
+   * 
+   * @throws IllegalArgumentException
+   *           if the settings defined by this builder are invalid and are not
+   *           conducive to the construction of a valid key frames instance.
+   */
   public KeyFrames<T> build() {
     final int frameCount = f_values.size();
     /*
@@ -121,7 +215,7 @@ public class KeyFramesBuilder<T> {
       Double curr = f_timeFractions.get(i);
       if (curr == null) {
         if (prev == -1)
-          throw new IllegalStateException(I18N.err(3, "Time fraction of the first key frame is null, it should be zero"));
+          throw new IllegalArgumentException(I18N.err(3, "Time fraction of the first key frame is null, it should be zero"));
         fillList.add(i);
       } else {
         if (!fillList.isEmpty()) {

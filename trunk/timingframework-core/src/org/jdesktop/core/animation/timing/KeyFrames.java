@@ -227,9 +227,15 @@ public class KeyFrames<T> implements Iterable<Frame<T>> {
     }
   }
 
+  /**
+   * The ordered list of key frames managed by this instance.
+   */
   @Vouch("Immutable")
   private final Frame<T>[] f_frames;
 
+  /**
+   * Used to evaluates between two key frame values.
+   */
   private final Evaluator<T> f_evaluator;
 
   /**
@@ -253,6 +259,16 @@ public class KeyFrames<T> implements Iterable<Frame<T>> {
     return f_frames.length;
   }
 
+  /**
+   * Returns the key frame at the specified position in this list.
+   * 
+   * @param index
+   *          index of the key frame to return.
+   * @return the key frame at the specified position in this list.
+   * @throws IndexOutOfBoundsException
+   *           if the index is out of range (
+   *           <tt>index &lt; 0 || index &gt;= size()</tt>)
+   */
   public Frame<T> getFrame(int index) {
     return f_frames[index];
   }
@@ -284,19 +300,25 @@ public class KeyFrames<T> implements Iterable<Frame<T>> {
 
   /**
    * Returns interval of time, 0 to {@link KeyFrames#size()} - 2, that contains
-   * this time fraction. The interval returned is the index of the start key
-   * time of the interval the passed fraction falls within.
+   * the passed time fraction based upon the list of key frames managed by this
+   * instance. The return value is the index of the key frame closest to, but
+   * not after, the passed time fraction. More precisely, the returned interval
+   * is <i>i</i> if <tt>fraction</tt> is within the range ( <tt>getFrame(</tt>
+   * <i>i</i><tt>).getTimeFraction()</tt>, <tt>getFrame(</tt> <i>i</i>
+   * <tt>+1).getTimeFraction()</tt>] unless <i>i</i>=0 in which case
+   * <tt>fraction</tt> is within the range [0, <tt>getFrame(</tt><i>i</i>
+   * <tt>+1).getTimeFraction()</tt>] (i.e., zero inclusive).
    * <p>
-   * The returned interval is <i>i</i> if <tt>fraction</tt> is within the range
-   * (<tt>getKeyTime(</tt><i>i</i><tt>)</tt>, <tt>getKeyTime(</tt> <i>i</i>
-   * <tt>+1)</tt>] unless <i>i</i>=0 in which case <tt>fraction</tt> is within
-   * the range [0, <tt>getKeyTime(</tt><i>i</i><tt>+1)</tt>] (i.e., zero
-   * inclusive).
-   * <p>
-   * For example, consider the following instance:
+   * For example, consider the following instance (ignoring the integer key
+   * frame values):
    * 
    * <pre>
-   * KeyFrames k = TODO.build(0, 0.1, 0.2, 0.5, 1);
+   * KeyFramesBuilder&lt;Integer&gt; builder = new KeyFramesBuilder&lt;Integer&gt;(1);
+   * builder.addFrame(2, 0.1); // addFrame(value, atTimeFraction)
+   * builder.addFrame(3, 0.2);
+   * builder.addFrame(4, 0.5);
+   * builder.addFrame(5, 1);
+   * KeyFrames&lt;Integer&gt; k = builder.build();
    * </pre>
    * 
    * The table below shows the results obtained from calls on this instance.
@@ -304,12 +326,12 @@ public class KeyFrames<T> implements Iterable<Frame<T>> {
    * <table border="1">
    * <tr>
    * <th><i>f<i></th>
-   * <th><i>i</i><tt>=k.getStartFrameIndexAt(</tt><i>f</i><tt>)</tt></th>
+   * <th><i>i</i><tt>=k.getFrameIndexAt(</tt><i>f</i><tt>)</tt></th>
    * <th><tt>k.getFrame(</tt><i>i</i><tt>).getTimeFraction()</tt></th>
    * <th><tt>k.getFrame(</tt><i>i</i><tt>+1).getTimeFraction()</tt></th>
    * </tr>
    * <tr>
-   * <td align="right">-1*</td>
+   * <td align="right">-1&dagger;</td>
    * <td align="right">0</td>
    * <td align="right">0.0</td>
    * <td align="right">0.1</td>
@@ -363,22 +385,23 @@ public class KeyFrames<T> implements Iterable<Frame<T>> {
    * <td align="right">1.0</td>
    * </tr>
    * <tr>
-   * <td align="right">2*</td>
+   * <td align="right">2&dagger;</td>
    * <td align="right">3</td>
    * <td align="right">0.5</td>
    * <td align="right">1.0</td>
    * </tr>
    * </table>
    * 
-   * * The first and the last entries, -1 and 2, are outside the range [0,1],
-   * however the implementation clamps them to [0,1] and returns a valid result.
+   * &dagger; The first and the last entries, -1 and 2, are outside the range
+   * [0,1], however the implementation clamps them to [0,1] and returns a valid
+   * result.
    * 
    * @param fraction
    *          a time fraction in the range [0,1].
-   * @return the index of the start key time of the interval the passed fraction
-   *         falls within.
+   * @return the index of the key frame closest to, but not after, the passed
+   *         time fraction.
    */
-  public int getStartFrameIndexAt(double fraction) {
+  public int getFrameIndexAt(double fraction) {
     final int size = size();
     for (int i = 1; i < size; ++i) {
       if (fraction <= f_frames[i].getTimeFraction())
@@ -387,8 +410,19 @@ public class KeyFrames<T> implements Iterable<Frame<T>> {
     return size - 2;
   }
 
-  public T getInterpolatedValueAt(double fraction) {
-    final int interval = getStartFrameIndexAt(fraction);
+  /**
+   * Gets the evaluated value at the passed time fraction based upon the list of
+   * key frames managed by this instance. The returned value is calculated by
+   * the key frames' {@link Evaluator} using the two key frames
+   * <tt>fraction</tt> lies between and the {@link Interpolator} set for that
+   * interval of time.
+   * 
+   * @param fraction
+   *          a time fraction in the range [0,1].
+   * @return the evaluated value at the passed time fraction.
+   */
+  public T getEvaluatedValueAt(double fraction) {
+    final int interval = getFrameIndexAt(fraction);
     /*
      * First, figure out the real fraction to use, given the interpolation type
      * and start and end time of the interval.
@@ -406,7 +440,7 @@ public class KeyFrames<T> implements Iterable<Frame<T>> {
       iFraction = 1;
     }
     /*
-     * Second interpolate between the two key values.
+     * Second evaluate between the two key values.
      */
     final T v0 = f_frames[interval].getValue();
     final T v1 = f_frames[interval + 1].getValue();
