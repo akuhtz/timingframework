@@ -52,8 +52,7 @@ public class SpherePanel extends Canvas {
   SpherePanel(Composite parent, int style, String resourceName, String label) {
     super(parent, style);
     f_sphereImage = DemoResources.getImage(resourceName, parent.getDisplay());
-    final PropertySetter<Integer> ps = PropertySetter.build(this, "sphereY", 20, (PANEL_HEIGHT - f_sphereImage.getBounds().height),
-        20);
+    final PropertySetter ps = PropertySetter.build(this, "sphereY", 20, (PANEL_HEIGHT - f_sphereImage.getBounds().height), 20);
     f_bouncer = new AnimatorBuilder().addTarget(ps).setDuration(2, TimeUnit.SECONDS)
         .setInterpolator(new AccelerationInterpolator(.5, .5)).build();
     f_label = label;
