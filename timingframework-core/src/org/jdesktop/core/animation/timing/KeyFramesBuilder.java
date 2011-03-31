@@ -59,8 +59,8 @@ public class KeyFramesBuilder<T> {
 
   public KeyFramesBuilder<T> addFrame(KeyFrames.Frame<T> frame) {
     f_values.add(frame.getValue());
-    f_timeFractions.add(frame.getTimeFraction());
-    f_interpolators.add(frame.getInterpolator());
+    f_timeFractions.add(frame.getTimeFraction() < 0 ? null : frame.getTimeFraction());
+    f_interpolators.add(frame.getInterpolator() == null ? LinearInterpolator.getInstance() : frame.getInterpolator());
     return this;
   }
 
