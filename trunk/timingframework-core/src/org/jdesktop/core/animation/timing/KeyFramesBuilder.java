@@ -1,6 +1,7 @@
 package org.jdesktop.core.animation.timing;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -182,26 +183,22 @@ public class KeyFramesBuilder<T> {
    * @return this builder (to allow chained operations).
    */
   public KeyFramesBuilder<T> addFrames(T... values) {
-    for (T value : values)
-      addFrame(value);
-    return this;
+    return addFrames(Arrays.asList(values));
   }
 
   /**
    * Adds a list of frames to the list of key frames being built.
    * <p>
-   * This is a convenience method that invokes
-   * {@link #addFrame(KeyFrames.Frame)} for each of the passed values.
+   * This is a convenience method that invokes {@link #addFrame(Object)} for
+   * each of the passed values.
    * 
-   * @param frames
-   *          a series of frames.
+   * @param values
+   *          a series values.
    * @return this builder (to allow chained operations).
-   * 
-   * @see KeyFrames.Frame
    */
-  public KeyFramesBuilder<T> addFrames(KeyFrames.Frame<T>... frames) {
-    for (KeyFrames.Frame<T> frame : frames)
-      addFrame(frame);
+  public KeyFramesBuilder<T> addFrames(List<T> values) {
+    for (T value : values)
+      addFrame(value);
     return this;
   }
 

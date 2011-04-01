@@ -89,6 +89,17 @@ public final class KnownEvaluators {
   }
 
   /**
+   * Unregisters an immutable evaluator, making it unknown. Has no effect if the
+   * passed instance was not previously registered.
+   * 
+   * @param singleton
+   *          an immutable evaluator instance.
+   */
+  public void unregister(Evaluator<?> singleton) {
+    f_immutableImplementations.remove(singleton);
+  }
+
+  /**
    * Gets the evaluator for the passed type. This class only registers immutable
    * evaluator implementations so multiple requests for the same type will share
    * the same evaluator.

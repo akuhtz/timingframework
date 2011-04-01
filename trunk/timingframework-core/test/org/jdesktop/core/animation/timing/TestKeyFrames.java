@@ -1,5 +1,10 @@
 package org.jdesktop.core.animation.timing;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.jdesktop.core.animation.timing.evaluators.EvaluatorInteger;
+import org.jdesktop.core.animation.timing.evaluators.KnownEvaluators;
 import org.jdesktop.core.animation.timing.interpolators.AccelerationInterpolator;
 import org.jdesktop.core.animation.timing.interpolators.DiscreteInterpolator;
 import org.jdesktop.core.animation.timing.interpolators.LinearInterpolator;
@@ -461,6 +466,119 @@ public final class TestKeyFrames {
     Assert.assertSame(LinearInterpolator.getInstance(), kf.getFrame(3).getInterpolator());
   }
 
+  @Test
+  public void addFrames1() {
+    final KeyFramesBuilder<Integer> b = new KeyFramesBuilder<Integer>(1);
+    b.addFrames(2, 3, 4);
+
+    final KeyFrames<Integer> kf = b.build();
+
+    Assert.assertEquals(1, kf.getFrame(0).getValue().intValue());
+    Assert.assertEquals(2, kf.getFrame(1).getValue().intValue());
+    Assert.assertEquals(3, kf.getFrame(2).getValue().intValue());
+    Assert.assertEquals(4, kf.getFrame(3).getValue().intValue());
+
+    double timeFraction = 0;
+    final double fractionPerFrame = 1.0 / (kf.size() - 1);
+    Assert.assertEquals(timeFraction, kf.getFrame(0).getTimeFraction(), 1e-9);
+    timeFraction += fractionPerFrame;
+    Assert.assertEquals(timeFraction, kf.getFrame(1).getTimeFraction(), 1e-9);
+    timeFraction += fractionPerFrame;
+    Assert.assertEquals(timeFraction, kf.getFrame(2).getTimeFraction(), 1e-9);
+
+    Assert.assertNull(kf.getFrame(0).getInterpolator());
+    Assert.assertSame(LinearInterpolator.getInstance(), kf.getFrame(1).getInterpolator());
+    Assert.assertSame(LinearInterpolator.getInstance(), kf.getFrame(2).getInterpolator());
+    Assert.assertSame(LinearInterpolator.getInstance(), kf.getFrame(3).getInterpolator());
+  }
+
+  @Test
+  public void addFrames2() {
+    final KeyFramesBuilder<Integer> b = new KeyFramesBuilder<Integer>();
+    b.addFrames(1, 2, 3, 4);
+
+    final KeyFrames<Integer> kf = b.build();
+
+    Assert.assertEquals(1, kf.getFrame(0).getValue().intValue());
+    Assert.assertEquals(2, kf.getFrame(1).getValue().intValue());
+    Assert.assertEquals(3, kf.getFrame(2).getValue().intValue());
+    Assert.assertEquals(4, kf.getFrame(3).getValue().intValue());
+
+    double timeFraction = 0;
+    final double fractionPerFrame = 1.0 / (kf.size() - 1);
+    Assert.assertEquals(timeFraction, kf.getFrame(0).getTimeFraction(), 1e-9);
+    timeFraction += fractionPerFrame;
+    Assert.assertEquals(timeFraction, kf.getFrame(1).getTimeFraction(), 1e-9);
+    timeFraction += fractionPerFrame;
+    Assert.assertEquals(timeFraction, kf.getFrame(2).getTimeFraction(), 1e-9);
+
+    Assert.assertNull(kf.getFrame(0).getInterpolator());
+    Assert.assertSame(LinearInterpolator.getInstance(), kf.getFrame(1).getInterpolator());
+    Assert.assertSame(LinearInterpolator.getInstance(), kf.getFrame(2).getInterpolator());
+    Assert.assertSame(LinearInterpolator.getInstance(), kf.getFrame(3).getInterpolator());
+  }
+
+  @Test
+  public void addFrames3() {
+    final KeyFramesBuilder<Integer> b = new KeyFramesBuilder<Integer>(1);
+    List<Integer> l = new ArrayList<Integer>();
+    l.add(2);
+    l.add(3);
+    l.add(4);
+    b.addFrames(l);
+
+    final KeyFrames<Integer> kf = b.build();
+
+    Assert.assertEquals(1, kf.getFrame(0).getValue().intValue());
+    Assert.assertEquals(2, kf.getFrame(1).getValue().intValue());
+    Assert.assertEquals(3, kf.getFrame(2).getValue().intValue());
+    Assert.assertEquals(4, kf.getFrame(3).getValue().intValue());
+
+    double timeFraction = 0;
+    final double fractionPerFrame = 1.0 / (kf.size() - 1);
+    Assert.assertEquals(timeFraction, kf.getFrame(0).getTimeFraction(), 1e-9);
+    timeFraction += fractionPerFrame;
+    Assert.assertEquals(timeFraction, kf.getFrame(1).getTimeFraction(), 1e-9);
+    timeFraction += fractionPerFrame;
+    Assert.assertEquals(timeFraction, kf.getFrame(2).getTimeFraction(), 1e-9);
+
+    Assert.assertNull(kf.getFrame(0).getInterpolator());
+    Assert.assertSame(LinearInterpolator.getInstance(), kf.getFrame(1).getInterpolator());
+    Assert.assertSame(LinearInterpolator.getInstance(), kf.getFrame(2).getInterpolator());
+    Assert.assertSame(LinearInterpolator.getInstance(), kf.getFrame(3).getInterpolator());
+  }
+
+  @Test
+  public void addFrames4() {
+    final KeyFramesBuilder<Integer> b = new KeyFramesBuilder<Integer>();
+    List<Integer> l = new ArrayList<Integer>();
+    l.add(1);
+    l.add(2);
+    l.add(3);
+    l.add(4);
+    b.addFrames(l);
+
+    final KeyFrames<Integer> kf = b.build();
+
+    Assert.assertEquals(1, kf.getFrame(0).getValue().intValue());
+    Assert.assertEquals(2, kf.getFrame(1).getValue().intValue());
+    Assert.assertEquals(3, kf.getFrame(2).getValue().intValue());
+    Assert.assertEquals(4, kf.getFrame(3).getValue().intValue());
+
+    double timeFraction = 0;
+    final double fractionPerFrame = 1.0 / (kf.size() - 1);
+    Assert.assertEquals(timeFraction, kf.getFrame(0).getTimeFraction(), 1e-9);
+    timeFraction += fractionPerFrame;
+    Assert.assertEquals(timeFraction, kf.getFrame(1).getTimeFraction(), 1e-9);
+    timeFraction += fractionPerFrame;
+    Assert.assertEquals(timeFraction, kf.getFrame(2).getTimeFraction(), 1e-9);
+
+    Assert.assertNull(kf.getFrame(0).getInterpolator());
+    Assert.assertSame(LinearInterpolator.getInstance(), kf.getFrame(1).getInterpolator());
+    Assert.assertSame(LinearInterpolator.getInstance(), kf.getFrame(2).getInterpolator());
+    Assert.assertSame(LinearInterpolator.getInstance(), kf.getFrame(3).getInterpolator());
+  }
+
   @Test(expected = IllegalArgumentException.class)
   public void zeroFrame() {
     final KeyFramesBuilder<Integer> b = new KeyFramesBuilder<Integer>();
@@ -564,4 +682,57 @@ public final class TestKeyFrames {
     b.build();
   }
 
+  @Test(expected = IllegalArgumentException.class)
+  public void badEvaluator() {
+    final KeyFramesBuilder<String> b = new KeyFramesBuilder<String>("first");
+    b.addFrame("Last");
+    b.build();
+  }
+
+  @Test
+  public void evaluator1() {
+    final KeyFramesBuilder<Integer> b = new KeyFramesBuilder<Integer>(1);
+    b.addFrame(2);
+    b.setEvaluator(new EvaluatorInteger());
+    b.build();
+  }
+
+  private final Evaluator<String> f_stringEvaluator = new Evaluator<String>() {
+    public Class<String> getEvaluatorClass() {
+      return String.class;
+    }
+
+    public String evaluate(String v0, String v1, double fraction) {
+      if (fraction < 0.5)
+        return v0;
+      else
+        return v1;
+    }
+  };
+
+  @Test
+  public void evaluator2() {
+    final KeyFramesBuilder<String> b = new KeyFramesBuilder<String>("first");
+    b.addFrame("Last");
+    b.setEvaluator(f_stringEvaluator);
+    b.build();
+  }
+
+  @Test
+  public void evaluator3() {
+    KnownEvaluators.getInstance().register(f_stringEvaluator);
+    final KeyFramesBuilder<String> b = new KeyFramesBuilder<String>("first");
+    b.addFrame("Last");
+    b.build();
+
+    KnownEvaluators.getInstance().unregister(f_stringEvaluator);
+    final KeyFramesBuilder<String> b1 = new KeyFramesBuilder<String>("first");
+    b1.addFrame("Last");
+    try {
+      b1.build();
+      Assert.fail("No evaluator for String should be available.");
+    } catch (IllegalArgumentException e) {
+      // success
+    }
+  }
 }
