@@ -70,7 +70,7 @@ public class KeyFramesBuilder<T> {
   public KeyFramesBuilder<T> addFrame(T value) {
     f_values.add(value);
     f_timeFractions.add(null);
-    f_interpolators.add(LinearInterpolator.getInstance());
+    f_interpolators.add(null);
     return this;
   }
 
@@ -94,7 +94,7 @@ public class KeyFramesBuilder<T> {
   public KeyFramesBuilder<T> addFrame(T value, double atTimeFraction) {
     f_values.add(value);
     f_timeFractions.add(atTimeFraction);
-    f_interpolators.add(LinearInterpolator.getInstance());
+    f_interpolators.add(null);
     return this;
   }
 
@@ -158,11 +158,16 @@ public class KeyFramesBuilder<T> {
    * @return this builder (to allow chained operations).
    * 
    * @see KeyFrames.Frame
+   * 
+   * @throws IllegalArgumentException
+   *           if <tt>frame</tt> is {@code null}.
    */
   public KeyFramesBuilder<T> addFrame(KeyFrames.Frame<T> frame) {
+    if (frame == null)
+      throw new IllegalArgumentException(I18N.err(1, "frame"));
     f_values.add(frame.getValue());
     f_timeFractions.add(frame.getTimeFraction() < 0 ? null : frame.getTimeFraction());
-    f_interpolators.add(frame.getInterpolator() == null ? LinearInterpolator.getInstance() : frame.getInterpolator());
+    f_interpolators.add(frame.getInterpolator());
     return this;
   }
 
@@ -321,10 +326,13 @@ public class KeyFramesBuilder<T> {
       final Double atTimeFraction = f_timeFractions.get(i);
       if (atTimeFraction == null)
         throw new IllegalArgumentException(I18N.err(24, i));
-      final Interpolator canidate = f_interpolator == null ? f_interpolators.get(i) : f_interpolator;
-      final Interpolator interpolator = i == 0 ? null : canidate;
-      if (i != 0 && interpolator == null)
-        throw new IllegalArgumentException(I18N.err(25, i));
+      final Interpolator interpolator;
+      if (i == 0) {
+        interpolator = null;
+      } else {
+        final Interpolator canidate = f_interpolator == null ? f_interpolators.get(i) : f_interpolator;
+        interpolator = canidate == null ? LinearInterpolator.getInstance() : canidate;
+      }
 
       frames[i] = new KeyFrames.Frame<T>(value, atTimeFraction, interpolator);
     }

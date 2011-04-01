@@ -105,6 +105,8 @@ public class PropertySetter extends TimingTargetAdapter {
   /**
    * Constructs a timing target that changes an object's property over time.
    * 
+   * @param <T>
+   *          the type of the object's property.
    * @param object
    *          an object.
    * @param propertyName
@@ -122,8 +124,11 @@ public class PropertySetter extends TimingTargetAdapter {
    * Constructs a timing target that changes an object's property over time.
    * 
    * @param <T>
+   *          the type of the object's property.
    * @param object
+   *          an object.
    * @param propertyName
+   *          the name of the the property to manipulate on <tt>object</tt>.
    * @param values
    * @return
    */
@@ -136,8 +141,11 @@ public class PropertySetter extends TimingTargetAdapter {
    * Constructs a timing target that changes an object's property over time.
    * 
    * @param <T>
+   *          the type of the object's property.
    * @param object
+   *          an object.
    * @param propertyName
+   *          the name of the the property to manipulate on <tt>object</tt>.
    * @param interpolator
    * @param values
    * @return
@@ -152,8 +160,11 @@ public class PropertySetter extends TimingTargetAdapter {
    * current value over time. This is referred to as a "to" animation.
    * 
    * @param <T>
+   *          the type of the object's property.
    * @param object
+   *          an object.
    * @param propertyName
+   *          the name of the the property to manipulate on <tt>object</tt>.
    * @param interpolator
    * @param values
    * @return
@@ -168,8 +179,11 @@ public class PropertySetter extends TimingTargetAdapter {
    * current value over time. This is referred to as a "to" animation.
    * 
    * @param <T>
+   *          the type of the object's property.
    * @param object
+   *          an object.
    * @param propertyName
+   *          the name of the the property to manipulate on <tt>object</tt>.
    * @param interpolator
    * @param values
    * @return
@@ -188,8 +202,11 @@ public class PropertySetter extends TimingTargetAdapter {
    * current value over time. This is referred to as a "to" animation.
    * 
    * @param <T>
+   *          the type of the object's property.
    * @param object
+   *          an object.
    * @param propertyName
+   *          the name of the the property to manipulate on <tt>object</tt>.
    * @param values
    * @return
    */
