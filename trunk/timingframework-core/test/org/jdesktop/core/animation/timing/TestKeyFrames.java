@@ -735,4 +735,16 @@ public final class TestKeyFrames {
       // success
     }
   }
+
+  @Test
+  public void overall() {
+    final KeyFramesBuilder<Integer> b = new KeyFramesBuilder<Integer>(1);
+    b.addFrame(100);
+    final KeyFrames<Integer> kf = b.build();
+    Assert.assertEquals(1, kf.getEvaluatedValueAt(0).intValue());
+    Assert.assertEquals(20, kf.getEvaluatedValueAt(0.2).intValue());
+    Assert.assertEquals(25, kf.getEvaluatedValueAt(0.25).intValue());
+    Assert.assertEquals(50, kf.getEvaluatedValueAt(0.5).intValue());
+    Assert.assertEquals(100, kf.getEvaluatedValueAt(1).intValue());
+  }
 }
