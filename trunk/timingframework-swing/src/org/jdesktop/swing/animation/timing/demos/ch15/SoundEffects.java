@@ -3,7 +3,6 @@ package org.jdesktop.swing.animation.timing.demos.ch15;
 import java.applet.AudioClip;
 
 import org.jdesktop.core.animation.timing.Animator;
-import org.jdesktop.core.animation.timing.Animator.Direction;
 import org.jdesktop.core.animation.timing.KeyFrames;
 import org.jdesktop.core.animation.timing.TimingTarget;
 import org.jdesktop.swing.animation.timing.demos.DemoResources;
@@ -94,7 +93,7 @@ public class SoundEffects implements TimingTarget {
    * turn clip appropriately
    */
   @Override
-  public void timingEvent(double fraction, Direction direction, Animator source) {
+  public void timingEvent(Animator source, double fraction) {
     if (!pastFirstTurn) {
       if (f_keyFrames.getFrameIndexAt(fraction) == 1) {
         turn();

@@ -7,7 +7,6 @@ import java.util.Locale;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.jdesktop.core.animation.i18n.I18N;
-import org.jdesktop.core.animation.timing.Animator.Direction;
 import org.jdesktop.core.animation.timing.interpolators.LinearInterpolator;
 import org.jdesktop.core.animation.timing.interpolators.SplineInterpolator;
 
@@ -322,7 +321,7 @@ public class PropertySetter {
     }
 
     @Override
-    public void timingEvent(double fraction, Direction direction, Animator source) {
+    public void timingEvent(Animator source, double fraction) {
       try {
         f_propertySetter.invoke(f_object, f_keyFrames.get().getEvaluatedValueAt(fraction));
       } catch (Exception e) {

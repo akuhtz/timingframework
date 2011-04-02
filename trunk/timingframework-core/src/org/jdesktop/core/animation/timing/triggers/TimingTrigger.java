@@ -1,7 +1,6 @@
 package org.jdesktop.core.animation.timing.triggers;
 
 import org.jdesktop.core.animation.timing.Animator;
-import org.jdesktop.core.animation.timing.Animator.Direction;
 import org.jdesktop.core.animation.timing.TimingTarget;
 
 /**
@@ -114,7 +113,7 @@ public class TimingTrigger extends Trigger implements TimingTarget {
    * {@link TimingTrigger} are limited to START, STOP, and REPEAT
    */
   @Override
-  public void timingEvent(double fraction, Direction direction, Animator source) {
+  public void timingEvent(Animator source, double fraction) {
     // Nothing to do
   }
 }

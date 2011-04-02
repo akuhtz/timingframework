@@ -1,7 +1,5 @@
 package org.jdesktop.core.animation.timing;
 
-import org.jdesktop.core.animation.timing.Animator.Direction;
-
 /**
  * Implements the {@link TimingTarget} interface, providing stubs for all
  * TimingTarget methods. Subclasses may extend this adapter rather than
@@ -33,7 +31,7 @@ public class TimingTargetAdapter implements TimingTarget {
   }
 
   @Override
-  public void timingEvent(double fraction, Direction direction, Animator source) {
+  public void timingEvent(Animator source, double fraction) {
     // default is to do nothing
   }
 }

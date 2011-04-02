@@ -79,7 +79,7 @@ public final class FadingButtonTF {
       Color c;
 
       @Override
-      public void timingEvent(double fraction, Direction direction, Animator source) {
+      public void timingEvent(Animator source, double fraction) {
         if (c != null)
           c.dispose();
         // fade the red color

@@ -14,7 +14,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
 import org.jdesktop.core.animation.timing.Animator;
-import org.jdesktop.core.animation.timing.Animator.Direction;
 import org.jdesktop.core.animation.timing.AnimatorBuilder;
 import org.jdesktop.core.animation.timing.TimingSource;
 import org.jdesktop.core.animation.timing.TimingTargetAdapter;
@@ -129,7 +128,7 @@ public class SplineInterpolatorTest extends TimingTargetAdapter {
    * interpolated.
    */
   @Override
-  public void timingEvent(double fraction, Direction direction, Animator source) {
+  public void timingEvent(Animator source, double fraction) {
     long currentTime = System.nanoTime() / 1000000;
     long elapsedTime = currentTime - startTime;
     float realFraction = (float) elapsedTime / DURATION;
