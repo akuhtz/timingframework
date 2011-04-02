@@ -53,7 +53,6 @@ public interface TimingTarget {
    *          with a duration of {@link Animator#INFINITE INFINITE} will have an
    *          undefined value for the fraction, since there is no fraction that
    *          makes sense if the animation has no defined length.
-   * @see Animator.Direction
    */
   public void timingEvent(Animator source, double fraction);
 }
