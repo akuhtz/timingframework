@@ -323,7 +323,7 @@ public class PropertySetter {
     @Override
     public void timingEvent(Animator source, double fraction) {
       try {
-        f_propertySetter.invoke(f_object, f_keyFrames.get().getEvaluatedValueAt(fraction));
+        f_propertySetter.invoke(f_object, f_keyFrames.get().getInterpolatedValueAt(fraction));
       } catch (Exception e) {
         throw new IllegalStateException(I18N.err(32, f_propertySetter.getName(), f_object.toString()), e);
       }
