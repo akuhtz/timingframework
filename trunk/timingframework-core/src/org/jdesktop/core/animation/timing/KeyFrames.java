@@ -411,8 +411,8 @@ public class KeyFrames<T> implements Iterable<Frame<T>> {
   }
 
   /**
-   * Gets the evaluated value at the passed time fraction based upon the list of
-   * key frames managed by this instance. The returned value is calculated by
+   * Gets the interpolated value at the passed time fraction based upon the list
+   * of key frames managed by this instance. The returned value is calculated by
    * the key frames' {@link Evaluator} using the two key frames
    * <tt>fraction</tt> lies between and the {@link Interpolator} set for that
    * interval of time.
@@ -421,7 +421,7 @@ public class KeyFrames<T> implements Iterable<Frame<T>> {
    *          a time fraction in the range [0,1].
    * @return the evaluated value at the passed time fraction.
    */
-  public T getEvaluatedValueAt(double fraction) {
+  public T getInterpolatedValueAt(double fraction) {
     final int interval = getFrameIndexAt(fraction);
     /*
      * First, figure out the real fraction to use, given the interpolation type

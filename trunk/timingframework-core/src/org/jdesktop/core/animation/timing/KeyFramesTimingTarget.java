@@ -18,7 +18,7 @@ public abstract class KeyFramesTimingTarget<T> extends TimingTargetAdapter {
 
   @Override
   public void timingEvent(Animator source, double fraction) {
-    final T value = f_keyFrames.getEvaluatedValueAt(fraction);
+    final T value = f_keyFrames.getInterpolatedValueAt(fraction);
     valueChangeTimingEvent(value, fraction, source);
   }
 

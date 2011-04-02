@@ -741,11 +741,11 @@ public final class TestKeyFrames {
     final KeyFramesBuilder<Integer> b = new KeyFramesBuilder<Integer>(1);
     b.addFrame(100);
     final KeyFrames<Integer> kf = b.build();
-    Assert.assertEquals(1, kf.getEvaluatedValueAt(0).intValue());
-    Assert.assertEquals(20, kf.getEvaluatedValueAt(0.2).intValue());
-    Assert.assertEquals(25, kf.getEvaluatedValueAt(0.25).intValue());
-    Assert.assertEquals(50, kf.getEvaluatedValueAt(0.5).intValue());
-    Assert.assertEquals(100, kf.getEvaluatedValueAt(1).intValue());
+    Assert.assertEquals(1, kf.getInterpolatedValueAt(0).intValue());
+    Assert.assertEquals(20, kf.getInterpolatedValueAt(0.2).intValue());
+    Assert.assertEquals(25, kf.getInterpolatedValueAt(0.25).intValue());
+    Assert.assertEquals(50, kf.getInterpolatedValueAt(0.5).intValue());
+    Assert.assertEquals(100, kf.getInterpolatedValueAt(1).intValue());
   }
 
   @Test
@@ -754,10 +754,10 @@ public final class TestKeyFrames {
     b.addFrame("last");
     b.setEvaluator(f_stringEvaluator);
     final KeyFrames<String> kf = b.build();
-    Assert.assertEquals("first", kf.getEvaluatedValueAt(0));
-    Assert.assertEquals("first", kf.getEvaluatedValueAt(0.2));
-    Assert.assertEquals("last", kf.getEvaluatedValueAt(0.5));
-    Assert.assertEquals("last", kf.getEvaluatedValueAt(0.501));
-    Assert.assertEquals("last", kf.getEvaluatedValueAt(1));
+    Assert.assertEquals("first", kf.getInterpolatedValueAt(0));
+    Assert.assertEquals("first", kf.getInterpolatedValueAt(0.2));
+    Assert.assertEquals("last", kf.getInterpolatedValueAt(0.5));
+    Assert.assertEquals("last", kf.getInterpolatedValueAt(0.501));
+    Assert.assertEquals("last", kf.getInterpolatedValueAt(1));
   }
 }
