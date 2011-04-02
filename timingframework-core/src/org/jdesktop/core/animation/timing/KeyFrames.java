@@ -177,7 +177,7 @@ public class KeyFrames<T> implements Iterable<Frame<T>> {
     /**
      * The value of this key frame.
      * <p>
-     * The returned value will never be {@link null}.
+     * The returned value will never be {@code null}.
      * 
      * @return a value.
      */
@@ -191,10 +191,9 @@ public class KeyFrames<T> implements Iterable<Frame<T>> {
      * <p>
      * The time fraction can be negative in the case that this instance was
      * created by client code to be passed to
-     * {@link KeyFramesBuilder#addFrame(Frame)} or
-     * {@link KeyFramesBuilder#addFrames(Frame...)} and a constructor that does
-     * not set the time fraction was called. A negative value indicates to the
-     * {@link KeyFramesBuilder} that the time fraction should be calculated,
+     * {@link KeyFramesBuilder#addFrame(KeyFrames.Frame)} and a constructor that
+     * does not set the time fraction was called. A negative value indicates to
+     * the {@link KeyFramesBuilder} that the time fraction should be calculated,
      * linearly, from the previous and next specified time fractions.
      * 
      * @return a time fraction in the range [0,1], or a negative number.
@@ -215,9 +214,8 @@ public class KeyFrames<T> implements Iterable<Frame<T>> {
      * interpolator is used to interpolate between the previous frame and this
      * one&mdash;the first frame has no intepolator.</li>
      * <li>If this instance was created by client code to be passed to
-     * {@link KeyFramesBuilder#addFrame(Frame)} or
-     * {@link KeyFramesBuilder#addFrames(Frame...)} then a {@code null} value
-     * indicates that either the interpolator set with
+     * {@link KeyFramesBuilder#addFrame(KeyFrames.Frame)} then a {@code null}
+     * value indicates that either the interpolator set with
      * {@link KeyFramesBuilder#setInterpolator(Interpolator)} or the default
      * {@link LinearInterpolator} should be used for this key frame.</li>
      * </ul>
