@@ -77,19 +77,22 @@ import com.surelogic.ThreadSafe;
  * <tt>PropertySetter.buildTo</tt> to define more involved and
  * tightly-controlled steps in the animation, including the times between the
  * values and how the values are interpolated by using the constructor that
- * takes a series of {@link KeyFrames.Frame} objects. {@link KeyFrames.Frame}
- * defines the fractional times at which an object takes on specific values, the
- * values to assume at those times, and the method of interpolation between
- * those values (it is the type that {@link KeyFrames} uses to represent
- * individual frames). For example, here is the same animation as above,
- * specified through a list of {@link KeyFrames.Frame} objects, where the WHITE
- * color will be set 40% of the way through the animation. The final transition
- * to BLUE uses a {@link SplineInterpolator} rather than the default
- * {@link LinearInterpolator}.
+ * takes a {@link KeyFrames} object. In the case of a "to" animation, the first
+ * key value of the {@link KeyFrames} object is ignored&mdash;it is replaced
+ * with the current value of the property. For example, here is the same
+ * animation as above, specified through a list of {@link KeyFrames.Frame}
+ * objects, where the WHITE color will be set 40% of the way through the
+ * animation. The final transition to BLUE uses a {@link SplineInterpolator}
+ * rather than the default {@link LinearInterpolator}. The RED color that is
+ * specified as the starting value is ignored and replaced with the current
+ * value of the foreground property.
  * 
  * <pre>
- * TimingTarget ps = PropertySetter.buildTo(obj, &quot;background&quot;, new KeyFrames.Frame&lt;Color&gt;(Color.WHITE, 0.4),
- *     new KeyFrames.Frame&lt;Color&gt;(Color.BLUE, 1, new SplineInterpolator(0.00, 1.00, 1.00, 1.00)));
+ * KeyFramesBuilder&lt;Color&gt; builder = new KeyFramesBuilder&lt;Color&gt;(Color.RED);
+ * builder.setFrame(Color.WHITE, 0.4);
+ * builder.setFrame(Color.BLUE, 1, new SplineInterpolator(0.00, 1.00, 1.00, 1.00));
+ * KeyFrames&lt;Color&gt; frames = builder.build();
+ * TimingTarget ps = PropertySetter.buildTo(obj, &quot;foreground&quot;, frames);
  * Animator animator = new AnimatorBuilder().setDuration(5, TimeUnit.SECONDS).addTarget(ps).build();
  * animator.start();
  * </pre>
@@ -112,7 +115,7 @@ public class PropertySetter extends TimingTargetAdapter {
    * @param keyFrames
    *          a key frames instance that define how the property's value changes
    *          over time.
-   * @return
+   * @return a timing target.
    */
   public static <T> TimingTarget build(Object object, String propertyName, KeyFrames<T> keyFrames) {
     return new PropertySetter(object, propertyName, keyFrames, false);
@@ -128,7 +131,10 @@ public class PropertySetter extends TimingTargetAdapter {
    * @param propertyName
    *          the name of the the property to manipulate on <tt>object</tt>.
    * @param values
-   * @return
+   *          an ordered list of values that the property should be animated
+   *          between. The values will be spaced equally in time and a
+   *          {@link LinearInterpolator} will be used.
+   * @return a timing target.
    */
   public static <T> TimingTarget build(Object object, String propertyName, T... values) {
     final KeyFrames<T> keyFrames = new KeyFramesBuilder<T>().addFrames(values).build();
@@ -147,7 +153,10 @@ public class PropertySetter extends TimingTargetAdapter {
    * @param interpolator
    *          the interpolator that should be used between the values.
    * @param values
-   * @return
+   *          an ordered list of values that the property should be animated
+   *          between. The values will be spaced equally in time and the passed
+   *          interpolator will be used.
+   * @return a timing target.
    */
   public static <T> TimingTarget build(Object object, String propertyName, Interpolator interpolator, T... values) {
     final KeyFrames<T> keyFrames = new KeyFramesBuilder<T>().setInterpolator(interpolator).addFrames(values).build();
@@ -168,7 +177,7 @@ public class PropertySetter extends TimingTargetAdapter {
    *          a key frames instance that define how the property's value changes
    *          over time. The initial value is ignored and replaced with the
    *          current value of the object's property.
-   * @return
+   * @return a timing target.
    */
   public static <T> TimingTarget buildTo(Object object, String propertyName, KeyFrames<T> keyFrames) {
     return new PropertySetter(object, propertyName, keyFrames, true);
@@ -185,7 +194,11 @@ public class PropertySetter extends TimingTargetAdapter {
    * @param propertyName
    *          the name of the the property to manipulate on <tt>object</tt>.
    * @param values
-   * @return
+   *          an ordered list of values that the property should be animated
+   *          between. The current value of the object's property is added to
+   *          the start of this ordered list. The values will be spaced equally
+   *          in time and a {@link LinearInterpolator} will be used.
+   * @return a timing target.
    */
   public static <T> TimingTarget buildTo(Object object, String propertyName, T... values) {
     final KeyFrames<T> keyFrames = new KeyFramesBuilder<T>(values[0]).addFrames(values).build();
@@ -205,7 +218,11 @@ public class PropertySetter extends TimingTargetAdapter {
    * @param interpolator
    *          the interpolator that should be used between the values.
    * @param values
-   * @return
+   *          an ordered list of values that the property should be animated
+   *          between. The current value of the object's property is added to
+   *          the start of this ordered list. The values will be spaced equally
+   *          in time and the passed interpolator will be used.
+   * @return a timing target.
    */
   public static <T> TimingTarget buildTo(Object object, String propertyName, Interpolator interpolator, T... values) {
     final KeyFrames<T> keyFrames = new KeyFramesBuilder<T>(values[0]).setInterpolator(interpolator).addFrames(values).build();
@@ -219,6 +236,25 @@ public class PropertySetter extends TimingTargetAdapter {
   private final Method f_propertySetter;
   private final Method f_propertyGetter;
 
+  /**
+   * Constructs a property setter instance.
+   * <p>
+   * This constructor should only be called from one of the static factory
+   * methods defined above.
+   * 
+   * @param object
+   *          an object.
+   * @param propertyName
+   *          the name of the the property to manipulate on <tt>object</tt>.
+   * @param keyFrames
+   *          a key frames instance that define how the property's value changes
+   *          over time. The initial value is ignored and replaced with the
+   *          current value of the object's property if this is a "to"
+   *          animation.
+   * @param toAnimation
+   *          {@code true} if this is a "to" animation, {@code true} false
+   *          otherwise.
+   */
   private PropertySetter(Object object, String propertyName, KeyFrames<?> keyFrames, boolean toAnimation) {
     if (object == null)
       throw new IllegalArgumentException(I18N.err(1, "object"));
