@@ -713,7 +713,7 @@ public final class TestKeyFrames {
   @Test
   public void evaluator2() {
     final KeyFramesBuilder<String> b = new KeyFramesBuilder<String>("first");
-    b.addFrame("Last");
+    b.addFrame("last");
     b.setEvaluator(f_stringEvaluator);
     b.build();
   }
@@ -722,12 +722,12 @@ public final class TestKeyFrames {
   public void evaluator3() {
     KnownEvaluators.getInstance().register(f_stringEvaluator);
     final KeyFramesBuilder<String> b = new KeyFramesBuilder<String>("first");
-    b.addFrame("Last");
+    b.addFrame("last");
     b.build();
 
     KnownEvaluators.getInstance().unregister(f_stringEvaluator);
     final KeyFramesBuilder<String> b1 = new KeyFramesBuilder<String>("first");
-    b1.addFrame("Last");
+    b1.addFrame("last");
     try {
       b1.build();
       Assert.fail("No evaluator for String should be available.");
@@ -737,7 +737,7 @@ public final class TestKeyFrames {
   }
 
   @Test
-  public void overall() {
+  public void overall1() {
     final KeyFramesBuilder<Integer> b = new KeyFramesBuilder<Integer>(1);
     b.addFrame(100);
     final KeyFrames<Integer> kf = b.build();
@@ -746,5 +746,18 @@ public final class TestKeyFrames {
     Assert.assertEquals(25, kf.getEvaluatedValueAt(0.25).intValue());
     Assert.assertEquals(50, kf.getEvaluatedValueAt(0.5).intValue());
     Assert.assertEquals(100, kf.getEvaluatedValueAt(1).intValue());
+  }
+
+  @Test
+  public void overall2() {
+    final KeyFramesBuilder<String> b = new KeyFramesBuilder<String>("first");
+    b.addFrame("last");
+    b.setEvaluator(f_stringEvaluator);
+    final KeyFrames<String> kf = b.build();
+    Assert.assertEquals("first", kf.getEvaluatedValueAt(0));
+    Assert.assertEquals("first", kf.getEvaluatedValueAt(0.2));
+    Assert.assertEquals("last", kf.getEvaluatedValueAt(0.5));
+    Assert.assertEquals("last", kf.getEvaluatedValueAt(0.501));
+    Assert.assertEquals("last", kf.getEvaluatedValueAt(1));
   }
 }
