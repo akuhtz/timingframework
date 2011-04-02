@@ -10,7 +10,6 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.jdesktop.core.animation.timing.Animator;
-import org.jdesktop.core.animation.timing.Animator.Direction;
 import org.jdesktop.core.animation.timing.AnimatorBuilder;
 import org.jdesktop.core.animation.timing.TimingSource;
 import org.jdesktop.core.animation.timing.TimingTargetAdapter;
@@ -121,7 +120,7 @@ public class BasicRace extends TimingTargetAdapter {
    * Calculate and set the current car position based on the animation fraction.
    */
   @Override
-  public void timingEvent(double fraction, Direction direction, Animator source) {
+  public void timingEvent(Animator source, double fraction) {
     // Simple linear interpolation to find current position
     current.x = (int) (start.x + (end.x - start.x) * fraction);
     current.y = (int) (start.y + (end.y - start.y) * fraction);

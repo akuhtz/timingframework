@@ -3,7 +3,6 @@ package org.jdesktop.core.animation.rendering;
 import java.util.concurrent.TimeUnit;
 
 import org.jdesktop.core.animation.timing.Animator;
-import org.jdesktop.core.animation.timing.Animator.Direction;
 import org.jdesktop.core.animation.timing.AnimatorBuilder;
 import org.jdesktop.core.animation.timing.Interpolator;
 import org.jdesktop.core.animation.timing.TimingTargetAdapter;
@@ -127,7 +126,7 @@ public final class Viewport {
     }
 
     @Override
-    public void timingEvent(double fraction, Direction direction, Animator source) {
+    public void timingEvent(Animator source, double fraction) {
       final int pixelDelta = (int) Math.round(f_pixelsToMove * fraction);
       int proposedViewXY = f_horizontal ? f_x : f_y;
       if (f_add)

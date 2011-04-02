@@ -99,7 +99,7 @@ public class FadingButtonTF extends JButton implements ActionListener, TimingTar
    * fraction of the animation
    */
   @Override
-  public void timingEvent(double fraction, Direction direction, Animator source) {
+  public void timingEvent(Animator source, double fraction) {
     f_alpha = (float) fraction;
     // redisplay our button
     repaint();
