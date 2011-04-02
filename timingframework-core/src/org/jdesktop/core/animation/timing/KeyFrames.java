@@ -13,9 +13,11 @@ import com.surelogic.ThreadSafe;
 import com.surelogic.Vouch;
 
 /**
- * KeyFrames holds information about the times at which values are sampled and
- * the values at those times. It also holds information about how to interpolate
- * between these values for times that lie between the sampling points.
+ * This class manages a list of key frames to animate values via interpolation
+ * between a series of key values at key times. It holds information about the
+ * times at which values are sampled and the values at those times. It also
+ * holds information about how to interpolate between these values for times
+ * that lie between the sampling points.
  * 
  * @param <T>
  *          the type of the values.
@@ -239,7 +241,7 @@ public class KeyFrames<T> implements Iterable<Frame<T>> {
   private final Evaluator<T> f_evaluator;
 
   /**
-   * Constructs a list of key frames.
+   * Constructs a key frames instance.
    * <p>
    * This constructor should only be called from
    * {@link KeyFramesBuilder#build()}.
