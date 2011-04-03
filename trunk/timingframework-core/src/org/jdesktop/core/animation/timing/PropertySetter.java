@@ -10,6 +10,7 @@ import org.jdesktop.core.animation.i18n.I18N;
 import org.jdesktop.core.animation.timing.interpolators.LinearInterpolator;
 import org.jdesktop.core.animation.timing.interpolators.SplineInterpolator;
 
+import com.surelogic.Immutable;
 import com.surelogic.ThreadSafe;
 
 /**
@@ -99,7 +100,7 @@ import com.surelogic.ThreadSafe;
  * @author Chet Haase
  * @author Tim Halloran
  */
-@ThreadSafe
+@Immutable
 public class PropertySetter {
 
   /**
@@ -278,6 +279,7 @@ public class PropertySetter {
     }
   }
 
+  @ThreadSafe
   private static class PropertySetterTimingTarget extends KeyFramesTimingTarget<Object> {
 
     protected final Object f_object;
@@ -299,6 +301,7 @@ public class PropertySetter {
     }
   }
 
+  @ThreadSafe
   private static final class PropertySetterToTimingTarget extends PropertySetterTimingTarget {
 
     private final AtomicReference<KeyFrames<Object>> f_keyFrames = new AtomicReference<KeyFrames<Object>>();
