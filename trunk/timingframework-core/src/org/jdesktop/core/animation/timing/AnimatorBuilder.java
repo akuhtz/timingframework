@@ -148,8 +148,8 @@ public class AnimatorBuilder {
    * {@link Animator.RepeatBehavior#REVERSE}.
    * 
    * @param value
-   *          the behavior for each successive cycle in the animation. A
-   *          {@code null} value is equivalent to setting the default value.
+   *          the behavior for each successive animation cycle. A {@code null}
+   *          value is equivalent to setting the default value.
    * @return this builder (to allow chained operations).
    */
   public AnimatorBuilder setRepeatBehavior(Animator.RepeatBehavior value) {
@@ -162,7 +162,7 @@ public class AnimatorBuilder {
    * is 1.
    * 
    * @param value
-   *          Number of times the animation cycle will repeat. This value must
+   *          number of times the animation cycle will repeat. This value must
    *          be >= 1 or {@link Animator#INFINITE} for animations that repeat
    *          indefinitely.
    * @return this builder (to allow chained operations).
