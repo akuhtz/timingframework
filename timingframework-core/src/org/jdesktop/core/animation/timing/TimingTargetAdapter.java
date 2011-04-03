@@ -1,5 +1,7 @@
 package org.jdesktop.core.animation.timing;
 
+import com.surelogic.Immutable;
+
 /**
  * Implements the {@link TimingTarget} interface, providing stubs for all
  * TimingTarget methods. Subclasses may extend this adapter rather than
@@ -11,6 +13,7 @@ package org.jdesktop.core.animation.timing;
  * @author Chet Haase
  * @author Tim Halloran
  */
+@Immutable(implementationOnly = true)
 public class TimingTargetAdapter implements TimingTarget {
 
   @Override

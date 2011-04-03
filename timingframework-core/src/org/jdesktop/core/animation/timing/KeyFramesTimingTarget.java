@@ -2,6 +2,8 @@ package org.jdesktop.core.animation.timing;
 
 import org.jdesktop.core.animation.i18n.I18N;
 
+import com.surelogic.Immutable;
+
 /**
  * Abstract timing target that allows interpolation of values throughout an
  * animation via key frames.
@@ -11,6 +13,7 @@ import org.jdesktop.core.animation.i18n.I18N;
  * @param <T>
  *          the type of the values.
  */
+@Immutable
 public abstract class KeyFramesTimingTarget<T> extends TimingTargetAdapter {
 
   private final KeyFrames<T> f_keyFrames;

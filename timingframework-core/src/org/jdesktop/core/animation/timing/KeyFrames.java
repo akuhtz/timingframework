@@ -9,7 +9,6 @@ import org.jdesktop.core.animation.timing.KeyFrames.Frame;
 import org.jdesktop.core.animation.timing.interpolators.LinearInterpolator;
 
 import com.surelogic.Immutable;
-import com.surelogic.ThreadSafe;
 import com.surelogic.Vouch;
 
 /**
@@ -25,7 +24,7 @@ import com.surelogic.Vouch;
  * @author Chet Haase
  * @author Tim Halloran
  */
-@ThreadSafe
+@Immutable
 public class KeyFrames<T> implements Iterable<Frame<T>> {
 
   /**
