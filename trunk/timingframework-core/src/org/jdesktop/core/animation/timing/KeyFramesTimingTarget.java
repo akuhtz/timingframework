@@ -4,7 +4,7 @@ import org.jdesktop.core.animation.i18n.I18N;
 
 /**
  * Abstract timing target that allows interpolation of values throughout an
- * animation using a set of key frames.
+ * animation via key frames.
  * 
  * @author Tim Halloran
  * 
@@ -62,9 +62,7 @@ public abstract class KeyFramesTimingTarget<T> extends TimingTargetAdapter {
    * cycle.
    * 
    * @param value
-   *          the interpolated value, determined by invoking
-   *          {@link KeyFrames#getInterpolatedValueAt(double)} with
-   *          <tt>fraction</tt>.
+   *          the interpolated value, determined using the object's key frames.
    * @param source
    *          the animation.
    * @param fraction
