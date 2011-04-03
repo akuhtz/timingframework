@@ -115,6 +115,7 @@ public final class Animator implements TickListener {
   /*
    * Immutable state set by the builder.
    */
+
   private final long f_duration;
   private final TimeUnit f_durationTimeUnit;
   private final EndBehavior f_endBehavior;
@@ -123,6 +124,92 @@ public final class Animator implements TickListener {
   private final long f_repeatCount;
   private final Direction f_startDirection;
   private final TimingSource f_timingSource;
+
+  /**
+   * Gets the duration of this animation. The units of this value are obtained
+   * by calling {@link #getDurationTimeUnit()}.
+   * 
+   * @return the duration of the animation. This value must be >= 1 or
+   *         {@link Animator#INFINITE}, meaning the animation will run until
+   *         manually stopped.
+   * 
+   * @see #getDurationTimeUnit()
+   */
+  public long getDuration() {
+    return f_duration;
+  }
+
+  /**
+   * Gets the time unit of the duration of this animation. The duration is
+   * obtained by calling {@link #getDuration()}.
+   * 
+   * @return the time unit of the value parameter.
+   * 
+   * @see #getDuration()
+   */
+  public TimeUnit getDurationTimeUnit() {
+    return f_durationTimeUnit;
+  }
+
+  /**
+   * Gets the behavior at the end of this animation.
+   * 
+   * @return the behavior at the end of the animation.
+   */
+  public EndBehavior getEndBehavior() {
+    return f_endBehavior;
+  }
+
+  /**
+   * Gets the interpolator for this animation.
+   * 
+   * @return the interpolation to use each animation cycle.
+   */
+  public Interpolator getInterpolator() {
+    return f_interpolator;
+  }
+
+  /**
+   * Gets the repeat behavior of this animation.
+   * 
+   * @return the behavior for each successive animation cycle.
+   */
+  public RepeatBehavior getRepeatBehavior() {
+    return f_repeatBehavior;
+  }
+
+  /**
+   * Gets the number of times the animation cycle will repeat.
+   * 
+   * @return number of times the animation cycle will repeat. This value is >= 1
+   *         or {@link Animator#INFINITE} for animations that repeat
+   *         indefinitely.
+   */
+  public long getRepeatCount() {
+    return f_repeatCount;
+  }
+
+  /**
+   * Gets the start direction for the initial animation cycle.
+   * 
+   * @return initial animation cycle direction.
+   */
+  public Direction getStartDirection() {
+    return f_startDirection;
+  }
+
+  /**
+   * Gets the timing source for this animation.
+   * 
+   * @return a timing source.
+   */
+  public TimingSource getTimingSource() {
+    return f_timingSource;
+  }
+
+  /*
+   * Mutable thread-safe state that is managed by this animation.
+   */
 
   /**
    * This animation may have multiple {@link TimingTarget} listeners.

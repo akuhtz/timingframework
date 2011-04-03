@@ -7,11 +7,16 @@ import com.surelogic.Immutable;
 /**
  * Abstract timing target that allows interpolation of values throughout an
  * animation via key frames.
+ * <p>
+ * If your animation simply changes a property on an object then consider using
+ * the {@link PropertySetter} utility instead of extending this class.
  * 
  * @author Tim Halloran
  * 
  * @param <T>
  *          the type of the values.
+ * 
+ * @see PropertySetter
  */
 @Immutable
 public abstract class KeyFramesTimingTarget<T> extends TimingTargetAdapter {

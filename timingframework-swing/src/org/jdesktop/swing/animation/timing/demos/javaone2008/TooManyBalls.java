@@ -32,10 +32,10 @@ import org.jdesktop.core.animation.timing.AnimatorBuilder;
 import org.jdesktop.core.animation.timing.Interpolator;
 import org.jdesktop.core.animation.timing.KeyFrames;
 import org.jdesktop.core.animation.timing.KeyFramesBuilder;
-import org.jdesktop.core.animation.timing.PropertySetter;
 import org.jdesktop.core.animation.timing.TimingSource;
 import org.jdesktop.core.animation.timing.TimingSource.TickListener;
 import org.jdesktop.core.animation.timing.TimingTarget;
+import org.jdesktop.core.animation.timing.TimingTargetAdapter;
 import org.jdesktop.core.animation.timing.interpolators.AccelerationInterpolator;
 import org.jdesktop.core.animation.timing.interpolators.SplineInterpolator;
 import org.jdesktop.swing.animation.rendering.JRendererFactory;
@@ -244,7 +244,7 @@ public class TooManyBalls implements JRendererTarget<GraphicsConfiguration, Grap
   private static final Interpolator SPLINE_1_0_1_1 = new SplineInterpolator(1.00, 0.00, 1.00, 1.00);
 
   private void addBall() {
-    Ball ball = new Ball();
+    final Ball ball = new Ball();
     ball.imageIndex = f_die.nextInt(5);
     BufferedImage ballImage = f_ballImages[ball.imageIndex];
 
@@ -267,22 +267,27 @@ public class TooManyBalls implements JRendererTarget<GraphicsConfiguration, Grap
     builder.addFrame(ball.x, SPLINE_1_0_1_1);
     builder.addFrame(ball.x - radiusX, SPLINE_0_1_1_0);
     builder.addFrame(ball.x, SPLINE_1_0_1_1);
-    KeyFrames<Integer> framesX = builder.build();
+    final KeyFrames<Integer> framesX = builder.build();
 
     builder = new KeyFramesBuilder<Integer>(ball.y);
     builder.addFrame(ball.y + radiusY, SPLINE_1_0_1_1);
     builder.addFrame(ball.y + (2 * radiusY), SPLINE_0_1_1_0);
     builder.addFrame(ball.y + radiusY, SPLINE_1_0_1_1);
     builder.addFrame(ball.y, SPLINE_0_1_1_0);
-    KeyFrames<Integer> framesY = builder.build();
+    final KeyFrames<Integer> framesY = builder.build();
 
-    final TimingTarget psx = PropertySetter.build(ball, "x", framesX);
-    final TimingTarget psy = PropertySetter.build(ball, "y", framesY);
+    final TimingTarget circularMovement = new TimingTargetAdapter() {
+      @Override
+      public void timingEvent(Animator source, double fraction) {
+        ball.x = framesX.getInterpolatedValueAt(fraction);
+        ball.y = framesY.getInterpolatedValueAt(fraction);
+      }
+    };
     /*
      * Sometimes go at a constant rate, sometimes accelerate and decelerate.
      */
     final Interpolator i = f_die.nextBoolean() ? ACCEL_4_4 : null;
-    ball.animator = new AnimatorBuilder().setDuration(duration, TimeUnit.SECONDS).addTarget(psx).addTarget(psy)
+    ball.animator = new AnimatorBuilder().setDuration(duration, TimeUnit.SECONDS).addTarget(circularMovement)
         .setRepeatCount(Animator.INFINITE).setRepeatBehavior(Animator.RepeatBehavior.LOOP).setInterpolator(i).build();
     ball.animator.start();
 
