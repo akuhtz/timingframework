@@ -117,7 +117,7 @@ public class PropertySetter {
    * @return a timing target.
    */
   public static <T> TimingTarget build(Object object, String propertyName, KeyFrames<T> keyFrames) {
-    return new PropertyTimingTarget(object, propertyName, keyFrames, false);
+    return buildHelper(object, propertyName, keyFrames, false);
   }
 
   /**
@@ -179,7 +179,7 @@ public class PropertySetter {
    * @return a timing target.
    */
   public static <T> TimingTarget buildTo(Object object, String propertyName, KeyFrames<T> keyFrames) {
-    return new PropertyTimingTarget(object, propertyName, keyFrames, true);
+    return buildHelper(object, propertyName, keyFrames, true);
   }
 
   /**
@@ -232,101 +232,104 @@ public class PropertySetter {
     // no instances
   }
 
-  private static class PropertyTimingTarget extends TimingTargetAdapter {
-    private final Object f_object;
-    private final String f_propertyName;
-    private final AtomicReference<KeyFrames<Object>> f_keyFrames = new AtomicReference<KeyFrames<Object>>();
-    private final boolean f_isToAnimation;
-    private final Method f_propertySetter;
-    private final Method f_propertyGetter;
-
-    /**
-     * Constructs a property setter instance.
-     * <p>
-     * This constructor should only be called from one of the static factory
-     * methods defined above.
-     * 
-     * @param object
-     *          an object.
-     * @param propertyName
-     *          the name of the the property to manipulate on <tt>object</tt>.
-     * @param keyFrames
-     *          a key frames instance that define how the property's value
-     *          changes over time. The initial value is ignored and replaced
-     *          with the current value of the object's property if this is a
-     *          "to" animation.
-     * @param toAnimation
-     *          {@code true} if this is a "to" animation, {@code true} false
-     *          otherwise.
+  private static TimingTarget buildHelper(final Object object, final String propertyName, final KeyFrames<?> keyFrames,
+      final boolean isToAnimation) {
+    if (object == null)
+      throw new IllegalArgumentException(I18N.err(1, "object"));
+    if (propertyName == null)
+      throw new IllegalArgumentException(I18N.err(1, "propertyName"));
+    if (keyFrames == null)
+      throw new IllegalArgumentException(I18N.err(1, "keyFrames"));
+    @SuppressWarnings("unchecked")
+    final KeyFrames<Object> objectKeyFrames = (KeyFrames<Object>) keyFrames;
+    /*
+     * Find the setter method for the property.
      */
-    private PropertyTimingTarget(Object object, String propertyName, KeyFrames<?> keyFrames, boolean toAnimation) {
-      if (object == null)
-        throw new IllegalArgumentException(I18N.err(1, "object"));
-      f_object = object;
-      if (propertyName == null)
-        throw new IllegalArgumentException(I18N.err(1, "propertyName"));
-      f_propertyName = propertyName;
-      if (keyFrames == null)
-        throw new IllegalArgumentException(I18N.err(1, "keyFrames"));
-      @SuppressWarnings("unchecked")
-      final KeyFrames<Object> copyKeyFrames = (KeyFrames<Object>) keyFrames;
-      f_keyFrames.set(copyKeyFrames);
-      f_isToAnimation = toAnimation;
-      /*
-       * Find the setter method for the property.
-       */
-      final String firstChar = f_propertyName.substring(0, 1);
-      final String remainder = f_propertyName.substring(1);
-      final String propertySetterName = "set" + firstChar.toUpperCase(Locale.ENGLISH) + remainder;
+    Method propertySetter;
+    final String firstChar = propertyName.substring(0, 1);
+    final String remainder = propertyName.substring(1);
+    final String propertySetterName = "set" + firstChar.toUpperCase(Locale.ENGLISH) + remainder;
+    try {
+      final PropertyDescriptor pd = new PropertyDescriptor(propertyName, object.getClass(), null, propertySetterName);
+      propertySetter = pd.getWriteMethod();
+    } catch (IntrospectionException e) {
+      throw new IllegalArgumentException(I18N.err(30, propertySetterName, propertyName, object.toString()), e);
+    }
+    /*
+     * Find the getter method for the property if this is a "to" animations
+     */
+    if (isToAnimation) {
+      final String propertyGetterName = "get" + firstChar.toUpperCase(Locale.ENGLISH) + remainder;
       try {
-        final PropertyDescriptor pd = new PropertyDescriptor(f_propertyName, f_object.getClass(), null, propertySetterName);
-        f_propertySetter = pd.getWriteMethod();
+        final PropertyDescriptor pd = new PropertyDescriptor(propertyName, object.getClass(), propertyGetterName, null);
+        final Method propertyGetter = pd.getReadMethod();
+        /*
+         * Setup "to" animation.
+         */
+        return new PropertySetterToTimingTarget(objectKeyFrames, object, propertyGetter, propertySetter);
       } catch (IntrospectionException e) {
-        throw new IllegalArgumentException(I18N.err(30, propertySetterName, propertyName, object.toString()), e);
+        throw new IllegalArgumentException(I18N.err(30, propertyGetterName, propertyName, object.toString()), e);
       }
+    } else {
       /*
-       * Find the getter method for the property if this is a "to" animations
+       * Setup animation.
        */
-      if (f_isToAnimation) {
-        final String propertyGetterName = "get" + firstChar.toUpperCase(Locale.ENGLISH) + remainder;
-        try {
-          final PropertyDescriptor pd = new PropertyDescriptor(f_propertyName, f_object.getClass(), propertyGetterName, null);
-          f_propertyGetter = pd.getReadMethod();
-        } catch (IntrospectionException e) {
-          throw new IllegalArgumentException(I18N.err(30, propertyGetterName, propertyName, object.toString()), e);
-        }
-      } else {
-        f_propertyGetter = null;
+      return new PropertySetterTimingTarget(objectKeyFrames, object, propertySetter);
+    }
+  }
+
+  private static class PropertySetterTimingTarget extends KeyFramesTimingTarget<Object> {
+
+    protected final Object f_object;
+    protected final Method f_propertySetter;
+
+    public PropertySetterTimingTarget(KeyFrames<Object> keyFrames, Object object, Method propertySetter) {
+      super(keyFrames);
+      f_object = object;
+      f_propertySetter = propertySetter;
+    }
+
+    @Override
+    public void valueAtTimingEvent(Object value, double fraction, Animator source) {
+      try {
+        f_propertySetter.invoke(f_object, value);
+      } catch (Exception e) {
+        throw new IllegalStateException(I18N.err(32, f_propertySetter.getName(), f_object.toString()), e);
       }
+    }
+  }
+
+  private static final class PropertySetterToTimingTarget extends PropertySetterTimingTarget {
+
+    private final AtomicReference<KeyFrames<Object>> f_keyFrames = new AtomicReference<KeyFrames<Object>>();
+    protected final Method f_propertyGetter;
+
+    public PropertySetterToTimingTarget(KeyFrames<Object> keyFrames, Object object, Method propertyGetter, Method propertySetter) {
+      super(keyFrames, object, propertySetter);
+      f_propertyGetter = propertyGetter;
     }
 
     @Override
     public void begin(Animator source) {
-      if (f_isToAnimation) {
-        try {
-          final Object startValue = f_propertyGetter.invoke(f_object);
-          final KeyFramesBuilder<Object> builder = new KeyFramesBuilder<Object>(startValue);
-          boolean first = true;
-          for (KeyFrames.Frame<Object> frame : f_keyFrames.get()) {
-            if (first)
-              first = false;
-            else
-              builder.addFrame(frame);
-          }
-          f_keyFrames.set(builder.build());
-        } catch (Exception e) {
-          throw new IllegalStateException(I18N.err(31, f_propertyGetter.getName(), f_object.toString()), e);
+      try {
+        final Object startValue = f_propertyGetter.invoke(f_object);
+        final KeyFramesBuilder<Object> builder = new KeyFramesBuilder<Object>(startValue);
+        boolean first = true;
+        for (KeyFrames.Frame<Object> frame : f_keyFrames.get()) {
+          if (first)
+            first = false;
+          else
+            builder.addFrame(frame);
         }
+        f_keyFrames.set(builder.build());
+      } catch (Exception e) {
+        throw new IllegalStateException(I18N.err(31, f_propertyGetter.getName(), f_object.toString()), e);
       }
     }
 
     @Override
     public void timingEvent(Animator source, double fraction) {
-      try {
-        f_propertySetter.invoke(f_object, f_keyFrames.get().getInterpolatedValueAt(fraction));
-      } catch (Exception e) {
-        throw new IllegalStateException(I18N.err(32, f_propertySetter.getName(), f_object.toString()), e);
-      }
+      valueAtTimingEvent(f_keyFrames.get().getInterpolatedValueAt(fraction), fraction, source);
     }
   }
 }
