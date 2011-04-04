@@ -1,4 +1,4 @@
-package org.jdesktop.swt.animation.timing.demos.ch15;
+package org.jdesktop.swt.animation.timing.demos;
 
 import java.util.concurrent.TimeUnit;
 
@@ -27,7 +27,6 @@ import org.jdesktop.core.animation.timing.triggers.MouseTriggerEvent;
 import org.jdesktop.core.animation.timing.triggers.TimingTrigger;
 import org.jdesktop.core.animation.timing.triggers.TimingTriggerEvent;
 import org.jdesktop.core.animation.timing.triggers.Trigger;
-import org.jdesktop.swt.animation.timing.demos.DemoResources;
 import org.jdesktop.swt.animation.timing.sources.SWTTimingSource;
 import org.jdesktop.swt.animation.timing.triggers.EventTrigger;
 import org.jdesktop.swt.animation.timing.triggers.FocusTrigger;

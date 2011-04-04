@@ -295,7 +295,7 @@ public class PropertySetter {
       try {
         f_propertySetter.invoke(f_object, value);
       } catch (Exception e) {
-        throw new IllegalStateException(I18N.err(32, f_propertySetter.getName(), f_object.toString()), e);
+        throw new IllegalStateException(I18N.err(31, f_propertySetter.getName(), f_object.toString()), e);
       }
     }
   }
