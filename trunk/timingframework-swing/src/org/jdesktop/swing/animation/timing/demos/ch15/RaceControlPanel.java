@@ -13,6 +13,7 @@ import javax.swing.JPanel;
 public class RaceControlPanel extends JPanel {
 
   JButton goButton = new JButton("Go");
+  JButton reverseButton = new JButton("Reverse");
   JButton pauseResumeButton = new JButton("Pause/Resume");
   JButton stopButton = new JButton("Stop");
 
@@ -21,12 +22,17 @@ public class RaceControlPanel extends JPanel {
    */
   public RaceControlPanel() {
     add(goButton);
+    add(reverseButton);
     add(pauseResumeButton);
     add(stopButton);
   }
 
   public JButton getGoButton() {
     return goButton;
+  }
+
+  public JButton getReverseButton() {
+    return reverseButton;
   }
 
   public JButton getPauseResumeButton() {
@@ -39,9 +45,10 @@ public class RaceControlPanel extends JPanel {
 
   public void addListener(ActionListener listener) {
     goButton.addActionListener(listener);
+    reverseButton.addActionListener(listener);
     pauseResumeButton.addActionListener(listener);
     stopButton.addActionListener(listener);
   }
 
-  private static final long serialVersionUID = -4156188778768009687L;
+  private static final long serialVersionUID = -1737346780545607168L;
 }

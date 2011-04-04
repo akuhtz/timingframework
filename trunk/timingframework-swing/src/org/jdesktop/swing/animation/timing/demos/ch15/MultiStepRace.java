@@ -55,7 +55,7 @@ public final class MultiStepRace {
 
   /** Creates a new instance of BasicRace */
   public MultiStepRace(String appName) {
-    RaceGUI basicGUI = new RaceGUI(appName);
+    final RaceGUI basicGUI = new RaceGUI(appName);
 
     animator = new AnimatorBuilder().setDuration(RACE_TIME, TimeUnit.MILLISECONDS).setRepeatCount(Animator.INFINITE)
         .setRepeatBehavior(RepeatBehavior.LOOP).build();
@@ -136,11 +136,27 @@ public final class MultiStepRace {
      * by setting up a trigger.
      */
     JButton goButton = basicGUI.getControlPanel().getGoButton();
+    JButton reverseButton = basicGUI.getControlPanel().getReverseButton();
     JButton pauseResumeButton = basicGUI.getControlPanel().getPauseResumeButton();
     JButton stopButton = basicGUI.getControlPanel().getStopButton();
     ActionTrigger.addTrigger(goButton, animator);
+    reverseButton.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        if (animator.isPaused()) {
+          java.awt.Toolkit.getDefaultToolkit().beep();
+          return;
+        }
+
+        if (animator.isRunning()) {
+          animator.reverseNow();
+          basicGUI.getTrack().reverseCarRotation();
+        } else {
+          animator.startReverse();
+          basicGUI.getTrack().setCarRotation(180);
+        }
+      }
+    });
     pauseResumeButton.addActionListener(new ActionListener() {
-      @Override
       public void actionPerformed(ActionEvent e) {
         if (animator.isPaused()) {
           animator.resume();
@@ -151,7 +167,6 @@ public final class MultiStepRace {
       }
     });
     stopButton.addActionListener(new ActionListener() {
-      @Override
       public void actionPerformed(ActionEvent e) {
         if (animator.isRunning())
           animator.stop();
