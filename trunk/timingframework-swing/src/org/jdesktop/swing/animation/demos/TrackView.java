@@ -1,4 +1,4 @@
-package org.jdesktop.swing.animation.timing.demos.ch15;
+package org.jdesktop.swing.animation.demos;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -9,7 +9,6 @@ import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 
-import org.jdesktop.swing.animation.demos.DemoResources;
 
 /**
  * This class does the work of rendering the current view of the racetrack. It

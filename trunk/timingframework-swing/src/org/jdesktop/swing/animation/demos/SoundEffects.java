@@ -1,11 +1,10 @@
-package org.jdesktop.swing.animation.timing.demos.ch15;
+package org.jdesktop.swing.animation.demos;
 
 import java.applet.AudioClip;
 
 import org.jdesktop.core.animation.timing.Animator;
 import org.jdesktop.core.animation.timing.KeyFrames;
 import org.jdesktop.core.animation.timing.TimingTarget;
-import org.jdesktop.swing.animation.demos.DemoResources;
 
 /**
  * Simple utility class used to load and play sound effects for MultiStepRace.

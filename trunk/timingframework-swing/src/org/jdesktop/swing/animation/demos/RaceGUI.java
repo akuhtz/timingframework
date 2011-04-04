@@ -1,4 +1,4 @@
-package org.jdesktop.swing.animation.timing.demos.ch15;
+package org.jdesktop.swing.animation.demos;
 
 import java.awt.BorderLayout;
 
