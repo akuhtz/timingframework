@@ -1,8 +1,13 @@
 package org.jdesktop.swt.animation.timing.demos.ch15;
 
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
 import org.jdesktop.core.animation.timing.Animator;
 import org.jdesktop.core.animation.timing.AnimatorBuilder;
 import org.jdesktop.core.animation.timing.KeyFrames;
@@ -11,68 +16,98 @@ import org.jdesktop.core.animation.timing.PropertySetter;
 import org.jdesktop.core.animation.timing.TimingSource;
 import org.jdesktop.core.animation.timing.TimingTargetAdapter;
 import org.jdesktop.core.animation.timing.interpolators.DiscreteInterpolator;
-import org.jdesktop.core.animation.timing.sources.ScheduledExecutorTimingSource;
 import org.jdesktop.swt.animation.timing.sources.SWTTimingSource;
 
 /**
- * A console application that demonstrates use of a {@link DiscreteInterpolator}
+ * An SWT application that demonstrates use of a {@link DiscreteInterpolator}
  * using {@link KeyFrames} within a {@link PropertySetter} animation.
  * <p>
  * This demo is discussed in Chapter 15 on page 410 of <i>Filthy Rich
  * Clients</i> (Haase and Guy, Addison-Wesley, 2008).
- * <p>
- * Because this is a console application it is a good chance to use the
- * <tt>util.concurrent</tt>-based {@link ScheduledExecutorTimingSource} rather
- * than a {@link SWTTimingSource}. This timing source avoids any dependency upon
- * Swing.
  * 
  * @author Chet Haase
  * @author Tim Halloran
  */
 public class DiscreteInterpolation extends TimingTargetAdapter {
 
-  private final CountDownLatch f_done = new CountDownLatch(1);
-  private int f_intValue;
-
-  /** Creates a new instance of DiscreteInterpolation */
-  public DiscreteInterpolation() {
-  }
-
-  public void setIntValue(int intValue) {
-    f_intValue = intValue;
-    System.out.println("intValue = " + f_intValue);
-  }
-
-  @Override
-  public void end(Animator source) {
-    f_done.countDown();
-  }
-
-  public static void main(String[] args) {
-    TimingSource ts = new ScheduledExecutorTimingSource(100, TimeUnit.MILLISECONDS);
+  public static void main(String args[]) {
+    TimingSource ts = new SWTTimingSource(100, TimeUnit.MILLISECONDS);
     AnimatorBuilder.setDefaultTimingSource(ts);
     ts.init();
+
+    f_display = Display.getDefault();
+    final Shell f_shell = new Shell(f_display);
+    f_shell.setText("SWT DiscreteInterpolation Test");
+    f_shell.setLayout(new FillLayout());
+    f_benchmarkOutput = new Text(f_shell, SWT.MULTI | SWT.READ_ONLY | SWT.H_SCROLL | SWT.V_SCROLL);
+    f_benchmarkOutput.setEditable(false);
+    Font fixed = new Font(f_display, "Courier", 11, SWT.NONE);
+    f_benchmarkOutput.setFont(fixed);
+    f_benchmarkOutput.setBackground(f_display.getSystemColor(SWT.COLOR_BLACK));
+    f_benchmarkOutput.setForeground(f_display.getSystemColor(SWT.COLOR_GREEN));
+
+    f_shell.setSize(650, 500);
+    f_shell.open();
 
     DiscreteInterpolation object = new DiscreteInterpolation();
 
     final KeyFrames<Integer> keyFrames = new KeyFramesBuilder<Integer>().addFrames(2, 6, 3, 5, 4)
         .setInterpolator(DiscreteInterpolator.getInstance()).build();
-    System.out.println("-- Key Frames --");
+    out("Constructed Key Frames");
+    out("----------------------");
     int i = 0;
-    for (KeyFrames.Frame<Integer> frame : keyFrames) {
-      final String s = frame.getInterpolator() == null ? "null" : frame.getInterpolator().getClass().getSimpleName();
-      System.out.printf("Frame %d: value=%d timeFraction=%f interpolator=%s\n", i++, frame.getValue(), frame.getTimeFraction(), s);
+    for (KeyFrames.Frame<Integer> keyFrame : keyFrames) {
+      final String s = keyFrame.getInterpolator() == null ? "null" : keyFrame.getInterpolator().getClass().getSimpleName();
+      out(String.format("Frame %d: value=%d timeFraction=%f interpolator=%s", i++, keyFrame.getValue(), keyFrame.getTimeFraction(),
+          s));
     }
-    final Animator anim = new AnimatorBuilder().setDuration(3, TimeUnit.SECONDS)
+    final Animator animator = new AnimatorBuilder().setDuration(3, TimeUnit.SECONDS)
         .addTarget(PropertySetter.getTarget(object, "intValue", keyFrames)).addTarget(object).build();
-    System.out.println("-- Animation --");
-    anim.start();
+    out("");
+    out("Animation of intValue");
+    out("---------------------");
+    animator.start();
 
-    try {
-      object.f_done.await();
-    } catch (InterruptedException e) {
-      e.printStackTrace();
+    while (!f_shell.isDisposed()) {
+      if (!f_display.readAndDispatch())
+        f_display.sleep();
     }
     ts.dispose();
+    f_display.dispose();
+    System.exit(0);
+  }
+
+  private static Display f_display;
+  private static Text f_benchmarkOutput;
+
+  private int f_intValue;
+
+  public void setIntValue(int intValue) {
+    f_intValue = intValue;
+    out("intValue = " + f_intValue);
+  }
+
+  /**
+   * This method outputs the string to the GUI {@link #f_benchmarkOutput}.
+   * 
+   * @param s
+   *          a string to append to the output.
+   */
+  private static void out(final String s) {
+    final Runnable addToTextArea = new Runnable() {
+      @Override
+      public void run() {
+        final StringBuffer b = new StringBuffer(f_benchmarkOutput.getText());
+        b.append(s);
+        b.append(Text.DELIMITER);
+        f_benchmarkOutput.setText(b.toString());
+        f_benchmarkOutput.setSelection(b.length());
+      }
+    };
+    if (f_display.getThread().equals(Thread.currentThread())) {
+      addToTextArea.run();
+    } else {
+      f_display.asyncExec(addToTextArea);
+    }
   }
 }
