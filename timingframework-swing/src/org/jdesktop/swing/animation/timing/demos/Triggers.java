@@ -1,4 +1,4 @@
-package org.jdesktop.swing.animation.timing.demos.ch15;
+package org.jdesktop.swing.animation.timing.demos;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -26,7 +26,6 @@ import org.jdesktop.core.animation.timing.triggers.MouseTriggerEvent;
 import org.jdesktop.core.animation.timing.triggers.TimingTrigger;
 import org.jdesktop.core.animation.timing.triggers.TimingTriggerEvent;
 import org.jdesktop.core.animation.timing.triggers.Trigger;
-import org.jdesktop.swing.animation.timing.demos.DemoResources;
 import org.jdesktop.swing.animation.timing.sources.SwingTimerTimingSource;
 import org.jdesktop.swing.animation.timing.triggers.ActionTrigger;
 import org.jdesktop.swing.animation.timing.triggers.FocusTrigger;
