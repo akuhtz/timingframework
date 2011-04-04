@@ -20,7 +20,8 @@ import org.jdesktop.swing.animation.timing.sources.SwingTimerTimingSource;
  * a given time period.
  * <p>
  * This demo is discussed in Chapter 14 on pages 357&ndash;359 of <i>Filthy Rich
- * Clients</i> (Haase and Guy, Addison-Wesley, 2008).
+ * Clients</i> (Haase and Guy, Addison-Wesley, 2008). In the book it is referred
+ * to as <tt>BasicRace</tt> rather than <tt>RaceBasic</tt>.
  * 
  * @author Chet Haase
  */
