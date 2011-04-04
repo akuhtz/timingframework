@@ -1,4 +1,4 @@
-package org.jdesktop.swt.animation.timing.demos.javaone2008;
+package org.jdesktop.swt.animation.timing.demos;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +33,6 @@ import org.jdesktop.core.animation.timing.TimingTargetAdapter;
 import org.jdesktop.core.animation.timing.interpolators.AccelerationInterpolator;
 import org.jdesktop.core.animation.timing.interpolators.SplineInterpolator;
 import org.jdesktop.swt.animation.rendering.JRendererFactory;
-import org.jdesktop.swt.animation.timing.demos.DemoResources;
 import org.jdesktop.swt.animation.timing.sources.SWTTimingSource;
 
 /**

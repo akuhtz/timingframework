@@ -1,11 +1,11 @@
-package org.jdesktop.swing.animation.timing.demos.javaone2008;
+package org.jdesktop.swing.animation.timing.demos;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.GraphicsConfiguration;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -25,22 +25,18 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
-import org.jdesktop.core.animation.rendering.JRenderer;
-import org.jdesktop.core.animation.rendering.JRendererTarget;
 import org.jdesktop.core.animation.timing.Animator;
 import org.jdesktop.core.animation.timing.AnimatorBuilder;
 import org.jdesktop.core.animation.timing.Interpolator;
 import org.jdesktop.core.animation.timing.KeyFrames;
 import org.jdesktop.core.animation.timing.KeyFramesBuilder;
 import org.jdesktop.core.animation.timing.TimingSource;
+import org.jdesktop.core.animation.timing.TimingSource.PostTickListener;
 import org.jdesktop.core.animation.timing.TimingSource.TickListener;
 import org.jdesktop.core.animation.timing.TimingTarget;
 import org.jdesktop.core.animation.timing.TimingTargetAdapter;
 import org.jdesktop.core.animation.timing.interpolators.AccelerationInterpolator;
 import org.jdesktop.core.animation.timing.interpolators.SplineInterpolator;
-import org.jdesktop.swing.animation.rendering.JRendererFactory;
-import org.jdesktop.swing.animation.rendering.JRendererPanel;
-import org.jdesktop.swing.animation.timing.demos.DemoResources;
 import org.jdesktop.swing.animation.timing.sources.SwingTimerTimingSource;
 
 /**
@@ -50,23 +46,16 @@ import org.jdesktop.swing.animation.timing.sources.SwingTimerTimingSource;
  * scale and, as balls were added to the demonstration, the multiple timers
  * caused noticeable performance problems.
  * <p>
+ * This version of the "Too Many Balls!" demonstration mimics the problem Chet
+ * demonstrated by explicitly creating a Swing Timer for each animation.
+ * <p>
  * This version of the Timing Framework allows setting a default timer on the
  * {@link AnimatorBuilder}, thus making it easy for client code to avoid this
  * problem. This design was inspired by the JavaOne 2008 talk.
- * <p>
- * By default this program uses passive rendering. To use active rendering set
- * the <tt>org.jdesktop.renderer.active</tt> system property to any value. For
- * example place <tt>-Dorg.jdesktop.renderer.active=true</tt> on the java
- * command line.
  * 
  * @author Tim Halloran
  */
-public class TooManyBalls implements JRendererTarget<GraphicsConfiguration, Graphics2D> {
-
-  /**
-   * Used to update the FPS display once a second.
-   */
-  private static final TimingSource f_infoTimer = new SwingTimerTimingSource(1, TimeUnit.SECONDS);
+public class TooManyBallsBroken {
 
   public static void main(String[] args) {
     System.setProperty("swing.defaultlaf", "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
@@ -74,32 +63,57 @@ public class TooManyBalls implements JRendererTarget<GraphicsConfiguration, Grap
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
-        new TooManyBalls();
+        new TooManyBallsBroken();
       }
     });
   }
 
-  /*
-   * EDT methods and state
+  private static final TimingSource f_repaintTimer = new SwingTimerTimingSource(15, TimeUnit.MILLISECONDS);
+  /**
+   * Used to update the FPS display once a second.
    */
+  private static final TimingSource f_infoTimer = new SwingTimerTimingSource(1, TimeUnit.SECONDS);
+
+  private static final Interpolator ACCEL_4_4 = new AccelerationInterpolator(0.4, 0.4);
+  private static final Interpolator SPLINE_0_1_1_0 = new SplineInterpolator(0.00, 1.00, 1.00, 1.00);
+  private static final Interpolator SPLINE_1_0_1_1 = new SplineInterpolator(1.00, 0.00, 1.00, 1.00);
 
   private final JFrame f_frame;
-  private final JRendererPanel f_panel;
-  private final JRenderer<JRendererPanel> f_renderer;
   private final JLabel f_infoLabel;
-  private int f_ballCount = 0;
+  private final BallField f_field;
+  private final Random f_die = new Random();
+  private BufferedImage[] f_ballImages;
 
-  public TooManyBalls() {
-    final String rendererType = JRendererFactory.useActiveRenderer() ? "Active" : "Passive";
-    f_frame = new JFrame("Too Many Balls! - Swing " + rendererType + " Rendering");
+  public class Ball {
+    int x, y;
+    int imageIndex;
+    Animator animator;
+    TimingSource ts;
+
+    public void setX(int x) {
+      this.x = x;
+    }
+
+    public void setY(int y) {
+      this.y = y;
+    }
+  }
+
+  private final List<Ball> f_balls = new ArrayList<Ball>();
+
+  public TooManyBallsBroken() {
+    f_frame = new JFrame("Too Many Balls! - Too Many Swing Timers!");
     f_frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     f_frame.addWindowListener(new WindowAdapter() {
       @Override
       public void windowClosed(WindowEvent e) {
         super.windowClosed(e);
+        f_repaintTimer.dispose();
         f_infoTimer.dispose();
-        f_renderer.getTimingSource().dispose();
-        f_renderer.shutdown();
+        for (Ball ball : f_balls) {
+          ball.ts.dispose();
+          ball.animator.stop();
+        }
       }
     });
     f_frame.setLayout(new BorderLayout());
@@ -113,13 +127,7 @@ public class TooManyBalls implements JRendererTarget<GraphicsConfiguration, Grap
     addBall.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent arg0) {
-        f_renderer.invokeLater(new Runnable() {
-          @Override
-          public void run() {
-            addBall();
-          }
-        });
-        f_ballCount++;
+        addBall();
         updateBallCount();
       }
     });
@@ -127,22 +135,16 @@ public class TooManyBalls implements JRendererTarget<GraphicsConfiguration, Grap
     add10Balls.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent arg0) {
-        f_renderer.invokeLater(new Runnable() {
-          @Override
-          public void run() {
-            addBall();
-            addBall();
-            addBall();
-            addBall();
-            addBall();
-            addBall();
-            addBall();
-            addBall();
-            addBall();
-            addBall();
-          }
-        });
-        f_ballCount += 10;
+        addBall();
+        addBall();
+        addBall();
+        addBall();
+        addBall();
+        addBall();
+        addBall();
+        addBall();
+        addBall();
+        addBall();
         updateBallCount();
       }
     });
@@ -150,14 +152,7 @@ public class TooManyBalls implements JRendererTarget<GraphicsConfiguration, Grap
     removeBall.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent arg0) {
-        f_renderer.invokeLater(new Runnable() {
-          @Override
-          public void run() {
-            removeBall();
-          }
-        });
-        if (f_ballCount > 0)
-          f_ballCount--;
+        removeBall();
         updateBallCount();
       }
     });
@@ -165,24 +160,16 @@ public class TooManyBalls implements JRendererTarget<GraphicsConfiguration, Grap
     remove10Balls.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent arg0) {
-        f_renderer.invokeLater(new Runnable() {
-          @Override
-          public void run() {
-            removeBall();
-            removeBall();
-            removeBall();
-            removeBall();
-            removeBall();
-            removeBall();
-            removeBall();
-            removeBall();
-            removeBall();
-            removeBall();
-          }
-        });
-        f_ballCount -= 10;
-        if (f_ballCount < 0)
-          f_ballCount = 0;
+        removeBall();
+        removeBall();
+        removeBall();
+        removeBall();
+        removeBall();
+        removeBall();
+        removeBall();
+        removeBall();
+        removeBall();
+        removeBall();
         updateBallCount();
       }
     });
@@ -193,11 +180,9 @@ public class TooManyBalls implements JRendererTarget<GraphicsConfiguration, Grap
     f_infoLabel = new JLabel();
     topPanel.add(f_infoLabel, BorderLayout.EAST);
 
-    f_panel = new JRendererPanel();
-    f_frame.add(f_panel, BorderLayout.CENTER);
-    f_panel.setBackground(Color.white);
-
-    f_renderer = JRendererFactory.getDefaultRenderer(f_panel, this, false);
+    f_field = new BallField();
+    f_frame.add(f_field, BorderLayout.CENTER);
+    f_field.setBackground(Color.white);
 
     f_infoTimer.addTickListener(new TickListener() {
       @Override
@@ -205,7 +190,25 @@ public class TooManyBalls implements JRendererTarget<GraphicsConfiguration, Grap
         updateBallCount();
       }
     });
+
     f_infoTimer.init();
+    f_repaintTimer.init();
+    f_repaintTimer.addPostTickListener(new PostTickListener() {
+      @Override
+      public void timingSourcePostTick(TimingSource source, long nanoTime) {
+        f_field.repaint();
+      }
+    });
+
+    f_ballImages = new BufferedImage[DemoResources.SPHERES.length];
+    int index = 0;
+    for (String resourceName : DemoResources.SPHERES) {
+      try {
+        f_ballImages[index++] = ImageIO.read(DemoResources.getResource(resourceName));
+      } catch (IOException e) {
+        throw new IllegalStateException("Unable to load image: " + resourceName, e);
+      }
+    }
 
     f_frame.setPreferredSize(new Dimension(800, 600));
     f_frame.pack();
@@ -213,43 +216,21 @@ public class TooManyBalls implements JRendererTarget<GraphicsConfiguration, Grap
   }
 
   private void updateBallCount() {
-    f_infoLabel.setText("Balls: " + f_ballCount + "    FPS: " + f_renderer.getFPS());
+    f_infoLabel.setText("Balls: " + f_balls.size() + "    FPS: " + getFPS());
     f_frame.validate();
   }
 
   /*
-   * Renderer thread methods and state (may be the EDT if passive rendering is
-   * being used).
+   * Renderer thread methods and state
    */
-
-  private final Random f_die = new Random();
-  private BufferedImage[] f_ballImages;
-
-  public class Ball {
-    int x, y;
-    int imageIndex;
-    Animator animator;
-
-    public void setX(int x) {
-      this.x = x;
-    }
-
-    public void setY(int y) {
-      this.y = y;
-    }
-  }
-
-  private static final Interpolator ACCEL_4_4 = new AccelerationInterpolator(0.4, 0.4);
-  private static final Interpolator SPLINE_0_1_1_0 = new SplineInterpolator(0.00, 1.00, 1.00, 1.00);
-  private static final Interpolator SPLINE_1_0_1_1 = new SplineInterpolator(1.00, 0.00, 1.00, 1.00);
 
   private void addBall() {
     final Ball ball = new Ball();
     ball.imageIndex = f_die.nextInt(5);
     BufferedImage ballImage = f_ballImages[ball.imageIndex];
 
-    ball.x = f_die.nextInt(f_panel.getWidth() - ballImage.getWidth());
-    ball.y = f_die.nextInt(f_panel.getHeight() - ballImage.getHeight());
+    ball.x = f_die.nextInt(f_field.getWidth() - ballImage.getWidth());
+    ball.y = f_die.nextInt(f_field.getHeight() - ballImage.getHeight());
 
     final int duration = 4 + f_die.nextInt(10);
 
@@ -287,7 +268,9 @@ public class TooManyBalls implements JRendererTarget<GraphicsConfiguration, Grap
      * Sometimes go at a constant rate, sometimes accelerate and decelerate.
      */
     final Interpolator i = f_die.nextBoolean() ? ACCEL_4_4 : null;
-    ball.animator = new AnimatorBuilder().setDuration(duration, TimeUnit.SECONDS).addTarget(circularMovement)
+    ball.ts = new SwingTimerTimingSource(15, TimeUnit.MILLISECONDS);
+    ball.ts.init();
+    ball.animator = new AnimatorBuilder(ball.ts).setDuration(duration, TimeUnit.SECONDS).addTarget(circularMovement)
         .setRepeatCount(Animator.INFINITE).setRepeatBehavior(Animator.RepeatBehavior.LOOP).setInterpolator(i).build();
     ball.animator.start();
 
@@ -300,42 +283,56 @@ public class TooManyBalls implements JRendererTarget<GraphicsConfiguration, Grap
 
     Ball ball = f_balls.remove(0);
     if (ball != null) {
+      ball.ts.dispose();
       ball.animator.stop();
     }
   }
 
-  private final List<Ball> f_balls = new ArrayList<Ball>();
+  long f_paintCount = 0;
+  long f_lastPaintNanos = 0;
+  long f_totalPaintTimeNanos = 0;
 
-  @Override
-  public void renderSetup(GraphicsConfiguration gc) {
-    f_ballImages = new BufferedImage[DemoResources.SPHERES.length];
-    int index = 0;
-    for (String resourceName : DemoResources.SPHERES) {
-      try {
-        f_ballImages[index++] = ImageIO.read(DemoResources.getResource(resourceName));
-      } catch (IOException e) {
-        throw new IllegalStateException("Unable to load image: " + resourceName, e);
+  private long getFPS() {
+    if (f_paintCount < 1)
+      return 0;
+    final long avgCycleTime = f_totalPaintTimeNanos / f_paintCount;
+    if (avgCycleTime != 0) {
+      return TimeUnit.SECONDS.toNanos(1) / avgCycleTime;
+    } else
+      return 0;
+  }
+
+  /**
+   * A simple {@link JPanel} that draws paints the balls on a white background.
+   */
+  private final class BallField extends JPanel {
+
+    private static final long serialVersionUID = -3109606027190086843L;
+
+    public BallField() {
+      setOpaque(true);
+    }
+
+    @Override
+    public void paintComponent(Graphics g) {
+      Graphics2D g2d = (Graphics2D) g;
+
+      g2d.setBackground(Color.white);
+      g2d.clearRect(0, 0, f_field.getWidth(), f_field.getHeight());
+
+      for (Ball ball : f_balls) {
+        g2d.drawImage(f_ballImages[ball.imageIndex], ball.x, ball.y, null);
+      }
+
+      // Statistics
+      final long now = System.nanoTime();
+      if (f_lastPaintNanos == 0) {
+        f_lastPaintNanos = now;
+      } else {
+        f_paintCount++;
+        f_totalPaintTimeNanos += now - f_lastPaintNanos;
+        f_lastPaintNanos = now;
       }
     }
-  }
-
-  @Override
-  public void renderUpdate() {
-    // Nothing to do
-  }
-
-  @Override
-  public void render(Graphics2D g2d, int width, int height) {
-    g2d.setBackground(Color.white);
-    g2d.clearRect(0, 0, width, height);
-
-    for (Ball ball : f_balls) {
-      g2d.drawImage(f_ballImages[ball.imageIndex], ball.x, ball.y, null);
-    }
-  }
-
-  @Override
-  public void renderShutdown() {
-    // Nothing to do
   }
 }
