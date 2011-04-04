@@ -50,7 +50,7 @@ public final class MultiStepRace {
   public static final int RACE_TIME = 10000;
 
   private final Animator animator;
-  private final SoundEffects soundEffects;
+  private final RaceSoundEffects soundEffects;
 
   /** Creates a new instance of BasicRace */
   public MultiStepRace(String appName) {
@@ -127,7 +127,7 @@ public final class MultiStepRace {
     /*
      * Finally, add sound effects, triggered by the same animator.
      */
-    soundEffects = new SoundEffects(rotationKeyFrames);
+    soundEffects = new RaceSoundEffects(rotationKeyFrames);
     animator.addTarget(soundEffects);
 
     final RaceControlPanel controlPanel = basicGUI.getControlPanel();
