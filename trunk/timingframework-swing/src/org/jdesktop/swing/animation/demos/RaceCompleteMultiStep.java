@@ -27,6 +27,10 @@ import org.jdesktop.swing.animation.timing.sources.SwingTimerTimingSource;
  * the times/values/splines used for each segment of the race. It also adds an
  * animation for the rotation of the car (since the car should turn as it goes
  * around the curves) and sound effects (just to go completely overboard).
+ * <p>
+ * This demo is discussed in Chapter 15 on pages 357&ndash;359 of <i>Filthy Rich
+ * Clients</i> (Haase and Guy, Addison-Wesley, 2008). In the book it is referred
+ * to as <tt>MultiStepRace</tt> rather than <tt>RaceCompleteMultiStep</tt>.
  * 
  * @author Chet Haase
  */
