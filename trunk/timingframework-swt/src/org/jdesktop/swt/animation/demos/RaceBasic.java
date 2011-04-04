@@ -5,6 +5,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
@@ -21,7 +22,8 @@ import org.jdesktop.swt.animation.timing.sources.SWTTimingSource;
  * a given time period.
  * <p>
  * This demo is discussed in Chapter 14 on pages 357&ndash;359 of <i>Filthy Rich
- * Clients</i> (Haase and Guy, Addison-Wesley, 2008).
+ * Clients</i> (Haase and Guy, Addison-Wesley, 2008). In the book it is referred
+ * to as <tt>BasicRace</tt> rather than <tt>RaceBasic</tt>.
  * 
  * @author Chet Haase
  * @author Tim Halloran
@@ -61,15 +63,28 @@ public class RaceBasic extends TimingTargetAdapter {
   public RaceBasic(Shell shell, String appName) {
     final RaceGUI basicGUI = new RaceGUI(shell, appName);
     controlPanel = basicGUI.getControlPanel();
-    controlPanel.getGoButton().addListener(SWT.Selection, new Listener() {
+    final Button goButton = controlPanel.getGoButton();
+    final Button reverseButton = controlPanel.getReverseButton();
+    final Button pauseResumeButton = controlPanel.getPauseResumeButton();
+    final Button stopButton = controlPanel.getStopButton();
+
+    goButton.setEnabled(true);
+    reverseButton.setEnabled(false);
+    pauseResumeButton.setEnabled(false);
+    stopButton.setEnabled(false);
+
+    goButton.addListener(SWT.Selection, new Listener() {
       @Override
       public void handleEvent(Event event) {
-        animator.stop();
         animator.start();
-        basicGUI.getTrack().setCarRotation(0);
+        goButton.setEnabled(false);
+        reverseButton.setEnabled(true);
+        pauseResumeButton.setEnabled(true);
+        stopButton.setEnabled(true);
+        basicGUI.getTrack().setCarReverse(false);
       }
     });
-    controlPanel.getReverseButton().addListener(SWT.Selection, new Listener() {
+    reverseButton.addListener(SWT.Selection, new Listener() {
       @Override
       public void handleEvent(Event event) {
         if (animator.isPaused()) {
@@ -79,28 +94,37 @@ public class RaceBasic extends TimingTargetAdapter {
 
         if (animator.isRunning()) {
           animator.reverseNow();
-          basicGUI.getTrack().reverseCarRotation();
+          basicGUI.getTrack().toggleCarReverse();
         } else {
           animator.startReverse();
-          basicGUI.getTrack().setCarRotation(180);
+          basicGUI.getTrack().setCarReverse(true);
         }
       }
     });
-    controlPanel.getPauseResumeButton().addListener(SWT.Selection, new Listener() {
+    pauseResumeButton.addListener(SWT.Selection, new Listener() {
       @Override
       public void handleEvent(Event event) {
         if (animator.isPaused()) {
           animator.resume();
+          reverseButton.setEnabled(true);
+          stopButton.setEnabled(true);
         } else {
-          if (animator.isRunning())
+          if (animator.isRunning()) {
             animator.pause();
+            reverseButton.setEnabled(false);
+            stopButton.setEnabled(false);
+          }
         }
       }
     });
-    controlPanel.getStopButton().addListener(SWT.Selection, new Listener() {
+    stopButton.addListener(SWT.Selection, new Listener() {
       @Override
       public void handleEvent(Event event) {
         animator.stop();
+        goButton.setEnabled(true);
+        reverseButton.setEnabled(false);
+        pauseResumeButton.setEnabled(false);
+        stopButton.setEnabled(false);
       }
     });
     track = basicGUI.getTrack();
@@ -128,5 +152,13 @@ public class RaceBasic extends TimingTargetAdapter {
     // set the new position; this will force a repaint in TrackView
     // and will display the car in the new position
     track.setCarPosition(current);
+  }
+
+  @Override
+  public void end(Animator source) {
+    controlPanel.getGoButton().setEnabled(true);
+    controlPanel.getReverseButton().setEnabled(false);
+    controlPanel.getPauseResumeButton().setEnabled(false);
+    controlPanel.getStopButton().setEnabled(false);
   }
 }

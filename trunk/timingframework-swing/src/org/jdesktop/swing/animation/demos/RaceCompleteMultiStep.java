@@ -66,9 +66,9 @@ public final class RaceCompleteMultiStep {
     // We're going to need a more involved PropertyRange object
     // that has all curves of the track in it, as well as
     // non-linear movement around the curves
-    Point[] values = { RaceTrackView.START_POS, RaceTrackView.FIRST_TURN_START, RaceTrackView.FIRST_TURN_END, RaceTrackView.SECOND_TURN_START,
-        RaceTrackView.SECOND_TURN_END, RaceTrackView.THIRD_TURN_START, RaceTrackView.THIRD_TURN_END, RaceTrackView.FOURTH_TURN_START,
-        RaceTrackView.START_POS };
+    Point[] values = { RaceTrackView.START_POS, RaceTrackView.FIRST_TURN_START, RaceTrackView.FIRST_TURN_END,
+        RaceTrackView.SECOND_TURN_START, RaceTrackView.SECOND_TURN_END, RaceTrackView.THIRD_TURN_START,
+        RaceTrackView.THIRD_TURN_END, RaceTrackView.FOURTH_TURN_START, RaceTrackView.START_POS };
     // Calculate the keyTimes based on the distances that must be
     // traveled on each leg of the journey
     double totalDistance = 0;
@@ -199,10 +199,5 @@ public final class RaceCompleteMultiStep {
         stopButton.setEnabled(false);
       }
     });
-  }
-
-  public void stopSoundEffects() {
-    if (soundEffects != null)
-      soundEffects.stop();
   }
 }

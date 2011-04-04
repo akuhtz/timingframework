@@ -17,7 +17,8 @@ import org.jdesktop.swt.animation.timing.sources.SWTTimingSource;
  * car's movement.
  * <p>
  * This demo is discussed in Chapter 14 on pages 363&ndash;364 of <i>Filthy Rich
- * Clients</i> (Haase and Guy, Addison-Wesley, 2008).
+ * Clients</i> (Haase and Guy, Addison-Wesley, 2008). In the book it is referred
+ * to as <tt>NonLinearRace</tt> rather than <tt>RaceBasicNonLinear</tt>.
  * 
  * @author Chet Haase
  * @author Tim Halloran

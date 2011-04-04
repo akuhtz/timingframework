@@ -21,12 +21,13 @@ import org.eclipse.swt.widgets.Composite;
  */
 public class RaceTrackView extends Canvas {
 
-  Image car;
-  Image track;
-  Point carPosition;
-  float carRotation = 0;
-  int trackW, trackH;
-  int carW, carH, carWHalf, carHHalf;
+  private Image car;
+  private Image track;
+  private Point carPosition;
+  private float carRotation = 0;
+  private boolean carReverse = false;
+  private int trackW, trackH;
+  private int carW, carH, carWHalf, carHHalf;
 
   /** Hard-coded positions of interest on the track */
   static final Point START_POS = new Point(450, 70);
@@ -87,7 +88,16 @@ public class RaceTrackView extends Canvas {
      */
     Transform transform = new Transform(gc.getDevice());
     transform.translate(carPosition.x, carPosition.y);
-    transform.rotate(carRotation);
+    final double drawCarRotation;
+    if (carReverse) {
+      double result = carRotation + 180;
+      if (result > 360)
+        result = result - 360;
+      drawCarRotation = result;
+    } else {
+      drawCarRotation = carRotation;
+    }
+    transform.rotate((float) drawCarRotation);
     transform.translate(-(carPosition.x), -(carPosition.y));
     gc.setTransform(transform);
     /*
@@ -97,18 +107,12 @@ public class RaceTrackView extends Canvas {
     transform.dispose();
   }
 
-  /**
-   * Set the new position and schedule a repaint.
-   */
   public void setCarPosition(Point newPosition) {
     carPosition.x = newPosition.x;
     carPosition.y = newPosition.y;
     redraw();
   }
 
-  /**
-   * Set the new rotation and schedule a repaint.
-   */
   public void setCarRotation(float newDegrees) {
     carRotation = newDegrees;
     // repaint area accounts for larger rectangular are because rotate
@@ -116,20 +120,19 @@ public class RaceTrackView extends Canvas {
     redraw();
   }
 
-  /**
-   * Gets the car's rotation.
-   */
   public double getCarRotation() {
     return carRotation;
   }
 
-  /**
-   * Reverses the car's rotation.
-   */
-  public void reverseCarRotation() {
-    float result = carRotation + 180;
-    if (result > 360)
-      result = result - 360;
-    carRotation = result;
+  public void setCarReverse(boolean value) {
+    carReverse = value;
+  }
+
+  public void toggleCarReverse() {
+    carReverse = !carReverse;
+  }
+
+  public boolean getCarReverse() {
+    return carReverse;
   }
 }

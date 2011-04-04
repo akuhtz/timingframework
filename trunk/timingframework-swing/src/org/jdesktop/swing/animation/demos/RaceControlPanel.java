@@ -1,7 +1,5 @@
 package org.jdesktop.swing.animation.demos;
 
-import java.awt.event.ActionListener;
-
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
@@ -41,13 +39,6 @@ public class RaceControlPanel extends JPanel {
 
   public JButton getStopButton() {
     return stopButton;
-  }
-
-  public void addListener(ActionListener listener) {
-    goButton.addActionListener(listener);
-    reverseButton.addActionListener(listener);
-    pauseResumeButton.addActionListener(listener);
-    stopButton.addActionListener(listener);
   }
 
   private static final long serialVersionUID = -1737346780545607168L;
