@@ -111,9 +111,9 @@ public class FadingButtonTF extends JButton implements ActionListener, TimingTar
     AnimatorBuilder.setDefaultTimingSource(ts);
     ts.init();
 
-    final JFrame frame = new JFrame("Fading Button TF");
+    final JFrame frame = new JFrame("Swing Fading Button TF");
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    frame.setSize(300, 300);
+    frame.setSize(500, 300);
     JPanel checkerboard = new Checkerboard();
     checkerboard.add(new FadingButtonTF("Start Animation"));
     frame.add(checkerboard);
