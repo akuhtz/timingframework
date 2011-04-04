@@ -11,7 +11,7 @@ import org.jdesktop.core.animation.timing.interpolators.AccelerationInterpolator
 import org.jdesktop.swing.animation.timing.sources.SwingTimerTimingSource;
 
 /**
- * Simple subclass of {@link BasicRace} that uses a
+ * Simple subclass of {@link RaceBasic} that uses a
  * {@link AccelerationInterpolator} to give a non-linear motion effect to the
  * car's movement.
  * <p>
@@ -20,7 +20,7 @@ import org.jdesktop.swing.animation.timing.sources.SwingTimerTimingSource;
  * 
  * @author Chet Haase
  */
-public class NonLinearRace extends BasicRace {
+public class RaceBasicNonLinear extends RaceBasic {
 
   public static void main(String args[]) {
     System.setProperty("swing.defaultlaf", "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
@@ -31,13 +31,13 @@ public class NonLinearRace extends BasicRace {
 
     Runnable doCreateAndShowGUI = new Runnable() {
       public void run() {
-        new NonLinearRace("Non-Linear Race");
+        new RaceBasicNonLinear("Non-Linear Race");
       }
     };
     SwingUtilities.invokeLater(doCreateAndShowGUI);
   }
 
-  public NonLinearRace(String appName) {
+  public RaceBasicNonLinear(String appName) {
     super(appName);
   }
 

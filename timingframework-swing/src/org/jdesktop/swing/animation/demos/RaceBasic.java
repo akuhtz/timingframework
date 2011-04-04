@@ -24,7 +24,7 @@ import org.jdesktop.swing.animation.timing.sources.SwingTimerTimingSource;
  * 
  * @author Chet Haase
  */
-public class BasicRace extends TimingTargetAdapter {
+public class RaceBasic extends TimingTargetAdapter {
 
   public static void main(String args[]) {
     System.setProperty("swing.defaultlaf", "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
@@ -34,7 +34,7 @@ public class BasicRace extends TimingTargetAdapter {
     ts.init();
     Runnable doCreateAndShowGUI = new Runnable() {
       public void run() {
-        new BasicRace("BasicRace");
+        new RaceBasic("BasicRace");
       }
     };
     SwingUtilities.invokeLater(doCreateAndShowGUI);
@@ -49,7 +49,7 @@ public class BasicRace extends TimingTargetAdapter {
   RaceControlPanel controlPanel;
 
   /** Creates a new instance of BasicRace */
-  public BasicRace(String appName) {
+  public RaceBasic(String appName) {
     final RaceGUI basicGUI = new RaceGUI(appName);
     controlPanel = basicGUI.getControlPanel();
     final JButton goButton = controlPanel.getGoButton();
