@@ -19,7 +19,7 @@ import javax.swing.JComponent;
  * 
  * @author Chet Haase
  */
-public class TrackView extends JComponent {
+public class RaceTrackView extends JComponent {
 
   private BufferedImage car;
   private BufferedImage track;
@@ -42,7 +42,7 @@ public class TrackView extends JComponent {
   static final Point THIRD_TURN_END = new Point(504, 404);
   static final Point FOURTH_TURN_START = new Point(504, 127);
 
-  public TrackView() {
+  public RaceTrackView() {
     try {
       car = ImageIO.read(DemoResources.getResource(DemoResources.BEETLE_RED));
       track = ImageIO.read(DemoResources.getResource(DemoResources.TRACK));

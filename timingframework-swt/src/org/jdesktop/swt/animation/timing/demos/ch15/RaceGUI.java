@@ -14,7 +14,7 @@ import org.eclipse.swt.widgets.Shell;
  */
 public class RaceGUI {
 
-  private TrackView track;
+  private RaceTrackView track;
   private RaceControlPanel controlPanel;
 
   public RaceGUI(Shell shell, String appName) {
@@ -22,7 +22,7 @@ public class RaceGUI {
     shell.setLayout(new GridLayout());
 
     // Add Track view
-    track = new TrackView(shell, SWT.DOUBLE_BUFFERED);
+    track = new RaceTrackView(shell, SWT.DOUBLE_BUFFERED);
     track.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
     // Add control panel
@@ -30,7 +30,7 @@ public class RaceGUI {
     controlPanel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
   }
 
-  public TrackView getTrack() {
+  public RaceTrackView getTrack() {
     return track;
   }
 

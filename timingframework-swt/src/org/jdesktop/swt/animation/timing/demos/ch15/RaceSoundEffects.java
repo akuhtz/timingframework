@@ -12,14 +12,14 @@ import org.jdesktop.swt.animation.demos.DemoResources;
  * 
  * @author Chet Haase
  */
-public class SoundEffects extends TimingTargetAdapter {
+public class RaceSoundEffects extends TimingTargetAdapter {
 
   AudioClip f_drivingClip;
   AudioClip f_turningClip;
   KeyFrames<Integer> f_keyFrames;
 
   /** Creates a new instance of SoundEffects */
-  public SoundEffects(KeyFrames<Integer> keyFrames) {
+  public RaceSoundEffects(KeyFrames<Integer> keyFrames) {
     f_keyFrames = keyFrames;
     try {
       f_drivingClip = java.applet.Applet.newAudioClip(DemoResources.getResource(DemoResources.VROOM));
