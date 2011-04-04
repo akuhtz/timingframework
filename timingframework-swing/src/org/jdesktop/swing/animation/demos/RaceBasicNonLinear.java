@@ -32,7 +32,7 @@ public class RaceBasicNonLinear extends RaceBasic {
 
     Runnable doCreateAndShowGUI = new Runnable() {
       public void run() {
-        new RaceBasicNonLinear("Non-Linear Race");
+        new RaceBasicNonLinear("Swing Race (Non-Linear)");
       }
     };
     SwingUtilities.invokeLater(doCreateAndShowGUI);
