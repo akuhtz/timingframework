@@ -20,7 +20,7 @@ import org.jdesktop.swt.animation.demos.DemoResources;
  * @author Chet Haase
  * @author Tim Halloran
  */
-public class TrackView extends Canvas {
+public class RaceTrackView extends Canvas {
 
   Image car;
   Image track;
@@ -39,7 +39,7 @@ public class TrackView extends Canvas {
   static final Point THIRD_TURN_END = new Point(504, 404);
   static final Point FOURTH_TURN_START = new Point(504, 127);
 
-  public TrackView(Composite parent, int style) {
+  public RaceTrackView(Composite parent, int style) {
     super(parent, style);
     try {
       car = DemoResources.getImage(DemoResources.BEETLE_RED, parent.getDisplay());

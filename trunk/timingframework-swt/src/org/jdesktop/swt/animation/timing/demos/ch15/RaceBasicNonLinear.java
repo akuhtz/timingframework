@@ -12,7 +12,7 @@ import org.jdesktop.core.animation.timing.interpolators.AccelerationInterpolator
 import org.jdesktop.swt.animation.timing.sources.SWTTimingSource;
 
 /**
- * Simple subclass of {@link BasicRace} that uses a
+ * Simple subclass of {@link RaceBasic} that uses a
  * {@link AccelerationInterpolator} to give a non-linear motion effect to the
  * car's movement.
  * <p>
@@ -22,7 +22,7 @@ import org.jdesktop.swt.animation.timing.sources.SWTTimingSource;
  * @author Chet Haase
  * @author Tim Halloran
  */
-public class NonLinearRace extends BasicRace {
+public class RaceBasicNonLinear extends RaceBasic {
 
   public static void main(String args[]) {
     final Display display = Display.getDefault();
@@ -33,7 +33,7 @@ public class NonLinearRace extends BasicRace {
     AnimatorBuilder.setDefaultTimingSource(ts);
     ts.init();
 
-    new NonLinearRace(shell, "SWT Non-Linear Race");
+    new RaceBasicNonLinear(shell, "SWT Non-Linear Race");
 
     shell.pack();
     shell.open();
@@ -45,7 +45,7 @@ public class NonLinearRace extends BasicRace {
     display.dispose();
   }
 
-  public NonLinearRace(Shell shell, String appName) {
+  public RaceBasicNonLinear(Shell shell, String appName) {
     super(shell, appName);
   }
 

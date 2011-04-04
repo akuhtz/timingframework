@@ -34,7 +34,7 @@ import org.jdesktop.swt.animation.timing.triggers.EventTrigger;
  * @author Chet Haase
  * @author Tim Halloran
  */
-public final class MultiStepRace {
+public final class RaceCompleteMultiStep {
 
   public static void main(String args[]) {
     final Display display = Display.getDefault();
@@ -45,7 +45,7 @@ public final class MultiStepRace {
     AnimatorBuilder.setDefaultTimingSource(ts);
     ts.init();
 
-    final MultiStepRace race = new MultiStepRace(shell, "SWT Multi-Step Race");
+    final RaceCompleteMultiStep race = new RaceCompleteMultiStep(shell, "SWT Multi-Step Race");
 
     shell.pack();
     shell.open();
@@ -62,10 +62,10 @@ public final class MultiStepRace {
   public static final int RACE_TIME = 10000;
 
   private final Animator animator;
-  private final SoundEffects soundEffects;
+  private final RaceSoundEffects soundEffects;
 
   /** Creates a new instance of BasicRace */
-  public MultiStepRace(Shell shell, String appName) {
+  public RaceCompleteMultiStep(Shell shell, String appName) {
     RaceGUI basicGUI = new RaceGUI(shell, appName);
 
     animator = new AnimatorBuilder().setDuration(RACE_TIME, TimeUnit.MILLISECONDS).setRepeatCount(Animator.INFINITE)
@@ -74,9 +74,9 @@ public final class MultiStepRace {
     // We're going to need a more involved PropertyRange object
     // that has all curves of the track in it, as well as
     // non-linear movement around the curves
-    Point values[] = { TrackView.START_POS, TrackView.FIRST_TURN_START, TrackView.FIRST_TURN_END, TrackView.SECOND_TURN_START,
-        TrackView.SECOND_TURN_END, TrackView.THIRD_TURN_START, TrackView.THIRD_TURN_END, TrackView.FOURTH_TURN_START,
-        TrackView.START_POS };
+    Point values[] = { RaceTrackView.START_POS, RaceTrackView.FIRST_TURN_START, RaceTrackView.FIRST_TURN_END, RaceTrackView.SECOND_TURN_START,
+        RaceTrackView.SECOND_TURN_END, RaceTrackView.THIRD_TURN_START, RaceTrackView.THIRD_TURN_END, RaceTrackView.FOURTH_TURN_START,
+        RaceTrackView.START_POS };
     // Calculate the keyTimes based on the distances that must be
     // traveled on each leg of the journey
     double totalDistance = 0;
@@ -139,7 +139,7 @@ public final class MultiStepRace {
     /*
      * Finally, add sound effects, triggered by the same animator.
      */
-    soundEffects = new SoundEffects(rotationKeyFrames);
+    soundEffects = new RaceSoundEffects(rotationKeyFrames);
     animator.addTarget(soundEffects);
 
     /*

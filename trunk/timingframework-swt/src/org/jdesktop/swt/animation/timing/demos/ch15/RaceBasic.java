@@ -26,7 +26,7 @@ import org.jdesktop.swt.animation.timing.sources.SWTTimingSource;
  * @author Chet Haase
  * @author Tim Halloran
  */
-public class BasicRace extends TimingTargetAdapter {
+public class RaceBasic extends TimingTargetAdapter {
 
   public static void main(String args[]) {
     final Display display = Display.getDefault();
@@ -37,7 +37,7 @@ public class BasicRace extends TimingTargetAdapter {
     AnimatorBuilder.setDefaultTimingSource(ts);
     ts.init();
 
-    new BasicRace(shell, "SWT Basic Race");
+    new RaceBasic(shell, "SWT Basic Race");
 
     shell.pack();
     shell.open();
@@ -50,15 +50,15 @@ public class BasicRace extends TimingTargetAdapter {
   }
 
   public static final int RACE_TIME = 2000;
-  Point start = TrackView.START_POS;
-  Point end = TrackView.FIRST_TURN_START;
+  Point start = RaceTrackView.START_POS;
+  Point end = RaceTrackView.FIRST_TURN_START;
   Point current = new Point(0, 0);
   protected Animator animator;
-  TrackView track;
+  RaceTrackView track;
   RaceControlPanel controlPanel;
 
   /** Creates a new instance of BasicRace */
-  public BasicRace(Shell shell, String appName) {
+  public RaceBasic(Shell shell, String appName) {
     final RaceGUI basicGUI = new RaceGUI(shell, appName);
     controlPanel = basicGUI.getControlPanel();
     controlPanel.getGoButton().addListener(SWT.Selection, new Listener() {

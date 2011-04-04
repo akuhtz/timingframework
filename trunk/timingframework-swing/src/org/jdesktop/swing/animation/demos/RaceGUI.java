@@ -12,7 +12,7 @@ import javax.swing.JFrame;
  */
 public class RaceGUI {
 
-  private TrackView track;
+  private RaceTrackView track;
   private RaceControlPanel controlPanel;
 
   public RaceGUI(String appName) {
@@ -21,7 +21,7 @@ public class RaceGUI {
     f.setLayout(new BorderLayout());
 
     // Add Track view
-    track = new TrackView();
+    track = new RaceTrackView();
     f.add(track, BorderLayout.CENTER);
 
     // Add control panel
@@ -32,7 +32,7 @@ public class RaceGUI {
     f.setVisible(true);
   }
 
-  public TrackView getTrack() {
+  public RaceTrackView getTrack() {
     return track;
   }
 
