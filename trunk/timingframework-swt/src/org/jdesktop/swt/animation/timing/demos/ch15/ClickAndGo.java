@@ -153,14 +153,15 @@ public final class ClickAndGo extends Canvas {
         f_ball.animator = new AnimatorBuilder().setDuration(2, TimeUnit.SECONDS).build();
 
         final Point clickPoint = new Point(e.x, e.y);
-        f_ball.animator.addTarget(PropertySetter.buildTo(f_ball, "location", new AccelerationInterpolator(0.5, 0.5), clickPoint));
+        f_ball.animator.addTarget(PropertySetter
+            .getTargetTo(f_ball, "location", new AccelerationInterpolator(0.5, 0.5), clickPoint));
 
         final int rectSize = f_ball.image.getBounds().width;
         final Rectangle clickRect = new Rectangle(e.x, e.y, rectSize * (f_die.nextInt(4) + 1), rectSize * (f_die.nextInt(4) + 1));
-        f_ball.animator.addTarget(PropertySetter.buildTo(f_ball, "rect", clickRect));
+        f_ball.animator.addTarget(PropertySetter.getTargetTo(f_ball, "rect", clickRect));
 
         final RGB rectRGB = new RGB(f_die.nextInt(255), f_die.nextInt(255), f_die.nextInt(255));
-        f_ball.animator.addTarget(PropertySetter.buildTo(f_ball, "rectRGB", rectRGB));
+        f_ball.animator.addTarget(PropertySetter.getTargetTo(f_ball, "rectRGB", rectRGB));
 
         f_ball.animator.start();
       }

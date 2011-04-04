@@ -239,8 +239,8 @@ class SplineControlPanel extends JPanel {
         (float) control2.getY());
     KeyFrames<Double> frames = new KeyFramesBuilder<Double>().setInterpolator(splines).addFrames(0.0, 1.0).build();
 
-    TimingTarget dropModifier = PropertySetter.build(dropSimulator, "time", frames);
-    TimingTarget bounceModifier = PropertySetter.build(bounceSimulator, "time", frames);
+    TimingTarget dropModifier = PropertySetter.getTarget(dropSimulator, "time", frames);
+    TimingTarget bounceModifier = PropertySetter.getTarget(bounceSimulator, "time", frames);
 
     controller = new AnimatorBuilder().setDuration(2, TimeUnit.SECONDS).setRepeatBehavior(Animator.RepeatBehavior.REVERSE)
         .addTarget(dropModifier).addTarget(bounceModifier).build();
@@ -260,9 +260,9 @@ class SplineControlPanel extends JPanel {
           controller.stop();
         }
 
-        TimingTarget control1 = PropertySetter.build(display, "control1", display.getControl1(), template.getControl1());
-        TimingTarget control2 = PropertySetter.build(display, "control2", display.getControl2(), template.getControl2());
-        controller = new AnimatorBuilder().setDuration(300, TimeUnit.MILLISECONDS).addTarget(control1).addTarget(control2).build();
+        controller = new AnimatorBuilder().setDuration(300, TimeUnit.MILLISECONDS).build();
+        controller.addTarget(PropertySetter.getTarget(display, "control1", display.getControl1(), template.getControl1()));
+        controller.addTarget(PropertySetter.getTarget(display, "control2", display.getControl2(), template.getControl2()));
         controller.start();
       }
     }

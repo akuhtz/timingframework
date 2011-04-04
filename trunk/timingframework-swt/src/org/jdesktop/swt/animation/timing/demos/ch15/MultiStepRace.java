@@ -117,7 +117,7 @@ public final class MultiStepRace {
      * This PropertySetter enables the animation for the car movement all the
      * way around the track.
      */
-    final TimingTarget modifier = PropertySetter.build(basicGUI.getTrack(), "carPosition", keyFrames);
+    final TimingTarget modifier = PropertySetter.getTarget(basicGUI.getTrack(), "carPosition", keyFrames);
     animator.addTarget(modifier);
 
     /*
@@ -133,7 +133,7 @@ public final class MultiStepRace {
       rotationBuilder.addFrame(rotationKeyValues[i], times[i], rotationInterps[i]);
     }
     KeyFrames<Integer> rotationKeyFrames = rotationBuilder.build();
-    final TimingTarget rotationModifier = PropertySetter.build(basicGUI.getTrack(), "carRotation", rotationKeyFrames);
+    final TimingTarget rotationModifier = PropertySetter.getTarget(basicGUI.getTrack(), "carRotation", rotationKeyFrames);
     animator.addTarget(rotationModifier);
 
     /*
