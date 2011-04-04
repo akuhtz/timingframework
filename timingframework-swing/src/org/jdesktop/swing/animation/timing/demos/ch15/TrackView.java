@@ -26,10 +26,14 @@ public class TrackView extends JComponent {
   private BufferedImage track;
   private Point carPosition;
   private double carRotation = 0;
+  private boolean carReverse = false;
   private int trackW, trackH;
   private int carW, carH, carWHalf, carHHalf;
 
-  /** Hard-coded positions of interest on the track */
+  /*
+   * Hard-coded positions of interest on the track
+   */
+
   static final Point START_POS = new Point(450, 70);
   static final Point FIRST_TURN_START = new Point(130, 70);
   static final Point FIRST_TURN_END = new Point(76, 127);
@@ -59,9 +63,6 @@ public class TrackView extends JComponent {
     return new Dimension(trackW, trackH);
   }
 
-  /**
-   * Render the track and car.
-   */
   public void paintComponent(Graphics g) {
     /*
      * First draw the race track.
@@ -74,7 +75,16 @@ public class TrackView extends JComponent {
      */
     Graphics2D g2d = (Graphics2D) g.create();
     g2d.translate(carPosition.x, carPosition.y);
-    g2d.rotate(Math.toRadians(carRotation));
+    final double drawCarRotation;
+    if (carReverse) {
+      double result = carRotation + 180;
+      if (result > 360)
+        result = result - 360;
+      drawCarRotation = result;
+    } else {
+      drawCarRotation = carRotation;
+    }
+    g2d.rotate(Math.toRadians(drawCarRotation));
     g2d.translate(-(carPosition.x), -(carPosition.y));
 
     /*
@@ -83,9 +93,6 @@ public class TrackView extends JComponent {
     g2d.drawImage(car, carPosition.x - carWHalf, carPosition.y - carHHalf, null);
   }
 
-  /**
-   * Set the new position and schedule a repaint.
-   */
   public void setCarPosition(Point newPosition) {
     repaint(0, carPosition.x - carWHalf, carPosition.y - carHHalf, carW, carH);
     carPosition.x = newPosition.x;
@@ -93,9 +100,6 @@ public class TrackView extends JComponent {
     repaint(0, carPosition.x - carWHalf, carPosition.y - carHHalf, carW, carH);
   }
 
-  /**
-   * Set the new rotation and schedule a repaint.
-   */
   public void setCarRotation(double newDegrees) {
     carRotation = newDegrees;
     // repaint area accounts for larger rectangular are because rotate
@@ -103,21 +107,20 @@ public class TrackView extends JComponent {
     repaint(0, carPosition.x - carW, carPosition.y - carH, 2 * carW, 2 * carH);
   }
 
-  /**
-   * Gets the car's rotation.
-   */
   public double getCarRotation() {
     return carRotation;
   }
 
-  /**
-   * Reverses the car's rotation.
-   */
-  public void reverseCarRotation() {
-    double result = carRotation + 180;
-    if (result > 360)
-      result = result - 360;
-    carRotation = result;
+  public void setCarReverse(boolean value) {
+    carReverse = value;
+  }
+
+  public void toggleCarReverse() {
+    carReverse = !carReverse;
+  }
+
+  public boolean getCarReverse() {
+    return carReverse;
   }
 
   private static final long serialVersionUID = -7514622314816386572L;

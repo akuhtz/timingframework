@@ -75,19 +75,6 @@ public class SoundEffects implements TimingTarget {
     pastFourthTurn = false;
   }
 
-  @Override
-  public void end(Animator source) {
-    stop();
-  }
-
-  @Override
-  public void repeat(Animator source) {
-    pastFirstTurn = false;
-    pastSecondTurn = false;
-    pastThirdTurn = false;
-    pastFourthTurn = false;
-  }
-
   /**
    * This method figures out when the car hits one of the turns and plays the
    * turn clip appropriately
@@ -115,5 +102,18 @@ public class SoundEffects implements TimingTarget {
         pastFourthTurn = true;
       }
     }
+  }
+
+  @Override
+  public void repeat(Animator source) {
+    pastFirstTurn = false;
+    pastSecondTurn = false;
+    pastThirdTurn = false;
+    pastFourthTurn = false;
+  }
+
+  @Override
+  public void end(Animator source) {
+    stop();
   }
 }

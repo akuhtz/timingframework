@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.concurrent.TimeUnit;
 
+import javax.swing.JButton;
 import javax.swing.SwingUtilities;
 
 import org.jdesktop.core.animation.timing.Animator;
@@ -51,15 +52,28 @@ public class BasicRace extends TimingTargetAdapter {
   public BasicRace(String appName) {
     final RaceGUI basicGUI = new RaceGUI(appName);
     controlPanel = basicGUI.getControlPanel();
-    controlPanel.getGoButton().addActionListener(new ActionListener() {
+    final JButton goButton = controlPanel.getGoButton();
+    final JButton reverseButton = controlPanel.getReverseButton();
+    final JButton pauseResumeButton = controlPanel.getPauseResumeButton();
+    final JButton stopButton = controlPanel.getStopButton();
+
+    goButton.setEnabled(true);
+    reverseButton.setEnabled(false);
+    pauseResumeButton.setEnabled(false);
+    stopButton.setEnabled(false);
+
+    goButton.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        animator.stop();
         animator.start();
-        basicGUI.getTrack().setCarRotation(0);
+        goButton.setEnabled(false);
+        reverseButton.setEnabled(true);
+        pauseResumeButton.setEnabled(true);
+        stopButton.setEnabled(true);
+        basicGUI.getTrack().setCarReverse(false);
       }
     });
-    controlPanel.getReverseButton().addActionListener(new ActionListener() {
+    reverseButton.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
         if (animator.isPaused()) {
@@ -69,10 +83,10 @@ public class BasicRace extends TimingTargetAdapter {
 
         if (animator.isRunning()) {
           animator.reverseNow();
-          basicGUI.getTrack().reverseCarRotation();
+          basicGUI.getTrack().toggleCarReverse();
         } else {
           animator.startReverse();
-          basicGUI.getTrack().setCarRotation(180);
+          basicGUI.getTrack().setCarReverse(true);
         }
       }
     });
@@ -81,9 +95,14 @@ public class BasicRace extends TimingTargetAdapter {
       public void actionPerformed(ActionEvent e) {
         if (animator.isPaused()) {
           animator.resume();
+          reverseButton.setEnabled(true);
+          stopButton.setEnabled(true);
         } else {
-          if (animator.isRunning())
+          if (animator.isRunning()) {
             animator.pause();
+            reverseButton.setEnabled(false);
+            stopButton.setEnabled(false);
+          }
         }
       }
     });
@@ -91,6 +110,10 @@ public class BasicRace extends TimingTargetAdapter {
       @Override
       public void actionPerformed(ActionEvent e) {
         animator.stop();
+        goButton.setEnabled(true);
+        reverseButton.setEnabled(false);
+        pauseResumeButton.setEnabled(false);
+        stopButton.setEnabled(false);
       }
     });
     track = basicGUI.getTrack();
@@ -118,5 +141,13 @@ public class BasicRace extends TimingTargetAdapter {
     // set the new position; this will force a repaint in TrackView
     // and will display the car in the new position
     track.setCarPosition(current);
+  }
+
+  @Override
+  public void end(Animator source) {
+    controlPanel.getGoButton().setEnabled(true);
+    controlPanel.getReverseButton().setEnabled(false);
+    controlPanel.getPauseResumeButton().setEnabled(false);
+    controlPanel.getStopButton().setEnabled(false);
   }
 }
