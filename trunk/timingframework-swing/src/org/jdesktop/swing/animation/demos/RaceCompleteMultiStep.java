@@ -30,7 +30,7 @@ import org.jdesktop.swing.animation.timing.sources.SwingTimerTimingSource;
  * 
  * @author Chet Haase
  */
-public final class RaceMultiStep {
+public final class RaceCompleteMultiStep {
 
   public static void main(String args[]) {
     System.setProperty("swing.defaultlaf", "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
@@ -41,7 +41,7 @@ public final class RaceMultiStep {
 
     Runnable doCreateAndShowGUI = new Runnable() {
       public void run() {
-        new RaceMultiStep("Multi-Step Race");
+        new RaceCompleteMultiStep("Multi-Step Race");
       }
     };
     SwingUtilities.invokeLater(doCreateAndShowGUI);
@@ -53,7 +53,7 @@ public final class RaceMultiStep {
   private final RaceSoundEffects soundEffects;
 
   /** Creates a new instance of BasicRace */
-  public RaceMultiStep(String appName) {
+  public RaceCompleteMultiStep(String appName) {
     final RaceGUI basicGUI = new RaceGUI(appName);
 
     animator = new AnimatorBuilder().setDuration(RACE_TIME, TimeUnit.MILLISECONDS).setRepeatCount(Animator.INFINITE)
