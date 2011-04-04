@@ -94,6 +94,11 @@ public class FadingButtonTF extends JButton implements ActionListener, TimingTar
     // nothing to do
   }
 
+  @Override
+  public void reverse(Animator source) {
+    // nothing to do
+  }
+
   /**
    * This method sets the alpha of our button to be equal to the current elapsed
    * fraction of the animation

@@ -24,13 +24,16 @@ public class TimingTargetAdapter implements TimingTarget {
   @Override
   public void end(Animator source) {
     // default is to do nothing
-
   }
 
   @Override
   public void repeat(Animator source) {
     // default is to do nothing
+  }
 
+  @Override
+  public void reverse(Animator source) {
+    // default is to do nothing
   }
 
   @Override

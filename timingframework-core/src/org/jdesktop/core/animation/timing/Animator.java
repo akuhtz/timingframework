@@ -267,6 +267,14 @@ public final class Animator implements TickListener {
   private boolean f_tellListenersAboutRepeat;
 
   /**
+   * This get triggered if {@link Animator#reverseNow()} is invoked.
+   * <p>
+   * Accesses must be guarded by a lock on {@link #f_lock}.
+   */
+  @InRegion("AnimatorState")
+  private boolean f_tellListenersAboutReverse;
+
+  /**
    * Used for pause/resume.
    * <p>
    * Accesses must be guarded by a lock on {@link #f_lock}.
@@ -365,7 +373,7 @@ public final class Animator implements TickListener {
         throw new IllegalStateException(I18N.err(12, "start()"));
 
       f_startTimeNanos = f_cycleStartTimeNanos = System.nanoTime();
-      f_listenersToldAboutBegin = f_timeToStop = f_tellListenersAboutRepeat = false;
+      f_listenersToldAboutBegin = f_timeToStop = f_tellListenersAboutRepeat = f_tellListenersAboutReverse = false;
       f_currentDirection = f_startDirection;
       f_pauseBeginTimeNanos = 0;
       f_running = true;
@@ -386,7 +394,7 @@ public final class Animator implements TickListener {
         throw new IllegalStateException(I18N.err(12, "startReverse()"));
 
       f_startTimeNanos = f_cycleStartTimeNanos = System.nanoTime();
-      f_listenersToldAboutBegin = f_timeToStop = f_tellListenersAboutRepeat = false;
+      f_listenersToldAboutBegin = f_timeToStop = f_tellListenersAboutRepeat = f_tellListenersAboutReverse = false;
       f_currentDirection = (f_startDirection == Direction.FORWARD) ? Direction.BACKWARD : Direction.FORWARD;
       f_pauseBeginTimeNanos = 0;
       f_running = true;
@@ -518,6 +526,7 @@ public final class Animator implements TickListener {
        * Reverse the direction of the animation.
        */
       f_currentDirection = (f_currentDirection == Direction.FORWARD) ? Direction.BACKWARD : Direction.FORWARD;
+      f_tellListenersAboutReverse = true;
     }
   }
 
@@ -589,6 +598,7 @@ public final class Animator implements TickListener {
     final boolean timeToStop;
     final boolean notifyBegin;
     final boolean notifyRepeat;
+    final boolean notifyReverse;
     synchronized (f_lock) {
       fraction = calcInterpolatedTimingFraction(nanoTime);
       timeToStop = f_timeToStop;
@@ -604,6 +614,12 @@ public final class Animator implements TickListener {
       } else {
         notifyRepeat = false;
       }
+      if (f_tellListenersAboutReverse) {
+        notifyReverse = true;
+        f_tellListenersAboutReverse = false;
+      } else {
+        notifyReverse = false;
+      }
     }
     if (notifyBegin) {
       if (!f_targets.isEmpty())
@@ -617,12 +633,18 @@ public final class Animator implements TickListener {
           target.repeat(this);
         }
     }
+    if (notifyReverse) {
+      if (!f_targets.isEmpty())
+        for (TimingTarget target : f_targets) {
+          target.reverse(this);
+        }
+    }
     if (!f_targets.isEmpty())
       for (TimingTarget target : f_targets) {
         target.timingEvent(this, fraction);
       }
     if (timeToStop) {
-      stop();
+      stopHelper(true);
     }
   }
 

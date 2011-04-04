@@ -4,14 +4,14 @@ import java.applet.AudioClip;
 
 import org.jdesktop.core.animation.timing.Animator;
 import org.jdesktop.core.animation.timing.KeyFrames;
-import org.jdesktop.core.animation.timing.TimingTarget;
+import org.jdesktop.core.animation.timing.TimingTargetAdapter;
 
 /**
  * Simple utility class used to load and play sound effects for MultiStepRace.
  * 
  * @author Chet Haase
  */
-public class RaceSoundEffects implements TimingTarget {
+public class RaceSoundEffects extends TimingTargetAdapter {
 
   AudioClip f_drivingClip;
   AudioClip f_turningClip;
@@ -85,17 +85,20 @@ public class RaceSoundEffects implements TimingTarget {
         turn();
         pastFirstTurn = true;
       }
-    } else if (!pastSecondTurn) {
+    }
+    if (!pastSecondTurn) {
       if (f_keyFrames.getFrameIndexAt(fraction) == 3) {
         turn();
         pastSecondTurn = true;
       }
-    } else if (!pastThirdTurn) {
+    }
+    if (!pastThirdTurn) {
       if (f_keyFrames.getFrameIndexAt(fraction) == 5) {
         turn();
         pastThirdTurn = true;
       }
-    } else if (!pastFourthTurn) {
+    }
+    if (!pastFourthTurn) {
       if (f_keyFrames.getFrameIndexAt(fraction) == 7) {
         turn();
         pastFourthTurn = true;
@@ -105,6 +108,14 @@ public class RaceSoundEffects implements TimingTarget {
 
   @Override
   public void repeat(Animator source) {
+    pastFirstTurn = false;
+    pastSecondTurn = false;
+    pastThirdTurn = false;
+    pastFourthTurn = false;
+  }
+
+  @Override
+  public void reverse(Animator source) {
     pastFirstTurn = false;
     pastSecondTurn = false;
     pastThirdTurn = false;

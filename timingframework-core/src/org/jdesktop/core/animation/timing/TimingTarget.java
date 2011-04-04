@@ -40,6 +40,17 @@ public interface TimingTarget {
   public void repeat(Animator source);
 
   /**
+   * Called when a running animation is reversed via
+   * {@link Animator#reverseNow()}. This method is not invoked when
+   * {@link Animator#startReverse()} is called, it is only used as a
+   * notification when a running animation is reversed.
+   * 
+   * @param source
+   *          the animation.
+   */
+  public void reverse(Animator source);
+
+  /**
    * This method will receive all of the timing events during an animation. The
    * fraction is the percent elapsed (0 to 1) of the current animation cycle.
    * 
