@@ -176,7 +176,7 @@ public final class ClickAndGo extends JPanel {
 
     if (f_desktopHints != null)
       g2d.addRenderingHints(f_desktopHints);
-    g2d.drawString("Click on the screen an the ball will move to that point in 2 seconds.", 5, 20);
+    g2d.drawString("Click on the screen and the ball and rectangle will move to that point in two seconds.", 5, 20);
     g2d.drawString("Feel free to change the ball's destination at any time.", 5, 35);
 
     final Rectangle r = f_ball.rect;

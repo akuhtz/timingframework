@@ -112,7 +112,7 @@ public final class FadingButtonTF {
 
     animationTimer.init();
 
-    shell.setSize(300, 300);
+    shell.setSize(500, 300);
     shell.open();
     while (!shell.isDisposed()) {
       if (!display.readAndDispatch())

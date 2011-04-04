@@ -102,7 +102,7 @@ public class SplineInterpolatorTest extends TimingTargetAdapter {
     JScrollPane scrollPane = new JScrollPane(f_benchmarkOutput);
     frame.add(scrollPane);
 
-    frame.setMinimumSize(new Dimension(275, 500));
+    frame.setMinimumSize(new Dimension(350, 500));
     frame.pack();
     frame.setVisible(true);
 
@@ -138,7 +138,7 @@ public class SplineInterpolatorTest extends TimingTargetAdapter {
   public void end(Animator source) {
     out("");
     out("\"real\" fraction may exceed");
-    out("one due to callback delays");
+    out("1.00 due to callback delays");
     out("(interpolated never should)");
   }
 }

@@ -52,7 +52,7 @@ public class SplineInterpolatorTest extends TimingTargetAdapter {
     f_benchmarkOutput.setBackground(f_display.getSystemColor(SWT.COLOR_BLACK));
     f_benchmarkOutput.setForeground(f_display.getSystemColor(SWT.COLOR_GREEN));
 
-    f_shell.setSize(275, 500);
+    f_shell.setSize(350, 500);
     f_shell.open();
 
     SplineInterpolator si = new SplineInterpolator(1, 0, 0, 1);
@@ -119,7 +119,7 @@ public class SplineInterpolatorTest extends TimingTargetAdapter {
   public void end(Animator source) {
     out("");
     out("\"real\" fraction may exceed");
-    out("one due to callback delays");
+    out("1.00 due to callback delays");
     out("(interpolated never should)");
   }
 }
