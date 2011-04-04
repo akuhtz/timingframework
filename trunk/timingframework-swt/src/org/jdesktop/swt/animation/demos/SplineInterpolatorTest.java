@@ -52,7 +52,7 @@ public class SplineInterpolatorTest extends TimingTargetAdapter {
     f_benchmarkOutput.setBackground(f_display.getSystemColor(SWT.COLOR_BLACK));
     f_benchmarkOutput.setForeground(f_display.getSystemColor(SWT.COLOR_GREEN));
 
-    f_shell.setSize(250, 500);
+    f_shell.setSize(275, 500);
     f_shell.open();
 
     SplineInterpolator si = new SplineInterpolator(1, 0, 0, 1);
@@ -104,15 +104,22 @@ public class SplineInterpolatorTest extends TimingTargetAdapter {
   }
 
   /**
-   * TimingTarget implementation: Calculate the real fraction elapsed and output
-   * that along with the fraction parameter, which has been non-linearly
-   * interpolated.
+   * Calculate the real fraction elapsed and output that along with the fraction
+   * parameter, which has been non-linearly interpolated.
    */
   @Override
   public void timingEvent(Animator source, double fraction) {
     long currentTime = System.nanoTime() / 1000000;
     long elapsedTime = currentTime - startTime;
-    float realFraction = (float) elapsedTime / DURATION;
+    double realFraction = (double) elapsedTime / DURATION;
     out(String.format("%.2f          %.2f", realFraction, fraction));
+  }
+
+  @Override
+  public void end(Animator source) {
+    out("");
+    out("\"real\" fraction may exceed");
+    out("one due to callback delays");
+    out("(interpolated never should)");
   }
 }

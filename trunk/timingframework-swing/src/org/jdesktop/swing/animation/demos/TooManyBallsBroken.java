@@ -102,7 +102,7 @@ public class TooManyBallsBroken {
   private final List<Ball> f_balls = new ArrayList<Ball>();
 
   public TooManyBallsBroken() {
-    f_frame = new JFrame("Too Many Balls! - Too Many Swing Timers!");
+    f_frame = new JFrame("Swing Too Many Balls! - Too Many Timers!");
     f_frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     f_frame.addWindowListener(new WindowAdapter() {
       @Override

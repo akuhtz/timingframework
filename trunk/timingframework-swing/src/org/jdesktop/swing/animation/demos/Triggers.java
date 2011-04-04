@@ -71,7 +71,7 @@ public class Triggers extends JComponent {
   }
 
   private static void createAndShowGUI() {
-    JFrame f = new JFrame("Triggers");
+    JFrame f = new JFrame("Swing Triggers");
     f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     f.setLayout(new BorderLayout());
     JPanel buttonPanel = new JPanel();

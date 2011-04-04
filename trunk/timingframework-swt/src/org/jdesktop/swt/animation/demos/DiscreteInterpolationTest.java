@@ -28,7 +28,7 @@ import org.jdesktop.swt.animation.timing.sources.SWTTimingSource;
  * @author Chet Haase
  * @author Tim Halloran
  */
-public class DiscreteInterpolation extends TimingTargetAdapter {
+public class DiscreteInterpolationTest extends TimingTargetAdapter {
 
   public static void main(String args[]) {
     TimingSource ts = new SWTTimingSource(100, TimeUnit.MILLISECONDS);
@@ -49,7 +49,7 @@ public class DiscreteInterpolation extends TimingTargetAdapter {
     f_shell.setSize(650, 500);
     f_shell.open();
 
-    DiscreteInterpolation object = new DiscreteInterpolation();
+    DiscreteInterpolationTest object = new DiscreteInterpolationTest();
 
     final KeyFrames<Integer> keyFrames = new KeyFramesBuilder<Integer>().addFrames(2, 6, 3, 5, 4)
         .setInterpolator(DiscreteInterpolator.getInstance()).build();
