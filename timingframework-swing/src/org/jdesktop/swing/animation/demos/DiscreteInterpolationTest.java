@@ -33,7 +33,7 @@ import org.jdesktop.swing.animation.timing.sources.SwingTimerTimingSource;
  * @author Chet Haase
  * @author Tim Halloran
  */
-public class DiscreteInterpolation extends TimingTargetAdapter {
+public class DiscreteInterpolationTest extends TimingTargetAdapter {
 
   public static void main(String args[]) {
     System.setProperty("swing.defaultlaf", "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
@@ -108,7 +108,7 @@ public class DiscreteInterpolation extends TimingTargetAdapter {
     frame.pack();
     frame.setVisible(true);
 
-    DiscreteInterpolation object = new DiscreteInterpolation();
+    DiscreteInterpolationTest object = new DiscreteInterpolationTest();
 
     final KeyFrames<Integer> keyFrames = new KeyFramesBuilder<Integer>().addFrames(2, 6, 3, 5, 4)
         .setInterpolator(DiscreteInterpolator.getInstance()).build();

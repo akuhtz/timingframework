@@ -23,7 +23,7 @@ public final class DemoResources {
 
   public static final String[] SPHERES = { BLUE_SPHERE, GRAY_SPHERE, GREEN_SPHERE, RED_SPHERE, YELLOW_SPHERE };
 
-  private static final String PREFIX = "org/jdesktop/swing/animation/timing/demos/";
+  private static final String PREFIX = "org/jdesktop/swing/animation/demos/";
 
   /**
    * Gets the passed resource in the classpath.

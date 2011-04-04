@@ -98,7 +98,7 @@ public class TooManyBalls implements JRendererTarget<Display, GC> {
   public TooManyBalls() {
     final Display display = Display.getDefault();
     final Shell shell = new Shell(display);
-    shell.setText("Too Many Balls! - SWT Passive Rendering");
+    shell.setText("SWT Too Many Balls!");
 
     /**
      * Used for ball animations.

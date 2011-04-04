@@ -102,7 +102,7 @@ public class SplineInterpolatorTest extends TimingTargetAdapter {
     JScrollPane scrollPane = new JScrollPane(f_benchmarkOutput);
     frame.add(scrollPane);
 
-    frame.setMinimumSize(new Dimension(250, 500));
+    frame.setMinimumSize(new Dimension(275, 500));
     frame.pack();
     frame.setVisible(true);
 
@@ -123,15 +123,22 @@ public class SplineInterpolatorTest extends TimingTargetAdapter {
   }
 
   /**
-   * TimingTarget implementation: Calculate the real fraction elapsed and output
-   * that along with the fraction parameter, which has been non-linearly
-   * interpolated.
+   * Calculate the real fraction elapsed and output that along with the fraction
+   * parameter, which has been non-linearly interpolated.
    */
   @Override
   public void timingEvent(Animator source, double fraction) {
     long currentTime = System.nanoTime() / 1000000;
     long elapsedTime = currentTime - startTime;
-    float realFraction = (float) elapsedTime / DURATION;
+    double realFraction = (double) elapsedTime / DURATION;
     out(String.format("%.2f          %.2f", realFraction, fraction));
+  }
+
+  @Override
+  public void end(Animator source) {
+    out("");
+    out("\"real\" fraction may exceed");
+    out("one due to callback delays");
+    out("(interpolated never should)");
   }
 }
