@@ -1,4 +1,4 @@
-package org.jdesktop.swt.animation.timing.demos.ch15;
+package org.jdesktop.swt.animation.demos;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;

@@ -1,4 +1,4 @@
-package org.jdesktop.swt.animation.timing.demos.ch15;
+package org.jdesktop.swt.animation.demos;
 
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
@@ -8,7 +8,6 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Transform;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
-import org.jdesktop.swt.animation.demos.DemoResources;
 
 /**
  * This class does the work of rendering the current view of the racetrack. It
