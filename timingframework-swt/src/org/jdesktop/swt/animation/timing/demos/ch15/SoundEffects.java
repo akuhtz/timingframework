@@ -5,7 +5,7 @@ import java.applet.AudioClip;
 import org.jdesktop.core.animation.timing.Animator;
 import org.jdesktop.core.animation.timing.KeyFrames;
 import org.jdesktop.core.animation.timing.TimingTarget;
-import org.jdesktop.swt.animation.timing.demos.DemoResources;
+import org.jdesktop.swt.animation.demos.DemoResources;
 
 /**
  * Simple utility class used to load and play sound effects for MultiStepRace.

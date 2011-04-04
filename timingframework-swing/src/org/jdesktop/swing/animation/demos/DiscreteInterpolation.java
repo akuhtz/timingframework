@@ -1,4 +1,4 @@
-package org.jdesktop.swing.animation.timing.demos;
+package org.jdesktop.swing.animation.demos;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -15,35 +15,30 @@ import javax.swing.WindowConstants;
 
 import org.jdesktop.core.animation.timing.Animator;
 import org.jdesktop.core.animation.timing.AnimatorBuilder;
+import org.jdesktop.core.animation.timing.KeyFrames;
+import org.jdesktop.core.animation.timing.KeyFramesBuilder;
+import org.jdesktop.core.animation.timing.PropertySetter;
 import org.jdesktop.core.animation.timing.TimingSource;
 import org.jdesktop.core.animation.timing.TimingTargetAdapter;
-import org.jdesktop.core.animation.timing.interpolators.SplineInterpolator;
+import org.jdesktop.core.animation.timing.interpolators.DiscreteInterpolator;
 import org.jdesktop.swing.animation.timing.sources.SwingTimerTimingSource;
 
 /**
- * A Swing application that compares the elapsed fraction, in real time, to the
- * elapsed fraction when using a sample {@link SplineInterpolator}..
+ * A Swing application that demonstrates use of a {@link DiscreteInterpolator}
+ * using {@link KeyFrames} within a {@link PropertySetter} animation.
  * <p>
- * This is based upon the TimingResolution demo discussed in Chapter 14 on pages
- * 372&ndash;375 (the section on <i>Resolution</i>) of <i>Filthy Rich
- * Clients</i> (Haase and Guy, Addison-Wesley, 2008), however it has been
- * changed in several ways. First, it outputs to a Swing window. This avoids the
- * test program crashing when the Swing EDT exits (which seemed to occur on some
- * systems&mdash;recent versions of Swing must have realized that the
- * console-based program had no windows). Second, it uses a global timer (as
- * advocated by Haase in his JavaOne 2008 talk) which causes the "ticks" to be
- * slightly off from what is shown in the book (sometimes&mdash;you might get
- * lucky).
+ * This demo is discussed in Chapter 15 on page 410 of <i>Filthy Rich
+ * Clients</i> (Haase and Guy, Addison-Wesley, 2008).
  * 
  * @author Chet Haase
  * @author Tim Halloran
  */
-public class SplineInterpolatorTest extends TimingTargetAdapter {
+public class DiscreteInterpolation extends TimingTargetAdapter {
 
   public static void main(String args[]) {
     System.setProperty("swing.defaultlaf", "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
 
-    TimingSource ts = new SwingTimerTimingSource(DURATION / 10, TimeUnit.MILLISECONDS);
+    TimingSource ts = new SwingTimerTimingSource(100, TimeUnit.MILLISECONDS);
     AnimatorBuilder.setDefaultTimingSource(ts);
     ts.init();
 
@@ -53,6 +48,13 @@ public class SplineInterpolatorTest extends TimingTargetAdapter {
         setupGUI();
       }
     });
+  }
+
+  private int f_intValue;
+
+  public void setIntValue(int intValue) {
+    f_intValue = intValue;
+    out("intValue = " + f_intValue);
   }
 
   private static final JTextArea f_benchmarkOutput = new JTextArea("");
@@ -85,7 +87,7 @@ public class SplineInterpolatorTest extends TimingTargetAdapter {
    * the benchmark runs.
    */
   private static void setupGUI() {
-    JFrame frame = new JFrame("Swing SplineInterpolator Test");
+    JFrame frame = new JFrame("Swing DiscreteInterpolation Test");
     frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     frame.addWindowListener(new WindowAdapter() {
       @Override
@@ -102,36 +104,27 @@ public class SplineInterpolatorTest extends TimingTargetAdapter {
     JScrollPane scrollPane = new JScrollPane(f_benchmarkOutput);
     frame.add(scrollPane);
 
-    frame.setMinimumSize(new Dimension(250, 500));
+    frame.setMinimumSize(new Dimension(650, 500));
     frame.pack();
     frame.setVisible(true);
 
-    SplineInterpolator si = new SplineInterpolator(1, 0, 0, 1);
-    Animator animator = new AnimatorBuilder().setDuration(DURATION, TimeUnit.MILLISECONDS).setInterpolator(si)
-        .addTarget(new SplineInterpolatorTest()).build();
+    DiscreteInterpolation object = new DiscreteInterpolation();
+
+    final KeyFrames<Integer> keyFrames = new KeyFramesBuilder<Integer>().addFrames(2, 6, 3, 5, 4)
+        .setInterpolator(DiscreteInterpolator.getInstance()).build();
+    out("Constructed Key Frames");
+    out("----------------------");
+    int i = 0;
+    for (KeyFrames.Frame<Integer> keyFrame : keyFrames) {
+      final String s = keyFrame.getInterpolator() == null ? "null" : keyFrame.getInterpolator().getClass().getSimpleName();
+      out(String.format("Frame %d: value=%d timeFraction=%f interpolator=%s", i++, keyFrame.getValue(), keyFrame.getTimeFraction(),
+          s));
+    }
+    final Animator animator = new AnimatorBuilder().setDuration(3, TimeUnit.SECONDS)
+        .addTarget(PropertySetter.getTarget(object, "intValue", keyFrames)).addTarget(object).build();
+    out("");
+    out("Animation of intValue");
+    out("---------------------");
     animator.start();
-  }
-
-  private long startTime;
-  private final static int DURATION = 5000; // milliseconds
-
-  @Override
-  public void begin(Animator source) {
-    startTime = System.nanoTime() / 1000000;
-    out("real  interpolated");
-    out("----  ------------");
-  }
-
-  /**
-   * TimingTarget implementation: Calculate the real fraction elapsed and output
-   * that along with the fraction parameter, which has been non-linearly
-   * interpolated.
-   */
-  @Override
-  public void timingEvent(Animator source, double fraction) {
-    long currentTime = System.nanoTime() / 1000000;
-    long elapsedTime = currentTime - startTime;
-    float realFraction = (float) elapsedTime / DURATION;
-    out(String.format("%.2f          %.2f", realFraction, fraction));
   }
 }

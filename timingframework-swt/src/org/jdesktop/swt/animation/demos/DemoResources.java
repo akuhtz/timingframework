@@ -1,4 +1,4 @@
-package org.jdesktop.swt.animation.timing.demos;
+package org.jdesktop.swt.animation.demos;
 
 import java.io.IOException;
 import java.net.URL;

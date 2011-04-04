@@ -1,4 +1,4 @@
-package org.jdesktop.swt.animation.timing.demos;
+package org.jdesktop.swt.animation.demos;
 
 import java.util.Random;
 import java.util.concurrent.TimeUnit;

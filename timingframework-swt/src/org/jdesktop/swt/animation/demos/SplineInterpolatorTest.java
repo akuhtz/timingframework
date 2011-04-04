@@ -1,4 +1,4 @@
-package org.jdesktop.swt.animation.timing.demos;
+package org.jdesktop.swt.animation.demos;
 
 import java.util.concurrent.TimeUnit;
 
@@ -10,34 +10,40 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.jdesktop.core.animation.timing.Animator;
 import org.jdesktop.core.animation.timing.AnimatorBuilder;
-import org.jdesktop.core.animation.timing.KeyFrames;
-import org.jdesktop.core.animation.timing.KeyFramesBuilder;
-import org.jdesktop.core.animation.timing.PropertySetter;
 import org.jdesktop.core.animation.timing.TimingSource;
 import org.jdesktop.core.animation.timing.TimingTargetAdapter;
-import org.jdesktop.core.animation.timing.interpolators.DiscreteInterpolator;
+import org.jdesktop.core.animation.timing.interpolators.SplineInterpolator;
 import org.jdesktop.swt.animation.timing.sources.SWTTimingSource;
 
 /**
- * An SWT application that demonstrates use of a {@link DiscreteInterpolator}
- * using {@link KeyFrames} within a {@link PropertySetter} animation.
+ * A SWT application that compares the elapsed fraction, in real time, to the
+ * elapsed fraction when using a sample {@link SplineInterpolator}..
  * <p>
- * This demo is discussed in Chapter 15 on page 410 of <i>Filthy Rich
- * Clients</i> (Haase and Guy, Addison-Wesley, 2008).
+ * This is based upon the TimingResolution demo discussed in Chapter 14 on pages
+ * 372&ndash;375 (the section on <i>Resolution</i>) of <i>Filthy Rich
+ * Clients</i> (Haase and Guy, Addison-Wesley, 2008), however it has been
+ * changed in several ways. First, it outputs to a SWT window. Second, it uses a
+ * global timer (as advocated by Haase in his JavaOne 2008 talk) which causes
+ * the "ticks" to be slightly off from what is shown in the book
+ * (sometimes&mdash;you might get lucky).
  * 
  * @author Chet Haase
  * @author Tim Halloran
  */
-public class DiscreteInterpolation extends TimingTargetAdapter {
+public class SplineInterpolatorTest extends TimingTargetAdapter {
+
+  private static Display f_display;
+  private static Text f_benchmarkOutput;
 
   public static void main(String args[]) {
-    TimingSource ts = new SWTTimingSource(100, TimeUnit.MILLISECONDS);
+
+    TimingSource ts = new SWTTimingSource(DURATION / 10, TimeUnit.MILLISECONDS);
     AnimatorBuilder.setDefaultTimingSource(ts);
     ts.init();
 
     f_display = Display.getDefault();
     final Shell f_shell = new Shell(f_display);
-    f_shell.setText("SWT DiscreteInterpolation Test");
+    f_shell.setText("SWT SplineInterpolator Test");
     f_shell.setLayout(new FillLayout());
     f_benchmarkOutput = new Text(f_shell, SWT.MULTI | SWT.READ_ONLY | SWT.H_SCROLL | SWT.V_SCROLL);
     f_benchmarkOutput.setEditable(false);
@@ -46,26 +52,12 @@ public class DiscreteInterpolation extends TimingTargetAdapter {
     f_benchmarkOutput.setBackground(f_display.getSystemColor(SWT.COLOR_BLACK));
     f_benchmarkOutput.setForeground(f_display.getSystemColor(SWT.COLOR_GREEN));
 
-    f_shell.setSize(650, 500);
+    f_shell.setSize(250, 500);
     f_shell.open();
 
-    DiscreteInterpolation object = new DiscreteInterpolation();
-
-    final KeyFrames<Integer> keyFrames = new KeyFramesBuilder<Integer>().addFrames(2, 6, 3, 5, 4)
-        .setInterpolator(DiscreteInterpolator.getInstance()).build();
-    out("Constructed Key Frames");
-    out("----------------------");
-    int i = 0;
-    for (KeyFrames.Frame<Integer> keyFrame : keyFrames) {
-      final String s = keyFrame.getInterpolator() == null ? "null" : keyFrame.getInterpolator().getClass().getSimpleName();
-      out(String.format("Frame %d: value=%d timeFraction=%f interpolator=%s", i++, keyFrame.getValue(), keyFrame.getTimeFraction(),
-          s));
-    }
-    final Animator animator = new AnimatorBuilder().setDuration(3, TimeUnit.SECONDS)
-        .addTarget(PropertySetter.getTarget(object, "intValue", keyFrames)).addTarget(object).build();
-    out("");
-    out("Animation of intValue");
-    out("---------------------");
+    SplineInterpolator si = new SplineInterpolator(1, 0, 0, 1);
+    Animator animator = new AnimatorBuilder().setDuration(DURATION, TimeUnit.MILLISECONDS).setInterpolator(si)
+        .addTarget(new SplineInterpolatorTest()).build();
     animator.start();
 
     while (!f_shell.isDisposed()) {
@@ -75,16 +67,6 @@ public class DiscreteInterpolation extends TimingTargetAdapter {
     ts.dispose();
     f_display.dispose();
     System.exit(0);
-  }
-
-  private static Display f_display;
-  private static Text f_benchmarkOutput;
-
-  private int f_intValue;
-
-  public void setIntValue(int intValue) {
-    f_intValue = intValue;
-    out("intValue = " + f_intValue);
   }
 
   /**
@@ -109,5 +91,28 @@ public class DiscreteInterpolation extends TimingTargetAdapter {
     } else {
       f_display.asyncExec(addToTextArea);
     }
+  }
+
+  private long startTime;
+  private final static int DURATION = 5000; // milliseconds
+
+  @Override
+  public void begin(Animator source) {
+    startTime = System.nanoTime() / 1000000;
+    out("real  interpolated");
+    out("----  ------------");
+  }
+
+  /**
+   * TimingTarget implementation: Calculate the real fraction elapsed and output
+   * that along with the fraction parameter, which has been non-linearly
+   * interpolated.
+   */
+  @Override
+  public void timingEvent(Animator source, double fraction) {
+    long currentTime = System.nanoTime() / 1000000;
+    long elapsedTime = currentTime - startTime;
+    float realFraction = (float) elapsedTime / DURATION;
+    out(String.format("%.2f          %.2f", realFraction, fraction));
   }
 }
