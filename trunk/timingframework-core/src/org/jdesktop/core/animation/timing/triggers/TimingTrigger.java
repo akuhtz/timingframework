@@ -108,10 +108,11 @@ public class TimingTrigger extends Trigger implements TimingTarget {
     fire(TimingTriggerEvent.REPEAT);
   }
 
-  /**
-   * This method does nothing in this implementation because the events of
-   * {@link TimingTrigger} are limited to START, STOP, and REPEAT
-   */
+  @Override
+  public void reverse(Animator source) {
+    // Nothing to do
+  }
+
   @Override
   public void timingEvent(Animator source, double fraction) {
     // Nothing to do

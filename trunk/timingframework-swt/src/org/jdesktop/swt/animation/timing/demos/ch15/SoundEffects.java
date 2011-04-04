@@ -4,7 +4,7 @@ import java.applet.AudioClip;
 
 import org.jdesktop.core.animation.timing.Animator;
 import org.jdesktop.core.animation.timing.KeyFrames;
-import org.jdesktop.core.animation.timing.TimingTarget;
+import org.jdesktop.core.animation.timing.TimingTargetAdapter;
 import org.jdesktop.swt.animation.demos.DemoResources;
 
 /**
@@ -12,7 +12,7 @@ import org.jdesktop.swt.animation.demos.DemoResources;
  * 
  * @author Chet Haase
  */
-public class SoundEffects implements TimingTarget {
+public class SoundEffects extends TimingTargetAdapter {
 
   AudioClip f_drivingClip;
   AudioClip f_turningClip;
