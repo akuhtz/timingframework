@@ -7,9 +7,10 @@ import org.jdesktop.core.animation.timing.KeyFrames;
 import org.jdesktop.core.animation.timing.TimingTargetAdapter;
 
 /**
- * Simple utility class used to load and play sound effects for MultiStepRace.
+ * Simple utility class used to load and play sound effects for the race demo.
  * 
  * @author Chet Haase
+ * @author Tim Halloran
  */
 public class RaceSoundEffects extends TimingTargetAdapter {
 
