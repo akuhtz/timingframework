@@ -45,7 +45,7 @@ public final class RaceCompleteMultiStep {
 
     Runnable doCreateAndShowGUI = new Runnable() {
       public void run() {
-        new RaceCompleteMultiStep("Multi-Step Race");
+        new RaceCompleteMultiStep("Swing Race (Multi-Step)");
       }
     };
     SwingUtilities.invokeLater(doCreateAndShowGUI);

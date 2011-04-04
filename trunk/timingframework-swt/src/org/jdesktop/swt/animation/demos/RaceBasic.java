@@ -39,7 +39,7 @@ public class RaceBasic extends TimingTargetAdapter {
     AnimatorBuilder.setDefaultTimingSource(ts);
     ts.init();
 
-    new RaceBasic(shell, "SWT Basic Race");
+    new RaceBasic(shell, "SWT Race (Basic)");
 
     shell.pack();
     shell.open();

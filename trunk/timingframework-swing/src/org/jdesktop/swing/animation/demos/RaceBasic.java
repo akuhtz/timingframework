@@ -35,7 +35,7 @@ public class RaceBasic extends TimingTargetAdapter {
     ts.init();
     Runnable doCreateAndShowGUI = new Runnable() {
       public void run() {
-        new RaceBasic("BasicRace");
+        new RaceBasic("Swing Race (Basic)");
       }
     };
     SwingUtilities.invokeLater(doCreateAndShowGUI);

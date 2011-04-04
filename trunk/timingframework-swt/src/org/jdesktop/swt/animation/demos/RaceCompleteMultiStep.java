@@ -48,7 +48,7 @@ public final class RaceCompleteMultiStep {
     AnimatorBuilder.setDefaultTimingSource(ts);
     ts.init();
 
-    final RaceCompleteMultiStep race = new RaceCompleteMultiStep(shell, "SWT Multi-Step Race");
+    final RaceCompleteMultiStep race = new RaceCompleteMultiStep(shell, "SWT Race (Multi-Step)");
 
     shell.pack();
     shell.open();

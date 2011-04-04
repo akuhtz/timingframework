@@ -34,7 +34,7 @@ public class RaceBasicNonLinear extends RaceBasic {
     AnimatorBuilder.setDefaultTimingSource(ts);
     ts.init();
 
-    new RaceBasicNonLinear(shell, "SWT Non-Linear Race");
+    new RaceBasicNonLinear(shell, "SWT Race (Non-Linear)");
 
     shell.pack();
     shell.open();
