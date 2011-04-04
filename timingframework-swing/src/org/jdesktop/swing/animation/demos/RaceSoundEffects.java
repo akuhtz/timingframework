@@ -11,14 +11,14 @@ import org.jdesktop.core.animation.timing.TimingTarget;
  * 
  * @author Chet Haase
  */
-public class SoundEffects implements TimingTarget {
+public class RaceSoundEffects implements TimingTarget {
 
   AudioClip f_drivingClip;
   AudioClip f_turningClip;
   KeyFrames<Integer> f_keyFrames;
 
   /** Creates a new instance of SoundEffects */
-  public SoundEffects(KeyFrames<Integer> keyFrames) {
+  public RaceSoundEffects(KeyFrames<Integer> keyFrames) {
     f_keyFrames = keyFrames;
     try {
       f_drivingClip = java.applet.Applet.newAudioClip(DemoResources.getResource(DemoResources.VROOM));
