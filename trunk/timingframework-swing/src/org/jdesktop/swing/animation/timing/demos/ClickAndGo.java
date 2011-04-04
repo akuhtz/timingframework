@@ -1,4 +1,4 @@
-package org.jdesktop.swing.animation.timing.demos.ch15;
+package org.jdesktop.swing.animation.timing.demos;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -32,7 +32,6 @@ import org.jdesktop.core.animation.timing.PropertySetter;
 import org.jdesktop.core.animation.timing.TimingSource;
 import org.jdesktop.core.animation.timing.TimingSource.PostTickListener;
 import org.jdesktop.core.animation.timing.interpolators.AccelerationInterpolator;
-import org.jdesktop.swing.animation.timing.demos.DemoResources;
 import org.jdesktop.swing.animation.timing.evaluators.EvaluatorPoint2D;
 import org.jdesktop.swing.animation.timing.sources.SwingTimerTimingSource;
 
