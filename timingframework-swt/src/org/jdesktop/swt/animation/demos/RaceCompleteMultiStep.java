@@ -21,7 +21,6 @@ import org.jdesktop.core.animation.timing.TimingSource;
 import org.jdesktop.core.animation.timing.TimingTarget;
 import org.jdesktop.core.animation.timing.interpolators.SplineInterpolator;
 import org.jdesktop.swt.animation.timing.sources.SWTTimingSource;
-import org.jdesktop.swt.animation.timing.triggers.EventTrigger;
 
 /**
  * The full-blown demo with all of the bells and whistles. This one uses the
@@ -30,6 +29,10 @@ import org.jdesktop.swt.animation.timing.triggers.EventTrigger;
  * the times/values/splines used for each segment of the race. It also adds an
  * animation for the rotation of the car (since the car should turn as it goes
  * around the curves) and sound effects (just to go completely overboard).
+ * <p>
+ * This demo is discussed in Chapter 15 on pages 357&ndash;359 of <i>Filthy Rich
+ * Clients</i> (Haase and Guy, Addison-Wesley, 2008). In the book it is referred
+ * to as <tt>MultiStepRace</tt> rather than <tt>RaceCompleteMultiStep</tt>.
  * 
  * @author Chet Haase
  * @author Tim Halloran
@@ -66,7 +69,7 @@ public final class RaceCompleteMultiStep {
 
   /** Creates a new instance of BasicRace */
   public RaceCompleteMultiStep(Shell shell, String appName) {
-    RaceGUI basicGUI = new RaceGUI(shell, appName);
+    final RaceGUI basicGUI = new RaceGUI(shell, appName);
 
     animator = new AnimatorBuilder().setDuration(RACE_TIME, TimeUnit.MILLISECONDS).setRepeatCount(Animator.INFINITE)
         .setRepeatBehavior(RepeatBehavior.LOOP).build();
@@ -74,9 +77,9 @@ public final class RaceCompleteMultiStep {
     // We're going to need a more involved PropertyRange object
     // that has all curves of the track in it, as well as
     // non-linear movement around the curves
-    Point values[] = { RaceTrackView.START_POS, RaceTrackView.FIRST_TURN_START, RaceTrackView.FIRST_TURN_END, RaceTrackView.SECOND_TURN_START,
-        RaceTrackView.SECOND_TURN_END, RaceTrackView.THIRD_TURN_START, RaceTrackView.THIRD_TURN_END, RaceTrackView.FOURTH_TURN_START,
-        RaceTrackView.START_POS };
+    Point values[] = { RaceTrackView.START_POS, RaceTrackView.FIRST_TURN_START, RaceTrackView.FIRST_TURN_END,
+        RaceTrackView.SECOND_TURN_START, RaceTrackView.SECOND_TURN_END, RaceTrackView.THIRD_TURN_START,
+        RaceTrackView.THIRD_TURN_END, RaceTrackView.FOURTH_TURN_START, RaceTrackView.START_POS };
     // Calculate the keyTimes based on the distances that must be
     // traveled on each leg of the journey
     double totalDistance = 0;
@@ -142,31 +145,69 @@ public final class RaceCompleteMultiStep {
     soundEffects = new RaceSoundEffects(rotationKeyFrames);
     animator.addTarget(soundEffects);
 
-    /*
-     * Instead of manually tracking the events, have the framework do the work
-     * by setting up a trigger.
-     */
-    Button goButton = basicGUI.getControlPanel().getGoButton();
-    Button pauseResumeButton = basicGUI.getControlPanel().getPauseResumeButton();
-    Button stopButton = basicGUI.getControlPanel().getStopButton();
-    EventTrigger.addTrigger(goButton, SWT.Selection, animator);
+    final RaceControlPanel controlPanel = basicGUI.getControlPanel();
+    final Button goButton = controlPanel.getGoButton();
+    final Button reverseButton = controlPanel.getReverseButton();
+    final Button pauseResumeButton = controlPanel.getPauseResumeButton();
+    final Button stopButton = controlPanel.getStopButton();
+
+    goButton.setEnabled(true);
+    reverseButton.setEnabled(false);
+    pauseResumeButton.setEnabled(false);
+    stopButton.setEnabled(false);
+
+    goButton.addListener(SWT.Selection, new Listener() {
+      @Override
+      public void handleEvent(Event event) {
+        animator.start();
+        goButton.setEnabled(false);
+        reverseButton.setEnabled(true);
+        pauseResumeButton.setEnabled(true);
+        stopButton.setEnabled(true);
+        basicGUI.getTrack().setCarReverse(false);
+      }
+    });
+    reverseButton.addListener(SWT.Selection, new Listener() {
+      @Override
+      public void handleEvent(Event event) {
+        if (animator.isPaused()) {
+          java.awt.Toolkit.getDefaultToolkit().beep();
+          return;
+        }
+
+        if (animator.isRunning()) {
+          animator.reverseNow();
+          basicGUI.getTrack().toggleCarReverse();
+        } else {
+          animator.startReverse();
+          basicGUI.getTrack().setCarReverse(true);
+        }
+      }
+    });
     pauseResumeButton.addListener(SWT.Selection, new Listener() {
       @Override
       public void handleEvent(Event event) {
         if (animator.isPaused()) {
           animator.resume();
+          reverseButton.setEnabled(true);
+          stopButton.setEnabled(true);
         } else {
-          if (animator.isRunning())
+          if (animator.isRunning()) {
             animator.pause();
+            reverseButton.setEnabled(false);
+            stopButton.setEnabled(false);
+          }
         }
       }
     });
     stopButton.addListener(SWT.Selection, new Listener() {
       @Override
       public void handleEvent(Event event) {
-        if (animator.isRunning())
-          animator.stop();
-        stopSoundEffects();
+        animator.stop();
+        goButton.setEnabled(true);
+        reverseButton.setEnabled(false);
+        pauseResumeButton.setEnabled(false);
+        stopButton.setEnabled(false);
       }
     });
   }
