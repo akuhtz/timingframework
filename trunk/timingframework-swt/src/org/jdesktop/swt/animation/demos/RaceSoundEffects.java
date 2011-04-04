@@ -7,9 +7,10 @@ import org.jdesktop.core.animation.timing.KeyFrames;
 import org.jdesktop.core.animation.timing.TimingTargetAdapter;
 
 /**
- * Simple utility class used to load and play sound effects for MultiStepRace.
+ * Simple utility class used to load and play sound effects for the race demo.
  * 
  * @author Chet Haase
+ * @author Tim Halloran
  */
 public class RaceSoundEffects extends TimingTargetAdapter {
 
@@ -74,19 +75,6 @@ public class RaceSoundEffects extends TimingTargetAdapter {
     pastFourthTurn = false;
   }
 
-  @Override
-  public void end(Animator source) {
-    stop();
-  }
-
-  @Override
-  public void repeat(Animator source) {
-    pastFirstTurn = false;
-    pastSecondTurn = false;
-    pastThirdTurn = false;
-    pastFourthTurn = false;
-  }
-
   /**
    * This method figures out when the car hits one of the turns and plays the
    * turn clip appropriately
@@ -98,21 +86,45 @@ public class RaceSoundEffects extends TimingTargetAdapter {
         turn();
         pastFirstTurn = true;
       }
-    } else if (!pastSecondTurn) {
+    }
+    if (!pastSecondTurn) {
       if (f_keyFrames.getFrameIndexAt(fraction) == 3) {
         turn();
         pastSecondTurn = true;
       }
-    } else if (!pastThirdTurn) {
+    }
+    if (!pastThirdTurn) {
       if (f_keyFrames.getFrameIndexAt(fraction) == 5) {
         turn();
         pastThirdTurn = true;
       }
-    } else if (!pastFourthTurn) {
+    }
+    if (!pastFourthTurn) {
       if (f_keyFrames.getFrameIndexAt(fraction) == 7) {
         turn();
         pastFourthTurn = true;
       }
     }
+  }
+
+  @Override
+  public void repeat(Animator source) {
+    pastFirstTurn = false;
+    pastSecondTurn = false;
+    pastThirdTurn = false;
+    pastFourthTurn = false;
+  }
+
+  @Override
+  public void reverse(Animator source) {
+    pastFirstTurn = false;
+    pastSecondTurn = false;
+    pastThirdTurn = false;
+    pastFourthTurn = false;
+  }
+
+  @Override
+  public void end(Animator source) {
+    stop();
   }
 }
