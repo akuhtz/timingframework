@@ -1,24 +1,29 @@
-package org.jdesktop.swt.animation.timing.demos;
+package org.jdesktop.swing.animation.demos;
 
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Text;
+import javax.swing.JFrame;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
+import javax.swing.WindowConstants;
+
 import org.jdesktop.core.animation.timing.TimingSource;
 import org.jdesktop.core.animation.timing.TimingSource.TickListener;
 import org.jdesktop.core.animation.timing.sources.ScheduledExecutorTimingSource;
-import org.jdesktop.swt.animation.timing.sources.SWTNotificationContext;
-import org.jdesktop.swt.animation.timing.sources.SWTTimingSource;
+import org.jdesktop.swing.animation.timing.sources.SwingNotificationContext;
+import org.jdesktop.swing.animation.timing.sources.SwingTimerTimingSource;
 
 /**
- * A SWT application that outputs benchmarks of the available
+ * A Swing application that outputs benchmarks of the available
  * {@link TimingSource} implementations.
  * <p>
  * This is based upon the TimingResolution demo discussed in Chapter 12 on pages
@@ -29,13 +34,13 @@ import org.jdesktop.swt.animation.timing.sources.SWTTimingSource;
  * <p>
  * Three timing source configurations are benchmarked:
  * <ol>
- * <li>{@link SWTTimingSource} (within SWT UI thread) &ndash; As discussed in
+ * <li>{@link SwingTimerTimingSource} (within Swing EDT) &ndash; As discussed in
  * the book, this timer has the advantage that all calls made from it are within
  * the EDT.</li>
- * <li>{@link ScheduledExecutorTimingSource} (within SWT UI thread) &ndash; This
+ * <li>{@link ScheduledExecutorTimingSource} (within Swing EDT) &ndash; This
  * timing source is provided by a <tt>util.concurrent</tt> and uses
- * {@link Display#asyncExec(Runnable)} to ensure that all calls from it are
- * within the SWT UI thread.</li>
+ * {@link SwingUtilities#invokeLater(Runnable)} to ensure that all calls from it
+ * are within the EDT.</li>
  * <li>{@link ScheduledExecutorTimingSource} (within timer thread) &ndash; This
  * timing source is provided by a <tt>util.concurrent</tt> and calls from it are
  * within its tread context.</li>
@@ -46,36 +51,18 @@ import org.jdesktop.swt.animation.timing.sources.SWTTimingSource;
  */
 public class TimingSourceResolution {
 
-  private static Display f_display;
-  private static Text f_benchmarkOutput;
-
   public static void main(String args[]) {
-    f_display = Display.getDefault();
-    final Shell f_shell = new Shell(f_display);
-    f_shell.setText("SWT TimingSource Resolution Benchmark");
-    f_shell.setLayout(new FillLayout());
-    f_benchmarkOutput = new Text(f_shell, SWT.MULTI | SWT.READ_ONLY | SWT.H_SCROLL | SWT.V_SCROLL);
-    f_benchmarkOutput.setEditable(false);
-    Font fixed = new Font(f_display, "Courier", 11, SWT.NONE);
-    f_benchmarkOutput.setFont(fixed);
-    f_benchmarkOutput.setBackground(f_display.getSystemColor(SWT.COLOR_BLACK));
-    f_benchmarkOutput.setForeground(f_display.getSystemColor(SWT.COLOR_GREEN));
+    System.setProperty("swing.defaultlaf", "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
 
-    f_shell.setSize(450, 600);
-    f_shell.open();
-
-    /*
-     * Run the benchmarks in a thread outside the SWT UI thread.
-     */
-    new Thread(f_runBenchmarks).start();
-
-    while (!f_shell.isDisposed()) {
-      if (!f_display.readAndDispatch())
-        f_display.sleep();
-    }
-    f_display.dispose();
-    System.exit(0);
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        setupGUI();
+      }
+    });
   }
+
+  private static final JTextArea f_benchmarkOutput = new JTextArea("");
 
   /**
    * This method outputs the string to the GUI {@link #f_benchmarkOutput}.
@@ -89,15 +76,14 @@ public class TimingSourceResolution {
       public void run() {
         final StringBuffer b = new StringBuffer(f_benchmarkOutput.getText());
         b.append(s);
-        b.append(Text.DELIMITER);
+        b.append("\n");
         f_benchmarkOutput.setText(b.toString());
-        f_benchmarkOutput.setSelection(b.length());
       }
     };
-    if (f_display.getThread().equals(Thread.currentThread())) {
+    if (SwingUtilities.isEventDispatchThread()) {
       addToTextArea.run();
     } else {
-      f_display.asyncExec(addToTextArea);
+      SwingUtilities.invokeLater(addToTextArea);
     }
   }
 
@@ -123,8 +109,8 @@ public class TimingSourceResolution {
       source.addTickListener(new TickListener() {
         @Override
         public void timingSourceTick(TimingSource source, long nanoTime) {
-          if (edt && !f_display.getThread().equals(Thread.currentThread())) {
-            out("!! We are not in the SWT UI thread when we should be !!");
+          if (edt && !SwingUtilities.isEventDispatchThread()) {
+            out("!! We are not in the Swing EDT when we should be !!");
           }
           if (timerIteration.incrementAndGet() > iterations) {
             if (outputResults.get()) {
@@ -161,17 +147,17 @@ public class TimingSourceResolution {
     TimingSource getTimingSource(int periodMillis);
   }
 
-  static class SWTTimerFactory implements TimingSourceFactory {
+  static class SwingTimerFactory implements TimingSourceFactory {
     @Override
     public TimingSource getTimingSource(int periodMillis) {
-      return new SWTTimingSource(periodMillis, TimeUnit.MILLISECONDS);
+      return new SwingTimerTimingSource(periodMillis, TimeUnit.MILLISECONDS);
     }
   }
 
-  static class SWTScheduledExecutorFactory implements TimingSourceFactory {
+  static class SwingScheduledExecutorFactory implements TimingSourceFactory {
     @Override
     public TimingSource getTimingSource(int periodMillis) {
-      return new ScheduledExecutorTimingSource(new SWTNotificationContext(), periodMillis, TimeUnit.MILLISECONDS);
+      return new ScheduledExecutorTimingSource(new SwingNotificationContext(), periodMillis, TimeUnit.MILLISECONDS);
     }
   }
 
@@ -180,6 +166,38 @@ public class TimingSourceResolution {
     public TimingSource getTimingSource(int periodMillis) {
       return new ScheduledExecutorTimingSource(periodMillis, TimeUnit.MILLISECONDS);
     }
+  }
+
+  /**
+   * Sets up the simple text output window and then starts a thread to perform
+   * the benchmark runs.
+   */
+  private static void setupGUI() {
+    JFrame frame = new JFrame("Swing TimingSource Resolution Benchmark");
+    frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+    frame.addWindowListener(new WindowAdapter() {
+      @Override
+      public void windowClosed(WindowEvent e) {
+        super.windowClosed(e);
+        System.exit(0);
+      }
+    });
+    f_benchmarkOutput.setEditable(false);
+    final Font fixed = new Font("Courier", Font.PLAIN, 14);
+    f_benchmarkOutput.setFont(fixed);
+    f_benchmarkOutput.setBackground(Color.black);
+    f_benchmarkOutput.setForeground(Color.green);
+    JScrollPane scrollPane = new JScrollPane(f_benchmarkOutput);
+    frame.add(scrollPane);
+
+    frame.setMinimumSize(new Dimension(450, 600));
+    frame.pack();
+    frame.setVisible(true);
+
+    /*
+     * Run the benchmarks in a thread outside the EDT.
+     */
+    new Thread(f_runBenchmarks).start();
   }
 
   /**
@@ -192,9 +210,8 @@ public class TimingSourceResolution {
 
       out(String.format("%d processors available on this machine\n", Runtime.getRuntime().availableProcessors()));
 
-      timeResolution.measureTimingSource(new SWTTimerFactory(), "SWTTimingSource (Calls in SWT UI thread)", true);
-      timeResolution.measureTimingSource(new SWTScheduledExecutorFactory(),
-          "ScheduledExecutorTimingSource (Calls in SWT UI thread)", true);
+      timeResolution.measureTimingSource(new SwingTimerFactory(), "SwingTimerTimingSource (Calls in EDT)", true);
+      timeResolution.measureTimingSource(new SwingScheduledExecutorFactory(), "ScheduledExecutorTimingSource (Calls in EDT)", true);
       timeResolution.measureTimingSource(new ScheduledExecutorFactory(), "ScheduledExecutorTimingSource (Calls in timer thread)",
           false);
 

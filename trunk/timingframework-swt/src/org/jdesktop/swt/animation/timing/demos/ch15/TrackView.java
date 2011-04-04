@@ -8,7 +8,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Transform;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
-import org.jdesktop.swt.animation.timing.demos.DemoResources;
+import org.jdesktop.swt.animation.demos.DemoResources;
 
 /**
  * This class does the work of rendering the current view of the racetrack. It

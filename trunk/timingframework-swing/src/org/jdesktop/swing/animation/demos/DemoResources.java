@@ -1,4 +1,4 @@
-package org.jdesktop.swing.animation.timing.demos;
+package org.jdesktop.swing.animation.demos;
 
 import java.net.URL;
 
