@@ -1,4 +1,4 @@
-package org.jdesktop.swt.animation.timing.demos.ch12;
+package org.jdesktop.swt.animation.timing.demos;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;

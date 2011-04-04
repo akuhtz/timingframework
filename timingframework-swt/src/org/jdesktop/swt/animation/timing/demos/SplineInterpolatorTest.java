@@ -1,4 +1,4 @@
-package org.jdesktop.swt.animation.timing.demos.ch14;
+package org.jdesktop.swt.animation.timing.demos;
 
 import java.util.concurrent.TimeUnit;
 

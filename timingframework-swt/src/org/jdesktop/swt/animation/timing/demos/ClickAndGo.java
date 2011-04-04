@@ -1,4 +1,4 @@
-package org.jdesktop.swt.animation.timing.demos.ch15;
+package org.jdesktop.swt.animation.timing.demos;
 
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -27,7 +27,6 @@ import org.jdesktop.core.animation.timing.PropertySetter;
 import org.jdesktop.core.animation.timing.TimingSource;
 import org.jdesktop.core.animation.timing.TimingSource.PostTickListener;
 import org.jdesktop.core.animation.timing.interpolators.AccelerationInterpolator;
-import org.jdesktop.swt.animation.timing.demos.DemoResources;
 import org.jdesktop.swt.animation.timing.sources.SWTTimingSource;
 
 /**
