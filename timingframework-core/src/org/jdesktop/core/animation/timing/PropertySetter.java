@@ -317,7 +317,7 @@ public class PropertySetter {
         final Object startValue = f_propertyGetter.invoke(f_object);
         final KeyFramesBuilder<Object> builder = new KeyFramesBuilder<Object>(startValue);
         boolean first = true;
-        for (KeyFrames.Frame<Object> frame : f_keyFrames.get()) {
+        for (KeyFrames.Frame<Object> frame : getKeyFrames()) {
           if (first)
             first = false;
           else
