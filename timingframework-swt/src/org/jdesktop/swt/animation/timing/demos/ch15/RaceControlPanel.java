@@ -15,6 +15,7 @@ import org.eclipse.swt.widgets.Listener;
 public class RaceControlPanel extends Composite {
 
   final Button goButton;
+  final Button reverseButton;
   final Button pauseResumeButton;
   final Button stopButton;
 
@@ -26,6 +27,8 @@ public class RaceControlPanel extends Composite {
     setLayout(new FillLayout());
     goButton = new Button(this, SWT.PUSH);
     goButton.setText("Go");
+    reverseButton = new Button(this, SWT.PUSH);
+    reverseButton.setText("Reverse");
     pauseResumeButton = new Button(this, SWT.PUSH);
     pauseResumeButton.setText("Pause/Resume");
     stopButton = new Button(this, SWT.PUSH);
@@ -34,6 +37,10 @@ public class RaceControlPanel extends Composite {
 
   public Button getGoButton() {
     return goButton;
+  }
+
+  public Button getReverseButton() {
+    return reverseButton;
   }
 
   public Button getPauseResumeButton() {
@@ -46,6 +53,7 @@ public class RaceControlPanel extends Composite {
 
   public void addListener(Listener listener) {
     goButton.addListener(SWT.Selection, listener);
+    reverseButton.addListener(SWT.Selection, listener);
     pauseResumeButton.addListener(SWT.Selection, listener);
     stopButton.addListener(SWT.Selection, listener);
   }
