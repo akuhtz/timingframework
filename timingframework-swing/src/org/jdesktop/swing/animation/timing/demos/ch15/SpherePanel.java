@@ -11,8 +11,8 @@ import javax.swing.JPanel;
 
 import org.jdesktop.core.animation.timing.Animator;
 import org.jdesktop.core.animation.timing.AnimatorBuilder;
+import org.jdesktop.core.animation.timing.Interpolator;
 import org.jdesktop.core.animation.timing.PropertySetter;
-import org.jdesktop.core.animation.timing.TimingTarget;
 import org.jdesktop.core.animation.timing.interpolators.AccelerationInterpolator;
 import org.jdesktop.swing.animation.timing.demos.DemoResources;
 
@@ -27,6 +27,7 @@ public class SpherePanel extends JPanel {
 
   private static final int PADDING = 5;
   private static final int PANEL_HEIGHT = 300;
+  private static final Interpolator ACCEL_5_5 = new AccelerationInterpolator(.5, .5);
 
   private final BufferedImage f_sphereImage;
   private final int f_sphereX = PADDING;
@@ -56,9 +57,8 @@ public class SpherePanel extends JPanel {
       throw new IllegalStateException("Problem loading image " + resourceName, e);
     }
     setPreferredSize(new Dimension(f_sphereImage.getWidth() + 2 * PADDING, PANEL_HEIGHT));
-    final TimingTarget ps = PropertySetter.build(this, "sphereY", 20, (PANEL_HEIGHT - f_sphereImage.getHeight()), 20);
-    f_bouncer = new AnimatorBuilder().addTarget(ps).setDuration(2, TimeUnit.SECONDS)
-        .setInterpolator(new AccelerationInterpolator(.5, .5)).build();
+    f_bouncer = new AnimatorBuilder().setDuration(2, TimeUnit.SECONDS).setInterpolator(ACCEL_5_5).build();
+    f_bouncer.addTarget(PropertySetter.getTarget(this, "sphereY", 20, (PANEL_HEIGHT - f_sphereImage.getHeight()), 20));
     f_label = label;
   }
 

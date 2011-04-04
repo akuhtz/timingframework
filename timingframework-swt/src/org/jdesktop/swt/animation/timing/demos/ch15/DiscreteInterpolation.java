@@ -64,7 +64,7 @@ public class DiscreteInterpolation extends TimingTargetAdapter {
       System.out.printf("Frame %d: value=%d timeFraction=%f interpolator=%s\n", i++, frame.getValue(), frame.getTimeFraction(), s);
     }
     final Animator anim = new AnimatorBuilder().setDuration(3, TimeUnit.SECONDS)
-        .addTarget(PropertySetter.build(object, "intValue", keyFrames)).addTarget(object).build();
+        .addTarget(PropertySetter.getTarget(object, "intValue", keyFrames)).addTarget(object).build();
     System.out.println("-- Animation --");
     anim.start();
 

@@ -152,15 +152,16 @@ public final class ClickAndGo extends JPanel {
         f_ball.animator = new AnimatorBuilder().setDuration(2, TimeUnit.SECONDS).build();
 
         final Point clickPoint = new Point(e.getX(), e.getY());
-        f_ball.animator.addTarget(PropertySetter.buildTo(f_ball, "location", new AccelerationInterpolator(0.5, 0.5), clickPoint));
+        f_ball.animator.addTarget(PropertySetter
+            .getTargetTo(f_ball, "location", new AccelerationInterpolator(0.5, 0.5), clickPoint));
 
         final int rectSize = f_ball.image.getWidth();
         final Rectangle clickRect = new Rectangle(e.getX(), e.getY(), rectSize * (f_die.nextInt(4) + 1), rectSize
             * (f_die.nextInt(4) + 1));
-        f_ball.animator.addTarget(PropertySetter.buildTo(f_ball, "rect", clickRect));
+        f_ball.animator.addTarget(PropertySetter.getTargetTo(f_ball, "rect", clickRect));
 
         final Color rectColor = new Color(f_die.nextInt(255), f_die.nextInt(255), f_die.nextInt(255));
-        f_ball.animator.addTarget(PropertySetter.buildTo(f_ball, "rectColor", rectColor));
+        f_ball.animator.addTarget(PropertySetter.getTargetTo(f_ball, "rectColor", rectColor));
 
         f_ball.animator.start();
       }
