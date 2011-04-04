@@ -19,7 +19,6 @@ import org.jdesktop.core.animation.timing.TimingSource;
 import org.jdesktop.core.animation.timing.TimingTarget;
 import org.jdesktop.core.animation.timing.interpolators.SplineInterpolator;
 import org.jdesktop.swing.animation.timing.sources.SwingTimerTimingSource;
-import org.jdesktop.swing.animation.timing.triggers.ActionTrigger;
 
 /**
  * The full-blown demo with all of the bells and whistles. This one uses the
@@ -131,16 +130,30 @@ public final class MultiStepRace {
     soundEffects = new SoundEffects(rotationKeyFrames);
     animator.addTarget(soundEffects);
 
-    /*
-     * Instead of manually tracking the events, have the framework do the work
-     * by setting up a trigger.
-     */
-    JButton goButton = basicGUI.getControlPanel().getGoButton();
-    JButton reverseButton = basicGUI.getControlPanel().getReverseButton();
-    JButton pauseResumeButton = basicGUI.getControlPanel().getPauseResumeButton();
-    JButton stopButton = basicGUI.getControlPanel().getStopButton();
-    ActionTrigger.addTrigger(goButton, animator);
+    final RaceControlPanel controlPanel = basicGUI.getControlPanel();
+    final JButton goButton = controlPanel.getGoButton();
+    final JButton reverseButton = controlPanel.getReverseButton();
+    final JButton pauseResumeButton = controlPanel.getPauseResumeButton();
+    final JButton stopButton = controlPanel.getStopButton();
+
+    goButton.setEnabled(true);
+    reverseButton.setEnabled(false);
+    pauseResumeButton.setEnabled(false);
+    stopButton.setEnabled(false);
+
+    goButton.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        animator.start();
+        goButton.setEnabled(false);
+        reverseButton.setEnabled(true);
+        pauseResumeButton.setEnabled(true);
+        stopButton.setEnabled(true);
+        basicGUI.getTrack().setCarReverse(false);
+      }
+    });
     reverseButton.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         if (animator.isPaused()) {
           java.awt.Toolkit.getDefaultToolkit().beep();
@@ -149,28 +162,37 @@ public final class MultiStepRace {
 
         if (animator.isRunning()) {
           animator.reverseNow();
-          basicGUI.getTrack().reverseCarRotation();
+          basicGUI.getTrack().toggleCarReverse();
         } else {
           animator.startReverse();
-          basicGUI.getTrack().setCarRotation(180);
+          basicGUI.getTrack().setCarReverse(true);
         }
       }
     });
-    pauseResumeButton.addActionListener(new ActionListener() {
+    controlPanel.getPauseResumeButton().addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         if (animator.isPaused()) {
           animator.resume();
+          reverseButton.setEnabled(true);
+          stopButton.setEnabled(true);
         } else {
-          if (animator.isRunning())
+          if (animator.isRunning()) {
             animator.pause();
+            reverseButton.setEnabled(false);
+            stopButton.setEnabled(false);
+          }
         }
       }
     });
-    stopButton.addActionListener(new ActionListener() {
+    controlPanel.getStopButton().addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
-        if (animator.isRunning())
-          animator.stop();
-        stopSoundEffects();
+        animator.stop();
+        goButton.setEnabled(true);
+        reverseButton.setEnabled(false);
+        pauseResumeButton.setEnabled(false);
+        stopButton.setEnabled(false);
       }
     });
   }
