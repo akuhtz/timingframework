@@ -6,11 +6,64 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.jdesktop.core.animation.i18n.I18N;
+import org.jdesktop.core.animation.timing.interpolators.LinearInterpolator;
 
 import com.surelogic.NotThreadSafe;
 
 /**
  * This class is used to construct {@link Animator} instances.
+ * <p>
+ * The default values are listed in the table below.
+ * <p>
+ * <table border="1">
+ * <tr>
+ * <th>Method</th>
+ * <th>Description</th>
+ * <th>Default</th>
+ * </tr>
+ * <tr>
+ * <td>{@link #addTarget(TimingTarget)}</td>
+ * <td>gets timing events while the animation is running</td>
+ * <td align="right"><i>none</i></td>
+ * </tr>
+ * <tr>
+ * <td>{@link #setDefaultTimingSource(TimingSource)} or
+ * {@link #AnimatorBuilder(TimingSource)}</td>
+ * <td>a timing source for the animation</td>
+ * <td align="right"><i>none</i></td>
+ * </tr>
+ * <tr>
+ * <td>{@link #setDuration(long, TimeUnit)}</td>
+ * <td>the duration of one cycle of the animation</td>
+ * <td align="right">1 second</td>
+ * </tr>
+ * <tr>
+ * <td>{@link #setEndBehavior(Animator.EndBehavior)}</td>
+ * <td>what happens at the end of the animation</td>
+ * <td align="right">{@link Animator.EndBehavior#HOLD}</td>
+ * </tr>
+ * <tr>
+ * <td>{@link #setInterpolator(Interpolator)}</td>
+ * <td>the interpolator for each animation cycle</td>
+ * <td align="right">{@link LinearInterpolator}</td>
+ * </tr>
+ * <tr>
+ * <td>{@link #setRepeatBehavior(Animator.RepeatBehavior)}</td>
+ * <td>the repeat behavior of the animation</td>
+ * <td align="right">{@link Animator.RepeatBehavior#REVERSE}</td>
+ * </tr>
+ * <tr>
+ * <td>{@link #setRepeatCount(long)}</td>
+ * <td>the number of times the animation cycle will repeat</td>
+ * <td align="right">1</td>
+ * </tr>
+ * <tr>
+ * <td>{@link #setStartDirection(Animator.Direction)}</td>
+ * <td>the start direction for the initial animation cycle</td>
+ * <td align="right">{@link Animator.Direction#FORWARD}</td>
+ * </tr>
+ * </table>
+ * 
  * <p>
  * Instances of this class are not thread safe and are intended to be
  * thread-confined. However, the {@link Animator} objects produces are
@@ -92,24 +145,24 @@ public class AnimatorBuilder {
   }
 
   /**
-   * Sets the duration for the animation. The default value is one second.
+   * Sets the duration of one cycle of the animation. The default value is one
+   * second.
    * 
    * @param value
-   *          the duration of the animation. This value must be >= 1 or
-   *          {@link Animator#INFINITE}, meaning the animation will run until
-   *          manually stopped.
+   *          the duration of the animation. This value must be >= 1.
    * @param unit
    *          the time unit of the value parameter. A {@code null} value is
    *          equivalent to setting the default unit of {@link TimeUnit#SECONDS}
    *          .
    * @return this builder (to allow chained operations).
+   * 
    * @throws IllegalStateException
-   *           if value is not >= 1 or {@link Animator#INFINITE}.
+   *           if value is not >= 1.
    */
   public AnimatorBuilder setDuration(long value, TimeUnit unit) {
-    if (value < 1 && value != Animator.INFINITE) {
+    if (value < 1)
       throw new IllegalArgumentException(I18N.err(10, value));
-    }
+
     f_duration = value;
     f_durationTimeUnit = unit != null ? unit : TimeUnit.SECONDS;
     return this;
@@ -166,13 +219,14 @@ public class AnimatorBuilder {
    *          be >= 1 or {@link Animator#INFINITE} for animations that repeat
    *          indefinitely.
    * @return this builder (to allow chained operations).
+   * 
    * @throws IllegalArgumentException
    *           if value is not >=1 or {@link Animator#INFINITE}.
    */
   public AnimatorBuilder setRepeatCount(long value) {
-    if (value < 1 && value != Animator.INFINITE) {
+    if (value < 1 && value != Animator.INFINITE)
       throw new IllegalArgumentException(I18N.err(10, value));
-    }
+
     f_repeatCount = value;
     return this;
   }

@@ -38,7 +38,10 @@ public interface TimingTarget {
   public void end(Animator source);
 
   /**
-   * Called when the animation repeats the animation cycle.
+   * Called when the animation repeats the animation cycle. This method will be
+   * invoked {@link Animator#getRepeatCount()} - 1 times, unless
+   * {@link Animator#getRepeatCount()} == {@link Animator#INFINITE} in which
+   * case it will be invoked until the animation is manually stopped.
    * 
    * @param source
    *          the animation.
@@ -48,7 +51,7 @@ public interface TimingTarget {
   /**
    * Called when a running animation is reversed via
    * {@link Animator#reverseNow()}. This method is not invoked when
-   * {@link Animator#startReverse()} is called, it is only used as a
+   * {@link Animator#startReverse()} is called&mdash;it is only used as a
    * notification when a running animation is reversed.
    * 
    * @param source
