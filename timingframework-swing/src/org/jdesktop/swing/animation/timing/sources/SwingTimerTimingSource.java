@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.concurrent.TimeUnit;
 
+import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
 import org.jdesktop.core.animation.timing.TimingSource;
@@ -34,6 +35,9 @@ public final class SwingTimerTimingSource extends TimingSource {
   private final Timer f_timer;
 
   /**
+   * javax.swing.Timer
+   * 
+   * 
    * Constructs a new instance. The {@link #init()} must be called on the new
    * instance to start the timer. The {@link #dispose()} method should be called
    * to stop the timer.
@@ -47,7 +51,29 @@ public final class SwingTimerTimingSource extends TimingSource {
    *          the time unit of period parameter.
    */
   public SwingTimerTimingSource(long period, TimeUnit unit) {
-    super(null);
+    super(new TickListenerNotificationContext() {
+
+      public void notifyTickListenersInContext(TimingSource source) {
+        /*
+         * Because of the use of the javax.swing.Timer we are already in the
+         * thread context of the Swing EDT.
+         */
+        source.notifyTickListeners();
+      }
+
+      public void runInContext(final Runnable task) {
+        SwingUtilities.invokeLater(new Runnable() {
+          @Override
+          public void run() {
+            /*
+             * Run the task within the thread context of the Swing EDT.
+             */
+            task.run();
+          }
+        });
+
+      }
+    });
     int periodMillis = (int) unit.toMillis(period);
     if (periodMillis != unit.toMillis(period))
       periodMillis = 1;
