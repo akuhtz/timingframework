@@ -776,7 +776,7 @@ public final class Animator implements TickListener {
         if (inCallbackContext)
           task.run();
         else
-          f_timingSource.contextAwareRunTask(task);
+          f_timingSource.submit(task);
       }
     }
   }
