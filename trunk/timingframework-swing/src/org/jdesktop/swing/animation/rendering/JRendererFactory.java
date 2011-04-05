@@ -9,8 +9,44 @@ import org.jdesktop.core.animation.timing.AnimatorBuilder;
 import org.jdesktop.core.animation.timing.TimingSource;
 import org.jdesktop.swing.animation.timing.sources.SwingTimerTimingSource;
 
+/**
+ * Used to construct a Swing renderer based upon the users preference for active
+ * or passive rendering.
+ * <p>
+ * Active rendering is used if the <tt>org.jdesktop.renderer.active</tt>
+ * property is defined. For example with the following passed to the Java
+ * interpreter.
+ * 
+ * <pre>
+ * -Dorg.jdesktop.renderer.active=true
+ * </pre>
+ * 
+ * @author Tim Halloran
+ */
 public final class JRendererFactory {
 
+  /**
+   * Gets a renderer based upon the users preference for active or passive
+   * rendering.
+   * <p>
+   * Active rendering is used if the <tt>org.jdesktop.renderer.active</tt>
+   * property is defined. For example with the following passed to the Java
+   * interpreter.
+   * 
+   * <pre>
+   * -Dorg.jdesktop.renderer.active=true
+   * </pre>
+   * 
+   * @param on
+   *          the panel to render on.
+   * @param target
+   *          the rendering implementation to callback to.
+   * @param hasChildren
+   *          if <tt>on</tt> manages child Swing components. {@code true} if it
+   *          does. {@code false} if it does not. This helps the renderer
+   *          improve performance if no child components are ever used.
+   * @return a renderer for <tt>on</tt>.
+   */
   public static JRenderer<JRendererPanel> getDefaultRenderer(JRendererPanel on,
       JRendererTarget<GraphicsConfiguration, Graphics2D> target, boolean hasChildren) {
     final JRenderer<JRendererPanel> result;
@@ -27,6 +63,12 @@ public final class JRendererFactory {
 
   public static final String PROPERTY = "org.jdesktop.renderer.active";
 
+  /**
+   * Gets if active rendering is desired.
+   * 
+   * @return {@code true} if active rendering is desired, {@code false}
+   *         otherwise.
+   */
   public static boolean useActiveRenderer() {
     return System.getProperty(PROPERTY) != null;
   }

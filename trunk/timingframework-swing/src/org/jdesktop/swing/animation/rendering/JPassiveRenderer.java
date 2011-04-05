@@ -12,6 +12,29 @@ import org.jdesktop.core.animation.rendering.JRendererTarget;
 import org.jdesktop.core.animation.timing.TimingSource;
 import org.jdesktop.core.animation.timing.TimingSource.PostTickListener;
 
+/**
+ * Manages passive rendering on a Swing {@link JRendererPanel}.
+ * <p>
+ * To use this renderer a client constructs a {@link JRendererPanel} and passes
+ * it to the constructor with a {@link JRendererTarget} implementation and a
+ * timing source. A typical sequence would be
+ * 
+ * <pre>
+ * JFrame frame = new JFrame(&quot;Renderer Demonstration&quot;);
+ * final JRendererPanel on = new JRendererPanel();
+ * frame.setContentPane(on);
+ * final JRendererTarget&lt;GraphicsConfiguration, Graphics2D&gt; target = this;
+ * final TimingSource timingSource = new SwingTimerTimingSource();
+ * JRenderer renderer = new JPassiveRenderer(on, target, timingSource);
+ * timingSource.init();
+ * </pre>
+ * 
+ * In the above snippet <tt>on</tt> will be rendered to. The enclosing instance,
+ * <tt>this</tt>, implements {@link JRendererTarget} and will be called to
+ * customize what is displayed on-screen.
+ * 
+ * @author Tim Halloran
+ */
 public class JPassiveRenderer implements JRenderer<JRendererPanel> {
 
   /*
