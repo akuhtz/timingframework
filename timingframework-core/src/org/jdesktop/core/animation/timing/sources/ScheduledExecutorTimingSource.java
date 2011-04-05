@@ -24,7 +24,7 @@ import org.jdesktop.core.animation.timing.TimingSource;
  * ts.dispose(); // done using ts
  * </pre>
  * 
- * Calls to registered {@link TickListener} and {@link PostTickListener} objects
+ * Calls to registered {@code TickListener} and {@code PostTickListener} objects
  * from this timing source are always made in the context of a single thread.
  * This thread is the thread created by
  * {@link Executors#newSingleThreadScheduledExecutor()}. Further, any tasks
