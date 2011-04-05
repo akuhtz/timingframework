@@ -2,7 +2,6 @@ package org.jdesktop.swing.animation.rendering;
 
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
-import java.util.concurrent.TimeUnit;
 
 import org.jdesktop.core.animation.rendering.JRenderer;
 import org.jdesktop.core.animation.rendering.JRendererTarget;
@@ -18,7 +17,7 @@ public final class JRendererFactory {
     if (useActiveRenderer()) {
       result = new JActiveRenderer(on, target, hasChildren);
     } else {
-      final TimingSource timingSource = new SwingTimerTimingSource(15, TimeUnit.MILLISECONDS);
+      final TimingSource timingSource = new SwingTimerTimingSource();
       result = new JPassiveRenderer(on, target, timingSource);
       timingSource.init();
     }

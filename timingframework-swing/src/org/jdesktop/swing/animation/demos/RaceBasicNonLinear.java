@@ -26,7 +26,7 @@ public class RaceBasicNonLinear extends RaceBasic {
   public static void main(String args[]) {
     System.setProperty("swing.defaultlaf", "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
 
-    TimingSource ts = new SwingTimerTimingSource(10, TimeUnit.MILLISECONDS);
+    TimingSource ts = new SwingTimerTimingSource();
     AnimatorBuilder.setDefaultTimingSource(ts);
     ts.init();
 

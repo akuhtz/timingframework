@@ -1,7 +1,5 @@
 package org.jdesktop.swt.animation.rendering;
 
-import java.util.concurrent.TimeUnit;
-
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Display;
@@ -15,7 +13,7 @@ public final class JRendererFactory {
 
   public static JRenderer<Canvas> getDefaultRenderer(Canvas on, JRendererTarget<Display, GC> target, boolean hasChildren) {
     final JRenderer<Canvas> result;
-    final TimingSource timingSource = new SWTTimingSource(15, TimeUnit.MILLISECONDS, on.getDisplay());
+    final TimingSource timingSource = new SWTTimingSource(on.getDisplay());
     result = new JPassiveRenderer(on, target, timingSource);
     timingSource.init();
     AnimatorBuilder.setDefaultTimingSource(result.getTimingSource());

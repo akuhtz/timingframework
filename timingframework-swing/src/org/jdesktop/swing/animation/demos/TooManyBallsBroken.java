@@ -68,7 +68,7 @@ public class TooManyBallsBroken {
     });
   }
 
-  private static final TimingSource f_repaintTimer = new SwingTimerTimingSource(15, TimeUnit.MILLISECONDS);
+  private static final TimingSource f_repaintTimer = new SwingTimerTimingSource();
   /**
    * Used to update the FPS display once a second.
    */
@@ -268,7 +268,7 @@ public class TooManyBallsBroken {
      * Sometimes go at a constant rate, sometimes accelerate and decelerate.
      */
     final Interpolator i = f_die.nextBoolean() ? ACCEL_4_4 : null;
-    ball.ts = new SwingTimerTimingSource(15, TimeUnit.MILLISECONDS);
+    ball.ts = new SwingTimerTimingSource();
     ball.ts.init();
     ball.animator = new AnimatorBuilder(ball.ts).setDuration(duration, TimeUnit.SECONDS).addTarget(circularMovement)
         .setRepeatCount(Animator.INFINITE).setRepeatBehavior(Animator.RepeatBehavior.LOOP).setInterpolator(i).build();

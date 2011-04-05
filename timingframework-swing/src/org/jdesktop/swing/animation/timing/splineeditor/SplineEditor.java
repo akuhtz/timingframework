@@ -3,7 +3,6 @@ package org.jdesktop.swing.animation.timing.splineeditor;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.HeadlessException;
-import java.util.concurrent.TimeUnit;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -45,7 +44,7 @@ public class SplineEditor extends JFrame {
   public static void main(String[] args) {
     System.setProperty("swing.defaultlaf", "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
 
-    TimingSource ts = new SwingTimerTimingSource(10, TimeUnit.MILLISECONDS);
+    TimingSource ts = new SwingTimerTimingSource();
     AnimatorBuilder.setDefaultTimingSource(ts);
     ts.init();
 

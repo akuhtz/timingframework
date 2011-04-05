@@ -103,7 +103,7 @@ public class TooManyBalls implements JRendererTarget<Display, GC> {
     /**
      * Used for ball animations.
      */
-    final TimingSource animationTimer = new SWTTimingSource(15, TimeUnit.MILLISECONDS, display);
+    final TimingSource animationTimer = new SWTTimingSource(display);
     AnimatorBuilder.setDefaultTimingSource(animationTimer);
 
     /**

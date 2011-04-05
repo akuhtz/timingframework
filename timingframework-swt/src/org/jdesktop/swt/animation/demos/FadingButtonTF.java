@@ -1,7 +1,5 @@
 package org.jdesktop.swt.animation.demos;
 
-import java.util.concurrent.TimeUnit;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
@@ -46,7 +44,7 @@ public final class FadingButtonTF {
     shell.setText("SWT Fading Button TF");
     shell.setLayout(new FillLayout());
 
-    final TimingSource animationTimer = new SWTTimingSource(15, TimeUnit.MILLISECONDS, display);
+    final TimingSource animationTimer = new SWTTimingSource(display);
     AnimatorBuilder.setDefaultTimingSource(animationTimer);
 
     f_squareColor = display.getSystemColor(SWT.COLOR_RED);
