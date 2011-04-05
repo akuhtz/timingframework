@@ -39,7 +39,8 @@ import org.jdesktop.core.animation.timing.sources.ManualTimingSource;
  * JFrame frame = new JFrame(&quot;Renderer Demonstration&quot;);
  * final JRendererPanel on = new JRendererPanel();
  * frame.setContentPane(on);
- * JRenderer renderer = new ActiveRenderer(on, true, this);
+ * final JRendererTarget&lt;GraphicsConfiguration, Graphics2D&gt; target = this;
+ * JRenderer renderer = new JActiveRenderer(on, target, true);
  * </pre>
  * 
  * In the above snippet <tt>on</tt> will be rendered to. Swing children will be

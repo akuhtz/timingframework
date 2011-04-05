@@ -10,9 +10,11 @@ package org.jdesktop.core.animation.rendering;
  * @author Tim Halloran
  * 
  * @param <D>
- *          screen information for set up.
+ *          screen information for set up. <tt>GraphicsConfiguration</tt> is
+ *          used for Swing. <tt>Display</tt> is used for SWT.
  * @param <G>
  *          a graphics context usable for painting on the screen.
+ *          <tt>Graphics2D</tt> is used for Swing. <tt>GC</tt> is used for SWT.
  * 
  * @see JRenderer
  */
