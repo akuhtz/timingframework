@@ -8,6 +8,7 @@ import org.junit.Test;
 
 public final class TestTimingSource {
 
+  private int taskCounter;
   private int tickCounter;
   private int postTickCounter;
 
@@ -213,5 +214,17 @@ public final class TestTimingSource {
       ts.tick();
     Assert.assertEquals(1000, tickCounter);
     Assert.assertEquals(1000, postTickCounter);
+  }
+
+  @Test
+  public void runTask() {
+    final ManualTimingSource ts = new ManualTimingSource();
+    taskCounter = 0;
+    ts.submit(new Runnable() {
+      public void run() {
+        taskCounter++;
+      }
+    });
+    Assert.assertEquals(1, taskCounter);
   }
 }
