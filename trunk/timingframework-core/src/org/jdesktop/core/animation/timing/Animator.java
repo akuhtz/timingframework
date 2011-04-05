@@ -437,7 +437,7 @@ public final class Animator implements TickListener {
    * @see #cancel()
    */
   public void stop() {
-    stopHelper(true);
+    stopHelper(true, false);
   }
 
   /**
@@ -448,7 +448,7 @@ public final class Animator implements TickListener {
    * @see #stop()
    */
   public void cancel() {
-    stopHelper(false);
+    stopHelper(false, false);
   }
 
   /**
@@ -644,7 +644,7 @@ public final class Animator implements TickListener {
         target.timingEvent(this, fraction);
       }
     if (timeToStop) {
-      stopHelper(true);
+      stopHelper(true, true);
     }
   }
 
@@ -743,17 +743,41 @@ public final class Animator implements TickListener {
     return f_interpolator == null ? fraction : f_interpolator.interpolate(fraction);
   }
 
-  private void stopHelper(boolean notify) {
+  /**
+   * Helper routine to stop the running animation. It optionally invokes the
+   * {@link TimingTarget#end(Animator)} method of registered timing targets in
+   * the correct thread context.
+   * 
+   * @param notify
+   *          {@code true} if the {@link TimingTarget#end(Animator)} method
+   *          should be called for registered timing targets, {@code false} if
+   *          calls should not be made.
+   * @param inCallbackContext
+   *          {@link true} if the call to this method was made from the thread
+   *          context of {@link TimingSource.TickListener}, {@link false} if it
+   *          was not.
+   */
+  private void stopHelper(boolean notify, boolean inCallbackContext) {
     if (isRunning()) {
       f_timingSource.removeTickListener(this);
       synchronized (f_lock) {
         f_running = false;
         f_currentDirection = f_startDirection;
       }
-      if (notify && !f_targets.isEmpty())
-        for (TimingTarget target : f_targets) {
-          target.end(this);
-        }
+      if (notify && !f_targets.isEmpty()) {
+        final Runnable task = new Runnable() {
+          @Override
+          public void run() {
+            for (TimingTarget target : f_targets) {
+              target.end(Animator.this);
+            }
+          }
+        };
+        if (inCallbackContext)
+          task.run();
+        else
+          f_timingSource.contextAwareRunTask(task);
+      }
     }
   }
 

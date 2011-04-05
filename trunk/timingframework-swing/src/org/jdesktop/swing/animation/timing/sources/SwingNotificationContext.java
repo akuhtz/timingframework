@@ -33,7 +33,7 @@ import org.jdesktop.core.animation.timing.sources.ScheduledExecutorTimingSource;
 public final class SwingNotificationContext implements TickListenerNotificationContext {
 
   @Override
-  public void notifyTickListeners(final TimingSource source) {
+  public void notifyTickListenersInContext(final TimingSource source) {
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
@@ -41,6 +41,19 @@ public final class SwingNotificationContext implements TickListenerNotificationC
          * Notify listeners within the thread context of the Swing EDT.
          */
         source.notifyTickListeners();
+      }
+    });
+  }
+
+  @Override
+  public void runInContext(final Runnable task) {
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        /*
+         * Run the task within the thread context of the Swing EDT.
+         */
+        task.run();
       }
     });
   }

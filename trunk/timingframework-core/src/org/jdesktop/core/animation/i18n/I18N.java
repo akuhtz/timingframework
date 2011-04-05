@@ -6,14 +6,11 @@ import java.util.ResourceBundle;
  * A utility that manages a resource bundle of strings based upon the locale for
  * an application.
  * <p>
- * Strings or messages are read from the <tt>Msg</tt> file found in this
- * package. Numbered errors are read from the <tt>Err</tt> file found in this
- * package.
+ * Numbered errors are read from the <tt>Err</tt> file found in this package.
  * 
  * @author Tim Halloran
  */
 public final class I18N {
-  private static final ResourceBundle MSG = ResourceBundle.getBundle(I18N.class.getPackage().getName() + ".Msg");
 
   private static final ResourceBundle ERR = ResourceBundle.getBundle(I18N.class.getPackage().getName() + ".Err");
 
@@ -21,45 +18,6 @@ public final class I18N {
 
   private static String getString(final ResourceBundle bundle, final String keyTemplate, final Object... args) {
     return bundle.getString(String.format(keyTemplate, args));
-  }
-
-  /**
-   * Gets the string defined for the given key from the i18n resource bundle.
-   * For example, <tt>I18N.msg("timingframework.cheer")</tt> would result in the
-   * string <tt>"Timing Is Everything!"</tt> if the line
-   * <tt>timingframework.cheer=Timing Is Everything!</tt> is contained in the
-   * <tt>Msg</tt> properties file.
-   * <p>
-   * If the given key is not defined in the <tt>Msg</tt> properties file an
-   * exception is thrown.
-   * 
-   * @param key
-   *          the key for the desired message.
-   * @return the message for the given key.
-   */
-  public static String msg(final String key) {
-    final String result = MSG.getString(key);
-    return result;
-  }
-
-  /**
-   * Gets and formats the string defined for the given key from the i18n
-   * resource bundle. Calling this method is equivalent to calling
-   * <tt>String.format(I18N.msg(key), args).</tt>
-   * 
-   * For example, <tt>I18N.msg("hello.world", "Tim")</tt> would result in the
-   * string <tt>"Hi Tim!"</tt> if the line <tt>hello.world=Hi %s!</tt> is
-   * contained in the <tt>Msg</tt> properties file.
-   * 
-   * @param key
-   *          the key for the desired message.
-   * @param args
-   *          the variable arguments to format the resulting message with.
-   * @return the formatted message for the given key.
-   * @see String#format(String, Object...)
-   */
-  public static String msg(final String key, Object... args) {
-    return String.format(I18N.msg(key), args);
   }
 
   /**

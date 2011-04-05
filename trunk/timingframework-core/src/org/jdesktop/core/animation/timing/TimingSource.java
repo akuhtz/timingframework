@@ -89,31 +89,33 @@ public abstract class TimingSource {
    * This interface is implemented by any object wishing to change the calling
    * thread context of notifications to this {@link TimingSource} object's
    * {@link TickListener} objects.
+   * <p>
+   * The default implementation uses the thread context of the
+   * {@link TimingSource} object. Other implementations could ensure that
+   * another thread context is used, for example, within the Swing EDT or the
+   * SWT UI thread.
    */
   public interface TickListenerNotificationContext {
 
     /**
      * This method notifies the passed {@link TimingSource} object's
-     * {@link TickListener} objects that a tick of time has elapsed. At some
-     * point the implementation should ensure that it calls
-     * {@link TimingSource#notifyTickListeners()} on the passed
-     * {@link TimingSource} object. The default implementation is shown below.
-     * 
-     * <pre>
-     * public void notifyTickListeners(TimingSource source) {
-     *   source.notifyTickListeners();
-     * }
-     * </pre>
-     * 
-     * This default implementation notifies listeners in the thread context of
-     * the {@link TimingSource} object. Other implementations could ensure that
-     * listeners are notified in any thread context. For example, within the
-     * Swing EDT or the SWT EDT.
+     * {@link TickListener} objects that a tick of time has elapsed in the
+     * proper thread context. At some point the implementation must call
+     * <tt>source.notifyTickListeners()</tt>.
      * 
      * @param source
-     *          the object that invoked this call.
+     *          the timing source that invoked this call.
      */
-    public void notifyTickListeners(TimingSource source);
+    public void notifyTickListenersInContext(TimingSource source);
+
+    /**
+     * This method invokes the passed {@link Runnable} in the proper thread
+     * context. At some point the implementation must call <tt>task.run()</tt> .
+     * 
+     * @param task
+     *          the task to run in the proper thread context.
+     */
+    public void runInContext(Runnable task);
   }
 
   /**
@@ -241,6 +243,27 @@ public abstract class TimingSource {
     if (f_notificationContext == null)
       notifyTickListeners();
     else
-      f_notificationContext.notifyTickListeners(this);
+      f_notificationContext.notifyTickListenersInContext(this);
+  }
+
+  /**
+   * Runs the passed task through the object's
+   * {@link TickListenerNotificationContext}. The task is wrapped, via
+   * {@link WrappedRunnable}, to log if it fails due to an unhandled exception.
+   * <p>
+   * This method can be used to execute a snippet of code in the thread context
+   * used to callback to {@link TimingSource.TickListener} and
+   * {@link TimingSource.PostTickListener}.
+   * 
+   * @param task
+   *          a task.
+   * 
+   * @see WrappedRunnable
+   */
+  public final void contextAwareRunTask(Runnable task) {
+    if (f_notificationContext == null)
+      new WrappedRunnable(task).run();
+    else
+      f_notificationContext.runInContext(new WrappedRunnable(task));
   }
 }
