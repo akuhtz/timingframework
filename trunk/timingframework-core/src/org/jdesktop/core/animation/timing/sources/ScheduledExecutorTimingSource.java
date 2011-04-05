@@ -24,6 +24,13 @@ import org.jdesktop.core.animation.timing.TimingSource;
  * ts.dispose(); // done using ts
  * </pre>
  * 
+ * Calls to registered {@link TickListener} and {@link PostTickListener} objects
+ * from this timing source are always made in the context of a single thread.
+ * This thread is the thread created by
+ * {@link Executors#newSingleThreadScheduledExecutor()}. Further, any tasks
+ * submitted to {@link #submit(Runnable)} are run in this thread context as
+ * well.
+ * 
  * @author Tim Halloran
  */
 public final class ScheduledExecutorTimingSource extends TimingSource {

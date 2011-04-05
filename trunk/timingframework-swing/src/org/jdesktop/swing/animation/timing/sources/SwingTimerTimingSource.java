@@ -74,17 +74,15 @@ public final class SwingTimerTimingSource extends TimingSource {
 
   @Override
   protected void runTaskInThreadContext(final Runnable task) {
-    if (SwingUtilities.isEventDispatchThread())
+    if (SwingUtilities.isEventDispatchThread()) {
       task.run();
-    else
+    } else {
       SwingUtilities.invokeLater(new Runnable() {
         @Override
         public void run() {
-          /*
-           * Run the task within the thread context of the Swing EDT.
-           */
           task.run();
         }
       });
+    }
   }
 }

@@ -120,17 +120,15 @@ public final class SWTTimingSource extends TimingSource {
       display = Display.getDefault();
     if (display == null)
       return;
-    if (Thread.currentThread().equals(display.getThread()))
+    if (Thread.currentThread().equals(display.getThread())) {
       task.run();
-    else
+    } else {
       display.asyncExec(new Runnable() {
         @Override
         public void run() {
-          /*
-           * Run the task within the thread context of the SWT UI thread.
-           */
           task.run();
         }
       });
+    }
   }
 }

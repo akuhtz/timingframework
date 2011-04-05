@@ -8,8 +8,8 @@ import com.surelogic.ThreadSafe;
  * This class provides provides a base implementation for arbitrary timers that
  * may be used with the Timing Framework.
  * <p>
- * A timer needs to "tick" at some regular period of time. This period, if it is
- * variable for a particular implementation, should be specified to the
+ * A timing source needs to "tick" at some regular period of time. This period,
+ * if it is variable for a particular implementation, should be specified to the
  * subclass's constructor.
  * <p>
  * A timer notifies a registered set of {@link TickListener}s that a tick of
@@ -22,6 +22,10 @@ import com.surelogic.ThreadSafe;
  * A timer should begin ticking after {@link #init()} is called and should be
  * stopped and disposed after {@link #dispose()} is called. The timer cannot be
  * restarted after {@link #dispose()} is called.
+ * <p>
+ * A timing source should document the thread context in which it makes calls to
+ * registered listeners. In addition, it should ensure that tasks passed to
+ * {@link #submit(Runnable)} are run in the same thread context.
  * 
  * @author Chet Haase
  * @author Tim Halloran
@@ -206,20 +210,22 @@ public abstract class TimingSource {
   }
 
   /**
-   * Runs the passed task through the object's
-   * {@link TickListenerNotificationContext}. The task is wrapped, via
-   * {@link WrappedRunnable}, to log if it fails due to an unhandled exception.
+   * Runs the passed task in the thread context of this timing source. The task
+   * is wrapped, via {@link WrappedRunnable}, to log an error if it fails due to
+   * an unhandled exception. This method is used to execute a snippet of code in
+   * the thread context used to callback to {@link TimingSource.TickListener}
+   * and {@link TimingSource.PostTickListener}.
    * <p>
-   * This method can be used to execute a snippet of code in the thread context
-   * used to callback to {@link TimingSource.TickListener} and
-   * {@link TimingSource.PostTickListener}.
+   * The task may be run immediately or it may be queued for execution in a
+   * different thread context. Hence, this method may or may not block for
+   * execution of the task.
    * 
    * @param task
    *          a task.
    * 
    * @see WrappedRunnable
    */
-  public final void contextAwareRunTask(Runnable task) {
+  public final void submit(Runnable task) {
     if (task == null)
       return;
     final WrappedRunnable wrapped = new WrappedRunnable(task);
