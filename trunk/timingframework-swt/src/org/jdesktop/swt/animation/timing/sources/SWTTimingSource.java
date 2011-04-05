@@ -118,14 +118,19 @@ public final class SWTTimingSource extends TimingSource {
     Display display = f_display.get(); // handle unlikely null
     if (display == null)
       display = Display.getDefault();
-    display.asyncExec(new Runnable() {
-      @Override
-      public void run() {
-        /*
-         * Run the task within the thread context of the SWT UI thread.
-         */
-        task.run();
-      }
-    });
+    if (display == null)
+      return;
+    if (Thread.currentThread().equals(display.getThread()))
+      task.run();
+    else
+      display.asyncExec(new Runnable() {
+        @Override
+        public void run() {
+          /*
+           * Run the task within the thread context of the SWT UI thread.
+           */
+          task.run();
+        }
+      });
   }
 }
