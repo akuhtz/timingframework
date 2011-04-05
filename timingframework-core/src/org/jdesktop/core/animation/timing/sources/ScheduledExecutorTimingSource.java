@@ -24,6 +24,10 @@ import org.jdesktop.core.animation.timing.TimingSource;
  * ts.dispose(); // done using ts
  * </pre>
  * 
+ * If you are not sure what period to set, use the
+ * {@link #ScheduledExecutorTimingSource()} constructor which uses a reasonable
+ * default value of 15 milliseconds.
+ * <p>
  * Calls to registered {@code TickListener} and {@code PostTickListener} objects
  * from this timing source are always made in the context of a single thread.
  * This thread is the thread created by
@@ -53,6 +57,15 @@ public final class ScheduledExecutorTimingSource extends TimingSource {
     f_period = period;
     f_periodTimeUnit = unit;
     f_executor = Executors.newSingleThreadScheduledExecutor();
+  }
+
+  /**
+   * Constructs a new instance with a period of 15 milliseconds.. The
+   * {@link #init()} must be called on the new instance to start the timer. The
+   * {@link #dispose()} method should be called to stop the timer.
+   */
+  public ScheduledExecutorTimingSource() {
+    this(15, TimeUnit.MILLISECONDS);
   }
 
   @Override
