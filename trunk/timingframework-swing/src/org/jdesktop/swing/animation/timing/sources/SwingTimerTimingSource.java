@@ -51,36 +51,13 @@ public final class SwingTimerTimingSource extends TimingSource {
    *          the time unit of period parameter.
    */
   public SwingTimerTimingSource(long period, TimeUnit unit) {
-    super(new TickListenerNotificationContext() {
-
-      public void notifyTickListenersInContext(TimingSource source) {
-        /*
-         * Because of the use of the javax.swing.Timer we are already in the
-         * thread context of the Swing EDT.
-         */
-        source.notifyTickListeners();
-      }
-
-      public void runInContext(final Runnable task) {
-        SwingUtilities.invokeLater(new Runnable() {
-          @Override
-          public void run() {
-            /*
-             * Run the task within the thread context of the Swing EDT.
-             */
-            task.run();
-          }
-        });
-
-      }
-    });
     int periodMillis = (int) unit.toMillis(period);
     if (periodMillis != unit.toMillis(period))
       periodMillis = 1;
     f_timer = new Timer(periodMillis, new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        contextAwareNotifyTickListeners();
+        getNotifyTickListenersTask().run();
       }
     });
   }
@@ -93,5 +70,18 @@ public final class SwingTimerTimingSource extends TimingSource {
   @Override
   public void dispose() {
     f_timer.stop();
+  }
+
+  @Override
+  protected void runTaskInThreadContext(final Runnable task) {
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        /*
+         * Run the task within the thread context of the Swing EDT.
+         */
+        task.run();
+      }
+    });
   }
 }

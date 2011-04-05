@@ -19,11 +19,6 @@ import com.surelogic.ThreadSafe;
  * call <tt>repaint()</tt> after a large number of animations (which register
  * themselves as {@link TickListener}s) have updated the program's state.
  * <p>
- * The thread context of notifications can be changed by providing an
- * implementation of {@link TickListenerNotificationContext} to the constructor.
- * A default notification context, that does not change the notification thread,
- * is provided.
- * <p>
  * A timer should begin ticking after {@link #init()} is called and should be
  * stopped and disposed after {@link #dispose()} is called. The timer cannot be
  * restarted after {@link #dispose()} is called.
@@ -63,7 +58,7 @@ public abstract class TimingSource {
    * {@link TickListener} objects have been notified. The
    * {@link PostTickListener} implementation is registered as a listener of the
    * {@link TimingSource} via the
-   * {@link TimingSource#addTickListener(TickListener)} method.
+   * {@link TimingSource#addPostTickListener(TickListener)} method.
    * <p>
    * For example, a {@link PostTickListener} could be used to call
    * <tt>repaint()</tt> after a large number of animations (which register
@@ -86,56 +81,6 @@ public abstract class TimingSource {
   }
 
   /**
-   * This interface is implemented by any object wishing to change the calling
-   * thread context of notifications to this {@link TimingSource} object's
-   * {@link TickListener} objects.
-   * <p>
-   * The default implementation uses the thread context of the
-   * {@link TimingSource} object. Other implementations could ensure that
-   * another thread context is used, for example, within the Swing EDT or the
-   * SWT UI thread.
-   */
-  public interface TickListenerNotificationContext {
-
-    /**
-     * This method notifies the passed {@link TimingSource} object's
-     * {@link TickListener} objects that a tick of time has elapsed in the
-     * proper thread context. At some point the implementation must call
-     * <tt>source.notifyTickListeners()</tt>.
-     * 
-     * @param source
-     *          the timing source that invoked this call.
-     */
-    public void notifyTickListenersInContext(TimingSource source);
-
-    /**
-     * This method invokes the passed {@link Runnable} in the proper thread
-     * context. At some point the implementation must call <tt>task.run()</tt> .
-     * 
-     * @param task
-     *          the task to run in the proper thread context.
-     */
-    public void runInContext(Runnable task);
-  }
-
-  /**
-   * The context that the listeners will be notified within. A value of
-   * {@code null} indicates no context change is desired.
-   */
-  private final TickListenerNotificationContext f_notificationContext;
-
-  /**
-   * Constructs an instance with the passed notification context.
-   * 
-   * @param notificationContext
-   *          the context that the listeners will be notified within. A value of
-   *          {@code null} uses the default notification context.
-   */
-  public TimingSource(TickListenerNotificationContext notificationContext) {
-    f_notificationContext = notificationContext;
-  }
-
-  /**
    * Starts up the timing source.
    */
   public abstract void init();
@@ -144,6 +89,18 @@ public abstract class TimingSource {
    * Stops the timing source and disposes of its resources.
    */
   public abstract void dispose();
+
+  /**
+   * Submits a task to be run in the thread context of this timing source.
+   * <p>
+   * Implementers should check the the correct thread context of this call
+   * before queuing the task for later execution. If <tt>task.run()</tt> can be
+   * directly invoked this is preferred.
+   * 
+   * @param task
+   *          a task.
+   */
+  protected abstract void runTaskInThreadContext(Runnable task);
 
   /**
    * Listeners that will receive "tick" events.
@@ -209,41 +166,43 @@ public abstract class TimingSource {
   }
 
   /**
+   * A task to notify registered {@link TickListener} and
+   * {@link PostTickListener} objects that a tick of time has elapsed.
+   */
+  private final Runnable f_notifyTickListenersTask = new Runnable() {
+    public void run() {
+      final long nanoTime = System.nanoTime();
+      if (!f_tickListeners.isEmpty())
+        for (TickListener listener : f_tickListeners) {
+          listener.timingSourceTick(TimingSource.this, nanoTime);
+        }
+      if (!f_postTickListeners.isEmpty())
+        for (PostTickListener listener : f_postTickListeners) {
+          listener.timingSourcePostTick(TimingSource.this, nanoTime);
+        }
+    }
+  };
+
+  /**
+   * Used by implementations to directly execute the registered listeners rather
+   * than calling {@link #notifyTickListeners()}.
+   * 
+   * @return the tick listener notification task.
+   */
+  protected Runnable getNotifyTickListenersTask() {
+    return f_notifyTickListenersTask;
+  }
+
+  /**
    * This method notifies this object's {@link TickListener}s and, subsequently,
    * {@link PostTickListener}s that a tick of time has elapsed.
    * <p>
-   * This method should only be invoked by implementations of
-   * {@link TickListenerNotificationContext}. <b>Clients should not invoke this
-   * method in any other context.</b>
+   * Calls will be made in the thread context of this timing source.
    * 
    * @see TickListenerNotificationContext#notifyTickListeners(TimingSource)
    */
   public final void notifyTickListeners() {
-    final long nanoTime = System.nanoTime();
-    if (!f_tickListeners.isEmpty())
-      for (TickListener listener : f_tickListeners) {
-        listener.timingSourceTick(this, nanoTime);
-      }
-    if (!f_postTickListeners.isEmpty())
-      for (PostTickListener listener : f_postTickListeners) {
-        listener.timingSourcePostTick(this, nanoTime);
-      }
-  }
-
-  /**
-   * This method notifies this object's {@link TickListener} objects that a tick
-   * of time has elapsed by calling through the object's
-   * {@link TickListenerNotificationContext}.
-   * <p>
-   * Implementations should invoke this method when they want to notify
-   * {@link TickListener}s that a tick of time has elapsed. They should
-   * <i>not</i> invoke {@link #notifyTickListeners()} directly.
-   */
-  protected final void contextAwareNotifyTickListeners() {
-    if (f_notificationContext == null)
-      notifyTickListeners();
-    else
-      f_notificationContext.notifyTickListenersInContext(this);
+    runTaskInThreadContext(f_notifyTickListenersTask);
   }
 
   /**
@@ -261,9 +220,9 @@ public abstract class TimingSource {
    * @see WrappedRunnable
    */
   public final void contextAwareRunTask(Runnable task) {
-    if (f_notificationContext == null)
-      new WrappedRunnable(task).run();
-    else
-      f_notificationContext.runInContext(new WrappedRunnable(task));
+    if (task == null)
+      return;
+    final WrappedRunnable wrapped = new WrappedRunnable(task);
+    runTaskInThreadContext(wrapped);
   }
 }
