@@ -75,22 +75,34 @@ source.dispose(); // stops the timer
 
 <li>Use of the builder pattern to construct key frames and the ability to examine key frames objects.
 For example, the following snippet, taken from the <tt>DiscreteInterpolationTest</tt> demo, constructs
-a five key frames using discrete interpolation and then outputs the contents via iteration of the key
+a five integer-valued key frames, directs the use of discrete interpolation between the values, and
+outputs the contents via iteration of the key
 frames object.
 <pre>
-final KeyFrames<Integer> keyFrames = new KeyFramesBuilder<Integer>().addFrames(2, 6, 3, 5, 4)
-                                                  .setInterpolator(DiscreteInterpolator.getInstance())
-                                                  .build();
+final KeyFrames&lt;Integer&gt; keyFrames = new KeyFramesBuilder&lt;Integer&gt;().addFrames(2, 6, 3, 5, 4)
+                                           .setInterpolator(DiscreteInterpolator.getInstance())
+                                           .build();
 out("Constructed Key Frames");
 out("----------------------");
 int i = 0;
-for (KeyFrames.Frame<Integer> keyFrame : keyFrames) {
+for (KeyFrames.Frame&lt;Integer&gt; keyFrame : keyFrames) {
   final String s = keyFrame.getInterpolator() == null ? "null" : keyFrame.getInterpolator().getClass().getSimpleName();
   out(String.format("Frame %d: value=%d timeFraction=%f interpolator=%s", i++, keyFrame.getValue(), keyFrame.getTimeFraction(), s));
 }
 </pre>
-The output of this snippet is listed below. Notice that the interpolator for the first frame
-is <tt>null</tt>. This is because the interpolator for a time duration is stored with the end time.
+Alternatively, the key frames could have been constructed frame by frame, even including specific timing fractions for the key frame value, as shown below.
+<pre>
+final KeyFrames&lt;Integer&gt; keyFrames = new KeyFramesBuilder&lt;Integer&gt;()
+                                           .addFrame(2, DiscreteInterpolator.getInstance())
+                                           .addFrame(6, DiscreteInterpolator.getInstance())
+                                           .addFrame(3, 0.5, DiscreteInterpolator.getInstance())
+                                           .addFrame(5, DiscreteInterpolator.getInstance())
+                                           .addFrame(4, DiscreteInterpolator.getInstance())
+                                           .build();
+</pre>
+Regardless of how the key frames are constructed, the output of this snippet is listed below. Notice that
+the interpolator for the first frame is <tt>null</tt>. This is because the interpolator for a
+time duration is stored with the end time.
 <pre>
 Constructed Key Frames
 ----------------------
@@ -103,11 +115,15 @@ Frame 4: value=4 timeFraction=1.000000 interpolator=DiscreteInterpolator
 </li>
 
 <li>The addition of the <tt>KeyFramesTimingTarget</tt> to make it easier to use key frames without being
-forced to use <tt>PropertySetter</tt>.</li>
+forced to use a <tt>PropertySetter</tt>. This can avoid reflective <tt>get</tt> / <tt>set</tt> calls.</li>
 
 <li><tt>PropertySetter</tt> has been changed to a utility that returns <tt>TimingTargets</tt>. In particular
 "to" animations, where the current value of the property is used as the starting value for an animation, are
 far more flexible.
+
+<li>A Swing and SWT rendering infrastructure. In Swing both passive and active rendering are supported. In SWT,
+due to its current implementation, only passive rendering is supported. The <tt>TooManyBalls</tt> demo uses
+the rendering infrastructure.</li>
 
 <li>A multi-thread safe implementation that takes advantage of the
 <tt>util.concurrent</tt> library.</li>
