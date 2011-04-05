@@ -205,7 +205,7 @@ public abstract class TimingSource {
    * <p>
    * Calls will be made in the thread context of this timing source.
    */
-  public final void notifyTickListeners() {
+  protected final void notifyTickListeners() {
     runTaskInThreadContext(f_notifyTickListenersTask);
   }
 
