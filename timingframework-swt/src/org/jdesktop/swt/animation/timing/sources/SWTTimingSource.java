@@ -27,6 +27,10 @@ import org.jdesktop.core.animation.timing.TimingSource;
  * ts.dispose(); // done using ts
  * </pre>
  * 
+ * If you are not sure what period to set, use the
+ * {@link #SWTTimingSource(Display)} constructor which uses a reasonable default
+ * value of 15 milliseconds.
+ * <p>
  * Calls to registered {@link TickListener} and {@link PostTickListener} objects
  * from this timing source are always made in the context of the SWT UI thread.
  * Further, any tasks submitted to {@link #submit(Runnable)} are run in the
