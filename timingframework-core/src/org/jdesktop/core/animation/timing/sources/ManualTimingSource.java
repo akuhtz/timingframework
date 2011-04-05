@@ -13,10 +13,6 @@ import org.jdesktop.core.animation.timing.TimingSource;
  */
 public final class ManualTimingSource extends TimingSource {
 
-  public ManualTimingSource() {
-    super(null);
-  }
-
   @Override
   public void init() {
     // nothing to do
@@ -32,5 +28,12 @@ public final class ManualTimingSource extends TimingSource {
   @Override
   public void dispose() {
     // nothing to do
+  }
+
+  @Override
+  protected void runTaskInThreadContext(Runnable task) {
+    if (task == null)
+      return;
+    task.run();
   }
 }

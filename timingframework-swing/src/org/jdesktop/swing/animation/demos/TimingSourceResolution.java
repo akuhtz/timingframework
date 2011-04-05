@@ -19,7 +19,6 @@ import javax.swing.WindowConstants;
 import org.jdesktop.core.animation.timing.TimingSource;
 import org.jdesktop.core.animation.timing.TimingSource.TickListener;
 import org.jdesktop.core.animation.timing.sources.ScheduledExecutorTimingSource;
-import org.jdesktop.swing.animation.timing.sources.SwingNotificationContext;
 import org.jdesktop.swing.animation.timing.sources.SwingTimerTimingSource;
 
 /**
@@ -32,15 +31,11 @@ import org.jdesktop.swing.animation.timing.sources.SwingTimerTimingSource;
  * via their Timing Framework {@link TimingSource} implementations rather than
  * directly.
  * <p>
- * Three timing source configurations are benchmarked:
+ * Two timing source configurations are benchmarked:
  * <ol>
  * <li>{@link SwingTimerTimingSource} (within Swing EDT) &ndash; As discussed in
  * the book, this timer has the advantage that all calls made from it are within
  * the EDT.</li>
- * <li>{@link ScheduledExecutorTimingSource} (within Swing EDT) &ndash; This
- * timing source is provided by a <tt>util.concurrent</tt> and uses
- * {@link SwingUtilities#invokeLater(Runnable)} to ensure that all calls from it
- * are within the EDT.</li>
  * <li>{@link ScheduledExecutorTimingSource} (within timer thread) &ndash; This
  * timing source is provided by a <tt>util.concurrent</tt> and calls from it are
  * within its tread context.</li>
@@ -154,13 +149,6 @@ public class TimingSourceResolution {
     }
   }
 
-  static class SwingScheduledExecutorFactory implements TimingSourceFactory {
-    @Override
-    public TimingSource getTimingSource(int periodMillis) {
-      return new ScheduledExecutorTimingSource(new SwingNotificationContext(), periodMillis, TimeUnit.MILLISECONDS);
-    }
-  }
-
   static class ScheduledExecutorFactory implements TimingSourceFactory {
     @Override
     public TimingSource getTimingSource(int periodMillis) {
@@ -211,7 +199,6 @@ public class TimingSourceResolution {
       out(String.format("%d processors available on this machine\n", Runtime.getRuntime().availableProcessors()));
 
       timeResolution.measureTimingSource(new SwingTimerFactory(), "SwingTimerTimingSource (Calls in EDT)", true);
-      timeResolution.measureTimingSource(new SwingScheduledExecutorFactory(), "ScheduledExecutorTimingSource (Calls in EDT)", true);
       timeResolution.measureTimingSource(new ScheduledExecutorFactory(), "ScheduledExecutorTimingSource (Calls in timer thread)",
           false);
 

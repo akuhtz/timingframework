@@ -50,7 +50,7 @@ public final class SWTTimingSource extends TimingSource {
   private final Runnable f_periodic = new Runnable() {
     public void run() {
       if (f_running.get()) {
-        contextAwareNotifyTickListeners();
+        getNotifyTickListenersTask().run();
         f_display.get().timerExec(f_periodMillis, f_periodic);
       }
     }
@@ -75,28 +75,6 @@ public final class SWTTimingSource extends TimingSource {
    *          called on this timer.
    */
   public SWTTimingSource(long period, TimeUnit unit, final Display display) {
-    super(new TickListenerNotificationContext() {
-
-      public void notifyTickListenersInContext(TimingSource source) {
-        /*
-         * Because of the use of the SWT timer we are already in the thread
-         * context of the SWT UI thread.
-         */
-        source.notifyTickListeners();
-      }
-
-      public void runInContext(final Runnable task) {
-        (display == null ? Display.getDefault() : display).asyncExec(new Runnable() {
-          @Override
-          public void run() {
-            /*
-             * Run the task within the thread context of the SWT UI thread.
-             */
-            task.run();
-          }
-        });
-      }
-    });
     int periodMillis = (int) unit.toMillis(period);
     if (periodMillis != unit.toMillis(period))
       periodMillis = 1;
@@ -133,5 +111,21 @@ public final class SWTTimingSource extends TimingSource {
   @Override
   public void dispose() {
     f_running.set(false);
+  }
+
+  @Override
+  protected void runTaskInThreadContext(final Runnable task) {
+    Display display = f_display.get(); // handle unlikely null
+    if (display == null)
+      display = Display.getDefault();
+    display.asyncExec(new Runnable() {
+      @Override
+      public void run() {
+        /*
+         * Run the task within the thread context of the SWT UI thread.
+         */
+        task.run();
+      }
+    });
   }
 }

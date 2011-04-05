@@ -14,7 +14,6 @@ import org.eclipse.swt.widgets.Text;
 import org.jdesktop.core.animation.timing.TimingSource;
 import org.jdesktop.core.animation.timing.TimingSource.TickListener;
 import org.jdesktop.core.animation.timing.sources.ScheduledExecutorTimingSource;
-import org.jdesktop.swt.animation.timing.sources.SWTNotificationContext;
 import org.jdesktop.swt.animation.timing.sources.SWTTimingSource;
 
 /**
@@ -27,15 +26,11 @@ import org.jdesktop.swt.animation.timing.sources.SWTTimingSource;
  * via their Timing Framework {@link TimingSource} implementations rather than
  * directly.
  * <p>
- * Three timing source configurations are benchmarked:
+ * Two timing source configurations are benchmarked:
  * <ol>
  * <li>{@link SWTTimingSource} (within SWT UI thread) &ndash; As discussed in
  * the book, this timer has the advantage that all calls made from it are within
  * the EDT.</li>
- * <li>{@link ScheduledExecutorTimingSource} (within SWT UI thread) &ndash; This
- * timing source is provided by a <tt>util.concurrent</tt> and uses
- * {@link Display#asyncExec(Runnable)} to ensure that all calls from it are
- * within the SWT UI thread.</li>
  * <li>{@link ScheduledExecutorTimingSource} (within timer thread) &ndash; This
  * timing source is provided by a <tt>util.concurrent</tt> and calls from it are
  * within its tread context.</li>
@@ -168,13 +163,6 @@ public class TimingSourceResolution {
     }
   }
 
-  static class SWTScheduledExecutorFactory implements TimingSourceFactory {
-    @Override
-    public TimingSource getTimingSource(int periodMillis) {
-      return new ScheduledExecutorTimingSource(new SWTNotificationContext(), periodMillis, TimeUnit.MILLISECONDS);
-    }
-  }
-
   static class ScheduledExecutorFactory implements TimingSourceFactory {
     @Override
     public TimingSource getTimingSource(int periodMillis) {
@@ -193,8 +181,6 @@ public class TimingSourceResolution {
       out(String.format("%d processors available on this machine\n", Runtime.getRuntime().availableProcessors()));
 
       timeResolution.measureTimingSource(new SWTTimerFactory(), "SWTTimingSource (Calls in SWT UI thread)", true);
-      timeResolution.measureTimingSource(new SWTScheduledExecutorFactory(),
-          "ScheduledExecutorTimingSource (Calls in SWT UI thread)", true);
       timeResolution.measureTimingSource(new ScheduledExecutorFactory(), "ScheduledExecutorTimingSource (Calls in timer thread)",
           false);
 
