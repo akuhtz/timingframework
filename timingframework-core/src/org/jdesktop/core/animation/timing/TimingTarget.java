@@ -1,13 +1,20 @@
 package org.jdesktop.core.animation.timing;
 
 /**
- * This interface provides the methods which are called by Animator during the
- * course of a timing sequence. Applications that wish to receive timing events
- * will either create a subclass of TimingTargetAdapter and override or they can
- * create or use an implementation of TimingTarget. A TimingTarget can be passed
- * into the constructor of Animator or set later with the
- * {@link Animator#addTarget(TimingTarget)} method. Any Animator may have
- * multiple TimingTargets.
+ * This interface provides the methods which are called by an animation during
+ * the course of a timing sequence. Applications that wish to receive timing
+ * events will either create a subclass of {@link TimingTargetAdapter} and
+ * override methods of interest or they can create or use an implementation of
+ * {@link TimingTarget}. A timing target can be passed into an
+ * {@link AnimatorBuilder} via the
+ * {@link AnimatorBuilder#addTarget(TimingTarget)} method or set later with the
+ * {@link Animator#addTarget(TimingTarget)} method. Any animation may have
+ * multiple timing targets.
+ * <p>
+ * The thread context of calls to all the methods defined below is that of the
+ * {@link TimingSource.TickListenerNotificationContext} of the
+ * {@link TimingSource} being used by the animation. This thread context is
+ * typically well-documented for each {@link TimingSource} subclass.
  * 
  * @author Chet Haase
  * @author Tim Halloran
