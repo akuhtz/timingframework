@@ -73,6 +73,42 @@ source.dispose(); // stops the timer
 </pre>
 </li>
 
+<li>Use of the builder pattern to construct key frames and the ability to examine key frames objects.
+For example, the following snippet, taken from the <tt>DiscreteInterpolationTest</tt> demo, constructs
+a five key frames using discrete interpolation and then outputs the contents via iteration of the key
+frames object.
+<pre>
+final KeyFrames<Integer> keyFrames = new KeyFramesBuilder<Integer>().addFrames(2, 6, 3, 5, 4)
+                                                  .setInterpolator(DiscreteInterpolator.getInstance())
+                                                  .build();
+out("Constructed Key Frames");
+out("----------------------");
+int i = 0;
+for (KeyFrames.Frame<Integer> keyFrame : keyFrames) {
+  final String s = keyFrame.getInterpolator() == null ? "null" : keyFrame.getInterpolator().getClass().getSimpleName();
+  out(String.format("Frame %d: value=%d timeFraction=%f interpolator=%s", i++, keyFrame.getValue(), keyFrame.getTimeFraction(), s));
+}
+</pre>
+The output of this snippet is listed below. Notice that the interpolator for the first frame
+is <tt>null</tt>. This is because the interpolator for a time duration is stored with the end time.
+<pre>
+Constructed Key Frames
+----------------------
+Frame 0: value=2 timeFraction=0.000000 interpolator=null
+Frame 1: value=6 timeFraction=0.250000 interpolator=DiscreteInterpolator
+Frame 2: value=3 timeFraction=0.500000 interpolator=DiscreteInterpolator
+Frame 3: value=5 timeFraction=0.750000 interpolator=DiscreteInterpolator
+Frame 4: value=4 timeFraction=1.000000 interpolator=DiscreteInterpolator
+</pre>
+</li>
+
+<li>The addition of the <tt>KeyFramesTimingTarget</tt> to make it easier to use key frames without being
+forced to use <tt>PropertySetter</tt>.</li>
+
+<li><tt>PropertySetter</tt> has been changed to a utility that returns <tt>TimingTargets</tt>. In particular
+"to" animations, where the current value of the property is used as the starting value for an animation, are
+far more flexible.
+
 <li>A multi-thread safe implementation that takes advantage of the
 <tt>util.concurrent</tt> library.</li>
 </ul>
@@ -81,24 +117,23 @@ source.dispose(); // stops the timer
 
 <p>The Swing and SWT releases contain several demonstration programs that can be run from the
 release Jar file or built from source code. Many of these demonstration programs are updated
-versions of the programs presented in <i>Filthy Rich Clients</i> and they are organized by
-chapter, e.g., <tt>ch14</tt> for Chapter 14. Each demonstration is described in the book
-and within its source code.
+versions of the programs presented in <i>Filthy Rich Clients</i>.
+Their description in the book is referenced in the list below.
 
 <p>The Swing demonstrations are:
 
 <ul>
-<li><tt>org.jdesktop.swing.animation.timing.demos.ch12.TimingSourceResolution</tt></li>
-<li><tt>org.jdesktop.swing.animation.timing.demos.ch14.FadingButtonTF</tt></li>
-<li><tt>org.jdesktop.swing.animation.timing.demos.ch14.BasicRace</tt></li>
-<li><tt>org.jdesktop.swing.animation.timing.demos.ch14.NonLinearRace</tt></li>
-<li><tt>org.jdesktop.swing.animation.timing.demos.ch14.SplineInterpolatorTest</tt></li>
-<li><tt>org.jdesktop.swing.animation.timing.demos.ch15.Triggers</tt></li>
-<li><tt>org.jdesktop.swing.animation.timing.demos.ch15.ClickAndGo</tt> (not in the book&mdash;demonstrates non-trivial property setters)</li>
-<li><tt>org.jdesktop.swing.animation.timing.demos.ch15.DiscreteInterpolation</tt> (console)</li>
-<li><tt>org.jdesktop.swing.animation.timing.demos.ch15.MultiStepRace</tt></li>
-<li><tt>org.jdesktop.swing.animation.timing.demos.javaone2008.TooManyBallsBroken</tt> (illustrates the Swing timer issues Chet Haase discussed at JavaOne 2008)</li>
-<li><tt>org.jdesktop.swing.animation.timing.demos.javaone2008.TooManyBalls</tt> (fixed version&mdash;this demonstration is the Jar's <tt>Main-Class</tt>)</li>
+<li><tt>org.jdesktop.swing.animation.demos.TimingSourceResolution</tt> (Chapter 12 on pages 288&ndash;300)</li>
+<li><tt>org.jdesktop.swing.animation.demos.FadingButtonTF</tt> (Chapter 14 on pages 353&ndash;356)</li>
+<li><tt>org.jdesktop.swing.animation.demos.RaceBasic</tt> (Chapter 14 on pages 357&ndash;359; called <tt>BasicRace</tt>)</li>
+<li><tt>org.jdesktop.swing.animation.demos.RaceBasicNonLinear</tt> (Chapter 14 on pages 363&ndash;364; called <tt>NonLinearRace</tt>)</li>
+<li><tt>org.jdesktop.swing.animation.demos.SplineInterpolatorTest</tt> (Chapter 14 on pages 372&ndash;375)</li>
+<li><tt>org.jdesktop.swing.animation.demos.Triggers</tt> (Chapter 15 on pages 388&ndash;391)</li>
+<li><tt>org.jdesktop.swing.animation.demos.ClickAndGo</tt> (demonstrates "to" property setters as discussed in Chapter 15)</li>
+<li><tt>org.jdesktop.swing.animation.demos.DiscreteInterpolationTest</tt> (Chapter 15 on page 410, called <tt>DiscreateInterpolation</tt>)</li>
+<li><tt>org.jdesktop.swing.animation.demos.RaceCompleteMultiStep</tt> (Chapter 15 on pages 414&ndash;419; called <tt>MultiStepRace</tt>)</li>
+<li><tt>org.jdesktop.swing.animation.demos.TooManyBallsBroken</tt> (illustrates the Swing timer issue Chet Haase discussed at JavaOne 2008)</li>
+<li><tt>org.jdesktop.swing.animation.demos.TooManyBalls</tt> (fixed version)</li>
 </ul>
 
 <p>To run one of the demonstrations from the release Jar file use:
@@ -108,7 +143,7 @@ and within its source code.
 <p>The Swing <tt>TooManyBalls</tt> demonstration can be changed from passive rendering to game-like active
 rendering (see the <tt>JActiveRenderer</tt> class) by defining the <tt>org.jdesktop.renderer.active</tt> property. For example, use:
 
-<p><tt>java -cp timingframework-swing-3.0.jar -Dorg.jdesktop.renderer.active=true org.jdesktop.swing.animation.timing.demos.javaone2008.TooManyBalls</tt>
+<p><tt>java -cp timingframework-swing-3.0.jar -Dorg.jdesktop.renderer.active=true org.jdesktop.swing.animation.demos.TooManyBalls</tt>
 
 <p>On some computers active rendering looks smoother, but has the cost of using two processors and lots of memory. It is perhaps
 more appropriate for a game than a desktop application. It is, however, straightforward to write programs that can change from passive
@@ -120,16 +155,16 @@ to active rendering, like <tt>TooManyBalls</tt> does, by implementing <tt>JRende
 <p>The SWT demonstrations are:
 
 <ul>
-<li><tt>org.jdesktop.swt.animation.timing.demos.ch12.TimingSourceResolution</tt></li>
-<li><tt>org.jdesktop.swt.animation.timing.demos.ch14.FadingButtonTF</tt> (fades the background not the button because SWT doesn't support transparent components)</li>
-<li><tt>org.jdesktop.swt.animation.timing.demos.ch14.BasicRace</tt></li>
-<li><tt>org.jdesktop.swt.animation.timing.demos.ch14.NonLinearRace</tt></li>
-<li><tt>org.jdesktop.swt.animation.timing.demos.ch14.SplineInterpolatorTest</tt></li>
-<li><tt>org.jdesktop.swt.animation.timing.demos.ch15.Triggers</tt></li>
-<li><tt>org.jdesktop.swt.animation.timing.demos.ch15.ClickAndGo</tt> (not in the book&mdash;demonstrates non-trivial property setters)</li>
-<li><tt>org.jdesktop.swt.animation.timing.demos.ch15.DiscreteInterpolation</tt> (console)</li>
-<li><tt>org.jdesktop.swt.animation.timing.demos.ch15.MultiStepRace</tt></li>
-<li><tt>org.jdesktop.swt.animation.timing.demos.javaone2008.TooManyBalls</tt> (SWT version&mdash;this demonstration is the Jar's <tt>Main-Class</tt>)</li>
+<li><tt>org.jdesktop.swt.animation.demos.TimingSourceResolution</tt> (Chapter 12 on pages 288&ndash;300)</li>
+<li><tt>org.jdesktop.swt.animation.demos.FadingButtonTF</tt> (Chapter 14 on pages 353&ndash;356; fades the background not the button because SWT doesn't support transparent components)</li>
+<li><tt>org.jdesktop.swt.animation.demos.RaceBasic</tt> (Chapter 14 on pages 357&ndash;359; called <tt>BasicRace</tt>)</li>
+<li><tt>org.jdesktop.swt.animation.demos.RaceBasicNonLinear</tt> (Chapter 14 on pages 363&ndash;364; called <tt>NonLinearRace</tt>)</li>
+<li><tt>org.jdesktop.swt.animation.demos.SplineInterpolatorTest</tt> (Chapter 14 on pages 372&ndash;375)</li>
+<li><tt>org.jdesktop.swt.animation.demos.Triggers</tt> (Chapter 15 on pages 388&ndash;391)</li>
+<li><tt>org.jdesktop.swt.animation.demos.ClickAndGo</tt> (demonstrates "to" property setters as discussed in Chapter 15)</li>
+<li><tt>org.jdesktop.swt.animation.demos.DiscreteInterpolationTest</tt> (Chapter 15 on page 410, called <tt>DiscreateInterpolation</tt>)</li>
+<li><tt>org.jdesktop.swt.animation.demos.RaceCompleteMultiStep</tt> (Chapter 15 on pages 414&ndash;419; called <tt>MultiStepRace</tt>)</li>
+<li><tt>org.jdesktop.swt.animation.demos.TooManyBalls</tt> (SWT version)</li>
 </ul>
 
 <p>To run one of the SWT demonstrations from the release Jar file use:

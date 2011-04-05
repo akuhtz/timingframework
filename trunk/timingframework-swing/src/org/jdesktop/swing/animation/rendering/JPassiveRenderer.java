@@ -6,18 +6,13 @@ import java.util.concurrent.TimeUnit;
 
 import javax.swing.SwingUtilities;
 
+import org.jdesktop.core.animation.i18n.I18N;
 import org.jdesktop.core.animation.rendering.JRenderer;
 import org.jdesktop.core.animation.rendering.JRendererTarget;
 import org.jdesktop.core.animation.timing.TimingSource;
 import org.jdesktop.core.animation.timing.TimingSource.PostTickListener;
 
 public class JPassiveRenderer implements JRenderer<JRendererPanel> {
-
-  /*
-   * Some messages if things go wrong.
-   */
-  private static final String E_EDT_REQUIRED = "This code must be invoked within the Swing Event Dispatch Thread (EDT).";
-  private static final String E_NON_NULL = "%s must be non-null.";
 
   /*
    * Thread-confined to the EDT thread
@@ -47,18 +42,18 @@ public class JPassiveRenderer implements JRenderer<JRendererPanel> {
 
   public JPassiveRenderer(JRendererPanel on, JRendererTarget<GraphicsConfiguration, Graphics2D> target, TimingSource timingSource) {
     if (!SwingUtilities.isEventDispatchThread())
-      throw new IllegalStateException(E_EDT_REQUIRED);
+      throw new IllegalStateException(I18N.err(100));
 
     if (on == null)
-      throw new IllegalArgumentException(String.format(E_NON_NULL, "on"));
+      throw new IllegalArgumentException(I18N.err(1, "on"));
     f_on = on;
 
     if (target == null)
-      throw new IllegalArgumentException(String.format(E_NON_NULL, "life"));
+      throw new IllegalArgumentException(I18N.err(1, "life"));
     f_target = target;
 
     if (timingSource == null)
-      throw new IllegalArgumentException(String.format(E_NON_NULL, "timingSource"));
+      throw new IllegalArgumentException(I18N.err(1, "timingSource"));
     f_ts = timingSource;
 
     f_on.setDoubleBuffered(true);

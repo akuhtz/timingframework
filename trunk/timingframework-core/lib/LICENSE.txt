@@ -1,5 +1,7 @@
-TIMING FRAMEWORK
-A library for making Java animation and timing-based control easier!
+++----------------------------------------------------------------------++
+|| TIMING FRAMEWORK                                                     ||
+|| A library for making Java animation and timing-based control easier! ||
+++----------------------------------------------------------------------++
 
 Report bugs, read the documentation, and get new releases at:
    http://java.net/projects/timingframework/
