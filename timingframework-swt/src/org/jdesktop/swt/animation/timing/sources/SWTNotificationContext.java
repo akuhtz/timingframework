@@ -55,6 +55,5 @@ public final class SWTNotificationContext implements TickListenerNotificationCon
         task.run();
       }
     });
-
   }
 }
