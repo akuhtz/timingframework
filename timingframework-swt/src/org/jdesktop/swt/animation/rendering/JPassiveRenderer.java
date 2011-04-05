@@ -7,18 +7,13 @@ import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Display;
+import org.jdesktop.core.animation.i18n.I18N;
 import org.jdesktop.core.animation.rendering.JRenderer;
 import org.jdesktop.core.animation.rendering.JRendererTarget;
 import org.jdesktop.core.animation.timing.TimingSource;
 import org.jdesktop.core.animation.timing.TimingSource.PostTickListener;
 
 public class JPassiveRenderer implements JRenderer<Canvas> {
-
-  /*
-   * Some messages if things go wrong.
-   */
-  private static final String E_UIT_REQUIRED = "This code must be invoked within the SWT UI thread.";
-  private static final String E_NON_NULL = "%s must be non-null.";
 
   /*
    * Thread-confined to the SWT UI thread
@@ -49,18 +44,18 @@ public class JPassiveRenderer implements JRenderer<Canvas> {
 
   public JPassiveRenderer(Canvas on, JRendererTarget<Display, GC> target, TimingSource timingSource) {
     if (on == null)
-      throw new IllegalArgumentException(String.format(E_NON_NULL, "on"));
+      throw new IllegalArgumentException(I18N.err(1, "on"));
     f_on = on;
 
     if (!on.getDisplay().getThread().equals(Thread.currentThread()))
-      throw new IllegalStateException(E_UIT_REQUIRED);
+      throw new IllegalStateException(I18N.err(200));
 
     if (target == null)
-      throw new IllegalArgumentException(String.format(E_NON_NULL, "life"));
+      throw new IllegalArgumentException(I18N.err(1, "life"));
     f_target = target;
 
     if (timingSource == null)
-      throw new IllegalArgumentException(String.format(E_NON_NULL, "timingSource"));
+      throw new IllegalArgumentException(I18N.err(1, "timingSource"));
     f_ts = timingSource;
 
     f_on.addPaintListener(new PaintListener() {

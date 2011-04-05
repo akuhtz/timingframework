@@ -20,9 +20,11 @@ import java.util.logging.Logger;
 import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 
+import org.jdesktop.core.animation.i18n.I18N;
 import org.jdesktop.core.animation.rendering.JRenderer;
 import org.jdesktop.core.animation.rendering.JRendererTarget;
 import org.jdesktop.core.animation.timing.TimingSource;
+import org.jdesktop.core.animation.timing.WrappedRunnable;
 import org.jdesktop.core.animation.timing.sources.ManualTimingSource;
 
 /**
@@ -194,14 +196,6 @@ public final class JActiveRenderer implements JRenderer<JRendererPanel> {
   private final JRendererPanel f_on;
   private final boolean f_hasChildren;
 
-  /*
-   * Some messages if things go wrong.
-   */
-  private static final String E_AWAIT_INTR = "await() on the Swing EDT paint CountDownLatch in the rendering cycle was interrupted.";
-  private static final String E_EDT_REQUIRED = "This code must be invoked within the Swing Event Dispatch Thread (EDT).";
-  private static final String E_NON_NULL = "%s must be non-null.";
-  private static final String E_UNEXPECTED = "Unexpected %s thrown in the renderer thread.";
-
   /**
    * Constructs a new active renderer.
    * <p>
@@ -223,14 +217,14 @@ public final class JActiveRenderer implements JRenderer<JRendererPanel> {
    */
   public JActiveRenderer(JRendererPanel on, JRendererTarget<GraphicsConfiguration, Graphics2D> target, boolean hasChildren) {
     if (!SwingUtilities.isEventDispatchThread())
-      throw new IllegalStateException(E_EDT_REQUIRED);
+      throw new IllegalStateException(I18N.err(100));
 
     if (on == null)
-      throw new IllegalArgumentException(String.format(E_NON_NULL, "on"));
+      throw new IllegalArgumentException(I18N.err(1, "on"));
     f_on = on;
 
     if (target == null)
-      throw new IllegalArgumentException(String.format(E_NON_NULL, "life"));
+      throw new IllegalArgumentException(I18N.err(1, "life"));
     f_target = target;
 
     f_hasChildren = hasChildren;
@@ -367,7 +361,7 @@ public final class JActiveRenderer implements JRenderer<JRendererPanel> {
     if (SwingUtilities.isEventDispatchThread()) {
       return f_on;
     } else
-      throw new IllegalStateException(E_EDT_REQUIRED);
+      throw new IllegalStateException(I18N.err(100));
   }
 
   @Override
@@ -409,7 +403,7 @@ public final class JActiveRenderer implements JRenderer<JRendererPanel> {
         try {
           edtPaintLatch.await();
         } catch (InterruptedException e) {
-          Logger.getAnonymousLogger().log(Level.WARNING, E_AWAIT_INTR, e);
+          Logger.getAnonymousLogger().log(Level.WARNING, I18N.err(101), e);
         }
       }
 
@@ -467,28 +461,6 @@ public final class JActiveRenderer implements JRenderer<JRendererPanel> {
       }
       if (!f_shutdownRendering.get())
         invokeLater(this);
-    }
-  };
-
-  /**
-   * Used to wrap tasks that run on the rendering thread so that any unhandled
-   * exceptions are logged.
-   */
-  private static class WrappedRunnable implements Runnable {
-
-    private WrappedRunnable(Runnable task) {
-      f_task = task;
-    }
-
-    private final Runnable f_task;
-
-    @Override
-    public void run() {
-      try {
-        f_task.run();
-      } catch (Exception e) {
-        Logger.getAnonymousLogger().log(Level.SEVERE, String.format(E_UNEXPECTED, e.getClass().getSimpleName()), e);
-      }
     }
   };
 
