@@ -12,9 +12,8 @@ package org.jdesktop.core.animation.timing;
  * multiple timing targets.
  * <p>
  * The thread context of calls to all the methods defined below is that of the
- * {@link TimingSource.TickListenerNotificationContext} of the
- * {@link TimingSource} being used by the animation. This thread context is
- * typically well-documented for each {@link TimingSource} subclass.
+ * of the timing source being used by the animation. This thread context is
+ * typically documented for each {@link TimingSource} subclass.
  * 
  * @author Chet Haase
  * @author Tim Halloran

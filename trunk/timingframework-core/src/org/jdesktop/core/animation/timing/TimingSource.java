@@ -62,7 +62,7 @@ public abstract class TimingSource {
    * {@link TickListener} objects have been notified. The
    * {@link PostTickListener} implementation is registered as a listener of the
    * {@link TimingSource} via the
-   * {@link TimingSource#addPostTickListener(TickListener)} method.
+   * {@link TimingSource#addPostTickListener(PostTickListener)} method.
    * <p>
    * For example, a {@link PostTickListener} could be used to call
    * <tt>repaint()</tt> after a large number of animations (which register
@@ -188,8 +188,10 @@ public abstract class TimingSource {
   };
 
   /**
-   * Used by implementations to directly execute the registered listeners rather
-   * than calling {@link #notifyTickListeners()}.
+   * Used by implementations to directly execute the registered listeners
+   * notification task rather than calling {@link #notifyTickListeners()}. If
+   * the implementation knows that it is within the correct thread context this
+   * approach can improve performance.
    * 
    * @return the tick listener notification task.
    */
@@ -202,8 +204,6 @@ public abstract class TimingSource {
    * {@link PostTickListener}s that a tick of time has elapsed.
    * <p>
    * Calls will be made in the thread context of this timing source.
-   * 
-   * @see TickListenerNotificationContext#notifyTickListeners(TimingSource)
    */
   public final void notifyTickListeners() {
     runTaskInThreadContext(f_notifyTickListenersTask);

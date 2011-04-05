@@ -31,7 +31,7 @@ import org.jdesktop.core.animation.timing.TimingSource;
  * {@link #SWTTimingSource(Display)} constructor which uses a reasonable default
  * value of 15 milliseconds.
  * <p>
- * Calls to registered {@link TickListener} and {@link PostTickListener} objects
+ * Calls to registered {@code TickListener} and {@code PostTickListener} objects
  * from this timing source are always made in the context of the SWT UI thread.
  * Further, any tasks submitted to {@link #submit(Runnable)} are run in the
  * thread context of the SWT UI thread as well.

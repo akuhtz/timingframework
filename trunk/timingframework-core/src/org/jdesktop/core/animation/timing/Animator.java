@@ -432,7 +432,7 @@ public final class Animator implements TickListener {
    * animations will stop on their own.
    * <p>
    * This call will result in calls to the {@link TimingTarget#end(Animator)}
-   * method of all the registered {@link TimingTargets} of this animation.
+   * method of all the registered timing targets of this animation.
    * 
    * @see #cancel()
    */
