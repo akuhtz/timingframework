@@ -37,7 +37,7 @@ public final class SWTNotificationContext implements TickListenerNotificationCon
       @Override
       public void run() {
         /*
-         * Notify listeners within the thread context of the Swing EDT.
+         * Notify listeners within the thread context of the SWT UI thread.
          */
         source.notifyTickListeners();
       }
@@ -50,7 +50,7 @@ public final class SWTNotificationContext implements TickListenerNotificationCon
       @Override
       public void run() {
         /*
-         * Run the task within the thread context of the Swing EDT.
+         * Run the task within the thread context of the SWT UI thread.
          */
         task.run();
       }
