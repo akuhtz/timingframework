@@ -27,7 +27,7 @@ public class RaceControlPanel extends Composite {
     goButton = new Button(this, SWT.PUSH);
     goButton.setText("Go");
     reverseButton = new Button(this, SWT.PUSH);
-    reverseButton.setText("Reverse");
+    reverseButton.setText("Reverse Direction");
     pauseResumeButton = new Button(this, SWT.PUSH);
     pauseResumeButton.setText("Pause/Resume");
     stopButton = new Button(this, SWT.PUSH);
