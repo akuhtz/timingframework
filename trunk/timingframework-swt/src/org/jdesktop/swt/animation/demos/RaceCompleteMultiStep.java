@@ -44,7 +44,7 @@ public final class RaceCompleteMultiStep {
     final Shell shell = new Shell(display);
     shell.setLayout(new FillLayout());
 
-    final TimingSource ts = new SWTTimingSource(15, TimeUnit.MILLISECONDS, display);
+    final TimingSource ts = new SWTTimingSource(display);
     AnimatorBuilder.setDefaultTimingSource(ts);
     ts.init();
 

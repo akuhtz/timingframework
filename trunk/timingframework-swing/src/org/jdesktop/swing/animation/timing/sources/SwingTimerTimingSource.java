@@ -12,7 +12,7 @@ import org.jdesktop.core.animation.timing.TimingSource;
 /**
  * An implementation of {@link TimingSource} using a Swing {@link Timer}. This
  * implementation ensures that calls to registered {@code TickListener} and
- * {@code PostTickListener}objects are always made within the thread context of
+ * {@code PostTickListener} objects are always made within the thread context of
  * the Swing EDT.
  * <p>
  * A typical use, where {@code tl} is a {@code TickListener} object, would be
@@ -28,6 +28,11 @@ import org.jdesktop.core.animation.timing.TimingSource;
  * ts.dispose(); // done using ts
  * </pre>
  * 
+ * Calls to registered {@link TickListener} and {@link PostTickListener} objects
+ * from this timing source are always made in the context of the Swing EDT.
+ * Further, any tasks submitted to {@link #submit(Runnable)} are run in the
+ * thread context of the Swing EDT as well.
+ * 
  * @author Tim Halloran
  */
 public final class SwingTimerTimingSource extends TimingSource {
@@ -35,15 +40,15 @@ public final class SwingTimerTimingSource extends TimingSource {
   private final Timer f_timer;
 
   /**
-   * javax.swing.Timer
-   * 
-   * 
    * Constructs a new instance. The {@link #init()} must be called on the new
    * instance to start the timer. The {@link #dispose()} method should be called
    * to stop the timer.
    * <p>
    * The Swing timer requires a period of at least 1 millisecond. If the period
-   * passed is smaller it is rounded up to 1 millisecond.
+   * passed is smaller, it is set to 1 millisecond. It is also not recommended
+   * to pass a period much larger than a day as this could lead to integer
+   * overflow in the case that the value in milliseconds cannot be represented
+   * as an <tt>int</tt> to be passed to the Swing {@link Timer}.
    * 
    * @param period
    *          the period of time between "tick" events.
@@ -52,7 +57,7 @@ public final class SwingTimerTimingSource extends TimingSource {
    */
   public SwingTimerTimingSource(long period, TimeUnit unit) {
     int periodMillis = (int) unit.toMillis(period);
-    if (periodMillis != unit.toMillis(period))
+    if (periodMillis < 1)
       periodMillis = 1;
     f_timer = new Timer(periodMillis, new ActionListener() {
       @Override
@@ -60,6 +65,15 @@ public final class SwingTimerTimingSource extends TimingSource {
         getNotifyTickListenersTask().run();
       }
     });
+  }
+
+  /**
+   * Constructs a new instance with a period of 15 milliseconds. The
+   * {@link #init()} must be called on the new instance to start the timer. The
+   * {@link #dispose()} method should be called to stop the timer.
+   */
+  public SwingTimerTimingSource() {
+    this(15, TimeUnit.MILLISECONDS);
   }
 
   @Override

@@ -31,11 +31,12 @@ import org.jdesktop.swt.animation.timing.sources.SWTTimingSource;
 public class DiscreteInterpolationTest extends TimingTargetAdapter {
 
   public static void main(String args[]) {
-    TimingSource ts = new SWTTimingSource(100, TimeUnit.MILLISECONDS);
+    f_display = Display.getDefault();
+
+    TimingSource ts = new SWTTimingSource(100, TimeUnit.MILLISECONDS, f_display);
     AnimatorBuilder.setDefaultTimingSource(ts);
     ts.init();
 
-    f_display = Display.getDefault();
     final Shell f_shell = new Shell(f_display);
     f_shell.setText("SWT DiscreteInterpolation Test");
     f_shell.setLayout(new FillLayout());

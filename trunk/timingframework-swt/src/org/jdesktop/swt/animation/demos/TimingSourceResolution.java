@@ -159,7 +159,7 @@ public class TimingSourceResolution {
   static class SWTTimerFactory implements TimingSourceFactory {
     @Override
     public TimingSource getTimingSource(int periodMillis) {
-      return new SWTTimingSource(periodMillis, TimeUnit.MILLISECONDS);
+      return new SWTTimingSource(periodMillis, TimeUnit.MILLISECONDS, f_display);
     }
   }
 

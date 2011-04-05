@@ -62,7 +62,7 @@ public final class ClickAndGo extends JPanel {
   /**
    * Used for ball animations.
    */
-  private static final SwingTimerTimingSource f_animationTimer = new SwingTimerTimingSource(15, TimeUnit.MILLISECONDS);
+  private static final SwingTimerTimingSource f_animationTimer = new SwingTimerTimingSource();
 
   public static class Ball {
     Point location;

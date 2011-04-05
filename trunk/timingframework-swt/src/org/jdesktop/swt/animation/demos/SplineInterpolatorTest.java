@@ -36,12 +36,12 @@ public class SplineInterpolatorTest extends TimingTargetAdapter {
   private static Text f_benchmarkOutput;
 
   public static void main(String args[]) {
+    f_display = Display.getDefault();
 
-    TimingSource ts = new SWTTimingSource(DURATION / 10, TimeUnit.MILLISECONDS);
+    TimingSource ts = new SWTTimingSource(DURATION / 10, TimeUnit.MILLISECONDS, f_display);
     AnimatorBuilder.setDefaultTimingSource(ts);
     ts.init();
 
-    f_display = Display.getDefault();
     final Shell f_shell = new Shell(f_display);
     f_shell.setText("SWT SplineInterpolator Test");
     f_shell.setLayout(new FillLayout());
