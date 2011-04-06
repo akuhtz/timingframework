@@ -25,6 +25,7 @@
 		<mkdir dir="${core-release-work}${fs}lib" />
 
 		<copy file="${core-lib}${fs}LICENSE.txt" todir="${core-release-work}" />
+		<copy file="${core-lib}${fs}NOTES.txt" todir="${core-release-work}" />
 
 		<copy todir="${core-release-work}${fs}src">
 			<fileset dir="${promises-src}" />
