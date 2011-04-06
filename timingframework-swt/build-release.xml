@@ -9,6 +9,7 @@
 	<property name="swt-release" location="${swt}${fs}release" />
 	<property name="swt-release-work" location="${swt-release}${fs}timingframework-swt-${release-version}" />
 	<property name="swt-jar" value="timingframework-swt-${release-version}.jar" />
+	<property name="swt-demos-jar" value="timingframework-swt-demos-${release-version}.jar" />
 
 	<property name="org.eclipse.swt-jar" location="org.eclipse.swt${fs}swt.jar" />
 
@@ -22,6 +23,9 @@
 		<mkdir dir="${swt-release-work}" />
 		<mkdir dir="${swt-release-work}${fs}lib" />
 
+		<copy file="${core-lib}${fs}LICENSE.txt" todir="${swt-release-work}" />
+		<copy file="${core-lib}${fs}NOTES.txt" todir="${swt-release-work}" />
+
 		<copy todir="${swt-release-work}${fs}src">
 			<fileset dir="${promises-src}" />
 			<fileset dir="${core-src}" />
@@ -31,14 +35,20 @@
 		<mkdir dir="${swt-release-work}${fs}bin" />
 		<javac srcdir="${swt-release-work}${fs}src" destdir="${swt-release-work}${fs}bin" classpath="${org.eclipse.swt-jar}" debug="on" source="1.6" target="1.6" />
 		<jar destfile="${swt-release-work}${fs}lib${fs}${swt-jar}">
-			<fileset dir="${swt-release-work}${fs}bin" />
+			<fileset dir="${swt-release-work}${fs}bin" excludes="**/demos/**" />
 			<manifest />
 		</jar>
 		<jar destfile="${swt-release-work}${fs}lib${fs}${swt-jar}" update="true">
-			<fileset dir="${swt-release-work}${fs}src" />
-			<manifest>
-				<attribute name="Main-Class" value="org.jdesktop.swt.animation.timing.demos.javaone2008.TooManyBalls" />
-			</manifest>
+			<fileset dir="${swt-release-work}${fs}src" excludes="**/demos/**" />
+			<manifest />
+		</jar>
+		<jar destfile="${swt-release-work}${fs}lib${fs}${swt-demos-jar}">
+			<fileset dir="${swt-release-work}${fs}bin" includes="**/demos/**" />
+			<manifest />
+		</jar>
+		<jar destfile="${swt-release-work}${fs}lib${fs}${swt-demos-jar}" update="true">
+			<fileset dir="${swt-release-work}${fs}src" includes="**/demos/**" />
+			<manifest />
 		</jar>
 		<delete quiet="true" dir="${swt-release-work}${fs}bin" />
 

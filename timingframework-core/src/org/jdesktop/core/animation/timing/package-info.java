@@ -15,7 +15,7 @@
  * The {@code KeyFrames} class manages a list of key frames to animate
  * values via interpolation between a series of key values at key times.
  * Instances are constructed using a {@code KeyFramesBuilder}.
- * The {@link KeyFramesTimingTarget} simplifies construction of a timing
+ * A {@code KeyFramesTimingTarget} simplifies construction of a timing
  * target that uses key frames.
  * <p>
  * The {@code PropertySetter} class provides several static factory methods

@@ -9,6 +9,7 @@
 	<property name="swing-release" location="${swing}${fs}release" />
 	<property name="swing-release-work" location="${swing-release}${fs}timingframework-swing-${release-version}" />
 	<property name="swing-jar" value="timingframework-swing-${release-version}.jar" />
+	<property name="swing-demos-jar" value="timingframework-swing-demos-${release-version}.jar" />
 
 	<target name="build-release-swing">
 		<delete quiet="true" includeemptydirs="true">
@@ -20,6 +21,9 @@
 		<mkdir dir="${swing-release-work}" />
 		<mkdir dir="${swing-release-work}${fs}lib" />
 
+		<copy file="${core-lib}${fs}LICENSE.txt" todir="${swing-release-work}" />
+		<copy file="${core-lib}${fs}NOTES.txt" todir="${swing-release-work}" />
+
 		<copy todir="${swing-release-work}${fs}src">
 			<fileset dir="${promises-src}" />
 			<fileset dir="${core-src}" />
@@ -29,14 +33,20 @@
 		<mkdir dir="${swing-release-work}${fs}bin" />
 		<javac srcdir="${swing-release-work}${fs}src" destdir="${swing-release-work}${fs}bin" debug="on" source="1.6" target="1.6" />
 		<jar destfile="${swing-release-work}${fs}lib${fs}${swing-jar}">
-			<fileset dir="${swing-release-work}${fs}bin" />
+			<fileset dir="${swing-release-work}${fs}bin" excludes="**/demos/**" />
 			<manifest />
 		</jar>
 		<jar destfile="${swing-release-work}${fs}lib${fs}${swing-jar}" update="true">
-			<fileset dir="${swing-release-work}${fs}src" />
-			<manifest>
-				<attribute name="Main-Class" value="org.jdesktop.swing.animation.timing.demos.javaone2008.TooManyBalls" />
-			</manifest>
+			<fileset dir="${swing-release-work}${fs}src" excludes="**/demos/**" />
+			<manifest />
+		</jar>
+		<jar destfile="${swing-release-work}${fs}lib${fs}${swing-demos-jar}">
+			<fileset dir="${swing-release-work}${fs}bin" includes="**/demos/**" />
+			<manifest />
+		</jar>
+		<jar destfile="${swing-release-work}${fs}lib${fs}${swing-demos-jar}" update="true">
+			<fileset dir="${swing-release-work}${fs}src" includes="**/demos/**" />
+			<manifest />
 		</jar>
 		<delete quiet="true" dir="${swing-release-work}${fs}bin" />
 
