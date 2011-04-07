@@ -17,7 +17,7 @@ import com.surelogic.Immutable;
 @Immutable
 public final class LinearInterpolator implements Interpolator {
 
-  private static LinearInterpolator INSTANCE = new LinearInterpolator();
+  private static final LinearInterpolator INSTANCE = new LinearInterpolator();
 
   private LinearInterpolator() {
     // singleton
