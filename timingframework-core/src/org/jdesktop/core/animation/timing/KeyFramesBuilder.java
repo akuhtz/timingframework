@@ -17,6 +17,10 @@ import com.surelogic.NotThreadSafe;
  * Instances of this class are not thread safe and are intended to be
  * thread-confined. However, the {@link KeyFrames} objects produces are
  * thread-safe.
+ * <p>
+ * Client code should <i>never</i> mutate values that have been passed into a
+ * key frames instance. The behavior of the constructed key frames instance is
+ * undefined if its values are mutate by client code.
  * 
  * @param <T>
  *          the type of the values the {@link KeyFrames} instance constructed by
@@ -45,7 +49,10 @@ public class KeyFramesBuilder<T> {
    * starting, key frame.
    * 
    * @param startValue
-   *          the key frame value at zero.
+   *          the key frame value at zero. Client code should <i>never</i>
+   *          mutate values that have been passed into a key frames instance.
+   *          The behavior of the constructed key frames instance is undefined
+   *          if its values are mutate by client code.
    */
   public KeyFramesBuilder(T startValue) {
     f_values.add(startValue);
@@ -65,7 +72,10 @@ public class KeyFramesBuilder<T> {
    * an interpolator.
    * 
    * @param value
-   *          the value for the key frame.
+   *          the value for the key frame. Client code should <i>never</i>
+   *          mutate values that have been passed into a key frames instance.
+   *          The behavior of the constructed key frames instance is undefined
+   *          if its values are mutate by client code.
    * @return this builder (to allow chained operations).
    */
   public KeyFramesBuilder<T> addFrame(T value) {
@@ -84,7 +94,10 @@ public class KeyFramesBuilder<T> {
    * an interpolator.
    * 
    * @param value
-   *          the value for the key frame.
+   *          the value for the key frame. Client code should <i>never</i>
+   *          mutate values that have been passed into a key frames instance.
+   *          The behavior of the constructed key frames instance is undefined
+   *          if its values are mutate by client code.
    * @param atTimeFraction
    *          the time fraction in the range [0,1] when the value should occur.
    *          A negative value indicates that the time fraction when this fame
@@ -106,7 +119,10 @@ public class KeyFramesBuilder<T> {
    * the previous and next specified time fractions.
    * 
    * @param value
-   *          the value for the key frame.
+   *          the value for the key frame. Client code should <i>never</i>
+   *          mutate values that have been passed into a key frames instance.
+   *          The behavior of the constructed key frames instance is undefined
+   *          if its values are mutate by client code.
    * @param interpolator
    *          the interpolator that should be used between the previous key
    *          frame and the one being added. A {@code null} value indicates that
@@ -128,7 +144,10 @@ public class KeyFramesBuilder<T> {
    * Adds a frame to the list of key frames being built.
    * 
    * @param value
-   *          the value for the key frame.
+   *          the value for the key frame. Client code should <i>never</i>
+   *          mutate values that have been passed into a key frames instance.
+   *          The behavior of the constructed key frames instance is undefined
+   *          if its values are mutate by client code.
    * @param atTimeFraction
    *          the time fraction in the range [0,1] when the value should occur.
    *          A negative value indicates that the time fraction when this fame
@@ -179,7 +198,10 @@ public class KeyFramesBuilder<T> {
    * each of the passed values.
    * 
    * @param values
-   *          a series values.
+   *          a series values. Client code should <i>never</i> mutate values
+   *          that have been passed into a key frames instance. The behavior of
+   *          the constructed key frames instance is undefined if its values are
+   *          mutate by client code.
    * @return this builder (to allow chained operations).
    */
   public KeyFramesBuilder<T> addFrames(T... values) {
@@ -193,7 +215,10 @@ public class KeyFramesBuilder<T> {
    * each of the passed values.
    * 
    * @param values
-   *          a series values.
+   *          a series values. Client code should <i>never</i> mutate values
+   *          that have been passed into a key frames instance. The behavior of
+   *          the constructed key frames instance is undefined if its values are
+   *          mutate by client code.
    * @return this builder (to allow chained operations).
    */
   public KeyFramesBuilder<T> addFrames(List<T> values) {

@@ -17,6 +17,10 @@ import com.surelogic.Vouch;
  * times at which values are sampled and the values at those times. It also
  * holds information about how to interpolate between these values for times
  * that lie between the sampling points.
+ * <p>
+ * Client code should <i>never</i> mutate values that have been passed into a
+ * key frames instance. The behavior of this implementation is undefined if
+ * values are mutate by client code.
  * 
  * @param <T>
  *          the type of the values.
@@ -32,6 +36,9 @@ public class KeyFrames<T> implements Iterable<Frame<T>> {
    * fraction in the range [0,1] when that value should occur. In addition, the
    * class holds the interpolator that should be used between the previous key
    * frame and this one.
+   * <p>
+   * Client code should <i>never</i> mutate values that have been passed into a
+   * key frame.
    * 
    * @author Tim Halloran
    * 
@@ -55,6 +62,7 @@ public class KeyFrames<T> implements Iterable<Frame<T>> {
     /**
      * The non-{@code null} value of this key frame.
      */
+    @Vouch("Immutable")
     private final T f_value;
 
     /**
@@ -73,7 +81,8 @@ public class KeyFrames<T> implements Iterable<Frame<T>> {
      * Constructs a new key frame.
      * 
      * @param value
-     *          the value of this key frame.
+     *          the value of this key frame. Client code should <i>never</i>
+     *          mutate values that have been passed into an instance.
      * @param atTimeFraction
      *          the time fraction in the range [0,1] when the value should
      *          occur. A negative value indicates, to the
@@ -110,7 +119,8 @@ public class KeyFrames<T> implements Iterable<Frame<T>> {
      * and this one.
      * 
      * @param value
-     *          the value of this key frame.
+     *          the value of this key frame. Client code should <i>never</i>
+     *          mutate values that have been passed into an instance.
      * @param atTimeFraction
      *          the time fraction in the range [0,1] when the value should
      *          occur. A negative value indicates, to the
@@ -133,7 +143,8 @@ public class KeyFrames<T> implements Iterable<Frame<T>> {
      * previous and next specified time fractions.
      * 
      * @param value
-     *          the value of this key frame.
+     *          the value of this key frame. Client code should <i>never</i>
+     *          mutate values that have been passed into an instance.
      * @param interpolator
      *          the interpolator that should be used between the previous key
      *          frame and this one. A {@code null} value indicates, to the
