@@ -7,6 +7,7 @@ import java.util.List;
 import org.jdesktop.core.animation.timing.Interpolator;
 
 import com.surelogic.Immutable;
+import com.surelogic.Vouch;
 
 /**
  * This class interpolates fractional values using Bezier splines to animate
@@ -32,6 +33,7 @@ public final class SplineInterpolator implements Interpolator {
   /**
    * Constructed with {@link Collections#unmodifiableList(List)}.
    */
+  @Vouch("Immutable")
   private final List<LengthItem> f_lengths;
 
   /**
