@@ -49,8 +49,8 @@ public final class KnownEvaluators {
          */
         @SuppressWarnings("unchecked")
         final Class<? extends Evaluator<Object>> evaluatorType = (Class<? extends Evaluator<Object>>) Class.forName(className);
-        Evaluator<Object> e = construct(evaluatorType);
-        register(e);
+        Evaluator<Object> evaluator = construct(evaluatorType);
+        register(evaluator);
       } catch (Exception e) {
         // ignore
       }

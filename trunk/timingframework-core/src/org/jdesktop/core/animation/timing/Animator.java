@@ -652,17 +652,15 @@ public final class Animator implements TickListener {
         notifyRepeat = false;
       }
     }
-    if (notifyBegin) {
-      if (!f_targets.isEmpty())
-        for (TimingTarget target : f_targets) {
-          target.begin(this);
-        }
+    if (notifyBegin && !f_targets.isEmpty()) {
+      for (TimingTarget target : f_targets) {
+        target.begin(this);
+      }
     }
-    if (notifyRepeat) {
-      if (!f_targets.isEmpty())
-        for (TimingTarget target : f_targets) {
-          target.repeat(this);
-        }
+    if (notifyRepeat && !f_targets.isEmpty()) {
+      for (TimingTarget target : f_targets) {
+        target.repeat(this);
+      }
     }
     if (!f_targets.isEmpty())
       for (TimingTarget target : f_targets) {
