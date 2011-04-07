@@ -2,6 +2,7 @@ package org.jdesktop.core.animation.rendering;
 
 import java.util.concurrent.TimeUnit;
 
+import org.jdesktop.core.animation.i18n.I18N;
 import org.jdesktop.core.animation.timing.Animator;
 import org.jdesktop.core.animation.timing.AnimatorBuilder;
 import org.jdesktop.core.animation.timing.Interpolator;
@@ -33,12 +34,46 @@ public final class Viewport {
    * A source for the rate of animated viewport movement.
    */
   public interface MovementRateSource {
+
     /**
      * Gets the rate of animated viewport movement.
      * 
      * @return the rate of animated viewport movement in nanoseconds per pixel.
      */
     long getMovementRateNanosPerPixel();
+  }
+
+  /**
+   * A default source to obtain the rate of animated viewport movement in
+   * nanoseconds per pixels.
+   */
+  private static final class DefaultMovementRateSource implements MovementRateSource {
+
+    /**
+     * the rate of animated viewport movement in nanoseconds per pixel.
+     */
+    private final long f_nanosPerPixel;
+
+    /**
+     * Constructs an instance with the passed rate.
+     * 
+     * @param nanosPerPixel
+     *          the rate of animated viewport movement in nanoseconds per pixel.
+     */
+    public DefaultMovementRateSource(long nanosPerPixel) {
+      f_nanosPerPixel = nanosPerPixel;
+    }
+
+    /**
+     * Constructs an instance with a rate of 700 microseconds per pixel.
+     */
+    public DefaultMovementRateSource() {
+      this(TimeUnit.MICROSECONDS.toNanos(700));
+    }
+
+    public long getMovementRateNanosPerPixel() {
+      return f_nanosPerPixel;
+    }
   }
 
   /**
@@ -78,20 +113,10 @@ public final class Viewport {
   private final Interpolator f_moveI = new AccelerationInterpolator(0.2, 0);
 
   /**
-   * A default source to obtain the rate of animated viewport movement in
-   * nanoseconds per pixels.
-   */
-  private final MovementRateSource f_rateDefault = new MovementRateSource() {
-    public long getMovementRateNanosPerPixel() {
-      return TimeUnit.MICROSECONDS.toNanos(700);
-    }
-  };
-
-  /**
    * The source to obtain the rate of animated viewport movement in nanoseconds
    * per pixel.
    */
-  private MovementRateSource f_rate = f_rateDefault;
+  private MovementRateSource f_rate = new DefaultMovementRateSource();;
 
   /**
    * An animation to move the viewport horizontally.
@@ -175,14 +200,13 @@ public final class Viewport {
     }
 
     int pixelsToMove = 0;
-    switch (toward) {
-    case LEFT:
+    if (toward == Go.LEFT) {
       pixelsToMove = f_x;
-      break;
-    case RIGHT:
+    } else if (toward == Go.RIGHT) {
       pixelsToMove = f_intoWidth - f_x - f_width;
-      break;
-    }
+    } else
+      throw new IllegalStateException(I18N.err(3, "Horizontal direction of LEFT or RIGHT is " + toward));
+
     if (pixelsToMove > 0) {
       f_moveHorizontalAnimator = new AnimatorBuilder()
           .setDuration(f_rate.getMovementRateNanosPerPixel() * pixelsToMove, TimeUnit.NANOSECONDS).setInterpolator(f_moveI)
@@ -221,14 +245,13 @@ public final class Viewport {
     }
 
     int pixelsToMove = 0;
-    switch (toward) {
-    case UP:
+    if (toward == Go.UP) {
       pixelsToMove = f_y;
-      break;
-    case DOWN:
+    } else if (toward == Go.DOWN) {
       pixelsToMove = f_intoHeight - f_y - f_height;
-      break;
-    }
+    } else
+      throw new IllegalStateException(I18N.err(3, "Vertical direction of UP or DOWN is " + toward));
+
     if (pixelsToMove > 0) {
       f_moveVerticalAnimator = new AnimatorBuilder()
           .setDuration(f_rate.getMovementRateNanosPerPixel() * pixelsToMove, TimeUnit.NANOSECONDS).setInterpolator(f_moveI)
@@ -400,20 +423,16 @@ public final class Viewport {
    * Sets the rate of animated viewport movement. A value less than one resets
    * the movement rate to its default value.
    * 
-   * @param value
+   * @param nanosPerPixel
    *          the rate of animated viewport movement in nanoseconds per pixel or
    *          value less than one to reset the movement rate to its default
    *          value.
    */
-  public void setMovementRate(final long value) {
-    if (value < 1) {
-      f_rate = f_rateDefault;
+  public void setMovementRate(final long nanosPerPixel) {
+    if (nanosPerPixel < 1) {
+      f_rate = new DefaultMovementRateSource();
     } else {
-      f_rate = new MovementRateSource() {
-        public long getMovementRateNanosPerPixel() {
-          return value;
-        }
-      };
+      f_rate = new DefaultMovementRateSource(nanosPerPixel);
     }
   }
 
@@ -421,15 +440,15 @@ public final class Viewport {
    * Sets a source for the rate of animated viewport movement. A value of
    * {@code null} resets the movement rate to its default value.
    * 
-   * @param value
+   * @param source
    *          a source for the rate of animated viewport movement or
    *          {@code null} to reset the movement rate to its default value.
    */
-  public void setMovementRateSource(MovementRateSource value) {
-    if (value == null)
-      f_rate = f_rateDefault;
+  public void setMovementRateSource(MovementRateSource source) {
+    if (source == null)
+      f_rate = new DefaultMovementRateSource();
     else
-      f_rate = value;
+      f_rate = source;
   }
 
   /**

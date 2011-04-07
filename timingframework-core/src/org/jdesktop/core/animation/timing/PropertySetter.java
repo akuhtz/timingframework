@@ -304,7 +304,7 @@ public class PropertySetter {
   private static final class PropertySetterToTimingTarget extends PropertySetterTimingTarget {
 
     private final AtomicReference<KeyFrames<Object>> f_keyFrames = new AtomicReference<KeyFrames<Object>>();
-    protected final Method f_propertyGetter;
+    private final Method f_propertyGetter;
 
     public PropertySetterToTimingTarget(KeyFrames<Object> keyFrames, Object object, Method propertyGetter, Method propertySetter) {
       super(keyFrames, object, propertySetter);
