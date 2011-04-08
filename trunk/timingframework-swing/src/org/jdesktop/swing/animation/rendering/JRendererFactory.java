@@ -9,6 +9,8 @@ import org.jdesktop.core.animation.timing.AnimatorBuilder;
 import org.jdesktop.core.animation.timing.TimingSource;
 import org.jdesktop.swing.animation.timing.sources.SwingTimerTimingSource;
 
+import com.surelogic.Utility;
+
 /**
  * Used to construct a Swing renderer based upon the users preference for active
  * or passive rendering.
@@ -23,6 +25,7 @@ import org.jdesktop.swing.animation.timing.sources.SwingTimerTimingSource;
  * 
  * @author Tim Halloran
  */
+@Utility
 public final class JRendererFactory {
 
   /**
