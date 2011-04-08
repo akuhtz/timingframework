@@ -12,6 +12,7 @@ import org.jdesktop.core.animation.timing.interpolators.SplineInterpolator;
 
 import com.surelogic.Immutable;
 import com.surelogic.ThreadSafe;
+import com.surelogic.Utility;
 
 /**
  * A utility to construct {@link TimingTarget} instances that enables automating
@@ -100,6 +101,7 @@ import com.surelogic.ThreadSafe;
  * @author Tim Halloran
  */
 @Immutable
+@Utility
 public class PropertySetter {
 
   /**

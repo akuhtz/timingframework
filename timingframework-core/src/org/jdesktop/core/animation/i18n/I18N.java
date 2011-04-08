@@ -2,6 +2,8 @@ package org.jdesktop.core.animation.i18n;
 
 import java.util.ResourceBundle;
 
+import com.surelogic.Utility;
+
 /**
  * A utility that manages a resource bundle of strings based upon the locale for
  * an application.
@@ -10,6 +12,7 @@ import java.util.ResourceBundle;
  * 
  * @author Tim Halloran
  */
+@Utility
 public final class I18N {
 
   private static final ResourceBundle ERR = ResourceBundle.getBundle(I18N.class.getPackage().getName() + ".Err");
