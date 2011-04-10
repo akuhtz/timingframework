@@ -17,7 +17,7 @@ public class TriggerEvent {
    * define static objects that callers will use instead of users having to
    * manually create TriggerEvent objects from strings directly
    */
-  private String f_name;
+  private final String f_name;
 
   /**
    * Protected constructor; this helps ensure type-safe use of pre-define
