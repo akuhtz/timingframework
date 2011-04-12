@@ -1,4 +1,4 @@
-package org.jdesktop.core.animation.timing.triggers;
+package org.jdesktop.core.animation.timing.triggersold;
 
 /**
  * Superclass for all TriggerEvents used in the Trigger classes. The methods

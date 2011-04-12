@@ -1,4 +1,4 @@
-package org.jdesktop.core.animation.timing.triggers;
+package org.jdesktop.core.animation.timing.triggersold;
 
 /**
  * Mouse Enter/Exit/Press/Release/Click events.
