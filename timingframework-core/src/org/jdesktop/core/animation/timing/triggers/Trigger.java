@@ -1,6 +1,10 @@
 package org.jdesktop.core.animation.timing.triggers;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.jdesktop.core.animation.timing.Animator;
+
+import com.surelogic.ThreadSafe;
 
 /**
  * This abstract class should be overridden by any class wanting to implement a
@@ -10,21 +14,22 @@ import org.jdesktop.core.animation.timing.Animator;
  * an event that occurred.
  * <p>
  * Subclasses should call one of the constructors, according to whether they
- * want Trigger to discern between different {@link TriggerEvent} and whether
- * they want Trigger to auto-reverse the animation based on opposite
- * TriggerEvents.
+ * want a trigger to discern between different trigger events and whether they
+ * want the trigger to auto-reverse the animation on opposite trigger events.
  * <p>
  * Subclasses should call one of the <code>fire</code> methods based on whether
- * they want Trigger to perform any event logic or simply start the animation.
+ * they want the trigger to perform any event logic or simply start the
+ * animation.
  * 
  * @author Chet Haase
  */
+@ThreadSafe
 public abstract class Trigger {
 
-  private boolean f_disarmed = false;
-  private Animator f_animator;
-  private TriggerEvent f_triggerEvent;
-  private boolean f_autoReverse = false;
+  private final AtomicBoolean f_disarmed = new AtomicBoolean(false);
+  private final Animator f_animator;
+  private final TriggerEvent f_triggerEvent;
+  private final boolean f_autoReverse;
 
   /**
    * Creates a Trigger that will start the animator when {@link #fire()} is
@@ -80,10 +85,10 @@ public abstract class Trigger {
 
   /**
    * This method disables this Trigger and effectively noop's any actions that
-   * would otherwise occur
+   * would otherwise occur.
    */
-  public void disarm() {
-    f_disarmed = true;
+  public final void disarm() {
+    f_disarmed.set(true);
   }
 
   /**
@@ -97,7 +102,7 @@ public abstract class Trigger {
    *          determine whether the animator should be started or reversed
    */
   protected final void fire(TriggerEvent currentEvent) {
-    if (f_disarmed)
+    if (f_disarmed.get())
       return;
 
     if (currentEvent == f_triggerEvent) {
@@ -129,7 +134,7 @@ public abstract class Trigger {
    * is useful for subclasses with simple events.
    */
   protected final void fire() {
-    if (f_disarmed)
+    if (f_disarmed.get())
       return;
 
     if (f_animator.isRunning()) {
