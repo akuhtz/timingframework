@@ -175,8 +175,8 @@ public final class RaceCompleteMultiStep {
           return;
         }
 
-        if (animator.isRunning()) {
-          animator.reverseNow();
+        final boolean reverseSucceeded = animator.reverseNow();
+        if (reverseSucceeded) {
           basicGUI.getTrack().toggleCarReverse();
         } else {
           animator.startReverse();

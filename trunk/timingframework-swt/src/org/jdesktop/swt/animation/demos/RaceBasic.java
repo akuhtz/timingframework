@@ -92,8 +92,8 @@ public class RaceBasic extends TimingTargetAdapter {
           return;
         }
 
-        if (animator.isRunning()) {
-          animator.reverseNow();
+        final boolean reverseSucceeded = animator.reverseNow();
+        if (reverseSucceeded) {
           basicGUI.getTrack().toggleCarReverse();
         } else {
           animator.startReverse();

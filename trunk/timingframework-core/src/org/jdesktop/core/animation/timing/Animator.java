@@ -81,11 +81,22 @@ public final class Animator implements TickListener {
     /**
      * The cycle proceeds forward.
      */
-    FORWARD,
+    FORWARD {
+      @Override
+      public Direction getOppositeDirection() {
+        return BACKWARD;
+      }
+    },
     /**
      * The cycle proceeds backward.
      */
-    BACKWARD,
+    BACKWARD {
+      @Override
+      public Direction getOppositeDirection() {
+        return FORWARD;
+      }
+    };
+    abstract public Direction getOppositeDirection();
   };
 
   /**
@@ -243,14 +254,6 @@ public final class Animator implements TickListener {
   private long f_cycleStartTimeNanos;
 
   /**
-   * Ensures that listeners are notified that the animation has begun.
-   * <p>
-   * Accesses must be guarded by a lock on {@link #f_lock}.
-   */
-  @InRegion("AnimatorState")
-  private boolean f_listenersToldAboutBegin;
-
-  /**
    * This get triggered during fraction calculation.
    * <p>
    * Accesses must be guarded by a lock on {@link #f_lock}.
@@ -373,14 +376,7 @@ public final class Animator implements TickListener {
    *           prior to starting the animation or after the animation has ended.
    */
   public void start() {
-    synchronized (f_lock) {
-      if (isRunning())
-        throw new IllegalStateException(I18N.err(12, "start()"));
-
-      startHelper();
-      f_currentDirection = f_startDirection;
-    }
-    f_timingSource.addTickListener(this);
+    startHelper(f_startDirection, "start()");
   }
 
   /**
@@ -391,14 +387,7 @@ public final class Animator implements TickListener {
    *           prior to starting the animation or after the animation has ended.
    */
   public void startReverse() {
-    synchronized (f_lock) {
-      if (isRunning())
-        throw new IllegalStateException(I18N.err(12, "startReverse()"));
-
-      startHelper();
-      f_currentDirection = (f_startDirection == Direction.FORWARD) ? Direction.BACKWARD : Direction.FORWARD;
-    }
-    f_timingSource.addTickListener(this);
+    startHelper(f_startDirection.getOppositeDirection(), "startReverse()");
   }
 
   /**
@@ -432,26 +421,37 @@ public final class Animator implements TickListener {
 
   /**
    * Clients may invoke this method to stop a running animation, however, most
-   * animations will stop on their own.
+   * animations will stop on their own. If the animation was not running then
+   * this method returns {@code false}.
    * <p>
    * This call will result in calls to the {@link TimingTarget#end(Animator)}
    * method of all the registered timing targets of this animation.
    * 
+   * @return {@code true} if the animation was running and was successfully
+   *         stopped, {@code false} if the animation was not running and didn't
+   *         need to be stopped.
+   * 
    * @see #cancel()
    */
-  public void stop() {
-    stopHelper(true, false);
+  public boolean stop() {
+    return stopHelper(true, false);
   }
 
   /**
    * This method is like the {@link #stop} method, only this one will not result
-   * in a calls to the <code>end()</code> method in all TimingTargets of this
-   * Animation; it simply cancels the Animator immediately.
+   * in a calls to the {@link TimingTarget#end(Animator)} method of all the
+   * registered timing targets of this animation; it simply stops the animation
+   * immediately and returns. If the animation was not running then this method
+   * returns {@code false}.
+   * 
+   * @return {@code true} if the animation was running and was successfully
+   *         stopped, {@code false} if the animation was not running and didn't
+   *         need to be stopped.
    * 
    * @see #stop()
    */
-  public void cancel() {
-    stopHelper(false, false);
+  public boolean cancel() {
+    return stopHelper(false, false);
   }
 
   /**
@@ -510,16 +510,18 @@ public final class Animator implements TickListener {
   }
 
   /**
-   * Reverses the direction of the running animation. The animation cannot be
-   * paused.
+   * Reverses the direction of the animation if it is running and not paused. If
+   * it is not possible to reverse the animation now, the method returns
+   * {@code false}.
    * 
-   * @throws IllegalStateException
-   *           if the animation is not running.
+   * @return {@code true} if the animation was reversed, {@code false} if the
+   *         attempt to reverse the animation failed because the animation was
+   *         not running or it was paused.
    */
-  public void reverseNow() {
+  public boolean reverseNow() {
     synchronized (f_lock) {
       if (!isRunning() || isPaused())
-        throw new IllegalStateException(I18N.err(13, "reverseNow()"));
+        return false;
 
       final long now = System.nanoTime();
       final long cycleElapsedTimeNanos = getCycleElapsedTime(now);
@@ -528,7 +530,7 @@ public final class Animator implements TickListener {
       final long deltaNanos = (now - timeLeft) - f_cycleStartTimeNanos;
       f_cycleStartTimeNanos += deltaNanos;
       f_startTimeNanos += deltaNanos;
-      f_currentDirection = (f_currentDirection == Direction.FORWARD) ? Direction.BACKWARD : Direction.FORWARD;
+      f_currentDirection = f_currentDirection.getOppositeDirection();
     }
     f_timingSource.submit(new Runnable() {
       @Override
@@ -538,6 +540,7 @@ public final class Animator implements TickListener {
         }
       }
     });
+    return true;
   }
 
   /**
@@ -634,27 +637,15 @@ public final class Animator implements TickListener {
      */
     final double fraction;
     final boolean timeToStop;
-    final boolean notifyBegin;
     final boolean notifyRepeat;
     synchronized (f_lock) {
       fraction = calcInterpolatedTimingFraction(nanoTime);
       timeToStop = f_timeToStop;
-      if (!f_listenersToldAboutBegin) {
-        notifyBegin = true;
-        f_listenersToldAboutBegin = true;
-      } else {
-        notifyBegin = false;
-      }
       if (f_tellListenersAboutRepeat) {
         notifyRepeat = true;
         f_tellListenersAboutRepeat = false;
       } else {
         notifyRepeat = false;
-      }
-    }
-    if (notifyBegin && !f_targets.isEmpty()) {
-      for (TimingTarget target : f_targets) {
-        target.begin(this);
       }
     }
     if (notifyRepeat && !f_targets.isEmpty()) {
@@ -732,7 +723,7 @@ public final class Animator implements TickListener {
         /*
          * Reverse the direction of the animation.
          */
-        f_currentDirection = (f_currentDirection == Direction.FORWARD) ? Direction.BACKWARD : Direction.FORWARD;
+        f_currentDirection = f_currentDirection.getOppositeDirection();
       }
       if (f_currentDirection == Direction.BACKWARD) {
         fraction = 1 - fraction;
@@ -763,22 +754,47 @@ public final class Animator implements TickListener {
   /**
    * Factors out common code between {@link #start()} and
    * {@link #startReverse()}.
-   * <p>
-   * {@link #f_lock} should be held when invoking this method.
+   * 
+   * @param direction
+   *          the direction to start the animation going in.
+   * @param methodName
+   *          the short name of the calling method, used only for error
+   *          reporting.
+   * 
+   * @throws IllegalStateException
+   *           if the this animation is already running.
    */
-  @RequiresLock("AnimatorLock")
-  private void startHelper() {
-    f_startTimeNanos = f_cycleStartTimeNanos = System.nanoTime();
-    f_listenersToldAboutBegin = f_timeToStop = f_tellListenersAboutRepeat = false;
-    f_pauseBeginTimeNanos = 0;
-    f_running = true;
-    f_awaitLatch = new CountDownLatch(1);
+  private void startHelper(Direction direction, String methodName) {
+    synchronized (f_lock) {
+      if (isRunning())
+        throw new IllegalStateException(I18N.err(12, methodName));
+
+      f_startTimeNanos = f_cycleStartTimeNanos = System.nanoTime();
+      f_currentDirection = direction;
+      f_timeToStop = f_tellListenersAboutRepeat = false;
+      f_pauseBeginTimeNanos = 0;
+      f_running = true;
+      f_awaitLatch = new CountDownLatch(1);
+    }
+    if (!f_targets.isEmpty()) {
+      final Runnable task = new Runnable() {
+        @Override
+        public void run() {
+          for (TimingTarget target : f_targets) {
+            target.begin(Animator.this);
+          }
+        }
+      };
+      f_timingSource.submit(task);
+    }
+    f_timingSource.addTickListener(this);
   }
 
   /**
    * Helper routine to stop the running animation. It optionally invokes the
    * {@link TimingTarget#end(Animator)} method of registered timing targets in
-   * the correct thread context.
+   * the correct thread context. If the animation was not running then this
+   * method returns {@code false}.
    * 
    * @param notify
    *          {@code true} if the {@link TimingTarget#end(Animator)} method
@@ -788,33 +804,39 @@ public final class Animator implements TickListener {
    *          {@link true} if the call to this method was made from the thread
    *          context of {@link TimingSource.TickListener}, {@link false} if it
    *          was not.
+   * 
+   * @return {@code true} if the animation was running and was successfully
+   *         stopped, {@code false} if the animation was not running and didn't
+   *         need to be stopped.
    */
-  private void stopHelper(boolean notify, boolean inCallbackContext) {
-    if (isRunning()) {
-      f_timingSource.removeTickListener(this);
-      final CountDownLatch latch;
-      synchronized (f_lock) {
-        f_running = false;
-        f_currentDirection = f_startDirection;
-        latch = f_awaitLatch;
-        f_awaitLatch = null;
-      }
-      if (notify && !f_targets.isEmpty()) {
-        final Runnable task = new Runnable() {
-          @Override
-          public void run() {
-            for (TimingTarget target : f_targets) {
-              target.end(Animator.this);
-            }
-          }
-        };
-        if (inCallbackContext)
-          task.run();
-        else
-          f_timingSource.submit(task);
-      }
-      latch.countDown();
+  private boolean stopHelper(boolean notify, boolean inCallbackContext) {
+    final CountDownLatch latch;
+    synchronized (f_lock) {
+      if (!isRunning())
+        return false;
+
+      f_running = false;
+      f_currentDirection = f_startDirection;
+      latch = f_awaitLatch;
+      f_awaitLatch = null;
     }
+    f_timingSource.removeTickListener(this);
+    if (notify && !f_targets.isEmpty()) {
+      final Runnable task = new Runnable() {
+        @Override
+        public void run() {
+          for (TimingTarget target : f_targets) {
+            target.end(Animator.this);
+          }
+        }
+      };
+      if (inCallbackContext)
+        task.run();
+      else
+        f_timingSource.submit(task);
+    }
+    latch.countDown();
+    return true;
   }
 
   /**
