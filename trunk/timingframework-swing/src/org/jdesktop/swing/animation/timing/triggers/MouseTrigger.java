@@ -9,6 +9,8 @@ import org.jdesktop.core.animation.timing.Animator;
 import org.jdesktop.core.animation.timing.triggers.MouseTriggerEvent;
 import org.jdesktop.core.animation.timing.triggers.Trigger;
 
+import com.surelogic.ThreadSafe;
+
 /**
  * {@link MouseTrigger} handles mouse events and triggers an animation based on
  * those events. For example, to have {@code anim} start when component receives
@@ -20,6 +22,7 @@ import org.jdesktop.core.animation.timing.triggers.Trigger;
  * 
  * @author Chet Haase
  */
+@ThreadSafe
 public class MouseTrigger extends Trigger implements MouseListener {
 
   /**
@@ -74,47 +77,22 @@ public class MouseTrigger extends Trigger implements MouseListener {
     super(animator, event, autoReverse);
   }
 
-  /**
-   * Called by the object which added this trigger as a {@link MouseListener}.
-   * This method starts the animator if the trigger is waiting for an ENTER
-   * event.
-   */
   public void mouseEntered(MouseEvent e) {
     fire(MouseTriggerEvent.ENTER);
   }
 
-  /**
-   * Called by the object which added this trigger as a {@link MouseListener}.
-   * This method starts the animator if the trigger is waiting for an EXIT
-   * event.
-   */
   public void mouseExited(MouseEvent e) {
     fire(MouseTriggerEvent.EXIT);
   }
 
-  /**
-   * Called by the object which added this trigger as a {@link MouseListener}.
-   * This method starts the animator if the trigger is waiting for a PRESS
-   * event.
-   */
   public void mousePressed(MouseEvent e) {
     fire(MouseTriggerEvent.PRESS);
   }
 
-  /**
-   * Called by the object which added this trigger as a {@link MouseListener}.
-   * This method starts the animator if the trigger is waiting for a RELEASE
-   * event.
-   */
   public void mouseReleased(MouseEvent e) {
     fire(MouseTriggerEvent.RELEASE);
   }
 
-  /**
-   * Called by the object which added this trigger as a {@link MouseListener}.
-   * This method starts the animator if the trigger is waiting for a CLICK
-   * event.
-   */
   public void mouseClicked(MouseEvent e) {
     fire(MouseTriggerEvent.CLICK);
   }

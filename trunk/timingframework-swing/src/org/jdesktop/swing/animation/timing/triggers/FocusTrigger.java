@@ -9,6 +9,8 @@ import org.jdesktop.core.animation.timing.Animator;
 import org.jdesktop.core.animation.timing.triggers.FocusTriggerEvent;
 import org.jdesktop.core.animation.timing.triggers.Trigger;
 
+import com.surelogic.ThreadSafe;
+
 /**
  * FocusTrigger handles focus events and triggers an animation based on those
  * events. For example, to have {@code anim} start when component receives an IN
@@ -20,6 +22,7 @@ import org.jdesktop.core.animation.timing.triggers.Trigger;
  * 
  * @author Chet Haase
  */
+@ThreadSafe
 public class FocusTrigger extends Trigger implements FocusListener {
 
   /**
@@ -88,18 +91,10 @@ public class FocusTrigger extends Trigger implements FocusListener {
     super(animator, event, autoReverse);
   }
 
-  /**
-   * Called by the object which added this trigger as a {@link FocusTrigger}.
-   * This method starts the animator if the trigger is waiting for a IN event.
-   */
   public void focusGained(FocusEvent e) {
     fire(FocusTriggerEvent.IN);
   }
 
-  /**
-   * Called by the object which added this trigger as a {@link FocusTrigger}.
-   * This method starts the animator if the trigger is waiting for a OUT event.
-   */
   public void focusLost(FocusEvent e) {
     fire(FocusTriggerEvent.OUT);
   }
