@@ -7,6 +7,8 @@ import java.lang.reflect.Method;
 import org.jdesktop.core.animation.timing.Animator;
 import org.jdesktop.core.animation.timing.triggers.Trigger;
 
+import com.surelogic.ThreadSafe;
+
 /**
  * ActionTrigger handles action events and starts the animator when actions
  * occur. For example, to have {@code anim} start when a button is clicked, one
@@ -18,6 +20,7 @@ import org.jdesktop.core.animation.timing.triggers.Trigger;
  * 
  * @author Chet Haase
  */
+@ThreadSafe
 public class ActionTrigger extends Trigger implements ActionListener {
 
   /**
@@ -56,11 +59,6 @@ public class ActionTrigger extends Trigger implements ActionListener {
     super(animator);
   }
 
-  /**
-   * Called by an object generating {@link ActionEvent}s to which this trigger
-   * was added as an {@link ActionListener}. This starts the animation passed at
-   * object construction.
-   */
   public void actionPerformed(ActionEvent ae) {
     fire();
   }

@@ -8,6 +8,8 @@ import org.jdesktop.core.animation.timing.Animator;
 import org.jdesktop.core.animation.timing.triggers.MouseTriggerEvent;
 import org.jdesktop.core.animation.timing.triggers.Trigger;
 
+import com.surelogic.ThreadSafe;
+
 /**
  * {@link MouseTrigger} handles mouse events and triggers an animation based on
  * those events. For example, to have {@code anim} start when component receives
@@ -20,6 +22,7 @@ import org.jdesktop.core.animation.timing.triggers.Trigger;
  * @author Chet Haase
  * @author Tim Halloran
  */
+@ThreadSafe
 public class MouseTrigger extends Trigger implements MouseListener, MouseTrackListener {
 
   /**
@@ -75,20 +78,10 @@ public class MouseTrigger extends Trigger implements MouseListener, MouseTrackLi
     super(animator, event, autoReverse);
   }
 
-  /**
-   * Called by the object which added this trigger as a {@link MouseListener}.
-   * This method starts the animator if the trigger is waiting for an ENTER
-   * event.
-   */
   public void mouseEnter(MouseEvent e) {
     fire(MouseTriggerEvent.ENTER);
   }
 
-  /**
-   * Called by the object which added this trigger as a {@link MouseListener}.
-   * This method starts the animator if the trigger is waiting for an EXIT
-   * event.
-   */
   public void mouseExit(MouseEvent e) {
     fire(MouseTriggerEvent.EXIT);
   }
@@ -101,21 +94,11 @@ public class MouseTrigger extends Trigger implements MouseListener, MouseTrackLi
     // Nothing to do
   }
 
-  /**
-   * Called by the object which added this trigger as a {@link MouseListener}.
-   * This method starts the animator if the trigger is waiting for a CLICK event
-   * or a PRESS event (which are the same for SWT).
-   */
   public void mouseDown(MouseEvent e) {
     fire(MouseTriggerEvent.CLICK);
     fire(MouseTriggerEvent.PRESS);
   }
 
-  /**
-   * Called by the object which added this trigger as a {@link MouseListener}.
-   * This method starts the animator if the trigger is waiting for a RELEASE
-   * event.
-   */
   public void mouseUp(MouseEvent e) {
     fire(MouseTriggerEvent.RELEASE);
   }

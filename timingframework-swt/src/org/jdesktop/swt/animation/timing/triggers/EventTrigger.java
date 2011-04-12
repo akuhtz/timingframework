@@ -7,6 +7,8 @@ import org.eclipse.swt.widgets.Widget;
 import org.jdesktop.core.animation.timing.Animator;
 import org.jdesktop.core.animation.timing.triggers.Trigger;
 
+import com.surelogic.ThreadSafe;
+
 /**
  * EventTrigger handles SWT events and starts an animation when events occur.
  * For example, to have {@code anim} start when a button is clicked, one might
@@ -18,6 +20,7 @@ import org.jdesktop.core.animation.timing.triggers.Trigger;
  * 
  * @author Tim Halloran
  */
+@ThreadSafe
 public final class EventTrigger extends Trigger implements Listener {
 
   /**
@@ -54,10 +57,6 @@ public final class EventTrigger extends Trigger implements Listener {
     super(animator);
   }
 
-  /**
-   * Called by an object generating ActionEvents to which this trigger was added
-   * as an ActionListener. This starts the Animator.
-   */
   public void handleEvent(Event event) {
     fire();
   }
