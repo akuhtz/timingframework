@@ -54,25 +54,23 @@ public class TestAnimator {
     a.startReverse();
   }
 
-  @Test(expected = IllegalStateException.class)
   public void reverseNow1() {
     Animator a = new AnimatorBuilder(new ManualTimingSource()).build();
-    a.reverseNow();
+    Assert.assertFalse(a.reverseNow());
   }
 
-  @Test(expected = IllegalStateException.class)
   public void reverseNow2() {
     Animator a = new AnimatorBuilder(new ManualTimingSource()).build();
     a.start();
     a.pause();
-    a.reverseNow();
+    Assert.assertFalse(a.reverseNow());
   }
 
   @Test
   public void reverseNow3() {
     Animator a = new AnimatorBuilder(new ManualTimingSource()).build();
     a.start();
-    a.reverseNow();
+    Assert.assertTrue(a.reverseNow());
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -80,49 +78,127 @@ public class TestAnimator {
     new AnimatorBuilder(new ManualTimingSource()).setDuration(-10, TimeUnit.MILLISECONDS).build();
   }
 
-  private int beginCount, endCount, reverseCount, repeatCount, timingEventCount;
-
-  private void resetCounts() {
-    beginCount = endCount = reverseCount = repeatCount = timingEventCount = 0;
+  @Test
+  public void stop1() {
+    Animator a = new AnimatorBuilder(new ManualTimingSource()).build();
+    CountingTimingTarget counter = new CountingTimingTarget();
+    a.addTarget(counter);
+    a.start();
+    Assert.assertTrue(a.stop());
+    Assert.assertEquals(1, counter.getBeginCount());
+    Assert.assertEquals(1, counter.getEndCount());
+    Assert.assertEquals(0, counter.getReverseCount());
+    Assert.assertEquals(0, counter.getRepeatCount());
   }
 
-  final private TimingTarget counter = new TimingTarget() {
+  @Test
+  public void stop2() {
+    ManualTimingSource ts = new ManualTimingSource();
+    Animator a = new AnimatorBuilder(ts).build();
+    CountingTimingTarget counter = new CountingTimingTarget();
+    a.addTarget(counter);
+    a.start();
+    ts.tick();
+    Assert.assertTrue(a.stop());
+    Assert.assertEquals(1, counter.getBeginCount());
+    Assert.assertEquals(1, counter.getEndCount());
+    Assert.assertEquals(0, counter.getReverseCount());
+    Assert.assertEquals(0, counter.getRepeatCount());
+  }
 
-    public void timingEvent(Animator source, double fraction) {
-      timingEventCount++;
-    }
+  @Test
+  public void stop3() {
+    ManualTimingSource ts = new ManualTimingSource();
+    Animator a = new AnimatorBuilder(ts).build();
+    CountingTimingTarget counter = new CountingTimingTarget();
+    a.addTarget(counter);
+    a.start();
+    ts.tick();
+    Assert.assertTrue(a.stop());
+    Assert.assertEquals(1, counter.getBeginCount());
+    Assert.assertEquals(1, counter.getEndCount());
+    Assert.assertEquals(0, counter.getReverseCount());
+    Assert.assertEquals(0, counter.getRepeatCount());
+    Assert.assertFalse(a.stop());
+    Assert.assertFalse(a.cancel());
+  }
 
-    public void reverse(Animator source) {
-      reverseCount++;
-    }
+  @Test
+  public void stop4() {
+    Animator a = new AnimatorBuilder(new ManualTimingSource()).build();
+    CountingTimingTarget counter = new CountingTimingTarget();
+    a.addTarget(counter);
+    Assert.assertFalse(a.stop());
+  }
 
-    public void repeat(Animator source) {
-      repeatCount++;
-    }
+  @Test
+  public void cancel1() {
+    Animator a = new AnimatorBuilder(new ManualTimingSource()).build();
+    CountingTimingTarget counter = new CountingTimingTarget();
+    a.addTarget(counter);
+    a.start();
+    Assert.assertTrue(a.cancel());
+    Assert.assertEquals(1, counter.getBeginCount());
+    Assert.assertEquals(0, counter.getEndCount());
+    Assert.assertEquals(0, counter.getReverseCount());
+    Assert.assertEquals(0, counter.getRepeatCount());
+  }
 
-    public void end(Animator source) {
-      endCount++;
-    }
+  @Test
+  public void cancel2() {
+    ManualTimingSource ts = new ManualTimingSource();
+    Animator a = new AnimatorBuilder(ts).build();
+    CountingTimingTarget counter = new CountingTimingTarget();
+    a.addTarget(counter);
+    a.start();
+    ts.tick();
+    Assert.assertTrue(a.cancel());
+    Assert.assertEquals(1, counter.getBeginCount());
+    Assert.assertEquals(0, counter.getEndCount());
+    Assert.assertEquals(0, counter.getReverseCount());
+    Assert.assertEquals(0, counter.getRepeatCount());
+  }
 
-    public void begin(Animator source) {
-      beginCount++;
-    }
-  };
+  @Test
+  public void cancel3() {
+    ManualTimingSource ts = new ManualTimingSource();
+    Animator a = new AnimatorBuilder(ts).build();
+    CountingTimingTarget counter = new CountingTimingTarget();
+    a.addTarget(counter);
+    a.start();
+    ts.tick();
+    Assert.assertTrue(a.cancel());
+    Assert.assertEquals(1, counter.getBeginCount());
+    Assert.assertEquals(0, counter.getEndCount());
+    Assert.assertEquals(0, counter.getReverseCount());
+    Assert.assertEquals(0, counter.getRepeatCount());
+    Assert.assertFalse(a.stop());
+    Assert.assertFalse(a.cancel());
+  }
+
+  @Test
+  public void cancel4() {
+    Animator a = new AnimatorBuilder(new ManualTimingSource()).build();
+    CountingTimingTarget counter = new CountingTimingTarget();
+    a.addTarget(counter);
+    Assert.assertFalse(a.cancel());
+  }
 
   @Test
   public void timingTarget1() throws InterruptedException {
     TimingSource ts = new ScheduledExecutorTimingSource();
     ts.init();
     Animator a = new AnimatorBuilder(ts).build(); // 1 second
-    resetCounts();
+    CountingTimingTarget counter = new CountingTimingTarget();
     a.addTarget(counter);
     a.start();
     a.await();
-    Assert.assertEquals(1, beginCount);
-    Assert.assertEquals(1, endCount);
-    Assert.assertEquals(0, reverseCount);
-    Assert.assertEquals(0, repeatCount);
-    Assert.assertTrue("roughly 66 ticks", timingEventCount > 63 && timingEventCount < 69);
+    Assert.assertEquals(1, counter.getBeginCount());
+    Assert.assertEquals(1, counter.getEndCount());
+    Assert.assertEquals(0, counter.getReverseCount());
+    Assert.assertEquals(0, counter.getRepeatCount());
+    int ticks = counter.getTimingEventCount();
+    Assert.assertTrue("roughly 66 ticks", ticks > 63 && ticks < 69);
     ts.dispose();
   }
 
@@ -131,15 +207,16 @@ public class TestAnimator {
     TimingSource ts = new ScheduledExecutorTimingSource();
     ts.init();
     Animator a = new AnimatorBuilder(ts).setDuration(150, TimeUnit.MILLISECONDS).setRepeatCount(4).build();
-    resetCounts();
+    CountingTimingTarget counter = new CountingTimingTarget();
     a.addTarget(counter);
     a.start();
     a.await();
-    Assert.assertEquals(1, beginCount);
-    Assert.assertEquals(1, endCount);
-    Assert.assertEquals(0, reverseCount);
-    Assert.assertEquals(3, repeatCount);
-    Assert.assertTrue("roughly 40 ticks", timingEventCount > 36 && timingEventCount < 44);
+    Assert.assertEquals(1, counter.getBeginCount());
+    Assert.assertEquals(1, counter.getEndCount());
+    Assert.assertEquals(0, counter.getReverseCount());
+    Assert.assertEquals(3, counter.getRepeatCount());
+    int ticks = counter.getTimingEventCount();
+    Assert.assertTrue("roughly 40 ticks", ticks > 36 && ticks < 44);
     ts.dispose();
   }
 
@@ -148,16 +225,16 @@ public class TestAnimator {
     TimingSource ts = new ScheduledExecutorTimingSource();
     ts.init();
     Animator a = new AnimatorBuilder(ts).build();
-    resetCounts();
+    CountingTimingTarget counter = new CountingTimingTarget();
     a.addTarget(counter);
     a.start();
-    a.reverseNow();
+    Assert.assertTrue(a.reverseNow());
     a.await();
     Thread.sleep(1); // wait for callbacks
-    Assert.assertEquals(1, beginCount);
-    Assert.assertEquals(1, endCount);
-    Assert.assertEquals(1, reverseCount);
-    Assert.assertEquals(0, repeatCount);
+    Assert.assertEquals(1, counter.getBeginCount());
+    Assert.assertEquals(1, counter.getEndCount());
+    Assert.assertEquals(1, counter.getReverseCount());
+    Assert.assertEquals(0, counter.getRepeatCount());
     // duration will be short due to quick reverse
     ts.dispose();
   }
@@ -167,18 +244,19 @@ public class TestAnimator {
     TimingSource ts = new ScheduledExecutorTimingSource();
     ts.init();
     Animator a = new AnimatorBuilder(ts).build();
-    resetCounts();
+    CountingTimingTarget counter = new CountingTimingTarget();
     a.addTarget(counter);
     a.start();
     Thread.sleep(10);
-    a.reverseNow();
-    a.reverseNow();
+    Assert.assertTrue(a.reverseNow());
+    Assert.assertTrue(a.reverseNow());
     a.await();
-    Assert.assertEquals(1, beginCount);
-    Assert.assertEquals(1, endCount);
-    Assert.assertEquals(2, reverseCount);
-    Assert.assertEquals(0, repeatCount);
-    Assert.assertTrue("roughly 66 ticks", timingEventCount > 63 && timingEventCount < 69);
+    Assert.assertEquals(1, counter.getBeginCount());
+    Assert.assertEquals(1, counter.getEndCount());
+    Assert.assertEquals(2, counter.getReverseCount());
+    Assert.assertEquals(0, counter.getRepeatCount());
+    int ticks = counter.getTimingEventCount();
+    Assert.assertTrue("roughly 66 ticks", ticks > 63 && ticks < 69);
     ts.dispose();
   }
 }

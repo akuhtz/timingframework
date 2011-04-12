@@ -56,10 +56,10 @@ public class ActionTrigger extends Trigger implements ActionListener {
    *          the Animator that start when the event occurs
    */
   public ActionTrigger(Animator animator) {
-    super(animator);
+    super(animator, null, false);
   }
 
   public void actionPerformed(ActionEvent ae) {
-    fire();
+    fire(null);
   }
 }

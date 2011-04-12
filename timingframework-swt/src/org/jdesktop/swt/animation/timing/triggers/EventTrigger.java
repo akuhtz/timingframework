@@ -54,10 +54,10 @@ public final class EventTrigger extends Trigger implements Listener {
    *          the Animator that start when the event occurs
    */
   protected EventTrigger(Animator animator) {
-    super(animator);
+    super(animator, null, false);
   }
 
   public void handleEvent(Event event) {
-    fire();
+    fire(null);
   }
 }
