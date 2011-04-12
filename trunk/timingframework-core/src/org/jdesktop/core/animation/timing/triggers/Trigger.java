@@ -1,17 +1,17 @@
-package org.jdesktop.core.animation.timing.triggersold;
+package org.jdesktop.core.animation.timing.triggers;
 
 import org.jdesktop.core.animation.timing.Animator;
 
 /**
  * This abstract class should be overridden by any class wanting to implement a
- * new Trigger. The subclass will define the events to trigger off of and any
+ * new trigger. The subclass will define the events to trigger off of and any
  * listeners to handle those events. That subclass will call either
  * {@link #fire()} or {@link #fire(TriggerEvent)} to start the animator based on
  * an event that occurred.
  * <p>
- * Subclasses should call one of the constructors in Trigger, according to
- * whether they want Trigger to discern between different TriggerEvents and
- * whether they want Trigger to auto-reverse the animation based on opposite
+ * Subclasses should call one of the constructors, according to whether they
+ * want Trigger to discern between different {@link TriggerEvent} and whether
+ * they want Trigger to auto-reverse the animation based on opposite
  * TriggerEvents.
  * <p>
  * Subclasses should call one of the <code>fire</code> methods based on whether

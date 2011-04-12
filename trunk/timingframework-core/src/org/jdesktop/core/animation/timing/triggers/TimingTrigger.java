@@ -1,4 +1,4 @@
-package org.jdesktop.core.animation.timing.triggersold;
+package org.jdesktop.core.animation.timing.triggers;
 
 import org.jdesktop.core.animation.timing.Animator;
 import org.jdesktop.core.animation.timing.TimingTarget;
@@ -110,7 +110,7 @@ public class TimingTrigger extends Trigger implements TimingTarget {
 
   @Override
   public void reverse(Animator source) {
-    // Nothing to do
+    fire(TimingTriggerEvent.REVERSE);
   }
 
   @Override
