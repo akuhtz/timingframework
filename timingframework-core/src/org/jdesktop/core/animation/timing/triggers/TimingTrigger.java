@@ -2,6 +2,7 @@ package org.jdesktop.core.animation.timing.triggers;
 
 import org.jdesktop.core.animation.timing.Animator;
 import org.jdesktop.core.animation.timing.TimingTarget;
+import org.jdesktop.core.animation.timing.Trigger;
 
 import com.surelogic.ThreadSafe;
 

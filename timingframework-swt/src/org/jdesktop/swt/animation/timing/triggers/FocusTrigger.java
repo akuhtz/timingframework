@@ -4,8 +4,8 @@ import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.widgets.Control;
 import org.jdesktop.core.animation.timing.Animator;
+import org.jdesktop.core.animation.timing.Trigger;
 import org.jdesktop.core.animation.timing.triggers.FocusTriggerEvent;
-import org.jdesktop.core.animation.timing.triggers.Trigger;
 
 import com.surelogic.ThreadSafe;
 

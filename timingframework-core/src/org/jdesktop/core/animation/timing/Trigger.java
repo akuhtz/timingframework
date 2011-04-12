@@ -1,9 +1,8 @@
-package org.jdesktop.core.animation.timing.triggers;
+package org.jdesktop.core.animation.timing;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.jdesktop.core.animation.i18n.I18N;
-import org.jdesktop.core.animation.timing.Animator;
 
 import com.surelogic.ThreadSafe;
 

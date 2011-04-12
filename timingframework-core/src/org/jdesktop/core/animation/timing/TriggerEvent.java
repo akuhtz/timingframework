@@ -1,4 +1,4 @@
-package org.jdesktop.core.animation.timing.triggers;
+package org.jdesktop.core.animation.timing;
 
 import com.surelogic.Immutable;
 

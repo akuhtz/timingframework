@@ -6,8 +6,8 @@ import java.awt.event.MouseListener;
 import javax.swing.JComponent;
 
 import org.jdesktop.core.animation.timing.Animator;
+import org.jdesktop.core.animation.timing.Trigger;
 import org.jdesktop.core.animation.timing.triggers.MouseTriggerEvent;
-import org.jdesktop.core.animation.timing.triggers.Trigger;
 
 import com.surelogic.ThreadSafe;
 
