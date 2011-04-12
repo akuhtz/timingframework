@@ -5,7 +5,7 @@ import java.awt.event.ActionListener;
 import java.lang.reflect.Method;
 
 import org.jdesktop.core.animation.timing.Animator;
-import org.jdesktop.core.animation.timing.triggers.Trigger;
+import org.jdesktop.core.animation.timing.Trigger;
 
 import com.surelogic.ThreadSafe;
 

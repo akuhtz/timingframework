@@ -5,7 +5,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Widget;
 import org.jdesktop.core.animation.timing.Animator;
-import org.jdesktop.core.animation.timing.triggers.Trigger;
+import org.jdesktop.core.animation.timing.Trigger;
 
 import com.surelogic.ThreadSafe;
 

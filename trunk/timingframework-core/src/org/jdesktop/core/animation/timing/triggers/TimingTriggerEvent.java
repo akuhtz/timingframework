@@ -1,5 +1,7 @@
 package org.jdesktop.core.animation.timing.triggers;
 
+import org.jdesktop.core.animation.timing.TriggerEvent;
+
 /**
  * Animation start/stop/repeat/reverse events.
  * 

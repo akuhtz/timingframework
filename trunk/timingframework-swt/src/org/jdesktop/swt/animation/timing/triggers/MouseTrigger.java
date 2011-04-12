@@ -5,8 +5,8 @@ import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseTrackListener;
 import org.eclipse.swt.widgets.Control;
 import org.jdesktop.core.animation.timing.Animator;
+import org.jdesktop.core.animation.timing.Trigger;
 import org.jdesktop.core.animation.timing.triggers.MouseTriggerEvent;
-import org.jdesktop.core.animation.timing.triggers.Trigger;
 
 import com.surelogic.ThreadSafe;
 
