@@ -117,12 +117,7 @@ public abstract class Trigger {
     if (f_disarmed.get())
       return;
 
-    if (f_triggerEvent == null) {
-      /*
-       * This trigger fires regardless of what event occurred.
-       */
-      fireAnimation();
-    } else if (f_triggerEvent == event) {
+    if (f_triggerEvent == null || f_triggerEvent == event) {
       /*
        * Trigger event occurred - fire/re-fire the animation.
        */
