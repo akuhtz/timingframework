@@ -3,6 +3,8 @@ package org.jdesktop.core.animation.timing.triggers;
 import org.jdesktop.core.animation.timing.Animator;
 import org.jdesktop.core.animation.timing.TimingTarget;
 
+import com.surelogic.ThreadSafe;
+
 /**
  * A trigger that starts an animation when a timing event occurs. This class can
  * be useful in sequencing different animations. For example, one
@@ -16,6 +18,7 @@ import org.jdesktop.core.animation.timing.TimingTarget;
  * 
  * @author Chet Haase
  */
+@ThreadSafe
 public class TimingTrigger extends Trigger implements TimingTarget {
 
   /**
@@ -81,28 +84,16 @@ public class TimingTrigger extends Trigger implements TimingTarget {
   // TimingTarget implementation methods
   //
 
-  /**
-   * Called by Animator when starting. Sends the
-   * {@link TimingTriggerEvent#START} event to the Trigger.
-   */
   @Override
   public void begin(Animator source) {
     fire(TimingTriggerEvent.START);
   }
 
-  /**
-   * Called by Animator when ending. Sends the {@link TimingTriggerEvent#STOP}
-   * event to the Trigger.
-   */
   @Override
   public void end(Animator source) {
     fire(TimingTriggerEvent.STOP);
   }
 
-  /**
-   * Called by Animator when repeating. Sends the
-   * {@link TimingTriggerEvent#REPEAT} event to the Trigger.
-   */
   @Override
   public void repeat(Animator source) {
     fire(TimingTriggerEvent.REPEAT);
