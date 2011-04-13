@@ -24,7 +24,7 @@ import com.surelogic.ThreadSafe;
  * running animation when the opposite event to the trigger event occurs. The
  * opposite event is obtained by invoking
  * {@link TriggerEvent#getOppositeEvent()} on the trigger event. If the
- * animation is not running an the opposite event occurs the animation is
+ * animation is not running and the opposite event occurs the animation is
  * started in reverse.
  * 
  * @author Chet Haase
@@ -67,7 +67,7 @@ public abstract class AbstractTrigger implements Trigger {
    * <tt>autoReverse</tt> flag. This reverses the running animation when the
    * opposite event to <tt>triggerEvent</tt> occurs. The opposite event is
    * obtained by invoking {@link TriggerEvent#getOppositeEvent()} on
-   * <tt>triggerEvent</tt>. If the animation is not running an the opposite
+   * <tt>triggerEvent</tt>. If the animation is not running and the opposite
    * event occurs the animation is started in reverse.
    * 
    * @param target
@@ -119,13 +119,7 @@ public abstract class AbstractTrigger implements Trigger {
 
   /**
    * Called by subclasses to trigger the animation. If the trigger has been
-   * disarmed nothing happens. If this trigger fires on any event, then the
-   * animation is started&mdash;or stopped and started if it is running. If the
-   * passed event matches the trigger event, then the animation is
-   * started&mdash;or stopped and started if it is running. If the passed event
-   * matches the event opposite the trigger event and auto-reversing was
-   * requested, then the animation is reversed if it is running or started in
-   * reverse if it is not running. succeeded
+   * disarmed nothing happens.
    * 
    * @param event
    *          the {@link TriggerEvent} that just occurred, may be {@code null}
@@ -135,20 +129,34 @@ public abstract class AbstractTrigger implements Trigger {
     if (f_disarmed.get())
       return;
 
+    final Animator.Direction normalDirection = f_target.getStartDirection();
+
     if (f_triggerEvent == null || f_triggerEvent == event) {
       /*
-       * Trigger event occurred - fire/re-fire the animation.
+       * Trigger event occurred - reverse the animation if it is running in the
+       * opposite direction and auto-reversing is enabled, or restart the
+       * animation.
        */
+      if (f_oppositeEvent != null && f_target.isRunning() && f_target.getCurrentDirection() != normalDirection) {
+        final boolean reverseSucceeded = f_target.reverseNow();
+        if (reverseSucceeded)
+          return;
+      }
       f_target.stop();
       f_target.start();
     } else if (f_oppositeEvent == event) {
       /*
-       * Opposite event occurred - reverse the animation if it is running, or
-       * start it in reverse if it is not running.
+       * Opposite event occurred and auto-reversing is enabled - reverse the
+       * animation if it is running, or restart it in reverse if it is not
+       * running.
        */
-      final boolean reverseSucceeded = f_target.reverseNow();
-      if (!reverseSucceeded)
-        f_target.startReverse();
+      if (f_target.isRunning() && f_target.getCurrentDirection() == normalDirection) {
+        final boolean reverseSucceeded = f_target.reverseNow();
+        if (reverseSucceeded)
+          return;
+      }
+      f_target.stop();
+      f_target.startReverse();
     }
   }
 }
