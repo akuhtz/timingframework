@@ -1,7 +1,16 @@
-++----------------------------------------------------------------------++
-|| TIMING FRAMEWORK                                                     ||
-|| A library for making Java animation and timing-based control easier! ||
-++----------------------------------------------------------------------++
+  _______            _
+ /_  __(_)____ ___  (_)____  ____ _
+  / / / // __ `__ \/ // __ \/ __ `/
+ / / / // / / / / / // / / / /_/ /
+/_/ /_//_/ /_/ /_/_//_/ /_/\__, /
+                          /____/
+    ______                                              __
+   / ____/_________ _____ ___  ___ _      ______  _____/ /__
+  / /_   / ___/ __ `/ __ `__ \/ _ \ | /| / / __ \/ ___/ //_/
+ / __/  / /  / /_/ / / / / / /  __/ |/ |/ / /_/ / /  / ,<
+/_/    /_/   \__,_/_/ /_/ /_/\___/|__/|__/\____/_/  /_/|_| 
+
+A library for making Java animation and timing-based control easier!
 
 Report bugs, read the documentation, and get new releases at:
    http://java.net/projects/timingframework/
@@ -10,8 +19,82 @@ Report bugs, read the documentation, and get new releases at:
 || 3.0 Release Notes ||
 ++-------------------++
 
+The Timing Framework API is more stable, better tested, probably now usable
+in real projects.
+
+o KeyFramesBuilder added to allow KeyFrames to to be constructed using the
+  builder pattern.
+  
+o Overhaul of the KeyFrames implementation (removal of KeyValues and KeyTimes).
+  KeyFrames can be used without a PropertySetter via KeyFramesTimingTarget.
+  KeyFramesTimingTarget can help to avoid the cost of reflective getter/setter
+  calls. Key frames can be examined via iteration or a get method.
+
+o Overhaul of PropertySetter implementation. PropertySetter is now a utility
+  that provides TimingTarget instances. "To" animations, which get the
+  current value of a property as the staring value for an animation, can
+  animate between multiple values (not just one additional value). The
+  ClickAndGo demo was added to illustrate "to" animations.
+
+o Overhaul of the Trigger API to use enum types for events and encapsulate the
+  implementation of each trigger type. Swing and SWT each have a TriggerUtility
+  that constructs triggers. The Swing and SWT implementations use the same
+  trigger event types. Changes made to Chet Haase's Triggers demo to
+  illustrate auto-reverse of a triggered animation.
+
+o JRenderer, JRendererTarget, and Viewport provide the basis for a Swing
+  and SWT rendering framework. The Swing implementation supports both active
+  and passive rendering. The SWT implementation supports only passive
+  rendering (it is not clear that active rendering in SWT will ever be
+  possible). The TooManyBalls demo uses this framework.
+
+o I18N class added to serve error messages to the Timing Framework.
+
+o More work on the timing source API to simplify/fix the 2.0 release.
+  In particular, the API was changed to ensure that callbacks happen in the
+  correct thread context (broken in prior releases). Further, a constructor
+  was added to SwingTimingSource and SWTTimingSource that sets a reasonable
+  default period of 15 milliseconds.
+
+o JUnit tests added to unit test the core of the Timing Framework.
+  ManualTimingSource helps support unit testing as well as the Swing active
+  rendering implementation.
+
+o All the demos were moved into a single package:
+   org.jdesktop.swing.animation.demos for the Swing demos, and
+   org.jdesktop.swt.animation.demos for the SWT demos.
+
+o The demos were split out into their own Jar file. For example, for SWT
+  timingframework-swt-3.0.jar contains the SWT 3.0 release of the Timing
+  Framework and timingframework-swt-demos-3.0.jar contains the demos. This
+  change makes the release Jar file a bit smaller.
+
+o The SureLogic concurrency annotations are included in the release Jar
+  instead of as a separate Jar. These annotations help to document, and
+  allow tool verification, of the concurrency policies of the Timing
+  Framework implementation.
+
 ++-------------------++
 || 2.0 Release Notes ||
 ++-------------------++
 
-o AnimatorBuilder added to allow Animator to use the builder pattern.
+A quick release of updates to allow feedback, however, the API is not stable.
+
+o AnimatorBuilder added to allow Animator to to be constructed using the
+  builder pattern. In particular, a default timing source can be set for
+  all Animator instances that are built.
+
+o Separated time sources from Animator to make it easier for Animator instances
+  to share a time source and not tie Animator's implementation to Swing.
+  Chet Haase discussed the noticeable performance problem of starting one
+  javax.swing.Timer per Animator instance at JavaOne 2008. The
+  TooManyBallsBroken demo (only in the Swing distribution) illustrates
+  this problem. Tim Halloran's SWT port did not exhibit this timer problem
+  because it used the SWT Display.timerExec method which shares a timer. 
+  
+o Began work to fix parameterized type use in the Timing Framework.
+
+o Animator implementation made thread-safe. Further work is needed to make the
+  entire Timing Framework thread-safe.
+
+o Ported all of the Swing demos from Filthy Rich Clients to SWT.

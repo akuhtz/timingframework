@@ -1,7 +1,19 @@
-++----------------------------------------------------------------------++
-|| TIMING FRAMEWORK                                                     ||
-|| A library for making Java animation and timing-based control easier! ||
-++----------------------------------------------------------------------++
+  _______            _
+ /_  __(_)____ ___  (_)____  ____ _
+  / / / // __ `__ \/ // __ \/ __ `/
+ / / / // / / / / / // / / / /_/ /
+/_/ /_//_/ /_/ /_/_//_/ /_/\__, /
+                          /____/
+    ______                                              __
+   / ____/_________ _____ ___  ___ _      ______  _____/ /__
+  / /_   / ___/ __ `/ __ `__ \/ _ \ | /| / / __ \/ ___/ //_/
+ / __/  / /  / /_/ / / / / / /  __/ |/ |/ / /_/ / /  / ,<
+/_/    /_/   \__,_/_/ /_/ /_/\___/|__/|__/\____/_/  /_/|_| 
+
+A library for making Java animation and timing-based control easier!
+
+Report bugs, read the documentation, and get new releases at:
+   http://java.net/projects/timingframework/
 
 The modern Timing Framework implementation and the SureLogic promises
 are released under the following terms:
