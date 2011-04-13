@@ -7,8 +7,7 @@ import java.util.concurrent.TimeUnit;
 import org.jdesktop.core.animation.timing.TimingSource;
 
 /**
- * An implementation of {@link TimingSource} using a
- * {@link ScheduledExecutorService} as returned from
+ * A timing source using a {@link ScheduledExecutorService} as returned from
  * {@link Executors#newSingleThreadScheduledExecutor()}.
  * <p>
  * A typical use, where {@code tl} is a {@code TickListener} object, would be

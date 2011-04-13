@@ -3,7 +3,8 @@ package org.jdesktop.core.animation.timing;
 import com.surelogic.Immutable;
 
 /**
- * Evaluates between values of a particular type.
+ * This interface provides a mechanism for evaluating between two boundary
+ * values of a particular type.
  * 
  * @author Chet Haase
  * @author Tim Halloran

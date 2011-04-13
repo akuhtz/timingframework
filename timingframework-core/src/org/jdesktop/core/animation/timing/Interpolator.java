@@ -8,7 +8,7 @@ import org.jdesktop.core.animation.timing.interpolators.SplineInterpolator;
 import com.surelogic.Immutable;
 
 /**
- * Interface that provides a mechanism for animating object properties between
+ * This interface provides a mechanism for animating object properties between
  * different values. It defines the single {@link #interpolate(double)} method.
  * <p>
  * This interface is implemented by built-in interpolators. Applications may

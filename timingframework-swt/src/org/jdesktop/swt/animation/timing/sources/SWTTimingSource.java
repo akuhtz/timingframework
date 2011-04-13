@@ -8,10 +8,10 @@ import org.jdesktop.core.animation.i18n.I18N;
 import org.jdesktop.core.animation.timing.TimingSource;
 
 /**
- * An implementation of {@link TimingSource} for SWT. This implementation
- * ensures that calls to registered {@code TickListener} and
- * {@code PostTickListener} objects are always made within the thread context of
- * the SWT UI thread.
+ * A timing source based upon the SWT {@link Display#timerExec(int, Runnable)}
+ * and {@link Display#asyncExec(Runnable)} methods. This implementation ensures
+ * that calls to registered {@code TickListener} and {@code PostTickListener}
+ * objects are always made within the thread context of the SWT UI thread.
  * <p>
  * A typical use, where {@code tl} is a {@code TickListener} object, would be
  * 

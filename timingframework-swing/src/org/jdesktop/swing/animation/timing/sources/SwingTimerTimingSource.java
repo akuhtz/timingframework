@@ -10,8 +10,9 @@ import javax.swing.Timer;
 import org.jdesktop.core.animation.timing.TimingSource;
 
 /**
- * An implementation of {@link TimingSource} using a Swing {@link Timer}. This
- * implementation ensures that calls to registered {@code TickListener} and
+ * A timing source based upon a Swing {@link Timer} and the
+ * {@link SwingUtilities#invokeLater(Runnable)} method. This implementation
+ * ensures that calls to registered {@code TickListener} and
  * {@code PostTickListener} objects are always made within the thread context of
  * the Swing EDT.
  * <p>

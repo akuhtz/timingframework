@@ -24,6 +24,10 @@
  * can be used in conjunction with the {@code KeyFrames} class to construct
  * sophisticated animations based upon key frames.
  * <p>
+ * The {@code Trigger} and {@code TriggerEvent} interfaces specify the
+ * interface for triggers, an event-driven approach to starting animations,
+ * and trigger events.
+ * <p>
  * The {@code TimingSource} class provides a base implementation for timers
  * that may be used with the Timing Framework.
  */
