@@ -146,7 +146,7 @@ public final class TriggerUtility {
   }
 
   @ThreadSafe
-  private static class ActionTriggerHelper extends Trigger implements ActionListener {
+  private static final class ActionTriggerHelper extends Trigger implements ActionListener {
 
     private final Object f_object;
 
@@ -259,7 +259,7 @@ public final class TriggerUtility {
   }
 
   @ThreadSafe
-  private static class FocusTriggerHelper extends Trigger implements FocusListener {
+  private static final class FocusTriggerHelper extends Trigger implements FocusListener {
 
     private final JComponent f_component;
 
@@ -366,7 +366,8 @@ public final class TriggerUtility {
     return trigger;
   }
 
-  private static class MouseTriggerHelper extends Trigger implements MouseListener {
+  @ThreadSafe
+  private static final class MouseTriggerHelper extends Trigger implements MouseListener {
 
     private final JComponent f_component;
 
