@@ -231,7 +231,7 @@ public class PropertySetter {
   }
 
   private PropertySetter() {
-    // no instances
+    throw new AssertionError();
   }
 
   private static TimingTarget getTargetHelper(final Object object, final String propertyName, final KeyFrames<?> keyFrames,

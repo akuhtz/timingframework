@@ -1,112 +1,142 @@
 package org.jdesktop.core.animation.timing.triggers;
 
+import org.jdesktop.core.animation.i18n.I18N;
 import org.jdesktop.core.animation.timing.Animator;
 import org.jdesktop.core.animation.timing.TimingTarget;
 import org.jdesktop.core.animation.timing.Trigger;
 
+import com.surelogic.Immutable;
 import com.surelogic.ThreadSafe;
+import com.surelogic.Utility;
 
 /**
- * A trigger that starts an animation when a timing event occurs. This class can
- * be useful in sequencing different animations. For example, one
- * {@link Animator} can be set to start when another ends using this trigger.
- * For example, to have <tt>anim2</tt> start when <tt>anim1</tt> ends, one might
- * write the following:
+ * A trigger that starts an animation when an animation timing event occurs in
+ * another animation. This class can be useful in sequencing different
+ * animations. For example, one {@link Animator} can be set to start when
+ * another ends using this trigger. For example, to have <tt>anim2</tt> start
+ * when <tt>anim1</tt> ends, one might write the following:
  * 
  * <pre>
- * TimingTrigger trigger = TimingTrigger.addTrigger(anim1, anim2, TimingTriggerEvent.STOP);
+ * Trigger trigger = TimingTrigger.addTrigger(anim1, anim2, TimingTriggerEvent.STOP);
+ * </pre>
+ * 
+ * The returned trigger object can be safely ignored if the code never needs to
+ * disarm the trigger.
+ * 
+ * <pre>
+ * TimingTrigger.addTrigger(anim1, anim2, TimingTriggerEvent.STOP);
  * </pre>
  * 
  * @author Chet Haase
+ * @author Tim Halloran
  */
-@ThreadSafe
-public class TimingTrigger extends Trigger implements TimingTarget {
+@Immutable
+@Utility
+public class TimingTrigger {
 
   /**
-   * Creates a non-auto-reversing TimingTrigger and adds it as a target to the
-   * source Animator.
+   * Creates a non-auto-reversing timing trigger and adds it as a target to the
+   * source animation.
    * 
    * @param source
-   *          the Animator that will be listened to for events to start the
-   *          target Animator
+   *          the animation that will be listened to for events to start the
+   *          target animation.
    * @param target
-   *          the Animator that will start when the event occurs
+   *          the animation that will start when the event occurs.
    * @param event
-   *          the TimingTriggerEvent that will cause targetAnimator to start
-   * @return TimingTrigger the resulting trigger
+   *          the {@link TimingTriggerEvent} on <tt>source</tt> that will cause
+   *          <tt>target</tt> to start.
+   * @return the resulting trigger.
    * 
-   * @see Animator#addTarget(TimingTarget)
+   * @throws IllegalArgumentException
+   *           if any of the parameters is {@code null}.
    */
-  public static TimingTrigger addTrigger(Animator source, Animator target, TimingTriggerEvent event) {
+  public static Trigger addTrigger(Animator source, Animator target, TimingTriggerEvent event) {
     return addTrigger(source, target, event, false);
   }
 
   /**
-   * Creates a TimingTrigger and adds it as a target to the source Animator.
-   * 
+   * Creates a timing trigger and adds it as a target to the source animation.
    * 
    * @param source
-   *          the Animator that will be listened to for events to start the
-   *          target Animator
+   *          the animation that will be listened to for events to start the
+   *          target animation.
    * @param target
-   *          the Animator that will start when the event occurs
+   *          the animation that will start when the event occurs.
    * @param event
-   *          the TimingTriggerEvent that will cause targetAnimator to start
+   *          the {@link TimingTriggerEvent} on <tt>source</tt> that will cause
+   *          <tt>target</tt> to start.
    * @param autoReverse
-   *          flag to determine whether the animator should stop and reverse
-   *          based on opposite triggerEvents.
-   * @return TimingTrigger the resulting trigger
+   *          {@code true} if the animation should be reversed on opposite
+   *          trigger events, {@code false} otherwise.
+   * @return the resulting trigger.
    * 
-   * @see Animator#addTarget(TimingTarget)
+   * @throws IllegalArgumentException
+   *           if any of the parameters is {@code null}.
    */
-  public static TimingTrigger addTrigger(Animator source, Animator target, TimingTriggerEvent event, boolean autoReverse) {
-    TimingTrigger trigger = new TimingTrigger(target, event, autoReverse);
-    source.addTarget(trigger);
+  public static Trigger addTrigger(Animator source, Animator target, TimingTriggerEvent event, boolean autoReverse) {
+    if (source == null)
+      throw new IllegalArgumentException(I18N.err(1, "source"));
+    if (target == null)
+      throw new IllegalArgumentException(I18N.err(1, "target"));
+    if (event == null)
+      throw new IllegalArgumentException(I18N.err(1, "event"));
+    final TimingTriggerHelper trigger = new TimingTriggerHelper(source, target, event, autoReverse);
+    trigger.init();
     return trigger;
   }
 
-  /**
-   * Creates a non-auto-reversing TimingTrigger, which should be added to an
-   * Animator which will generate the events sent to the trigger.
-   */
-  public TimingTrigger(Animator animator, TimingTriggerEvent event) {
-    this(animator, event, false);
+  private TimingTrigger() {
+    throw new AssertionError();
   }
 
-  /**
-   * Creates a TimingTrigger, which should be added to an Animator which will
-   * generate the events sent to the trigger.
-   */
-  public TimingTrigger(Animator animator, TimingTriggerEvent event, boolean autoReverse) {
-    super(animator, event, autoReverse);
-  }
+  @ThreadSafe
+  private static class TimingTriggerHelper extends Trigger implements TimingTarget {
 
-  //
-  // TimingTarget implementation methods
-  //
+    private final Animator f_source;
 
-  @Override
-  public void begin(Animator source) {
-    fire(TimingTriggerEvent.START);
-  }
+    public TimingTriggerHelper(Animator source, Animator target, TimingTriggerEvent event, boolean autoReverse) {
+      super(target, event, autoReverse);
+      f_source = source;
+    }
 
-  @Override
-  public void end(Animator source) {
-    fire(TimingTriggerEvent.STOP);
-  }
+    public void init() {
+      f_source.addTarget(this);
+    }
 
-  @Override
-  public void repeat(Animator source) {
-    fire(TimingTriggerEvent.REPEAT);
-  }
+    @Override
+    public void disarm() {
+      f_source.removeTarget(this);
+      super.disarm();
+    }
 
-  @Override
-  public void reverse(Animator source) {
-    fire(TimingTriggerEvent.REVERSE);
-  }
+    //
+    // TimingTarget implementation methods
+    //
 
-  @Override
-  public void timingEvent(Animator source, double fraction) {
-    // Nothing to do
-  }
+    @Override
+    public void begin(Animator source) {
+      fire(TimingTriggerEvent.START);
+    }
+
+    @Override
+    public void end(Animator source) {
+      fire(TimingTriggerEvent.STOP);
+    }
+
+    @Override
+    public void repeat(Animator source) {
+      fire(TimingTriggerEvent.REPEAT);
+    }
+
+    @Override
+    public void reverse(Animator source) {
+      fire(TimingTriggerEvent.REVERSE);
+    }
+
+    @Override
+    public void timingEvent(Animator source, double fraction) {
+      // Nothing to do
+    }
+  };
 }

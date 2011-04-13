@@ -7,6 +7,10 @@ import org.jdesktop.core.animation.i18n.I18N;
 import com.surelogic.ThreadSafe;
 
 /**
+ * The abstract base class of all triggers. It contains two public methods,
+ * {@link #disarm()} which can be used to disable a trigger and
+ * {@link #isArmed()} which checks if a trigger is armed.
+ * <p>
  * This abstract class should be overridden by any class wanting to implement a
  * new trigger. The subclass will define the events to trigger off of and any
  * listeners to handle those events. The subclass will call
@@ -97,6 +101,17 @@ public abstract class Trigger {
    */
   public void disarm() {
     f_disarmed.set(true);
+  }
+
+  /**
+   * Gets if this trigger is armed.
+   * 
+   * @return {@code true} indicates that this trigger is armed, {@code false}
+   *         indicates that it has been disarmed with a call to
+   *         {@link #disarm()}.
+   */
+  public boolean isArmed() {
+    return !f_disarmed.get();
   }
 
   /**
