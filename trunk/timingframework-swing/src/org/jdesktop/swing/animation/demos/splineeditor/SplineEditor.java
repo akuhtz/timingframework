@@ -1,4 +1,4 @@
-package org.jdesktop.swing.animation.timing.splineeditor;
+package org.jdesktop.swing.animation.demos.splineeditor;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -14,7 +14,7 @@ import org.jdesktop.swing.animation.timing.sources.SwingTimerTimingSource;
 
 public class SplineEditor extends JFrame {
 
-  public static final String PREFIX = "org/jdesktop/swing/animation/timing/splineeditor/";
+  public static final String PREFIX = "org/jdesktop/swing/animation/demos/splineeditor/";
 
   public SplineEditor() throws HeadlessException {
     super("Spline Editor");
@@ -56,5 +56,4 @@ public class SplineEditor extends JFrame {
   }
 
   private static final long serialVersionUID = -6414936342796708815L;
-
 }
