@@ -2,12 +2,15 @@ package org.jdesktop.core.animation.timing.triggers;
 
 import org.jdesktop.core.animation.timing.TriggerEvent;
 
+import com.surelogic.Immutable;
+
 /**
  * Mouse Enter/Exit/Press/Release/Click events.
  * 
  * @author Chet Haase
  * @author Tim Halloran
  */
+@Immutable
 public enum MouseTriggerEvent implements TriggerEvent {
 
   /**
