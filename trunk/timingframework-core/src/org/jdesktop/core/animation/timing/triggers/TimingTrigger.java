@@ -119,7 +119,7 @@ public class TimingTrigger {
   }
 
   @ThreadSafe
-  private static class TimingTriggerHelper extends Trigger implements TimingTarget {
+  private static final class TimingTriggerHelper extends Trigger implements TimingTarget {
 
     private final Animator f_source;
 

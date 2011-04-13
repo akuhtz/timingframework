@@ -25,12 +25,11 @@ import org.jdesktop.core.animation.timing.Trigger;
 import org.jdesktop.core.animation.timing.interpolators.AccelerationInterpolator;
 import org.jdesktop.core.animation.timing.triggers.FocusTriggerEvent;
 import org.jdesktop.core.animation.timing.triggers.MouseTriggerEvent;
-import org.jdesktop.core.animation.timing.triggers.TimingTrigger;
 import org.jdesktop.core.animation.timing.triggers.TimingTriggerEvent;
 import org.jdesktop.swt.animation.timing.sources.SWTTimingSource;
-import org.jdesktop.swt.animation.timing.triggers.EventTrigger;
 import org.jdesktop.swt.animation.timing.triggers.FocusTrigger;
 import org.jdesktop.swt.animation.timing.triggers.MouseTrigger;
+import org.jdesktop.swt.animation.timing.triggers.TriggerUtility;
 
 /**
  * Simple program that demonstrates the use of several different {@link Trigger}
@@ -85,11 +84,11 @@ public class Triggers extends Composite {
     /*
      * Add triggers for each sphere, depending on what we want to trigger them.
      */
-    EventTrigger.addTrigger(triggerButton, SWT.Selection, action.getAnimator());
+    TriggerUtility.addEventTrigger(triggerButton, SWT.Selection, action.getAnimator());
     FocusTrigger.addTrigger(triggerButton, focus.getAnimator(), FocusTriggerEvent.IN);
     MouseTrigger.addTrigger(triggerButton, armed.getAnimator(), MouseTriggerEvent.PRESS);
     MouseTrigger.addTrigger(triggerButton, over.getAnimator(), MouseTriggerEvent.ENTER);
-    TimingTrigger.addTrigger(action.getAnimator(), timing.getAnimator(), TimingTriggerEvent.STOP);
+    TriggerUtility.addTimingTrigger(action.getAnimator(), timing.getAnimator(), TimingTriggerEvent.STOP);
   }
 
   private static void createAndShowGUI(Shell shell) {
