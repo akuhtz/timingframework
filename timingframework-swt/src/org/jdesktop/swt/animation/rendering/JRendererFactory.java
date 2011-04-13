@@ -19,6 +19,11 @@ public final class JRendererFactory {
 
   /**
    * Gets a passive renderer for the passed canvas.
+   * <p>
+   * This method constructs and starts an {@link SWTTimingSource} and sets it as
+   * the default for all animations. A handle to this timing source can be
+   * obtained by invoking {@link JRenderer#getTimingSource()}, for example, if
+   * it needs to be disposed.
    * 
    * @param on
    *          the canvas to render on.

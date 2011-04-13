@@ -7,6 +7,7 @@ import org.jdesktop.core.animation.rendering.JRenderer;
 import org.jdesktop.core.animation.rendering.JRendererTarget;
 import org.jdesktop.core.animation.timing.AnimatorBuilder;
 import org.jdesktop.core.animation.timing.TimingSource;
+import org.jdesktop.core.animation.timing.sources.ManualTimingSource;
 import org.jdesktop.swing.animation.timing.sources.SwingTimerTimingSource;
 
 import com.surelogic.Utility;
@@ -39,6 +40,12 @@ public final class JRendererFactory {
    * <pre>
    * -Dorg.jdesktop.renderer.active=true
    * </pre>
+   * 
+   * This method constructs and starts an {@link SwingTimerTimingSource} or a
+   * {@link ManualTimingSource} and sets it as the default for all animations. A
+   * handle to this timing source can be obtained by invoking
+   * {@link JRenderer#getTimingSource()}, for example, if it needs to be
+   * disposed.
    * 
    * @param on
    *          the panel to render on.
