@@ -13,6 +13,7 @@ import javax.swing.JComponent;
 import org.jdesktop.core.animation.i18n.I18N;
 import org.jdesktop.core.animation.timing.Animator;
 import org.jdesktop.core.animation.timing.Trigger;
+import org.jdesktop.core.animation.timing.triggers.AbstractTrigger;
 import org.jdesktop.core.animation.timing.triggers.FocusTriggerEvent;
 import org.jdesktop.core.animation.timing.triggers.MouseTriggerEvent;
 import org.jdesktop.core.animation.timing.triggers.TimingTrigger;
@@ -146,11 +147,11 @@ public final class TriggerUtility {
   }
 
   @ThreadSafe
-  private static final class ActionTriggerHelper extends Trigger implements ActionListener {
+  private static final class ActionTriggerHelper extends AbstractTrigger implements ActionListener {
 
     private final Object f_object;
 
-    protected ActionTriggerHelper(Object object, Animator animator) {
+    ActionTriggerHelper(Object object, Animator animator) {
       super(animator, null, false);
       f_object = object;
     }
@@ -259,11 +260,11 @@ public final class TriggerUtility {
   }
 
   @ThreadSafe
-  private static final class FocusTriggerHelper extends Trigger implements FocusListener {
+  private static final class FocusTriggerHelper extends AbstractTrigger implements FocusListener {
 
     private final JComponent f_component;
 
-    protected FocusTriggerHelper(JComponent component, Animator target, FocusTriggerEvent event, boolean autoReverse) {
+    FocusTriggerHelper(JComponent component, Animator target, FocusTriggerEvent event, boolean autoReverse) {
       super(target, event, autoReverse);
       f_component = component;
     }
@@ -367,11 +368,11 @@ public final class TriggerUtility {
   }
 
   @ThreadSafe
-  private static final class MouseTriggerHelper extends Trigger implements MouseListener {
+  private static final class MouseTriggerHelper extends AbstractTrigger implements MouseListener {
 
     private final JComponent f_component;
 
-    protected MouseTriggerHelper(JComponent component, Animator target, MouseTriggerEvent event, boolean autoReverse) {
+    MouseTriggerHelper(JComponent component, Animator target, MouseTriggerEvent event, boolean autoReverse) {
       super(target, event, autoReverse);
       f_component = component;
     }
