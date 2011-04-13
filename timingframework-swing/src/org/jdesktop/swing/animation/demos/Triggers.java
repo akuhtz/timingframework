@@ -73,8 +73,10 @@ public class Triggers extends JComponent {
     f.setLayout(new BorderLayout());
     JPanel buttonPanel = new JPanel();
     buttonPanel.setLayout(new BorderLayout());
-    // Note: "Other Button" exists only to provide another component to
-    // move focus from/to, in order to show how FocusTrigger works
+    /*
+     * Note that "Other Button" exists only to provide another component to move
+     * focus from/to, in order to show how a focus trigger works.
+     */
     buttonPanel.add(new JButton("Other Button"), BorderLayout.NORTH);
     triggerButton = new JButton("Trigger");
     buttonPanel.add(triggerButton, BorderLayout.SOUTH);
@@ -160,6 +162,5 @@ public class Triggers extends JComponent {
     }
 
     private static final long serialVersionUID = 5222141023907163488L;
-
   }
 }
