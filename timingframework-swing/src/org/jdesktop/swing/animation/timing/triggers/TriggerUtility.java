@@ -23,7 +23,7 @@ import com.surelogic.ThreadSafe;
 import com.surelogic.Utility;
 
 /**
- * A utility that creates Swing triggers.
+ * A utility that creates triggers for Swing applications.
  * 
  * @author Chet Haase
  * @author Tim Halloran
@@ -34,7 +34,20 @@ public final class TriggerUtility {
 
   /**
    * Creates a non-auto-reversing timing trigger and adds it as a target to the
-   * source animation.
+   * source animation. For example, one {@link Animator} can be set to start
+   * when another ends using this trigger. For example, to have <tt>anim2</tt>
+   * start when <tt>anim1</tt> ends, one might write the following:
+   * 
+   * <pre>
+   * Trigger trigger = TimingTrigger.addTrigger(anim1, anim2, TimingTriggerEvent.STOP);
+   * </pre>
+   * 
+   * The returned trigger object can be safely ignored if the code never needs
+   * to disarm the trigger.
+   * 
+   * <pre>
+   * TimingTrigger.addTrigger(anim1, anim2, TimingTriggerEvent.STOP);
+   * </pre>
    * 
    * @param source
    *          the animation that will be listened to for events to start the
@@ -57,6 +70,21 @@ public final class TriggerUtility {
 
   /**
    * Creates a timing trigger and adds it as a target to the source animation.
+   * For example, one {@link Animator} can be set to start when another ends
+   * using this trigger. For example, to have <tt>anim2</tt> start when
+   * <tt>anim1</tt> ends and visa versa, have <tt>anim2</tt> stop when
+   * <tt>anim1</tt> starts, one might write the following:
+   * 
+   * <pre>
+   * Trigger trigger = TimingTrigger.addTrigger(anim1, anim2, TimingTriggerEvent.STOP, true);
+   * </pre>
+   * 
+   * The returned trigger object can be safely ignored if the code never needs
+   * to disarm the trigger.
+   * 
+   * <pre>
+   * TimingTrigger.addTrigger(anim1, anim2, TimingTriggerEvent.STOP, true);
+   * </pre>
    * 
    * @param source
    *          the animation that will be listened to for events to start the
@@ -112,21 +140,39 @@ public final class TriggerUtility {
       throw new IllegalArgumentException(I18N.err(1, "object"));
     if (target == null)
       throw new IllegalArgumentException(I18N.err(1, "target"));
-    final ActionTriggerHelper trigger = new ActionTriggerHelper(target);
-    try {
-      Method addListenerMethod = object.getClass().getMethod("addActionListener", ActionListener.class);
-      addListenerMethod.invoke(object, trigger);
-    } catch (Exception e) {
-      throw new IllegalArgumentException(I18N.err(102, object), e);
-    }
+    final ActionTriggerHelper trigger = new ActionTriggerHelper(object, target);
+    trigger.init();
     return trigger;
   }
 
   @ThreadSafe
   private static class ActionTriggerHelper extends Trigger implements ActionListener {
 
-    protected ActionTriggerHelper(Animator animator) {
+    private final Object f_object;
+
+    protected ActionTriggerHelper(Object object, Animator animator) {
       super(animator, null, false);
+      f_object = object;
+    }
+
+    public void init() {
+      try {
+        Method addListenerMethod = f_object.getClass().getMethod("addActionListener", ActionListener.class);
+        addListenerMethod.invoke(f_object, this);
+      } catch (Exception e) {
+        throw new IllegalArgumentException(I18N.err(102, f_object), e);
+      }
+    }
+
+    @Override
+    public void disarm() {
+      super.disarm();
+      try {
+        Method addListenerMethod = f_object.getClass().getMethod("removeActionListener", ActionListener.class);
+        addListenerMethod.invoke(f_object, this);
+      } catch (Exception e) {
+        throw new IllegalArgumentException(I18N.err(103, f_object), e);
+      }
     }
 
     @Override
@@ -138,8 +184,8 @@ public final class TriggerUtility {
   /**
    * Creates a non-auto-reversing focus trigger and adds it as a
    * {@link FocusListener} to the passed component. For example, to have
-   * {@code anim} start when component receives an IN event, one might write the
-   * following:
+   * {@code anim} start when {@code component} receives an IN event, one might
+   * write the following:
    * 
    * <pre>
    * Trigger trigger = TriggerUtility.addFocusTrigger(component, anim, FocusTriggerEvent.IN);
@@ -170,7 +216,20 @@ public final class TriggerUtility {
 
   /**
    * Creates a focus trigger and adds it as a {@link FocusListener} to the
-   * passed component.
+   * passed component. For example, to have {@code anim} start when
+   * {@code component} receives an IN event, and reverse {@code anim} when
+   * {@code component} receives an OUT event, one might write the following:
+   * 
+   * <pre>
+   * Trigger trigger = TriggerUtility.addFocusTrigger(component, anim, FocusTriggerEvent.IN, true);
+   * </pre>
+   * 
+   * The returned trigger object can be safely ignored if the code never needs
+   * to disarm the trigger.
+   * 
+   * <pre>
+   * TriggerUtility.addFocusTrigger(component, anim, FocusTriggerEvent.IN, true);
+   * </pre>
    * 
    * @param component
    *          the component that will generate focus events for this trigger.
@@ -215,8 +274,8 @@ public final class TriggerUtility {
 
     @Override
     public void disarm() {
-      f_component.removeFocusListener(this);
       super.disarm();
+      f_component.removeFocusListener(this);
     }
 
     @Override
@@ -233,8 +292,8 @@ public final class TriggerUtility {
   /**
    * Creates a non-auto-reversing mouse trigger and adds it as a
    * {@link MouseListener} to the passed component. For example, to have
-   * {@code anim} start when component receives an CLICK event, one might write
-   * the following:
+   * {@code anim} start when {@code component} receives an CLICK event, one
+   * might write the following:
    * 
    * <pre>
    * Trigger trigger = TriggerUtility.addMouseTrigger(component, anim, MouseTriggerEvent.CLICK);
@@ -265,7 +324,20 @@ public final class TriggerUtility {
 
   /**
    * Creates a mouse trigger and adds it as a {@link MouseListener} to the
-   * passed component.
+   * passed component. For example, to have {@code anim} start when
+   * {@code component} receives an ENTER event, and reverse {@code anim} when
+   * {@code component} receives an EXIT event, one might write the following:
+   * 
+   * <pre>
+   * Trigger trigger = TriggerUtility.addMouseTrigger(component, anim, MouseTriggerEvent.ENTER, true);
+   * </pre>
+   * 
+   * The returned trigger object can be safely ignored if the code never needs
+   * to disarm the trigger.
+   * 
+   * <pre>
+   * TriggerUtility.addMouseTrigger(component, anim, MouseTriggerEvent.ENTER, true);
+   * </pre>
    * 
    * @param component
    *          the component that will generate mouse events for this trigger.
@@ -309,8 +381,8 @@ public final class TriggerUtility {
 
     @Override
     public void disarm() {
-      f_component.removeMouseListener(this);
       super.disarm();
+      f_component.removeMouseListener(this);
     }
 
     @Override
