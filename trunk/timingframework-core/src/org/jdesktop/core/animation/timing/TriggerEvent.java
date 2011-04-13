@@ -3,8 +3,9 @@ package org.jdesktop.core.animation.timing;
 import com.surelogic.Immutable;
 
 /**
- * Base interface for all trigger event enumerations. Defines the ability to get
- * the opposite event from a particular trigger event.
+ * This interface provides the base interface for all trigger event
+ * enumerations. Defines the ability to get the opposite event from a particular
+ * trigger event.
  * 
  * @author Tim Halloran
  */

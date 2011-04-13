@@ -3,8 +3,9 @@ package org.jdesktop.core.animation.timing;
 import com.surelogic.ThreadSafe;
 
 /**
- * Base interface for all triggers, an event-driven approach to starting an
- * animation. Methods are provided to disarm a trigger and check if it is armed.
+ * This interface provides methods supported by all triggers, an event-driven
+ * approach to starting an animation. Methods are provided to disarm a trigger
+ * and check if it is armed.
  * 
  * @author Chet Haase
  * @author Tim Halloran
