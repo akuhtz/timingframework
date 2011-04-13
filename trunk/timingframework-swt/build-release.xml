@@ -52,7 +52,7 @@
 		</jar>
 		<delete quiet="true" dir="${swt-release-work}${fs}bin" />
 
-		<javadoc access="public" destdir="${swt-release-work}${fs}/javadoc" classpath="${org.eclipse.swt-jar}" source="1.6" sourcepath="${swt-release-work}${fs}src" Overview="${core-lib}${fs}javadoc-overview.html" excludepackagenames="**.demos.*" notree="true" nodeprecatedlist="true" />
+		<javadoc access="public" destdir="${swt-release-work}${fs}/javadoc" classpath="${org.eclipse.swt-jar}" source="1.6" sourcepath="${swt-release-work}${fs}src" Overview="${core-lib}${fs}javadoc-overview.html" excludepackagenames="**.demos" notree="true" nodeprecatedlist="true" />
 
 		<zip destfile="${swt-release}${fs}timingframework-swt-${release-version}.zip" basedir="${swt-release-work}" />
 	</target>

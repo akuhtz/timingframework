@@ -50,7 +50,7 @@
 		</jar>
 		<delete quiet="true" dir="${swing-release-work}${fs}bin" />
 
-		<javadoc access="public" destdir="${swing-release-work}${fs}/javadoc" source="1.6" sourcepath="${swing-release-work}${fs}src" Overview="${core-lib}${fs}javadoc-overview.html" excludepackagenames="**.demos.*,**.splineeditor" notree="true" nodeprecatedlist="true" />
+		<javadoc access="public" destdir="${swing-release-work}${fs}/javadoc" source="1.6" sourcepath="${swing-release-work}${fs}src" Overview="${core-lib}${fs}javadoc-overview.html" excludepackagenames="**.demos,**.demos.*" notree="true" nodeprecatedlist="true" />
 
 		<zip destfile="${swing-release}${fs}timingframework-swing-${release-version}.zip" basedir="${swing-release-work}" />
 	</target>

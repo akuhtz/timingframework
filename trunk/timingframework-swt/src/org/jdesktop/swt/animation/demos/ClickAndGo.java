@@ -27,13 +27,14 @@ import org.jdesktop.core.animation.timing.PropertySetter;
 import org.jdesktop.core.animation.timing.TimingSource;
 import org.jdesktop.core.animation.timing.TimingSource.PostTickListener;
 import org.jdesktop.core.animation.timing.interpolators.AccelerationInterpolator;
+import org.jdesktop.swt.animation.timing.evaluators.EvaluatorPoint;
 import org.jdesktop.swt.animation.timing.sources.SWTTimingSource;
 
 /**
  * This demonstration tests two aspects of using {@link KeyFrames} and a
  * {@link PropertySetter}. First, it ensures that "to" animations work properly.
  * A "to" animation uses the getter on the property to set the starting point of
- * the animation. Second, it tests that the {@link EvaluatorPoint2D} class is
+ * the animation. Second, it tests that the {@link EvaluatorPoint} class is
  * automatically chosen as the {@link Evaluator} for an SWT {@link Point} .
  * 
  * @author Tim Halloran
