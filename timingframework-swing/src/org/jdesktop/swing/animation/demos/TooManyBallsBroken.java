@@ -42,7 +42,7 @@ import org.jdesktop.swing.animation.timing.sources.SwingTimerTimingSource;
 /**
  * This demonstration is a variant of the demonstration by Chet Haase at JavaOne
  * 2008. Chet discussed the problem in the original Timing Framework where, by
- * default, each animation used its own {@link javax.swing.Timer}. This did not
+ * default, each animation used its own {@code javax.swing.Timer}. This did not
  * scale and, as balls were added to the demonstration, the multiple timers
  * caused noticeable performance problems.
  * <p>

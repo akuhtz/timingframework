@@ -13,6 +13,27 @@ import org.jdesktop.core.animation.rendering.JRendererTarget;
 import org.jdesktop.core.animation.timing.TimingSource;
 import org.jdesktop.core.animation.timing.TimingSource.PostTickListener;
 
+/**
+ * Manages passive rendering on a Swing {@link Canvas}.
+ * <p>
+ * To use this renderer a client constructs a {@link Canvas} and passes it to
+ * the constructor with a {@link JRendererTarget} implementation and a timing
+ * source. A typical sequence would be
+ * 
+ * <pre>
+ * Canvas on = new Canvas(shell, SWT.DOUBLE_BUFFERED);
+ * final JRendererTarget&lt;Display, GC&gt; target = this;
+ * final TimingSource timingSource = new SWTTimingSource();
+ * JRenderer renderer = new JPassiveRenderer(on, target, timingSource);
+ * timingSource.init();
+ * </pre>
+ * 
+ * In the above snippet <tt>on</tt> will be rendered to. The enclosing instance,
+ * <tt>this</tt>, implements {@link JRendererTarget} and will be called to
+ * customize what is displayed on-screen.
+ * 
+ * @author Tim Halloran
+ */
 public class JPassiveRenderer implements JRenderer<Canvas> {
 
   /*

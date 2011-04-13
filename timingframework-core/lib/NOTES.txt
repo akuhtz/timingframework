@@ -53,8 +53,8 @@ o I18N class added to serve error messages to the Timing Framework.
 o More work on the timing source API to simplify/fix the 2.0 release.
   In particular, the API was changed to ensure that callbacks happen in the
   correct thread context (broken in prior releases). Further, a constructor
-  was added to SwingTimingSource and SWTTimingSource that sets a reasonable
-  default period of 15 milliseconds.
+  was added to SwingTimerTimingSource and SWTTimingSource that sets a
+  reasonable default period of 15 milliseconds.
 
 o JUnit tests added to unit test the core of the Timing Framework.
   ManualTimingSource helps support unit testing as well as the Swing active

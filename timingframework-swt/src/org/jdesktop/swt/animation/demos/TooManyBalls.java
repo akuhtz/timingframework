@@ -38,7 +38,7 @@ import org.jdesktop.swt.animation.timing.sources.SWTTimingSource;
 /**
  * This demonstration is a variant of the demonstration by Chet Haase at JavaOne
  * 2008. Chet discussed the problem in the original Timing Framework where, by
- * default, each animation used its own {@link javax.swing.Timer}. This did not
+ * default, each animation used its own {@code javax.swing.Timer}. This did not
  * scale and, as balls were added to the demonstration, the multiple timers
  * caused noticeable performance problems.
  * <p>
@@ -46,7 +46,7 @@ import org.jdesktop.swt.animation.timing.sources.SWTTimingSource;
  * {@link AnimatorBuilder}, thus making it easy for client code to avoid this
  * problem. This design was inspired by the JavaOne 2008 talk.
  * <p>
- * This program is a copy of Chet's demo implemented in SWT.
+ * This program is a port of Chet's Swing demo to SWT.
  * 
  * @author Tim Halloran
  */
