@@ -36,7 +36,20 @@ public class TimingTrigger {
 
   /**
    * Creates a non-auto-reversing timing trigger and adds it as a target to the
-   * source animation.
+   * source animation. For example, one {@link Animator} can be set to start
+   * when another ends using this trigger. For example, to have <tt>anim2</tt>
+   * start when <tt>anim1</tt> ends, one might write the following:
+   * 
+   * <pre>
+   * Trigger trigger = TimingTrigger.addTrigger(anim1, anim2, TimingTriggerEvent.STOP);
+   * </pre>
+   * 
+   * The returned trigger object can be safely ignored if the code never needs
+   * to disarm the trigger.
+   * 
+   * <pre>
+   * TimingTrigger.addTrigger(anim1, anim2, TimingTriggerEvent.STOP);
+   * </pre>
    * 
    * @param source
    *          the animation that will be listened to for events to start the
@@ -57,6 +70,21 @@ public class TimingTrigger {
 
   /**
    * Creates a timing trigger and adds it as a target to the source animation.
+   * For example, one {@link Animator} can be set to start when another ends and
+   * visa versa using this trigger. For example, to have <tt>anim2</tt> start
+   * when <tt>anim1</tt> ends and visa versa, have <tt>anim2</tt> stop when
+   * <tt>anim1</tt> starts, one might write the following:
+   * 
+   * <pre>
+   * Trigger trigger = TimingTrigger.addTrigger(anim1, anim2, TimingTriggerEvent.STOP, true);
+   * </pre>
+   * 
+   * The returned trigger object can be safely ignored if the code never needs
+   * to disarm the trigger.
+   * 
+   * <pre>
+   * TimingTrigger.addTrigger(anim1, anim2, TimingTriggerEvent.STOP, true);
+   * </pre>
    * 
    * @param source
    *          the animation that will be listened to for events to start the
@@ -106,8 +134,8 @@ public class TimingTrigger {
 
     @Override
     public void disarm() {
-      f_source.removeTarget(this);
       super.disarm();
+      f_source.removeTarget(this);
     }
 
     //
