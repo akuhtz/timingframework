@@ -1,4 +1,4 @@
-package org.jdesktop.swing.animation.timing.splineeditor;
+package org.jdesktop.swing.animation.demos.splineeditor;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -23,8 +23,8 @@ import java.io.OutputStream;
 
 import javax.imageio.ImageIO;
 
-@SuppressWarnings("serial")
 public class SplineDisplay extends EquationDisplay {
+
   private static final double CONTROL_POINT_SIZE = 12.0;
 
   private Point2D control1 = new Point2D.Double(0.25, 0.75);
@@ -251,4 +251,6 @@ public class SplineDisplay extends EquationDisplay {
       resetSelection();
     }
   }
+
+  private static final long serialVersionUID = -8419384496630123734L;
 }

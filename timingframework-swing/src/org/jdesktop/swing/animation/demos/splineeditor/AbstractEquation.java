@@ -1,4 +1,4 @@
-package org.jdesktop.swing.animation.timing.splineeditor;
+package org.jdesktop.swing.animation.demos.splineeditor;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;

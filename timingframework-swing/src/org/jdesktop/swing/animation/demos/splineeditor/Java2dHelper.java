@@ -1,4 +1,4 @@
-package org.jdesktop.swing.animation.timing.splineeditor;
+package org.jdesktop.swing.animation.demos.splineeditor;
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;

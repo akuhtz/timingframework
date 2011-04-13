@@ -1,4 +1,4 @@
-package org.jdesktop.swing.animation.timing.splineeditor;
+package org.jdesktop.swing.animation.demos.splineeditor;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -23,7 +23,6 @@ import java.util.List;
 
 import javax.swing.JComponent;
 
-@SuppressWarnings("serial")
 public class EquationDisplay extends JComponent implements PropertyChangeListener {
   private static final Color COLOR_BACKGROUND = Color.WHITE;
   private static final Color COLOR_MAJOR_GRID = Color.GRAY.brighter();
@@ -466,4 +465,6 @@ public class EquationDisplay extends JComponent implements PropertyChangeListene
       dragStart = dragEnd;
     }
   }
+
+  private static final long serialVersionUID = -6213415991942144301L;
 }

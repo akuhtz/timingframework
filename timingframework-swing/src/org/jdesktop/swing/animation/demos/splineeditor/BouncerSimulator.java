@@ -1,4 +1,4 @@
-package org.jdesktop.swing.animation.timing.splineeditor;
+package org.jdesktop.swing.animation.demos.splineeditor;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -63,5 +63,4 @@ public class BouncerSimulator extends AbstractSimulator {
   }
 
   private static final long serialVersionUID = -3963863642907761767L;
-
 }

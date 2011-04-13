@@ -1,4 +1,4 @@
-package org.jdesktop.swing.animation.timing.splineeditor;
+package org.jdesktop.swing.animation.demos.splineeditor;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -72,25 +72,6 @@ class SplineControlPanel extends JPanel {
 
     debugPanel.add(Box.createHorizontalStrut(150), new GridBagConstraints(0, linesCount++, 2, 1, 1.0, 0.0,
         GridBagConstraints.LINE_START, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-
-    // button = addButton(debugPanel, "Create");
-    // button.addActionListener(new ActionListener() {
-    // public void actionPerformed(ActionEvent e) {
-    // JFileChooser chooser = new JFileChooser(".");
-    // int choice = chooser.showSaveDialog(SplineControlPanel.this);
-    // if (choice == JFileChooser.CANCEL_OPTION) {
-    // return;
-    // }
-    // File file = chooser.getSelectedFile();
-    // try {
-    // OutputStream out = new FileOutputStream(file);
-    // display.saveAsTemplate(out);
-    // out.close();
-    // } catch (FileNotFoundException e1) {
-    // } catch (IOException e1) {
-    // }
-    // }
-    // });
 
     addSeparator(debugPanel, "Control Points");
     labelControl1 = addDebugLabel(debugPanel, "Point 1:", formatPoint(display.getControl1()));
@@ -235,9 +216,8 @@ class SplineControlPanel extends JPanel {
 
     Point2D control1 = display.getControl1();
     Point2D control2 = display.getControl2();
-    Interpolator splines = new SplineInterpolator((float) control1.getX(), (float) control1.getY(), (float) control2.getX(),
-        (float) control2.getY());
-    KeyFrames<Double> frames = new KeyFramesBuilder<Double>().setInterpolator(splines).addFrames(0.0, 1.0).build();
+    Interpolator splines = new SplineInterpolator(control1.getX(), control1.getY(), control2.getX(), control2.getY());
+    KeyFrames<Double> frames = new KeyFramesBuilder<Double>(0.0).addFrame(1.0).setInterpolator(splines).build();
 
     TimingTarget dropModifier = PropertySetter.getTarget(dropSimulator, "time", frames);
     TimingTarget bounceModifier = PropertySetter.getTarget(bounceSimulator, "time", frames);
@@ -260,7 +240,7 @@ class SplineControlPanel extends JPanel {
           controller.stop();
         }
 
-        controller = new AnimatorBuilder().setDuration(300, TimeUnit.MILLISECONDS).build();
+        controller = new AnimatorBuilder().setDuration(400, TimeUnit.MILLISECONDS).build();
         controller.addTarget(PropertySetter.getTarget(display, "control1", display.getControl1(), template.getControl1()));
         controller.addTarget(PropertySetter.getTarget(display, "control2", display.getControl2(), template.getControl2()));
         controller.start();
