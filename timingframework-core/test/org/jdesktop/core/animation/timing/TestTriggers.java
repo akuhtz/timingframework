@@ -1,5 +1,6 @@
 package org.jdesktop.core.animation.timing;
 
+import org.jdesktop.core.animation.timing.sources.ManualTimingSource;
 import org.jdesktop.core.animation.timing.sources.ScheduledExecutorTimingSource;
 import org.jdesktop.core.animation.timing.triggers.TimingTrigger;
 import org.jdesktop.core.animation.timing.triggers.TimingTriggerEvent;
@@ -9,7 +10,22 @@ import org.junit.Test;
 public final class TestTriggers {
 
   @Test
-  public void test1() throws InterruptedException {
+  public void disarm() {
+    TimingSource ts = new ManualTimingSource();
+    Animator a = new AnimatorBuilder(ts).build();
+    CountingTimingTarget counterA = new CountingTimingTarget();
+    a.addTarget(counterA);
+    Animator t = new AnimatorBuilder(ts).build();
+    CountingTimingTarget counterT = new CountingTimingTarget();
+    t.addTarget(counterT);
+    final Trigger trigger = TimingTrigger.addTrigger(a, t, TimingTriggerEvent.STOP);
+    Assert.assertTrue(trigger.isArmed());
+    trigger.disarm();
+    Assert.assertFalse(trigger.isArmed());
+  }
+
+  @Test
+  public void timingTrigger() throws InterruptedException {
     TimingSource ts = new ScheduledExecutorTimingSource();
     ts.init();
     Animator a = new AnimatorBuilder(ts).build(); // 1 second
@@ -22,6 +38,7 @@ public final class TestTriggers {
     a.start();
     a.await();
     t.await();
+    ts.dispose();
 
     Assert.assertEquals(1, counterA.getBeginCount());
     Assert.assertEquals(1, counterA.getEndCount());
