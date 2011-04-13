@@ -27,8 +27,6 @@ import org.jdesktop.core.animation.timing.triggers.FocusTriggerEvent;
 import org.jdesktop.core.animation.timing.triggers.MouseTriggerEvent;
 import org.jdesktop.core.animation.timing.triggers.TimingTriggerEvent;
 import org.jdesktop.swt.animation.timing.sources.SWTTimingSource;
-import org.jdesktop.swt.animation.timing.triggers.FocusTrigger;
-import org.jdesktop.swt.animation.timing.triggers.MouseTrigger;
 import org.jdesktop.swt.animation.timing.triggers.TriggerUtility;
 
 /**
@@ -75,19 +73,19 @@ public class Triggers extends Composite {
     layout.wrap = false;
     layout.spacing = 0;
     setLayout(layout);
-    action = new SpherePanel(this, SWT.DOUBLE_BUFFERED, DemoResources.YELLOW_SPHERE, "B-Click");
-    focus = new SpherePanel(this, SWT.DOUBLE_BUFFERED, DemoResources.BLUE_SPHERE, "Key-Foc");
-    armed = new SpherePanel(this, SWT.DOUBLE_BUFFERED, DemoResources.RED_SPHERE, "M-Press");
-    over = new SpherePanel(this, SWT.DOUBLE_BUFFERED, DemoResources.GREEN_SPHERE, "M-Enter");
-    timing = new SpherePanel(this, SWT.DOUBLE_BUFFERED, DemoResources.GRAY_SPHERE, "1-Stop");
+    action = new SpherePanel(this, SWT.DOUBLE_BUFFERED, DemoResources.YELLOW_SPHERE, "B-Click", true);
+    focus = new SpherePanel(this, SWT.DOUBLE_BUFFERED, DemoResources.BLUE_SPHERE, "Key-Foc", false);
+    armed = new SpherePanel(this, SWT.DOUBLE_BUFFERED, DemoResources.RED_SPHERE, "M-Press", true);
+    over = new SpherePanel(this, SWT.DOUBLE_BUFFERED, DemoResources.GREEN_SPHERE, "M-Enter", false);
+    timing = new SpherePanel(this, SWT.DOUBLE_BUFFERED, DemoResources.GRAY_SPHERE, "1-Stop", true);
 
     /*
      * Add triggers for each sphere, depending on what we want to trigger them.
      */
     TriggerUtility.addEventTrigger(triggerButton, SWT.Selection, action.getAnimator());
-    FocusTrigger.addTrigger(triggerButton, focus.getAnimator(), FocusTriggerEvent.IN);
-    MouseTrigger.addTrigger(triggerButton, armed.getAnimator(), MouseTriggerEvent.PRESS);
-    MouseTrigger.addTrigger(triggerButton, over.getAnimator(), MouseTriggerEvent.ENTER);
+    TriggerUtility.addFocusTrigger(triggerButton, focus.getAnimator(), FocusTriggerEvent.IN, true);
+    TriggerUtility.addMouseTrigger(triggerButton, armed.getAnimator(), MouseTriggerEvent.PRESS);
+    TriggerUtility.addMouseTrigger(triggerButton, over.getAnimator(), MouseTriggerEvent.ENTER, true);
     TriggerUtility.addTimingTrigger(action.getAnimator(), timing.getAnimator(), TimingTriggerEvent.STOP);
   }
 
@@ -96,8 +94,10 @@ public class Triggers extends Composite {
     final Composite buttonPanel = new Composite(shell, SWT.NONE);
     buttonPanel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
     buttonPanel.setLayout(new GridLayout());
-    // Note: "Other Button" exists only to provide another component to
-    // move focus from/to, in order to show how FocusTrigger works
+    /*
+     * Note that "Other Button" exists only to provide another component to move
+     * focus from/to, in order to show how a focus trigger works.
+     */
     final Button otherButton = new Button(buttonPanel, SWT.PUSH);
     otherButton.setText("Other Button");
     otherButton.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
@@ -144,11 +144,14 @@ public class Triggers extends Composite {
      * Load the named image and create the animator that will bounce the image
      * down and back up in this panel.
      */
-    SpherePanel(Composite parent, int style, String resourceName, String label) {
+    SpherePanel(Composite parent, int style, String resourceName, String label, boolean bounce) {
       super(parent, style);
       f_sphereImage = DemoResources.getImage(resourceName, parent.getDisplay());
       f_bouncer = new AnimatorBuilder().setDuration(2, TimeUnit.SECONDS).setInterpolator(ACCEL_5_5).build();
-      f_bouncer.addTarget(PropertySetter.getTarget(this, "sphereY", 20, (PANEL_HEIGHT - f_sphereImage.getBounds().height), 20));
+      if (bounce)
+        f_bouncer.addTarget(PropertySetter.getTarget(this, "sphereY", 20, (PANEL_HEIGHT - f_sphereImage.getBounds().height), 20));
+      else
+        f_bouncer.addTarget(PropertySetter.getTarget(this, "sphereY", 20, (PANEL_HEIGHT - f_sphereImage.getBounds().height)));
       f_label = label;
       addPaintListener(new PaintListener() {
         @Override

@@ -45,11 +45,11 @@ public class Triggers extends JComponent {
   /** Creates a new instance of Triggers */
   public Triggers() {
     setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-    action = new SpherePanel(DemoResources.YELLOW_SPHERE, "B-Click");
-    focus = new SpherePanel(DemoResources.BLUE_SPHERE, "Key-Foc");
-    armed = new SpherePanel(DemoResources.RED_SPHERE, "M-Press");
-    over = new SpherePanel(DemoResources.GREEN_SPHERE, "M-Enter");
-    timing = new SpherePanel(DemoResources.GRAY_SPHERE, "1-Stop");
+    action = new SpherePanel(DemoResources.YELLOW_SPHERE, "B-Click", true);
+    focus = new SpherePanel(DemoResources.BLUE_SPHERE, "Key-Foc", false);
+    armed = new SpherePanel(DemoResources.RED_SPHERE, "M-Press", true);
+    over = new SpherePanel(DemoResources.GREEN_SPHERE, "M-Enter", false);
+    timing = new SpherePanel(DemoResources.GRAY_SPHERE, "1-Stop", true);
 
     add(action);
     add(focus);
@@ -61,9 +61,9 @@ public class Triggers extends JComponent {
      * Add triggers for each sphere, depending on what we want to trigger them.
      */
     TriggerUtility.addActionTrigger(triggerButton, action.getAnimator());
-    TriggerUtility.addFocusTrigger(triggerButton, focus.getAnimator(), FocusTriggerEvent.IN);
+    TriggerUtility.addFocusTrigger(triggerButton, focus.getAnimator(), FocusTriggerEvent.IN, true);
     TriggerUtility.addMouseTrigger(triggerButton, armed.getAnimator(), MouseTriggerEvent.PRESS);
-    TriggerUtility.addMouseTrigger(triggerButton, over.getAnimator(), MouseTriggerEvent.ENTER);
+    TriggerUtility.addMouseTrigger(triggerButton, over.getAnimator(), MouseTriggerEvent.ENTER, true);
     TriggerUtility.addTimingTrigger(action.getAnimator(), timing.getAnimator(), TimingTriggerEvent.STOP);
   }
 
@@ -136,7 +136,7 @@ public class Triggers extends JComponent {
      * Load the named image and create the animator that will bounce the image
      * down and back up in this panel.
      */
-    SpherePanel(String resourceName, String label) {
+    SpherePanel(String resourceName, String label, boolean bounce) {
       try {
         f_sphereImage = ImageIO.read(DemoResources.getResource(resourceName));
       } catch (Exception e) {
@@ -144,7 +144,10 @@ public class Triggers extends JComponent {
       }
       setPreferredSize(new Dimension(f_sphereImage.getWidth() + 2 * PADDING, PANEL_HEIGHT));
       f_bouncer = new AnimatorBuilder().setDuration(2, TimeUnit.SECONDS).setInterpolator(ACCEL_5_5).build();
-      f_bouncer.addTarget(PropertySetter.getTarget(this, "sphereY", 20, (PANEL_HEIGHT - f_sphereImage.getHeight()), 20));
+      if (bounce)
+        f_bouncer.addTarget(PropertySetter.getTarget(this, "sphereY", 20, (PANEL_HEIGHT - f_sphereImage.getHeight()), 20));
+      else
+        f_bouncer.addTarget(PropertySetter.getTarget(this, "sphereY", 20, (PANEL_HEIGHT - f_sphereImage.getHeight())));
       f_label = label;
     }
 
