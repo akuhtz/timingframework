@@ -319,8 +319,8 @@ public final class TriggerUtility {
    * @throws IllegalArgumentException
    *           if any of the parameters is {@code null}.
    */
-  public static Trigger addMouseTrigger(JComponent component, Animator animator, MouseTriggerEvent event) {
-    return addMouseTrigger(component, animator, event, false);
+  public static Trigger addMouseTrigger(JComponent component, Animator target, MouseTriggerEvent event) {
+    return addMouseTrigger(component, target, event, false);
   }
 
   /**
