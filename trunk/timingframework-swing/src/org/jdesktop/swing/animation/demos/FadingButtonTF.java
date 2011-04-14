@@ -107,7 +107,6 @@ public class FadingButtonTF extends JButton implements ActionListener, TimingTar
     f_alpha = (float) fraction;
     // redisplay our button
     repaint();
-
   }
 
   private static void createAndShowGUI() {
