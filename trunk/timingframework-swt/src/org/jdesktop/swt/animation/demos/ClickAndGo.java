@@ -106,9 +106,9 @@ public final class ClickAndGo extends Canvas {
 
   public static void setupGUI(Shell shell, TimingSource ts) {
     f_ball.image = DemoResources.getImage(DemoResources.BLUE_SPHERE, shell.getDisplay());
-    f_ball.setLocation(new Point(50, 50));
+    f_ball.setLocation(new Point(50, 90));
     final int rectSize = f_ball.image.getBounds().width;
-    f_ball.setRect(new Rectangle(50, 50, rectSize, rectSize));
+    f_ball.setRect(new Rectangle(50, 90, rectSize, rectSize));
     f_ball.setRectRGB(new RGB(100, 100, 100));
 
     shell.setLayout(new FillLayout());
@@ -133,8 +133,10 @@ public final class ClickAndGo extends Canvas {
         gc.setBackground(e.widget.getDisplay().getSystemColor(SWT.COLOR_WHITE));
         gc.fillRectangle(0, 0, getBounds().width, getBounds().height);
 
-        gc.drawString("Click on the screen and the ball and rectangle will move to that point in two seconds.", 5, 5);
-        gc.drawString("Feel free to change the ball's destination at any time.", 5, 20);
+        gc.drawString("Click on the screen and the ball and the colored rectangle will move to that point in two seconds.", 5, 5);
+        gc.drawString("The ball and the colored rectangle don't use the same interpolator, so they will move at different rates.",
+            5, 20);
+        gc.drawString("Feel free to change the destination at any time.", 5, 35);
 
         gc.setBackground(f_ball.getRecColor());
         gc.setForeground(e.widget.getDisplay().getSystemColor(SWT.COLOR_BLACK));
