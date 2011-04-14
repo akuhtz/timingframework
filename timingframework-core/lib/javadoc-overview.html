@@ -119,7 +119,11 @@ forced to use a <tt>PropertySetter</tt>. This can avoid reflective <tt>get</tt> 
 
 <li><tt>PropertySetter</tt> has been changed to a utility that returns <tt>TimingTargets</tt>. In particular
 "to" animations, where the current value of the property is used as the starting value for an animation, are
-far more flexible.
+far more flexible.</li>
+
+<li>Triggers, and event-driven approach to starting animations, are now created using the
+<tt>TriggerUtility</tt> utility. Timing, focus, action/event, and mouse triggers are now supported in both Swing
+and SWT applications.</li>
 
 <li>A Swing and SWT rendering infrastructure. In Swing both passive and active rendering are supported. In SWT,
 due to its current implementation, only passive rendering is supported. The <tt>TooManyBalls</tt> demo uses
@@ -154,18 +158,18 @@ Their description in the book is referenced in the list below.
 
 <p>To run one of the demonstrations from the release Jar file use:
 
-<p><tt>java -cp timingframework-swing-3.0.jar <i>classname</i></tt>
+<p><tt>java -cp "timingframework-swing-demos-3.0.jar;timingframework-swing-3.0.jar" <i>classname</i></tt>
 
 <p>The Swing <tt>TooManyBalls</tt> demonstration can be changed from passive rendering to game-like active
 rendering (see the <tt>JActiveRenderer</tt> class) by defining the <tt>org.jdesktop.renderer.active</tt> property. For example, use:
 
-<p><tt>java -cp timingframework-swing-3.0.jar -Dorg.jdesktop.renderer.active=true org.jdesktop.swing.animation.demos.TooManyBalls</tt>
+<p><tt>java -cp "timingframework-swing-demos-3.0.jar;timingframework-swing-3.0.jar" -Dorg.jdesktop.renderer.active=true org.jdesktop.swing.animation.demos.TooManyBalls</tt>
 
 <p>On some computers active rendering looks smoother, but has the cost of using two processors and lots of memory. It is perhaps
 more appropriate for a game than a desktop application. It is, however, straightforward to write programs that can change from passive
 to active rendering, like <tt>TooManyBalls</tt> does, by implementing <tt>JRendererTarget</tt>.
 
-<p>The Swing distribution also includes <tt>org.jdesktop.swing.animation.timing.splineeditor.SplineEditor</tt>
+<p>The Swing distribution also includes <tt>org.jdesktop.swing.animation.demos.splineeditor.SplineEditor</tt>
 (from Chapter 14) which can be used to design and preview a particular spline interpolation.
 
 <p>The SWT demonstrations are:
@@ -185,7 +189,7 @@ to active rendering, like <tt>TooManyBalls</tt> does, by implementing <tt>JRende
 
 <p>To run one of the SWT demonstrations from the release Jar file use:
 
-<p><tt>java -cp "timingframework-swt-3.0.jar;swt.jar" <i>classname</i></tt>
+<p><tt>java -cp "timingframework-swt-demos-3.0.jar;timingframework-swt-3.0.jar;swt.jar" <i>classname</i></tt>
 
 <p>In the example above I copied the <tt>swt.jar</tt> for my platform into the
 same directory, but you can reference it within another directory (the command above
