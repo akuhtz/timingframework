@@ -107,9 +107,9 @@ public final class ClickAndGo extends JPanel {
     } catch (IOException e) {
       throw new IllegalStateException(e);
     }
-    f_ball.setLocation(new Point(50, 50));
+    f_ball.setLocation(new Point(50, 90));
     final int rectSize = f_ball.image.getWidth();
-    f_ball.setRect(new Rectangle(50, 50, rectSize, rectSize));
+    f_ball.setRect(new Rectangle(50, 90, rectSize, rectSize));
     f_ball.setRectColor(new Color(100, 100, 100));
 
     final JFrame frame = new JFrame("Swing Click and Go!");
@@ -176,8 +176,9 @@ public final class ClickAndGo extends JPanel {
 
     if (f_desktopHints != null)
       g2d.addRenderingHints(f_desktopHints);
-    g2d.drawString("Click on the screen and the ball and rectangle will move to that point in two seconds.", 5, 20);
-    g2d.drawString("Feel free to change the ball's destination at any time.", 5, 35);
+    g2d.drawString("Click on the screen and the ball and the colored rectangle will move to that point in two seconds.", 5, 20);
+    g2d.drawString("The ball and the colored rectangle do not use the same interpolator, so they will move at different rates.", 5, 35);
+    g2d.drawString("Feel free to change the destination at any time.", 5, 50);
 
     final Rectangle r = f_ball.rect;
     g2d.setColor(f_ball.getRectColor());
