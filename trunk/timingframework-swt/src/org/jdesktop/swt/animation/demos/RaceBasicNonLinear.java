@@ -52,7 +52,7 @@ public class RaceBasicNonLinear extends RaceBasic {
 
   @Override
   protected Animator getAnimator() {
-    return new AnimatorBuilder().setDuration(RACE_TIME, TimeUnit.MILLISECONDS)
-        .setInterpolator(new AccelerationInterpolator(0.5, 0.2)).addTarget(this).build();
+    return new AnimatorBuilder().setDuration(RACE_TIME, TimeUnit.SECONDS).setInterpolator(new AccelerationInterpolator(0.5, 0.2))
+        .addTarget(this).build();
   }
 }

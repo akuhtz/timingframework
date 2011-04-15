@@ -17,7 +17,7 @@ import org.jdesktop.swt.animation.timing.sources.SWTTimingSource;
 
 /**
  * A SWT application that compares the elapsed fraction, in real time, to the
- * elapsed fraction when using a sample {@link SplineInterpolator}..
+ * elapsed fraction when using a sample {@link SplineInterpolator}.
  * <p>
  * This is based upon the TimingResolution demo discussed in Chapter 14 on pages
  * 372&ndash;375 (the section on <i>Resolution</i>) of <i>Filthy Rich

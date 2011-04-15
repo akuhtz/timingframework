@@ -27,7 +27,6 @@ import javax.swing.WindowConstants;
 import org.jdesktop.core.animation.timing.Animator;
 import org.jdesktop.core.animation.timing.AnimatorBuilder;
 import org.jdesktop.core.animation.timing.Evaluator;
-import org.jdesktop.core.animation.timing.KeyFrames;
 import org.jdesktop.core.animation.timing.PropertySetter;
 import org.jdesktop.core.animation.timing.TimingSource;
 import org.jdesktop.core.animation.timing.TimingSource.PostTickListener;
@@ -36,10 +35,9 @@ import org.jdesktop.swing.animation.timing.evaluators.EvaluatorPoint2D;
 import org.jdesktop.swing.animation.timing.sources.SwingTimerTimingSource;
 
 /**
- * This demonstration tests two aspects of using {@link KeyFrames} and a
- * {@link PropertySetter}. First, it ensures that "to" animations work properly.
- * A "to" animation uses the getter on the property to set the starting point of
- * the animation. Second, it tests that the {@link EvaluatorPoint2D} class is
+ * This demonstration uses property setters to create a "to" animation. A "to"
+ * animation uses the getter on the property to set the starting point of the
+ * animation. Further, it tests that the {@link EvaluatorPoint2D} class is
  * automatically chosen as the {@link Evaluator} for a {@link Point} (
  * {@link Point} is an implementation of {@link Point2D}).
  * 
