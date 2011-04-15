@@ -41,7 +41,7 @@ public class RaceBasic extends TimingTargetAdapter {
     SwingUtilities.invokeLater(doCreateAndShowGUI);
   }
 
-  public static final int RACE_TIME = 2000;
+  protected static final int RACE_TIME = 2;
   Point start = RaceTrackView.START_POS;
   Point end = RaceTrackView.FIRST_TURN_START;
   Point current = new Point();
@@ -127,7 +127,7 @@ public class RaceBasic extends TimingTargetAdapter {
    * @return an animation.
    */
   protected Animator getAnimator() {
-    return new AnimatorBuilder().setDuration(RACE_TIME, TimeUnit.MILLISECONDS).addTarget(this).build();
+    return new AnimatorBuilder().setDuration(RACE_TIME, TimeUnit.SECONDS).addTarget(this).build();
   }
 
   /**
