@@ -5,7 +5,7 @@
  * This package provides the fundamental capabilities of the Timing
  * Framework. The core class of the entire framework is {@code Animator},
  * which is responsible for setting up and running animations. Animations
- * are constructed using an {@code AnimatorBuilder}.
+ * are constructed using an {@code Animator.Builder}.
  * <p>
  * {@code TimingTarget} is the interface used by {@code Animator} to report
  * timing events during the animation, and {@code TimingTargetAdapter},
@@ -14,7 +14,7 @@
  * <p>
  * The {@code KeyFrames} class manages a list of key frames to animate
  * values via interpolation between a series of key values at key times.
- * Instances are constructed using a {@code KeyFramesBuilder}.
+ * Instances are constructed using a {@code KeyFrames.Builder}.
  * A {@code KeyFramesTimingTarget} simplifies construction of a timing
  * target that uses key frames.
  * <p>
