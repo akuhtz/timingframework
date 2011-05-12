@@ -49,22 +49,22 @@ the <tt>timingframework-swt</tt> distribution at
 parameters to an <tt>Animator</tt> constructor and some to "set" methods. For example,
 The following animation will run a five second animation four times on <tt>myTarget</tt>:
 <pre>
-Animator animator = new AnimatorBuilder().setDuration(5, TimeUnit.SECONDS)
-                                         .setRepeatCount(4)
-                                         .addTarget(myTarget)
-                                         .build();
+Animator animator = new Animator.Builder().setDuration(5, TimeUnit.SECONDS)
+                                          .setRepeatCount(4)
+                                          .addTarget(myTarget)
+                                          .build();
 animator.start();
 </pre>
 </li> 
 
 <li>The ability to support a single timing source as advocated by Chet Haase
 in the JavaOne 2008 talk <i>Filthy Rich Clients: Filthier Richer Clientier</i>.
-This is done by setting a default timing source on the <tt>AnimatorBuilder</tt>
+This is done by setting a default timing source on the <tt>Animator</tt>
 class. For example, the following snippet of code creates a Swing timer and sets
 it as the default for all animations.
 <pre>
 TimingSource source = new SwingTimerTimingSource(15, TimeUnit.MILLISECONDS);
-AnimatorBuilder.setDefaultTimingSource(source); // shared timing source
+Animator.setDefaultTimingSource(source); // shared timing source
 source.init(); // starts the timer
 ...
 // create, use, and dispose lots of Animator instances
@@ -79,7 +79,7 @@ a five integer-valued key frames, directs the use of discrete interpolation betw
 outputs the contents via iteration of the key
 frames object.
 <pre>
-final KeyFrames&lt;Integer&gt; keyFrames = new KeyFramesBuilder&lt;Integer&gt;().addFrames(2, 6, 3, 5, 4)
+final KeyFrames&lt;Integer&gt; keyFrames = new KeyFrames.Builder&lt;Integer&gt;().addFrames(2, 6, 3, 5, 4)
                                            .setInterpolator(DiscreteInterpolator.getInstance())
                                            .build();
 out("Constructed Key Frames");
@@ -92,7 +92,7 @@ for (KeyFrames.Frame&lt;Integer&gt; keyFrame : keyFrames) {
 </pre>
 Alternatively, the key frames could have been constructed frame by frame, even including specific timing fractions for the key frame value, as shown below.
 <pre>
-final KeyFrames&lt;Integer&gt; keyFrames = new KeyFramesBuilder&lt;Integer&gt;()
+final KeyFrames&lt;Integer&gt; keyFrames = new KeyFrames.Builder&lt;Integer&gt;()
                                            .addFrame(2, DiscreteInterpolator.getInstance())
                                            .addFrame(6, DiscreteInterpolator.getInstance())
                                            .addFrame(3, 0.5, DiscreteInterpolator.getInstance())
@@ -158,12 +158,12 @@ Their description in the book is referenced in the list below.
 
 <p>To run one of the demonstrations from the release Jar file use:
 
-<p><tt>java -cp "timingframework-swing-demos-3.0.jar;timingframework-swing-3.0.jar" <i>classname</i></tt>
+<p><tt>java -cp "timingframework-swing-demos-3.1.jar;timingframework-swing-3.1.jar" <i>classname</i></tt>
 
 <p>The Swing <tt>TooManyBalls</tt> demonstration can be changed from passive rendering to game-like active
 rendering (see the <tt>JActiveRenderer</tt> class) by defining the <tt>org.jdesktop.renderer.active</tt> property. For example, use:
 
-<p><tt>java -cp "timingframework-swing-demos-3.0.jar;timingframework-swing-3.0.jar" -Dorg.jdesktop.renderer.active=true org.jdesktop.swing.animation.demos.TooManyBalls</tt>
+<p><tt>java -cp "timingframework-swing-demos-3.1.jar;timingframework-swing-3.1.jar" -Dorg.jdesktop.renderer.active=true org.jdesktop.swing.animation.demos.TooManyBalls</tt>
 
 <p>On some computers active rendering looks smoother, but has the cost of using two processors and lots of memory. It is perhaps
 more appropriate for a game than a desktop application. It is, however, straightforward to write programs that can change from passive
@@ -189,7 +189,7 @@ to active rendering, like <tt>TooManyBalls</tt> does, by implementing <tt>JRende
 
 <p>To run one of the SWT demonstrations from the release Jar file use:
 
-<p><tt>java -cp "timingframework-swt-demos-3.0.jar;timingframework-swt-3.0.jar;swt.jar" <i>classname</i></tt>
+<p><tt>java -cp "timingframework-swt-demos-3.1.jar;timingframework-swt-3.1.jar;swt.jar" <i>classname</i></tt>
 
 <p>In the example above I copied the <tt>swt.jar</tt> for my platform into the
 same directory, but you can reference it within another directory (the command above

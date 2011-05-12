@@ -14,9 +14,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
 import org.jdesktop.core.animation.timing.Animator;
-import org.jdesktop.core.animation.timing.AnimatorBuilder;
 import org.jdesktop.core.animation.timing.KeyFrames;
-import org.jdesktop.core.animation.timing.KeyFramesBuilder;
 import org.jdesktop.core.animation.timing.PropertySetter;
 import org.jdesktop.core.animation.timing.TimingSource;
 import org.jdesktop.core.animation.timing.TimingTargetAdapter;
@@ -39,7 +37,7 @@ public class DiscreteInterpolationTest extends TimingTargetAdapter {
     System.setProperty("swing.defaultlaf", "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
 
     TimingSource ts = new SwingTimerTimingSource(100, TimeUnit.MILLISECONDS);
-    AnimatorBuilder.setDefaultTimingSource(ts);
+    Animator.setDefaultTimingSource(ts);
     ts.init();
 
     SwingUtilities.invokeLater(new Runnable() {
@@ -110,7 +108,7 @@ public class DiscreteInterpolationTest extends TimingTargetAdapter {
 
     DiscreteInterpolationTest object = new DiscreteInterpolationTest();
 
-    final KeyFrames<Integer> keyFrames = new KeyFramesBuilder<Integer>().addFrames(2, 6, 3, 5, 4)
+    final KeyFrames<Integer> keyFrames = new KeyFrames.Builder<Integer>().addFrames(2, 6, 3, 5, 4)
         .setInterpolator(DiscreteInterpolator.getInstance()).build();
     out("Constructed Key Frames");
     out("----------------------");
@@ -120,7 +118,7 @@ public class DiscreteInterpolationTest extends TimingTargetAdapter {
       out(String.format("Frame %d: value=%d timeFraction=%f interpolator=%s", i++, keyFrame.getValue(), keyFrame.getTimeFraction(),
           s));
     }
-    final Animator animator = new AnimatorBuilder().setDuration(3, TimeUnit.SECONDS)
+    final Animator animator = new Animator.Builder().setDuration(3, TimeUnit.SECONDS)
         .addTarget(PropertySetter.getTarget(object, "intValue", keyFrames)).addTarget(object).build();
     out("");
     out("Animation of intValue");

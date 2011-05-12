@@ -10,10 +10,8 @@ import javax.swing.SwingUtilities;
 
 import org.jdesktop.core.animation.timing.Animator;
 import org.jdesktop.core.animation.timing.Animator.RepeatBehavior;
-import org.jdesktop.core.animation.timing.AnimatorBuilder;
 import org.jdesktop.core.animation.timing.Interpolator;
 import org.jdesktop.core.animation.timing.KeyFrames;
-import org.jdesktop.core.animation.timing.KeyFramesBuilder;
 import org.jdesktop.core.animation.timing.PropertySetter;
 import org.jdesktop.core.animation.timing.TimingSource;
 import org.jdesktop.core.animation.timing.TimingTarget;
@@ -40,7 +38,7 @@ public final class RaceCompleteMultiStep {
     System.setProperty("swing.defaultlaf", "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
 
     TimingSource ts = new SwingTimerTimingSource();
-    AnimatorBuilder.setDefaultTimingSource(ts);
+    Animator.setDefaultTimingSource(ts);
     ts.init();
 
     Runnable doCreateAndShowGUI = new Runnable() {
@@ -60,7 +58,7 @@ public final class RaceCompleteMultiStep {
   public RaceCompleteMultiStep(String appName) {
     final RaceGUI basicGUI = new RaceGUI(appName);
 
-    animator = new AnimatorBuilder().setDuration(RACE_TIME, TimeUnit.MILLISECONDS).setRepeatCount(Animator.INFINITE)
+    animator = new Animator.Builder().setDuration(RACE_TIME, TimeUnit.MILLISECONDS).setRepeatCount(Animator.INFINITE)
         .setRepeatBehavior(RepeatBehavior.LOOP).build();
 
     // We're going to need a more involved PropertyRange object
@@ -98,7 +96,7 @@ public final class RaceCompleteMultiStep {
     Interpolator[] interps = { null, initialSpline, curveSpline, straightawaySpline, curveSpline, straightawaySpline, curveSpline,
         straightawaySpline, finalSpline };
 
-    final KeyFramesBuilder<Point> builder = new KeyFramesBuilder<Point>(values[0]);
+    final KeyFrames.Builder<Point> builder = new KeyFrames.Builder<Point>(values[0]);
     for (int i = 1; i < values.length; i++) {
       builder.addFrame(values[i], times[i], interps[i]);
 
@@ -120,7 +118,7 @@ public final class RaceCompleteMultiStep {
     Interpolator curveTurnSpline = new SplineInterpolator(0.0f, 0.5f, 0.5f, 1.0f);
     Interpolator[] rotationInterps = { null, straightawayTurnSpline, curveTurnSpline, straightawayTurnSpline, curveTurnSpline,
         straightawayTurnSpline, curveTurnSpline, straightawayTurnSpline, curveTurnSpline };
-    final KeyFramesBuilder<Integer> rotationBuilder = new KeyFramesBuilder<Integer>(rotationKeyValues[0]);
+    final KeyFrames.Builder<Integer> rotationBuilder = new KeyFrames.Builder<Integer>(rotationKeyValues[0]);
     for (int i = 1; i < values.length; i++) {
       rotationBuilder.addFrame(rotationKeyValues[i], times[i], rotationInterps[i]);
     }

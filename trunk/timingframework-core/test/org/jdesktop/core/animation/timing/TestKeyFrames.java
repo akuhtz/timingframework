@@ -16,7 +16,7 @@ public final class TestKeyFrames {
 
   @Test
   public void builder1() {
-    final KeyFramesBuilder<Integer> b = new KeyFramesBuilder<Integer>(1);
+    final KeyFrames.Builder<Integer> b = new KeyFrames.Builder<Integer>(1);
     b.addFrame(2);
     final KeyFrames<Integer> kf = b.build();
     Assert.assertEquals(2, kf.size());
@@ -38,7 +38,7 @@ public final class TestKeyFrames {
 
   @Test
   public void builder1iterator() {
-    final KeyFramesBuilder<Integer> b = new KeyFramesBuilder<Integer>(1);
+    final KeyFrames.Builder<Integer> b = new KeyFrames.Builder<Integer>(1);
     b.addFrame(2);
     final KeyFrames<Integer> kf = b.build();
     Assert.assertEquals(2, kf.size());
@@ -59,7 +59,7 @@ public final class TestKeyFrames {
 
   @Test
   public void builder2() {
-    final KeyFramesBuilder<Integer> b = new KeyFramesBuilder<Integer>(1);
+    final KeyFrames.Builder<Integer> b = new KeyFrames.Builder<Integer>(1);
     b.addFrame(2);
     b.addFrame(3);
     final KeyFrames<Integer> kf = b.build();
@@ -82,7 +82,7 @@ public final class TestKeyFrames {
 
   @Test
   public void builder2iterator() {
-    final KeyFramesBuilder<Integer> b = new KeyFramesBuilder<Integer>(1);
+    final KeyFrames.Builder<Integer> b = new KeyFrames.Builder<Integer>(1);
     b.addFrame(2);
     b.addFrame(3);
     final KeyFrames<Integer> kf = b.build();
@@ -105,7 +105,7 @@ public final class TestKeyFrames {
   @Test
   public void builder3() {
     final int size = 10000; // a large (unlikely) number of frames
-    final KeyFramesBuilder<Integer> b = new KeyFramesBuilder<Integer>(1);
+    final KeyFrames.Builder<Integer> b = new KeyFrames.Builder<Integer>(1);
     for (int i = 2; i <= size; i++) {
       b.addFrame(i);
     }
@@ -130,7 +130,7 @@ public final class TestKeyFrames {
   @Test
   public void builder3iterator() {
     final int size = 10000; // a large (unlikely) number of frames
-    final KeyFramesBuilder<Integer> b = new KeyFramesBuilder<Integer>(1);
+    final KeyFrames.Builder<Integer> b = new KeyFrames.Builder<Integer>(1);
     for (int i = 2; i <= size; i++) {
       b.addFrame(i);
     }
@@ -154,7 +154,7 @@ public final class TestKeyFrames {
   @Test
   public void interpolator1() {
     final Interpolator i = new SplineInterpolator(0, 1, 0, 1);
-    final KeyFramesBuilder<Integer> b = new KeyFramesBuilder<Integer>(1);
+    final KeyFrames.Builder<Integer> b = new KeyFrames.Builder<Integer>(1);
     b.addFrame(2);
     b.addFrame(3);
     b.setInterpolator(i);
@@ -181,7 +181,7 @@ public final class TestKeyFrames {
   public void interpolator2() {
     final Interpolator i = new SplineInterpolator(0, 1, 0, 1);
     final Interpolator a = new AccelerationInterpolator(0.1, 0.1);
-    final KeyFramesBuilder<Integer> b = new KeyFramesBuilder<Integer>(1);
+    final KeyFrames.Builder<Integer> b = new KeyFrames.Builder<Integer>(1);
     b.addFrame(2, DiscreteInterpolator.getInstance());
     b.addFrame(3, a);
     b.setInterpolator(i);
@@ -208,7 +208,7 @@ public final class TestKeyFrames {
   public void interpolator3() {
     final Interpolator i = new SplineInterpolator(0, 1, 0, 1);
     final Interpolator a = new AccelerationInterpolator(0.1, 0.1);
-    final KeyFramesBuilder<Integer> b = new KeyFramesBuilder<Integer>(1);
+    final KeyFrames.Builder<Integer> b = new KeyFrames.Builder<Integer>(1);
     b.setInterpolator(i);
     b.addFrame(2, DiscreteInterpolator.getInstance());
     b.addFrame(3, a);
@@ -236,7 +236,7 @@ public final class TestKeyFrames {
   public void interpolator4() {
     final Interpolator i = new SplineInterpolator(0, 1, 0, 1);
     final Interpolator a = new AccelerationInterpolator(0.1, 0.1);
-    final KeyFramesBuilder<Integer> b = new KeyFramesBuilder<Integer>(1);
+    final KeyFrames.Builder<Integer> b = new KeyFrames.Builder<Integer>(1);
     b.addFrame(2, DiscreteInterpolator.getInstance());
     b.addFrame(3, a);
     b.addFrame(4, i);
@@ -265,7 +265,7 @@ public final class TestKeyFrames {
 
   @Test
   public void timeFraction() {
-    final KeyFramesBuilder<Integer> b = new KeyFramesBuilder<Integer>(1);
+    final KeyFrames.Builder<Integer> b = new KeyFrames.Builder<Integer>(1);
     b.addFrame(2, 0.3);
     b.addFrame(3, 0.4);
     b.addFrame(4, 1);
@@ -291,7 +291,7 @@ public final class TestKeyFrames {
   public void allThree() {
     final Interpolator i = new SplineInterpolator(0, 1, 0, 1);
     final Interpolator a = new AccelerationInterpolator(0.1, 0.1);
-    final KeyFramesBuilder<Integer> b = new KeyFramesBuilder<Integer>(1);
+    final KeyFrames.Builder<Integer> b = new KeyFrames.Builder<Integer>(1);
     b.addFrame(2, 0.3, i);
     b.addFrame(3, 0.4, a);
     b.addFrame(4, 1, DiscreteInterpolator.getInstance());
@@ -318,7 +318,7 @@ public final class TestKeyFrames {
     KeyFrames.Frame<Integer> f1 = new KeyFrames.Frame<Integer>(2);
     KeyFrames.Frame<Integer> f2 = new KeyFrames.Frame<Integer>(3);
     KeyFrames.Frame<Integer> f3 = new KeyFrames.Frame<Integer>(4);
-    final KeyFramesBuilder<Integer> b = new KeyFramesBuilder<Integer>(1);
+    final KeyFrames.Builder<Integer> b = new KeyFrames.Builder<Integer>(1);
     b.addFrame(f1);
     b.addFrame(f2);
     b.addFrame(f3);
@@ -349,7 +349,7 @@ public final class TestKeyFrames {
     KeyFrames.Frame<Integer> f1 = new KeyFrames.Frame<Integer>(2, 0.3);
     KeyFrames.Frame<Integer> f2 = new KeyFrames.Frame<Integer>(3, 0.4);
     KeyFrames.Frame<Integer> f3 = new KeyFrames.Frame<Integer>(4, 1);
-    final KeyFramesBuilder<Integer> b = new KeyFramesBuilder<Integer>(1);
+    final KeyFrames.Builder<Integer> b = new KeyFrames.Builder<Integer>(1);
     b.addFrame(f1);
     b.addFrame(f2);
     b.addFrame(f3);
@@ -379,7 +379,7 @@ public final class TestKeyFrames {
     KeyFrames.Frame<Integer> f1 = new KeyFrames.Frame<Integer>(2, i);
     KeyFrames.Frame<Integer> f2 = new KeyFrames.Frame<Integer>(3, a);
     KeyFrames.Frame<Integer> f3 = new KeyFrames.Frame<Integer>(4, DiscreteInterpolator.getInstance());
-    final KeyFramesBuilder<Integer> b = new KeyFramesBuilder<Integer>(1);
+    final KeyFrames.Builder<Integer> b = new KeyFrames.Builder<Integer>(1);
     b.addFrame(f1);
     b.addFrame(f2);
     b.addFrame(f3);
@@ -412,7 +412,7 @@ public final class TestKeyFrames {
     KeyFrames.Frame<Integer> f1 = new KeyFrames.Frame<Integer>(2, 0.3, i);
     KeyFrames.Frame<Integer> f2 = new KeyFrames.Frame<Integer>(3, 0.4, a);
     KeyFrames.Frame<Integer> f3 = new KeyFrames.Frame<Integer>(4, 1, DiscreteInterpolator.getInstance());
-    final KeyFramesBuilder<Integer> b = new KeyFramesBuilder<Integer>(1);
+    final KeyFrames.Builder<Integer> b = new KeyFrames.Builder<Integer>(1);
     b.addFrame(f1);
     b.addFrame(f2);
     b.addFrame(f3);
@@ -440,7 +440,7 @@ public final class TestKeyFrames {
     KeyFrames.Frame<Integer> f1 = new KeyFrames.Frame<Integer>(2, -1, null);
     KeyFrames.Frame<Integer> f2 = new KeyFrames.Frame<Integer>(3, -1, null);
     KeyFrames.Frame<Integer> f3 = new KeyFrames.Frame<Integer>(4, -1, null);
-    final KeyFramesBuilder<Integer> b = new KeyFramesBuilder<Integer>(1);
+    final KeyFrames.Builder<Integer> b = new KeyFrames.Builder<Integer>(1);
     b.addFrame(f1);
     b.addFrame(f2);
     b.addFrame(f3);
@@ -468,7 +468,7 @@ public final class TestKeyFrames {
 
   @Test
   public void addFrames1() {
-    final KeyFramesBuilder<Integer> b = new KeyFramesBuilder<Integer>(1);
+    final KeyFrames.Builder<Integer> b = new KeyFrames.Builder<Integer>(1);
     b.addFrames(2, 3, 4);
 
     final KeyFrames<Integer> kf = b.build();
@@ -494,7 +494,7 @@ public final class TestKeyFrames {
 
   @Test
   public void addFrames2() {
-    final KeyFramesBuilder<Integer> b = new KeyFramesBuilder<Integer>();
+    final KeyFrames.Builder<Integer> b = new KeyFrames.Builder<Integer>();
     b.addFrames(1, 2, 3, 4);
 
     final KeyFrames<Integer> kf = b.build();
@@ -520,7 +520,7 @@ public final class TestKeyFrames {
 
   @Test
   public void addFrames3() {
-    final KeyFramesBuilder<Integer> b = new KeyFramesBuilder<Integer>(1);
+    final KeyFrames.Builder<Integer> b = new KeyFrames.Builder<Integer>(1);
     List<Integer> l = new ArrayList<Integer>();
     l.add(2);
     l.add(3);
@@ -550,7 +550,7 @@ public final class TestKeyFrames {
 
   @Test
   public void addFrames4() {
-    final KeyFramesBuilder<Integer> b = new KeyFramesBuilder<Integer>();
+    final KeyFrames.Builder<Integer> b = new KeyFrames.Builder<Integer>();
     List<Integer> l = new ArrayList<Integer>();
     l.add(1);
     l.add(2);
@@ -581,19 +581,19 @@ public final class TestKeyFrames {
 
   @Test(expected = IllegalArgumentException.class)
   public void zeroFrame() {
-    final KeyFramesBuilder<Integer> b = new KeyFramesBuilder<Integer>();
+    final KeyFrames.Builder<Integer> b = new KeyFrames.Builder<Integer>();
     b.build();
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void oneFrame() {
-    final KeyFramesBuilder<Integer> b = new KeyFramesBuilder<Integer>(1);
+    final KeyFrames.Builder<Integer> b = new KeyFrames.Builder<Integer>(1);
     b.build();
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void nullValue1() {
-    final KeyFramesBuilder<Integer> b = new KeyFramesBuilder<Integer>(null);
+    final KeyFrames.Builder<Integer> b = new KeyFrames.Builder<Integer>(null);
     b.addFrame(2);
     b.addFrame(3);
     b.build();
@@ -601,7 +601,7 @@ public final class TestKeyFrames {
 
   @Test(expected = IllegalArgumentException.class)
   public void nullValue2() {
-    final KeyFramesBuilder<Integer> b = new KeyFramesBuilder<Integer>(1);
+    final KeyFrames.Builder<Integer> b = new KeyFrames.Builder<Integer>(1);
     b.addFrame((Integer) null);
     b.addFrame(3);
     b.build();
@@ -609,7 +609,7 @@ public final class TestKeyFrames {
 
   @Test(expected = IllegalArgumentException.class)
   public void nullValue3() {
-    final KeyFramesBuilder<Integer> b = new KeyFramesBuilder<Integer>(1);
+    final KeyFrames.Builder<Integer> b = new KeyFrames.Builder<Integer>(1);
     b.addFrame(2);
     b.addFrame((Integer) null);
     b.build();
@@ -617,7 +617,7 @@ public final class TestKeyFrames {
 
   @Test(expected = IllegalArgumentException.class)
   public void nullValue1frame() {
-    final KeyFramesBuilder<Integer> b = new KeyFramesBuilder<Integer>();
+    final KeyFrames.Builder<Integer> b = new KeyFrames.Builder<Integer>();
     b.addFrame((KeyFrames.Frame<Integer>) null);
     b.addFrame(new KeyFrames.Frame<Integer>(2));
     b.addFrame(new KeyFrames.Frame<Integer>(3));
@@ -626,7 +626,7 @@ public final class TestKeyFrames {
 
   @Test(expected = IllegalArgumentException.class)
   public void nullValue2frame() {
-    final KeyFramesBuilder<Integer> b = new KeyFramesBuilder<Integer>(1);
+    final KeyFrames.Builder<Integer> b = new KeyFrames.Builder<Integer>(1);
     b.addFrame((KeyFrames.Frame<Integer>) null);
     b.addFrame(new KeyFrames.Frame<Integer>(3));
     b.build();
@@ -634,7 +634,7 @@ public final class TestKeyFrames {
 
   @Test(expected = IllegalArgumentException.class)
   public void nullValue3frame() {
-    final KeyFramesBuilder<Integer> b = new KeyFramesBuilder<Integer>(1);
+    final KeyFrames.Builder<Integer> b = new KeyFrames.Builder<Integer>(1);
     b.addFrame(new KeyFrames.Frame<Integer>(2));
     b.addFrame((KeyFrames.Frame<Integer>) null);
     b.build();
@@ -642,7 +642,7 @@ public final class TestKeyFrames {
 
   @Test(expected = IllegalArgumentException.class)
   public void nonIncreasingTimeFraction1() {
-    final KeyFramesBuilder<Integer> b = new KeyFramesBuilder<Integer>(1);
+    final KeyFrames.Builder<Integer> b = new KeyFrames.Builder<Integer>(1);
     b.addFrame(2, 0.5);
     b.addFrame(3, 0.1);
     b.addFrame(4);
@@ -651,7 +651,7 @@ public final class TestKeyFrames {
 
   @Test(expected = IllegalArgumentException.class)
   public void nonIncreasingTimeFraction2() {
-    final KeyFramesBuilder<Integer> b = new KeyFramesBuilder<Integer>(1);
+    final KeyFrames.Builder<Integer> b = new KeyFrames.Builder<Integer>(1);
     b.addFrame(2, 0.1);
     b.addFrame(3, 0.2);
     b.addFrame(4, 0.3);
@@ -663,7 +663,7 @@ public final class TestKeyFrames {
 
   @Test
   public void maskFirstLast1() {
-    final KeyFramesBuilder<Integer> b = new KeyFramesBuilder<Integer>();
+    final KeyFrames.Builder<Integer> b = new KeyFrames.Builder<Integer>();
     b.addFrame(2, 0.1); // changed to 0 automatically
     b.addFrame(3, 0.2);
     b.addFrame(4, 0.3); // changed to 1 automatically
@@ -675,7 +675,7 @@ public final class TestKeyFrames {
     KeyFrames.Frame<Integer> f0 = new KeyFrames.Frame<Integer>(1, 0.1);
     KeyFrames.Frame<Integer> f1 = new KeyFrames.Frame<Integer>(2, 0.2);
     KeyFrames.Frame<Integer> f2 = new KeyFrames.Frame<Integer>(3, 0.3);
-    final KeyFramesBuilder<Integer> b = new KeyFramesBuilder<Integer>();
+    final KeyFrames.Builder<Integer> b = new KeyFrames.Builder<Integer>();
     b.addFrame(f0); // changed to 0 automatically
     b.addFrame(f1);
     b.addFrame(f2); // changed to 1 automatically
@@ -684,14 +684,14 @@ public final class TestKeyFrames {
 
   @Test(expected = IllegalArgumentException.class)
   public void badEvaluator() {
-    final KeyFramesBuilder<String> b = new KeyFramesBuilder<String>("first");
+    final KeyFrames.Builder<String> b = new KeyFrames.Builder<String>("first");
     b.addFrame("Last");
     b.build();
   }
 
   @Test
   public void evaluator1() {
-    final KeyFramesBuilder<Integer> b = new KeyFramesBuilder<Integer>(1);
+    final KeyFrames.Builder<Integer> b = new KeyFrames.Builder<Integer>(1);
     b.addFrame(2);
     b.setEvaluator(new EvaluatorInteger());
     b.build();
@@ -712,7 +712,7 @@ public final class TestKeyFrames {
 
   @Test
   public void evaluator2() {
-    final KeyFramesBuilder<String> b = new KeyFramesBuilder<String>("first");
+    final KeyFrames.Builder<String> b = new KeyFrames.Builder<String>("first");
     b.addFrame("last");
     b.setEvaluator(f_stringEvaluator);
     b.build();
@@ -721,12 +721,12 @@ public final class TestKeyFrames {
   @Test
   public void evaluator3() {
     KnownEvaluators.getInstance().register(f_stringEvaluator);
-    final KeyFramesBuilder<String> b = new KeyFramesBuilder<String>("first");
+    final KeyFrames.Builder<String> b = new KeyFrames.Builder<String>("first");
     b.addFrame("last");
     b.build();
 
     KnownEvaluators.getInstance().unregister(f_stringEvaluator);
-    final KeyFramesBuilder<String> b1 = new KeyFramesBuilder<String>("first");
+    final KeyFrames.Builder<String> b1 = new KeyFrames.Builder<String>("first");
     b1.addFrame("last");
     try {
       b1.build();
@@ -738,7 +738,7 @@ public final class TestKeyFrames {
 
   @Test
   public void overall1() {
-    final KeyFramesBuilder<Integer> b = new KeyFramesBuilder<Integer>(1);
+    final KeyFrames.Builder<Integer> b = new KeyFrames.Builder<Integer>(1);
     b.addFrame(100);
     final KeyFrames<Integer> kf = b.build();
     Assert.assertEquals(1, kf.getInterpolatedValueAt(0).intValue());
@@ -750,7 +750,7 @@ public final class TestKeyFrames {
 
   @Test
   public void overall2() {
-    final KeyFramesBuilder<String> b = new KeyFramesBuilder<String>("first");
+    final KeyFrames.Builder<String> b = new KeyFrames.Builder<String>("first");
     b.addFrame("last");
     b.setEvaluator(f_stringEvaluator);
     final KeyFrames<String> kf = b.build();

@@ -4,7 +4,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.jdesktop.core.animation.i18n.I18N;
 import org.jdesktop.core.animation.timing.Animator;
-import org.jdesktop.core.animation.timing.AnimatorBuilder;
 import org.jdesktop.core.animation.timing.Interpolator;
 import org.jdesktop.core.animation.timing.TimingTargetAdapter;
 import org.jdesktop.core.animation.timing.interpolators.AccelerationInterpolator;
@@ -208,7 +207,7 @@ public final class Viewport {
       throw new IllegalStateException(I18N.err(3, "Horizontal direction of LEFT or RIGHT is " + toward));
 
     if (pixelsToMove > 0) {
-      f_moveHorizontalAnimator = new AnimatorBuilder()
+      f_moveHorizontalAnimator = new Animator.Builder()
           .setDuration(f_rate.getMovementRateNanosPerPixel() * pixelsToMove, TimeUnit.NANOSECONDS).setInterpolator(f_moveI)
           .addTarget(new Mover(pixelsToMove, true, f_x, toward == Go.RIGHT)).build();
       f_moveHorizontalAnimator.start();
@@ -253,7 +252,7 @@ public final class Viewport {
       throw new IllegalStateException(I18N.err(3, "Vertical direction of UP or DOWN is " + toward));
 
     if (pixelsToMove > 0) {
-      f_moveVerticalAnimator = new AnimatorBuilder()
+      f_moveVerticalAnimator = new Animator.Builder()
           .setDuration(f_rate.getMovementRateNanosPerPixel() * pixelsToMove, TimeUnit.NANOSECONDS).setInterpolator(f_moveI)
           .addTarget(new Mover(pixelsToMove, false, f_y, toward == Go.DOWN)).build();
       f_moveVerticalAnimator.start();

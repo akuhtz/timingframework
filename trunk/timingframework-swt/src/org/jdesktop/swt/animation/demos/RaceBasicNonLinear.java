@@ -6,7 +6,6 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.jdesktop.core.animation.timing.Animator;
-import org.jdesktop.core.animation.timing.AnimatorBuilder;
 import org.jdesktop.core.animation.timing.TimingSource;
 import org.jdesktop.core.animation.timing.interpolators.AccelerationInterpolator;
 import org.jdesktop.swt.animation.timing.sources.SWTTimingSource;
@@ -31,7 +30,7 @@ public class RaceBasicNonLinear extends RaceBasic {
     shell.setLayout(new FillLayout());
 
     final TimingSource ts = new SWTTimingSource(display);
-    AnimatorBuilder.setDefaultTimingSource(ts);
+    Animator.setDefaultTimingSource(ts);
     ts.init();
 
     new RaceBasicNonLinear(shell, "SWT Race (Non-Linear)");
@@ -52,7 +51,7 @@ public class RaceBasicNonLinear extends RaceBasic {
 
   @Override
   protected Animator getAnimator() {
-    return new AnimatorBuilder().setDuration(RACE_TIME, TimeUnit.SECONDS).setInterpolator(new AccelerationInterpolator(0.5, 0.2))
+    return new Animator.Builder().setDuration(RACE_TIME, TimeUnit.SECONDS).setInterpolator(new AccelerationInterpolator(0.5, 0.2))
         .addTarget(this).build();
   }
 }

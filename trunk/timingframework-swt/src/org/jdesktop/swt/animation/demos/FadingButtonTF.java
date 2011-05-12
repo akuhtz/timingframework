@@ -17,7 +17,6 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.jdesktop.core.animation.timing.Animator;
 import org.jdesktop.core.animation.timing.Animator.Direction;
-import org.jdesktop.core.animation.timing.AnimatorBuilder;
 import org.jdesktop.core.animation.timing.TimingSource;
 import org.jdesktop.core.animation.timing.TimingTarget;
 import org.jdesktop.core.animation.timing.TimingTargetAdapter;
@@ -45,7 +44,7 @@ public final class FadingButtonTF {
     shell.setLayout(new FillLayout());
 
     final TimingSource animationTimer = new SWTTimingSource(display);
-    AnimatorBuilder.setDefaultTimingSource(animationTimer);
+    Animator.setDefaultTimingSource(animationTimer);
 
     f_squareColor = display.getSystemColor(SWT.COLOR_RED);
 
@@ -87,7 +86,7 @@ public final class FadingButtonTF {
         checkerboard.redraw();
       }
     };
-    final Animator animator = new AnimatorBuilder().setRepeatCount(Animator.INFINITE).setStartDirection(Direction.BACKWARD)
+    final Animator animator = new Animator.Builder().setRepeatCount(Animator.INFINITE).setStartDirection(Direction.BACKWARD)
         .addTarget(target).build();
     final Button push = new Button(checkerboard, SWT.PUSH);
     push.setText("Start Animation");

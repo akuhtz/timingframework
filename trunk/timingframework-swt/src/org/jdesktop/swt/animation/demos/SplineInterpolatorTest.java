@@ -9,7 +9,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.jdesktop.core.animation.timing.Animator;
-import org.jdesktop.core.animation.timing.AnimatorBuilder;
 import org.jdesktop.core.animation.timing.TimingSource;
 import org.jdesktop.core.animation.timing.TimingTargetAdapter;
 import org.jdesktop.core.animation.timing.interpolators.SplineInterpolator;
@@ -39,7 +38,7 @@ public class SplineInterpolatorTest extends TimingTargetAdapter {
     f_display = Display.getDefault();
 
     TimingSource ts = new SWTTimingSource(DURATION / 10, TimeUnit.MILLISECONDS, f_display);
-    AnimatorBuilder.setDefaultTimingSource(ts);
+    Animator.setDefaultTimingSource(ts);
     ts.init();
 
     final Shell f_shell = new Shell(f_display);
@@ -56,7 +55,7 @@ public class SplineInterpolatorTest extends TimingTargetAdapter {
     f_shell.open();
 
     SplineInterpolator si = new SplineInterpolator(1, 0, 0, 1);
-    Animator animator = new AnimatorBuilder().setDuration(DURATION, TimeUnit.MILLISECONDS).setInterpolator(si)
+    Animator animator = new Animator.Builder().setDuration(DURATION, TimeUnit.MILLISECONDS).setInterpolator(si)
         .addTarget(new SplineInterpolatorTest()).build();
     animator.start();
 

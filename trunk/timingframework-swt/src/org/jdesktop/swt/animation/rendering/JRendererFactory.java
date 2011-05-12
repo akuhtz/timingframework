@@ -5,7 +5,7 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Display;
 import org.jdesktop.core.animation.rendering.JRenderer;
 import org.jdesktop.core.animation.rendering.JRendererTarget;
-import org.jdesktop.core.animation.timing.AnimatorBuilder;
+import org.jdesktop.core.animation.timing.Animator;
 import org.jdesktop.core.animation.timing.TimingSource;
 import org.jdesktop.swt.animation.timing.sources.SWTTimingSource;
 
@@ -36,7 +36,7 @@ public final class JRendererFactory {
     final TimingSource timingSource = new SWTTimingSource(on.getDisplay());
     result = new JPassiveRenderer(on, target, timingSource);
     timingSource.init();
-    AnimatorBuilder.setDefaultTimingSource(result.getTimingSource());
+    Animator.setDefaultTimingSource(result.getTimingSource());
     return result;
   }
 

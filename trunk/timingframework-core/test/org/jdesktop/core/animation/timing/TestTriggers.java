@@ -12,10 +12,10 @@ public final class TestTriggers {
   @Test
   public void disarm() {
     TimingSource ts = new ManualTimingSource();
-    Animator a = new AnimatorBuilder(ts).build();
+    Animator a = new Animator.Builder(ts).build();
     CountingTimingTarget counterA = new CountingTimingTarget();
     a.addTarget(counterA);
-    Animator t = new AnimatorBuilder(ts).build();
+    Animator t = new Animator.Builder(ts).build();
     CountingTimingTarget counterT = new CountingTimingTarget();
     t.addTarget(counterT);
     final Trigger trigger = TimingTrigger.addTrigger(a, t, TimingTriggerEvent.STOP);
@@ -28,10 +28,10 @@ public final class TestTriggers {
   public void timingTrigger() throws InterruptedException {
     TimingSource ts = new ScheduledExecutorTimingSource();
     ts.init();
-    Animator a = new AnimatorBuilder(ts).build(); // 1 second
+    Animator a = new Animator.Builder(ts).build(); // 1 second
     CountingTimingTarget counterA = new CountingTimingTarget();
     a.addTarget(counterA);
-    Animator t = new AnimatorBuilder(ts).build(); // 1 second
+    Animator t = new Animator.Builder(ts).build(); // 1 second
     CountingTimingTarget counterT = new CountingTimingTarget();
     t.addTarget(counterT);
     TimingTrigger.addTrigger(a, t, TimingTriggerEvent.STOP);

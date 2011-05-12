@@ -16,7 +16,6 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import org.jdesktop.core.animation.timing.Animator;
-import org.jdesktop.core.animation.timing.AnimatorBuilder;
 import org.jdesktop.core.animation.timing.Interpolator;
 import org.jdesktop.core.animation.timing.PropertySetter;
 import org.jdesktop.core.animation.timing.TimingSource;
@@ -90,7 +89,7 @@ public class Triggers extends JComponent {
     System.setProperty("swing.defaultlaf", "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
 
     TimingSource ts = new SwingTimerTimingSource();
-    AnimatorBuilder.setDefaultTimingSource(ts);
+    Animator.setDefaultTimingSource(ts);
     ts.init();
 
     Runnable doCreateAndShowGUI = new Runnable() {
@@ -143,7 +142,7 @@ public class Triggers extends JComponent {
         throw new IllegalStateException("Problem loading image " + resourceName, e);
       }
       setPreferredSize(new Dimension(f_sphereImage.getWidth() + 2 * PADDING, PANEL_HEIGHT));
-      f_bouncer = new AnimatorBuilder().setDuration(2, TimeUnit.SECONDS).setInterpolator(ACCEL_5_5).build();
+      f_bouncer = new Animator.Builder().setDuration(2, TimeUnit.SECONDS).setInterpolator(ACCEL_5_5).build();
       if (bounce)
         f_bouncer.addTarget(PropertySetter.getTarget(this, "sphereY", 20, (PANEL_HEIGHT - f_sphereImage.getHeight()), 20));
       else

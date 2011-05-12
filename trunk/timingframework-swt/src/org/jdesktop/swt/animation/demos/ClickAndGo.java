@@ -20,7 +20,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.jdesktop.core.animation.timing.Animator;
-import org.jdesktop.core.animation.timing.AnimatorBuilder;
 import org.jdesktop.core.animation.timing.Evaluator;
 import org.jdesktop.core.animation.timing.PropertySetter;
 import org.jdesktop.core.animation.timing.TimingSource;
@@ -46,7 +45,7 @@ public final class ClickAndGo extends Canvas {
     shell.setLayout(new FillLayout());
 
     final TimingSource ts = new SWTTimingSource(display);
-    AnimatorBuilder.setDefaultTimingSource(ts);
+    Animator.setDefaultTimingSource(ts);
     ts.init();
 
     setupGUI(shell, ts);
@@ -150,7 +149,7 @@ public final class ClickAndGo extends Canvas {
         if (f_ball.animator != null)
           f_ball.animator.stop();
 
-        f_ball.animator = new AnimatorBuilder().setDuration(2, TimeUnit.SECONDS).build();
+        f_ball.animator = new Animator.Builder().setDuration(2, TimeUnit.SECONDS).build();
 
         final Point clickPoint = new Point(e.x, e.y);
         f_ball.animator.addTarget(PropertySetter
