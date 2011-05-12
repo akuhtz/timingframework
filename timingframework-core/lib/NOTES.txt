@@ -23,7 +23,12 @@ o AnimatorBuilder has been changed to Animator.Builder to better match the
   implementation suggested by Josh Bloch in Effective Java (second edition)
   Item 2: Consider a builder when faced with many constructor parameters.
 
-o setDefaultTimingSource has been moved to Animator (from Animator.Builder). 
+o setDefaultTimingSource is now a static method on the Animator class
+  (it was moved from the old AnimatorBuilder class). 
+
+o KeyFramesBuilder has been changed to KeyFrames.Builder  to better match the
+  implementation suggested by Josh Bloch in Effective Java (second edition)
+  Item 2: Consider a builder when faced with many constructor parameters.
 
 ++-------------------++
 || 3.0 Release Notes ||
