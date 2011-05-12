@@ -138,7 +138,7 @@ public class PropertySetter {
    * @return a timing target.
    */
   public static <T> TimingTarget getTarget(Object object, String propertyName, T... values) {
-    final KeyFrames<T> keyFrames = new KeyFramesBuilder<T>().addFrames(values).build();
+    final KeyFrames<T> keyFrames = new KeyFrames.Builder<T>().addFrames(values).build();
     return getTarget(object, propertyName, keyFrames);
   }
 
@@ -160,7 +160,7 @@ public class PropertySetter {
    * @return a timing target.
    */
   public static <T> TimingTarget getTarget(Object object, String propertyName, Interpolator interpolator, T... values) {
-    final KeyFrames<T> keyFrames = new KeyFramesBuilder<T>().setInterpolator(interpolator).addFrames(values).build();
+    final KeyFrames<T> keyFrames = new KeyFrames.Builder<T>().setInterpolator(interpolator).addFrames(values).build();
     return getTarget(object, propertyName, keyFrames);
   }
 
@@ -202,7 +202,7 @@ public class PropertySetter {
    * @return a timing target.
    */
   public static <T> TimingTarget getTargetTo(Object object, String propertyName, T... values) {
-    final KeyFrames<T> keyFrames = new KeyFramesBuilder<T>(values[0]).addFrames(values).build();
+    final KeyFrames<T> keyFrames = new KeyFrames.Builder<T>(values[0]).addFrames(values).build();
     return getTargetTo(object, propertyName, keyFrames);
   }
 
@@ -226,7 +226,7 @@ public class PropertySetter {
    * @return a timing target.
    */
   public static <T> TimingTarget getTargetTo(Object object, String propertyName, Interpolator interpolator, T... values) {
-    final KeyFrames<T> keyFrames = new KeyFramesBuilder<T>(values[0]).setInterpolator(interpolator).addFrames(values).build();
+    final KeyFrames<T> keyFrames = new KeyFrames.Builder<T>(values[0]).setInterpolator(interpolator).addFrames(values).build();
     return getTargetTo(object, propertyName, keyFrames);
   }
 
@@ -317,7 +317,7 @@ public class PropertySetter {
     public void begin(Animator source) {
       try {
         final Object startValue = f_propertyGetter.invoke(f_object);
-        final KeyFramesBuilder<Object> builder = new KeyFramesBuilder<Object>(startValue);
+        final KeyFrames.Builder<Object> builder = new KeyFrames.Builder<Object>(startValue);
         boolean first = true;
         for (KeyFrames.Frame<Object> frame : getKeyFrames()) {
           if (first)

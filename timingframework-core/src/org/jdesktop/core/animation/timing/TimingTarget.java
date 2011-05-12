@@ -6,8 +6,8 @@ package org.jdesktop.core.animation.timing;
  * events will either create a subclass of {@link TimingTargetAdapter} and
  * override methods of interest or they can create or use an implementation of
  * {@link TimingTarget}. A timing target can be passed into an
- * {@link AnimatorBuilder} via the
- * {@link AnimatorBuilder#addTarget(TimingTarget)} method or set later with the
+ * {@link Animator.Builder} via the
+ * {@link Animator.Builder#addTarget(TimingTarget)} method or set later with the
  * {@link Animator#addTarget(TimingTarget)} method. Any animation may have
  * multiple timing targets.
  * <p>

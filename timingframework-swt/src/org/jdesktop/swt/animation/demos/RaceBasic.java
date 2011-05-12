@@ -11,7 +11,6 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.jdesktop.core.animation.timing.Animator;
-import org.jdesktop.core.animation.timing.AnimatorBuilder;
 import org.jdesktop.core.animation.timing.TimingSource;
 import org.jdesktop.core.animation.timing.TimingTargetAdapter;
 import org.jdesktop.swt.animation.timing.sources.SWTTimingSource;
@@ -36,7 +35,7 @@ public class RaceBasic extends TimingTargetAdapter {
     shell.setLayout(new FillLayout());
 
     final TimingSource ts = new SWTTimingSource(display);
-    AnimatorBuilder.setDefaultTimingSource(ts);
+    Animator.setDefaultTimingSource(ts);
     ts.init();
 
     new RaceBasic(shell, "SWT Race (Basic)");
@@ -137,7 +136,7 @@ public class RaceBasic extends TimingTargetAdapter {
    * @return an animation.
    */
   protected Animator getAnimator() {
-    return new AnimatorBuilder().setDuration(RACE_TIME, TimeUnit.SECONDS).addTarget(this).build();
+    return new Animator.Builder().setDuration(RACE_TIME, TimeUnit.SECONDS).addTarget(this).build();
   }
 
   /**

@@ -25,7 +25,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
 import org.jdesktop.core.animation.timing.Animator;
-import org.jdesktop.core.animation.timing.AnimatorBuilder;
 import org.jdesktop.core.animation.timing.Evaluator;
 import org.jdesktop.core.animation.timing.PropertySetter;
 import org.jdesktop.core.animation.timing.TimingSource;
@@ -47,7 +46,7 @@ public final class ClickAndGo extends JPanel {
 
   public static void main(String[] args) {
     System.setProperty("swing.defaultlaf", "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
-    AnimatorBuilder.setDefaultTimingSource(f_animationTimer);
+    Animator.setDefaultTimingSource(f_animationTimer);
 
     SwingUtilities.invokeLater(new Runnable() {
       @Override
@@ -146,7 +145,7 @@ public final class ClickAndGo extends JPanel {
         if (f_ball.animator != null)
           f_ball.animator.stop();
 
-        f_ball.animator = new AnimatorBuilder().setDuration(2, TimeUnit.SECONDS).build();
+        f_ball.animator = new Animator.Builder().setDuration(2, TimeUnit.SECONDS).build();
 
         final Point clickPoint = new Point(e.getX(), e.getY());
         f_ball.animator.addTarget(PropertySetter

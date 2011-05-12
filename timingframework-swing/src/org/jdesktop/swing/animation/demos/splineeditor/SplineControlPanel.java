@@ -39,10 +39,8 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.jdesktop.core.animation.timing.Animator;
-import org.jdesktop.core.animation.timing.AnimatorBuilder;
 import org.jdesktop.core.animation.timing.Interpolator;
 import org.jdesktop.core.animation.timing.KeyFrames;
-import org.jdesktop.core.animation.timing.KeyFramesBuilder;
 import org.jdesktop.core.animation.timing.PropertySetter;
 import org.jdesktop.core.animation.timing.TimingTarget;
 import org.jdesktop.core.animation.timing.interpolators.SplineInterpolator;
@@ -217,12 +215,12 @@ class SplineControlPanel extends JPanel {
     Point2D control1 = display.getControl1();
     Point2D control2 = display.getControl2();
     Interpolator splines = new SplineInterpolator(control1.getX(), control1.getY(), control2.getX(), control2.getY());
-    KeyFrames<Double> frames = new KeyFramesBuilder<Double>(0.0).addFrame(1.0).setInterpolator(splines).build();
+    KeyFrames<Double> frames = new KeyFrames.Builder<Double>(0.0).addFrame(1.0).setInterpolator(splines).build();
 
     TimingTarget dropModifier = PropertySetter.getTarget(dropSimulator, "time", frames);
     TimingTarget bounceModifier = PropertySetter.getTarget(bounceSimulator, "time", frames);
 
-    controller = new AnimatorBuilder().setDuration(2, TimeUnit.SECONDS).setRepeatBehavior(Animator.RepeatBehavior.REVERSE)
+    controller = new Animator.Builder().setDuration(2, TimeUnit.SECONDS).setRepeatBehavior(Animator.RepeatBehavior.REVERSE)
         .addTarget(dropModifier).addTarget(bounceModifier).build();
     controller.start();
   }
@@ -240,7 +238,7 @@ class SplineControlPanel extends JPanel {
           controller.stop();
         }
 
-        controller = new AnimatorBuilder().setDuration(400, TimeUnit.MILLISECONDS).build();
+        controller = new Animator.Builder().setDuration(400, TimeUnit.MILLISECONDS).build();
         controller.addTarget(PropertySetter.getTarget(display, "control1", display.getControl1(), template.getControl1()));
         controller.addTarget(PropertySetter.getTarget(display, "control2", display.getControl2(), template.getControl2()));
         controller.start();

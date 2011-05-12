@@ -8,7 +8,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
-import org.jdesktop.core.animation.timing.AnimatorBuilder;
+import org.jdesktop.core.animation.timing.Animator;
 import org.jdesktop.core.animation.timing.TimingSource;
 import org.jdesktop.swing.animation.timing.sources.SwingTimerTimingSource;
 
@@ -45,7 +45,7 @@ public class SplineEditor extends JFrame {
     System.setProperty("swing.defaultlaf", "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
 
     TimingSource ts = new SwingTimerTimingSource();
-    AnimatorBuilder.setDefaultTimingSource(ts);
+    Animator.setDefaultTimingSource(ts);
     ts.init();
 
     SwingUtilities.invokeLater(new Runnable() {

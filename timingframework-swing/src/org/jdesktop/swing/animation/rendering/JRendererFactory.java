@@ -5,7 +5,7 @@ import java.awt.GraphicsConfiguration;
 
 import org.jdesktop.core.animation.rendering.JRenderer;
 import org.jdesktop.core.animation.rendering.JRendererTarget;
-import org.jdesktop.core.animation.timing.AnimatorBuilder;
+import org.jdesktop.core.animation.timing.Animator;
 import org.jdesktop.core.animation.timing.TimingSource;
 import org.jdesktop.core.animation.timing.sources.ManualTimingSource;
 import org.jdesktop.swing.animation.timing.sources.SwingTimerTimingSource;
@@ -67,7 +67,7 @@ public final class JRendererFactory {
       result = new JPassiveRenderer(on, target, timingSource);
       timingSource.init();
     }
-    AnimatorBuilder.setDefaultTimingSource(result.getTimingSource());
+    Animator.setDefaultTimingSource(result.getTimingSource());
     return result;
   }
 

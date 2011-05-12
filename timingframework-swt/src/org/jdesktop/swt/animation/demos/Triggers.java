@@ -17,7 +17,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.jdesktop.core.animation.timing.Animator;
-import org.jdesktop.core.animation.timing.AnimatorBuilder;
 import org.jdesktop.core.animation.timing.Interpolator;
 import org.jdesktop.core.animation.timing.PropertySetter;
 import org.jdesktop.core.animation.timing.TimingSource;
@@ -46,7 +45,7 @@ public class Triggers extends Composite {
     shell.setText("SWT Triggers");
 
     final TimingSource ts = new SWTTimingSource(display);
-    AnimatorBuilder.setDefaultTimingSource(ts);
+    Animator.setDefaultTimingSource(ts);
     ts.init();
 
     createAndShowGUI(shell);
@@ -147,7 +146,7 @@ public class Triggers extends Composite {
     SpherePanel(Composite parent, int style, String resourceName, String label, boolean bounce) {
       super(parent, style);
       f_sphereImage = DemoResources.getImage(resourceName, parent.getDisplay());
-      f_bouncer = new AnimatorBuilder().setDuration(2, TimeUnit.SECONDS).setInterpolator(ACCEL_5_5).build();
+      f_bouncer = new Animator.Builder().setDuration(2, TimeUnit.SECONDS).setInterpolator(ACCEL_5_5).build();
       if (bounce)
         f_bouncer.addTarget(PropertySetter.getTarget(this, "sphereY", 20, (PANEL_HEIGHT - f_sphereImage.getBounds().height), 20));
       else

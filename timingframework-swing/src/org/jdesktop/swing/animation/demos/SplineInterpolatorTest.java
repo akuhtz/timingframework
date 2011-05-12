@@ -14,7 +14,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
 import org.jdesktop.core.animation.timing.Animator;
-import org.jdesktop.core.animation.timing.AnimatorBuilder;
 import org.jdesktop.core.animation.timing.TimingSource;
 import org.jdesktop.core.animation.timing.TimingTargetAdapter;
 import org.jdesktop.core.animation.timing.interpolators.SplineInterpolator;
@@ -44,7 +43,7 @@ public class SplineInterpolatorTest extends TimingTargetAdapter {
     System.setProperty("swing.defaultlaf", "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
 
     TimingSource ts = new SwingTimerTimingSource(DURATION / 10, TimeUnit.MILLISECONDS);
-    AnimatorBuilder.setDefaultTimingSource(ts);
+    Animator.setDefaultTimingSource(ts);
     ts.init();
 
     SwingUtilities.invokeLater(new Runnable() {
@@ -107,7 +106,7 @@ public class SplineInterpolatorTest extends TimingTargetAdapter {
     frame.setVisible(true);
 
     SplineInterpolator si = new SplineInterpolator(1, 0, 0, 1);
-    Animator animator = new AnimatorBuilder().setDuration(DURATION, TimeUnit.MILLISECONDS).setInterpolator(si)
+    Animator animator = new Animator.Builder().setDuration(DURATION, TimeUnit.MILLISECONDS).setInterpolator(si)
         .addTarget(new SplineInterpolatorTest()).build();
     animator.start();
   }

@@ -5,7 +5,6 @@ import java.util.concurrent.TimeUnit;
 import javax.swing.SwingUtilities;
 
 import org.jdesktop.core.animation.timing.Animator;
-import org.jdesktop.core.animation.timing.AnimatorBuilder;
 import org.jdesktop.core.animation.timing.TimingSource;
 import org.jdesktop.core.animation.timing.interpolators.AccelerationInterpolator;
 import org.jdesktop.swing.animation.timing.sources.SwingTimerTimingSource;
@@ -27,7 +26,7 @@ public class RaceBasicNonLinear extends RaceBasic {
     System.setProperty("swing.defaultlaf", "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
 
     TimingSource ts = new SwingTimerTimingSource();
-    AnimatorBuilder.setDefaultTimingSource(ts);
+    Animator.setDefaultTimingSource(ts);
     ts.init();
 
     Runnable doCreateAndShowGUI = new Runnable() {
@@ -44,7 +43,7 @@ public class RaceBasicNonLinear extends RaceBasic {
 
   @Override
   protected Animator getAnimator() {
-    return new AnimatorBuilder().setDuration(RACE_TIME, TimeUnit.SECONDS).setInterpolator(new AccelerationInterpolator(0.5, 0.2))
+    return new Animator.Builder().setDuration(RACE_TIME, TimeUnit.SECONDS).setInterpolator(new AccelerationInterpolator(0.5, 0.2))
         .addTarget(this).build();
   }
 }

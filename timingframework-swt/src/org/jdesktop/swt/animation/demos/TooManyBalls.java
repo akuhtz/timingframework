@@ -22,10 +22,8 @@ import org.eclipse.swt.widgets.Shell;
 import org.jdesktop.core.animation.rendering.JRenderer;
 import org.jdesktop.core.animation.rendering.JRendererTarget;
 import org.jdesktop.core.animation.timing.Animator;
-import org.jdesktop.core.animation.timing.AnimatorBuilder;
 import org.jdesktop.core.animation.timing.Interpolator;
 import org.jdesktop.core.animation.timing.KeyFrames;
-import org.jdesktop.core.animation.timing.KeyFramesBuilder;
 import org.jdesktop.core.animation.timing.TimingSource;
 import org.jdesktop.core.animation.timing.TimingSource.TickListener;
 import org.jdesktop.core.animation.timing.TimingTarget;
@@ -104,7 +102,7 @@ public class TooManyBalls implements JRendererTarget<Display, GC> {
      * Used for ball animations.
      */
     final TimingSource animationTimer = new SWTTimingSource(display);
-    AnimatorBuilder.setDefaultTimingSource(animationTimer);
+    Animator.setDefaultTimingSource(animationTimer);
 
     /**
      * Used to update the FPS display once a second.
@@ -239,14 +237,14 @@ public class TooManyBalls implements JRendererTarget<Display, GC> {
     int radiusY = f_die.nextInt(300);
     if (f_die.nextBoolean())
       radiusY = -radiusY;
-    KeyFramesBuilder<Integer> builder = new KeyFramesBuilder<Integer>(ball.x);
+    KeyFrames.Builder<Integer> builder = new KeyFrames.Builder<Integer>(ball.x);
     builder.addFrame(ball.x + radiusX, SPLINE_0_1_1_0);
     builder.addFrame(ball.x, SPLINE_1_0_1_1);
     builder.addFrame(ball.x - radiusX, SPLINE_0_1_1_0);
     builder.addFrame(ball.x, SPLINE_1_0_1_1);
     final KeyFrames<Integer> framesX = builder.build();
 
-    builder = new KeyFramesBuilder<Integer>(ball.y);
+    builder = new KeyFrames.Builder<Integer>(ball.y);
     builder.addFrame(ball.y + radiusY, SPLINE_1_0_1_1);
     builder.addFrame(ball.y + (2 * radiusY), SPLINE_0_1_1_0);
     builder.addFrame(ball.y + radiusY, SPLINE_1_0_1_1);
@@ -264,7 +262,7 @@ public class TooManyBalls implements JRendererTarget<Display, GC> {
      * Sometimes go at a constant rate, sometimes accelerate and decelerate.
      */
     final Interpolator i = f_die.nextBoolean() ? ACCEL_4_4 : null;
-    ball.animator = new AnimatorBuilder().setDuration(duration, TimeUnit.SECONDS).addTarget(circularMovement)
+    ball.animator = new Animator.Builder().setDuration(duration, TimeUnit.SECONDS).addTarget(circularMovement)
         .setRepeatCount(Animator.INFINITE).setRepeatBehavior(Animator.RepeatBehavior.LOOP).setInterpolator(i).build();
     ball.animator.start();
 

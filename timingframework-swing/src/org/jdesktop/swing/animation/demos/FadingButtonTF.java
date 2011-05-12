@@ -15,7 +15,6 @@ import javax.swing.SwingUtilities;
 
 import org.jdesktop.core.animation.timing.Animator;
 import org.jdesktop.core.animation.timing.Animator.Direction;
-import org.jdesktop.core.animation.timing.AnimatorBuilder;
 import org.jdesktop.core.animation.timing.TimingSource;
 import org.jdesktop.core.animation.timing.TimingTarget;
 import org.jdesktop.swing.animation.timing.sources.SwingTimerTimingSource;
@@ -37,7 +36,7 @@ public class FadingButtonTF extends JButton implements ActionListener, TimingTar
   public FadingButtonTF(String label) {
     super(label);
     setOpaque(false);
-    f_animator = new AnimatorBuilder().setRepeatCount(Animator.INFINITE).setStartDirection(Direction.BACKWARD).addTarget(this)
+    f_animator = new Animator.Builder().setRepeatCount(Animator.INFINITE).setStartDirection(Direction.BACKWARD).addTarget(this)
         .build();
     addActionListener(this);
   }
@@ -111,7 +110,7 @@ public class FadingButtonTF extends JButton implements ActionListener, TimingTar
 
   private static void createAndShowGUI() {
     final TimingSource ts = new SwingTimerTimingSource();
-    AnimatorBuilder.setDefaultTimingSource(ts);
+    Animator.setDefaultTimingSource(ts);
     ts.init();
 
     final JFrame frame = new JFrame("Swing Fading Button TF");

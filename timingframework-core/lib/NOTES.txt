@@ -14,6 +14,16 @@ A library for making Java animation and timing-based control easier!
 
 Report bugs, read the documentation, and get new releases at:
    http://java.net/projects/timingframework/
+   
+++-------------------++
+|| 3.1 Release Notes ||
+++-------------------++
+
+o AnimatorBuilder has been changed to Animator.Builder to better match the
+  implementation suggested by Josh Bloch in Effective Java (second edition)
+  Item 2: Consider a builder when faced with many constructor parameters.
+
+o setDefaultTimingSource has been moved to Animator (from Animator.Builder). 
 
 ++-------------------++
 || 3.0 Release Notes ||

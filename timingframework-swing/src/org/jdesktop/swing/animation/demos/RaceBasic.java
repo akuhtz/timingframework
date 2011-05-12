@@ -9,7 +9,6 @@ import javax.swing.JButton;
 import javax.swing.SwingUtilities;
 
 import org.jdesktop.core.animation.timing.Animator;
-import org.jdesktop.core.animation.timing.AnimatorBuilder;
 import org.jdesktop.core.animation.timing.TimingSource;
 import org.jdesktop.core.animation.timing.TimingTargetAdapter;
 import org.jdesktop.swing.animation.timing.sources.SwingTimerTimingSource;
@@ -31,7 +30,7 @@ public class RaceBasic extends TimingTargetAdapter {
     System.setProperty("swing.defaultlaf", "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
 
     TimingSource ts = new SwingTimerTimingSource();
-    AnimatorBuilder.setDefaultTimingSource(ts);
+    Animator.setDefaultTimingSource(ts);
     ts.init();
     Runnable doCreateAndShowGUI = new Runnable() {
       public void run() {
@@ -127,7 +126,7 @@ public class RaceBasic extends TimingTargetAdapter {
    * @return an animation.
    */
   protected Animator getAnimator() {
-    return new AnimatorBuilder().setDuration(RACE_TIME, TimeUnit.SECONDS).addTarget(this).build();
+    return new Animator.Builder().setDuration(RACE_TIME, TimeUnit.SECONDS).addTarget(this).build();
   }
 
   /**
