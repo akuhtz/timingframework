@@ -3,6 +3,7 @@ package org.jdesktop.core.animation.timing;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import com.surelogic.ThreadSafe;
+import com.surelogic.Vouch;
 
 /**
  * This class provides provides a base implementation for arbitrary timers that
@@ -173,6 +174,7 @@ public abstract class TimingSource {
    * A task to notify registered {@link TickListener} and
    * {@link PostTickListener} objects that a tick of time has elapsed.
    */
+  @Vouch("ThreadSafe")
   private final Runnable f_notifyTickListenersTask = new Runnable() {
     public void run() {
       final long nanoTime = System.nanoTime();
