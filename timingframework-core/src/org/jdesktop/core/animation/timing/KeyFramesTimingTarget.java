@@ -18,7 +18,7 @@ import com.surelogic.Immutable;
  * 
  * @see PropertySetter
  */
-@Immutable
+@Immutable(implementationOnly = true)
 public abstract class KeyFramesTimingTarget<T> extends TimingTargetAdapter {
 
   private final KeyFrames<T> f_keyFrames;
