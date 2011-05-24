@@ -11,6 +11,7 @@ import org.jdesktop.core.animation.i18n.I18N;
 import org.jdesktop.core.animation.timing.TimingSource.TickListener;
 import org.jdesktop.core.animation.timing.interpolators.LinearInterpolator;
 
+import com.surelogic.Immutable;
 import com.surelogic.InRegion;
 import com.surelogic.NotThreadSafe;
 import com.surelogic.Region;
@@ -65,6 +66,7 @@ public final class Animator implements TickListener {
    * 
    * @see Builder#setEndBehavior(Animator.EndBehavior)
    */
+  @Immutable
   public static enum EndBehavior {
     /**
      * Timing sequence will maintain its final value at the end.
@@ -82,6 +84,7 @@ public final class Animator implements TickListener {
    * 
    * @see Builder#setStartDirection(Animator.Direction)
    */
+  @Immutable
   public static enum Direction {
     /**
      * The cycle proceeds forward.
@@ -109,6 +112,7 @@ public final class Animator implements TickListener {
    * 
    * @see Builder#setRepeatBehavior(Animator.RepeatBehavior)
    */
+  @Immutable
   public static enum RepeatBehavior {
     /**
      * Each repeated cycle proceeds in the same direction as the previous one.
