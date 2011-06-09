@@ -5,8 +5,6 @@ import java.util.logging.Logger;
 
 import org.jdesktop.core.animation.i18n.I18N;
 
-import com.surelogic.ThreadSafe;
-
 /**
  * Wraps a task and provides logging if that task fails due to an unhandled
  * exception.
@@ -24,7 +22,6 @@ import com.surelogic.ThreadSafe;
  * @author Tim Halloran
  * 
  */
-@ThreadSafe(implementationOnly = true)
 public class WrappedRunnable implements Runnable {
 
   /**
