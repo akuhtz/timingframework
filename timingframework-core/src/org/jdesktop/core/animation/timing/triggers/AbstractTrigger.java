@@ -30,7 +30,7 @@ import com.surelogic.ThreadSafe;
  * @author Chet Haase
  * @author Tim Halloran
  */
-@ThreadSafe
+@ThreadSafe(implementationOnly=true)
 public abstract class AbstractTrigger implements Trigger {
 
   /**

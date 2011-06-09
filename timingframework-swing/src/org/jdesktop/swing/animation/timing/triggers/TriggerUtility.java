@@ -20,7 +20,6 @@ import org.jdesktop.core.animation.timing.triggers.TimingTrigger;
 import org.jdesktop.core.animation.timing.triggers.TimingTriggerEvent;
 
 import com.surelogic.Immutable;
-import com.surelogic.ThreadSafe;
 import com.surelogic.Utility;
 
 /**
@@ -146,7 +145,6 @@ public final class TriggerUtility {
     return trigger;
   }
 
-  @ThreadSafe
   private static final class ActionTriggerHelper extends AbstractTrigger implements ActionListener {
 
     private final Object f_object;
@@ -259,7 +257,6 @@ public final class TriggerUtility {
     return trigger;
   }
 
-  @ThreadSafe
   private static final class FocusTriggerHelper extends AbstractTrigger implements FocusListener {
 
     private final JComponent f_component;
@@ -367,7 +364,6 @@ public final class TriggerUtility {
     return trigger;
   }
 
-  @ThreadSafe
   private static final class MouseTriggerHelper extends AbstractTrigger implements MouseListener {
 
     private final JComponent f_component;
