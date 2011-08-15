@@ -110,7 +110,7 @@ public final class ClickAndGo extends JPanel {
     f_ball.setRectColor(new Color(100, 100, 100));
 
     final JFrame frame = new JFrame("Swing Click and Go!");
-    frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+    frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     frame.addWindowListener(new WindowAdapter() {
       @Override
       public void windowClosed(WindowEvent e) {

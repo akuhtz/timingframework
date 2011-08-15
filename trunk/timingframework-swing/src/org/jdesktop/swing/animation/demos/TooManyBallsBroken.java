@@ -101,7 +101,7 @@ public class TooManyBallsBroken {
 
   public TooManyBallsBroken() {
     f_frame = new JFrame("Swing Too Many Balls! - Too Many Timers!");
-    f_frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+    f_frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     f_frame.addWindowListener(new WindowAdapter() {
       @Override
       public void windowClosed(WindowEvent e) {

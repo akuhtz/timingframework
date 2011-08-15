@@ -85,7 +85,7 @@ public class SplineInterpolatorTest extends TimingTargetAdapter {
    */
   private static void setupGUI() {
     JFrame frame = new JFrame("Swing SplineInterpolator Test");
-    frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+    frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     frame.addWindowListener(new WindowAdapter() {
       @Override
       public void windowClosed(WindowEvent e) {
