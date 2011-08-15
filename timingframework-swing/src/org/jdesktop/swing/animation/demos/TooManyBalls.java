@@ -89,7 +89,7 @@ public class TooManyBalls implements JRendererTarget<GraphicsConfiguration, Grap
   public TooManyBalls() {
     final String rendererType = JRendererFactory.useActiveRenderer() ? "Active" : "Passive";
     f_frame = new JFrame("Swing Too Many Balls! - " + rendererType + " Rendering");
-    f_frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+    f_frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     f_frame.addWindowListener(new WindowAdapter() {
       @Override
       public void windowClosed(WindowEvent e) {

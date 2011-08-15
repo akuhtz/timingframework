@@ -162,7 +162,7 @@ public class TimingSourceResolution {
    */
   private static void setupGUI() {
     JFrame frame = new JFrame("Swing TimingSource Resolution Benchmark");
-    frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+    frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     frame.addWindowListener(new WindowAdapter() {
       @Override
       public void windowClosed(WindowEvent e) {
