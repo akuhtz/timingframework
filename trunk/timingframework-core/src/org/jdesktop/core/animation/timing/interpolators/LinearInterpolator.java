@@ -3,6 +3,7 @@ package org.jdesktop.core.animation.timing.interpolators;
 import org.jdesktop.core.animation.timing.Interpolator;
 
 import com.surelogic.Immutable;
+import com.surelogic.Singleton;
 
 /**
  * This class interpolates fractional values to animate movement at a constant
@@ -15,6 +16,7 @@ import com.surelogic.Immutable;
  * @author Chet Haase
  */
 @Immutable
+@Singleton
 public final class LinearInterpolator implements Interpolator {
 
   private static final LinearInterpolator INSTANCE = new LinearInterpolator();

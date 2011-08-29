@@ -610,7 +610,6 @@ public class KeyFrames<T> implements Iterable<Frame<T>> {
        * Try to find an evaluator unless one was set.
        */
       if (f_evaluator == null) {
-        @SuppressWarnings("unchecked")
         final Class<T> c = (Class<T>) frames[0].getValue().getClass();
         f_evaluator = KnownEvaluators.getInstance().getEvaluatorFor(c);
       }
