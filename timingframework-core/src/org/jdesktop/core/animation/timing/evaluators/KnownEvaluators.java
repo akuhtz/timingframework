@@ -6,6 +6,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.jdesktop.core.animation.timing.Evaluator;
 
+import com.surelogic.Singleton;
+
 /**
  * Manages a set of known immutable evaluator implementations that the program
  * can find by the type they work with.
@@ -16,6 +18,7 @@ import org.jdesktop.core.animation.timing.Evaluator;
  * 
  * @author Tim Halloran
  */
+@Singleton
 public final class KnownEvaluators {
 
   private static final KnownEvaluators INSTANCE = new KnownEvaluators();
@@ -47,7 +50,6 @@ public final class KnownEvaluators {
          * static typing so we cast to Object. We check the types dynamically in
          * the createFor method below so this is not a problem.
          */
-        @SuppressWarnings("unchecked")
         final Class<? extends Evaluator<Object>> evaluatorType = (Class<? extends Evaluator<Object>>) Class.forName(className);
         Evaluator<Object> evaluator = construct(evaluatorType);
         register(evaluator);
@@ -165,7 +167,6 @@ public final class KnownEvaluators {
     /*
      * The getDeclaredConstructors call is not parameterized correctly.
      */
-    @SuppressWarnings("unchecked")
     final Constructor<? extends Evaluator<T>>[] ctors = (Constructor<? extends Evaluator<T>>[]) evaluatorType
         .getDeclaredConstructors();
     for (Constructor<? extends Evaluator<T>> c : ctors) {
