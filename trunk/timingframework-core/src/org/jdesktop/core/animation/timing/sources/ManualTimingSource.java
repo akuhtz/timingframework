@@ -2,6 +2,8 @@ package org.jdesktop.core.animation.timing.sources;
 
 import org.jdesktop.core.animation.timing.TimingSource;
 
+import com.surelogic.ThreadSafe;
+
 /**
  * A timing source where ticks are manually controlled via invocation of the
  * {@link #tick()} method.
@@ -11,6 +13,7 @@ import org.jdesktop.core.animation.timing.TimingSource;
  * 
  * @author Tim Halloran
  */
+@ThreadSafe
 public final class ManualTimingSource extends TimingSource {
 
   @Override
