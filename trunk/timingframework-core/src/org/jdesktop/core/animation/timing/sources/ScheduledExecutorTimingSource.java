@@ -6,6 +6,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.jdesktop.core.animation.timing.TimingSource;
 
+import com.surelogic.ThreadSafe;
+import com.surelogic.Unique;
+
 /**
  * A timing source using a {@link ScheduledExecutorService} as returned from
  * {@link Executors#newSingleThreadScheduledExecutor()}.
@@ -36,8 +39,10 @@ import org.jdesktop.core.animation.timing.TimingSource;
  * 
  * @author Tim Halloran
  */
+@ThreadSafe
 public final class ScheduledExecutorTimingSource extends TimingSource {
 
+  @Unique
   private final ScheduledExecutorService f_executor;
   private final long f_period;
   private final TimeUnit f_periodTimeUnit;
@@ -59,7 +64,7 @@ public final class ScheduledExecutorTimingSource extends TimingSource {
   }
 
   /**
-   * Constructs a new instance with a period of 15 milliseconds.. The
+   * Constructs a new instance with a period of 15 milliseconds. The
    * {@link #init()} must be called on the new instance to start the timer. The
    * {@link #dispose()} method should be called to stop the timer.
    */
