@@ -32,7 +32,7 @@ import com.surelogic.Utility;
  */
 @Immutable
 @Utility
-public class TimingTrigger {
+public final class TimingTrigger {
 
   /**
    * Creates a non-auto-reversing timing trigger and adds it as a target to the

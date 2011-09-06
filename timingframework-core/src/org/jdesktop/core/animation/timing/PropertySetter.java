@@ -101,7 +101,7 @@ import com.surelogic.Utility;
  */
 @Immutable
 @Utility
-public class PropertySetter {
+public final class PropertySetter {
 
   /**
    * Constructs a timing target that changes an object's property over time.
