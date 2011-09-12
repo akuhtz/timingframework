@@ -27,8 +27,8 @@
     </license>
   </licenses>
   <scm>
-    <connection>scm:svn:https://svn.java.net/svn/timingframework~svn/trunk</connection>
-    <developerConnection>scm:svn:https://svn.java.net/svn/timingframework~svn/trunk</developerConnection>
+    <connection>scm:svn:https://svn.java.net/svn/timingframework~svn/trunk/timingframework-core</connection>
+    <developerConnection>scm:svn:https://svn.java.net/svn/timingframework~svn/trunk/timingframework-core</developerConnection>
     <url>https://svn.java.net/svn/timingframework~svn/trunk</url>
   </scm>
 
