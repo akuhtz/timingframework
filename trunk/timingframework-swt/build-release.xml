@@ -28,7 +28,8 @@
 
 		<copy todir="${swt-release-work}${fs}src">
 			<fileset dir="${promises-src}" />
-			<fileset dir="${core-src}" />
+			<fileset dir="${core-src-main-java}" />
+			<fileset dir="${core-src-main-resources}" />
 			<fileset dir="${swt-src}" />
 		</copy>
 
