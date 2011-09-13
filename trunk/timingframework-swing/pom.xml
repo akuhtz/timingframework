@@ -63,7 +63,7 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.jdesktop</groupId>
+      <groupId>org.jdesktop.timingframework</groupId>
       <artifactId>timingframework-core</artifactId>
       <version>3.0.0</version>
       <type>jar</type>
