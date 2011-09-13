@@ -731,7 +731,7 @@ public final class TestKeyFrames {
     try {
       b1.build();
       Assert.fail("No evaluator for String should be available.");
-    } catch (IllegalArgumentException e) {
+    } catch (IllegalArgumentException success) {
       // success
     }
   }
