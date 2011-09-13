@@ -7,6 +7,9 @@ import org.eclipse.swt.widgets.Display;
 import org.jdesktop.core.animation.i18n.I18N;
 import org.jdesktop.core.animation.timing.TimingSource;
 
+import com.surelogic.ThreadSafe;
+import com.surelogic.Vouch;
+
 /**
  * A timing source based upon the SWT {@link Display#timerExec(int, Runnable)}
  * and {@link Display#asyncExec(Runnable)} methods. This implementation ensures
@@ -38,10 +41,12 @@ import org.jdesktop.core.animation.timing.TimingSource;
  * 
  * @author Tim Halloran
  */
+@ThreadSafe
 public final class SWTTimingSource extends TimingSource {
 
   private final int f_periodMillis;
   private final AtomicBoolean f_running = new AtomicBoolean(true);
+  @Vouch("ThreadSafe")
   private final Display f_display;
 
   /**
@@ -57,6 +62,7 @@ public final class SWTTimingSource extends TimingSource {
    * @param unit
    *          the time unit of period parameter.
    */
+  @Vouch("ThreadSafe")
   private final Runnable f_periodic = new Runnable() {
     public void run() {
       if (f_running.get()) {
