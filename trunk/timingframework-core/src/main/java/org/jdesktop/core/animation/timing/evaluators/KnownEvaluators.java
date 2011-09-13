@@ -53,7 +53,7 @@ public final class KnownEvaluators {
         final Class<? extends Evaluator<Object>> evaluatorType = (Class<? extends Evaluator<Object>>) Class.forName(className);
         Evaluator<Object> evaluator = construct(evaluatorType);
         register(evaluator);
-      } catch (Exception e) {
+      } catch (Exception ignore) {
         // ignore
       }
     }
