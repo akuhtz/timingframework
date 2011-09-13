@@ -5,7 +5,7 @@
     <artifactId>jvnet-parent</artifactId>
     <version>1</version>
   </parent>
-  <groupId>org.jdesktop</groupId>
+  <groupId>org.jdesktop.timingframework</groupId>
   <artifactId>timingframework-core</artifactId>
   <packaging>jar</packaging>
   <name>Timing Framework - Core</name>
