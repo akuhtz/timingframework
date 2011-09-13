@@ -9,6 +9,9 @@ import javax.swing.Timer;
 
 import org.jdesktop.core.animation.timing.TimingSource;
 
+import com.surelogic.ThreadSafe;
+import com.surelogic.Vouch;
+
 /**
  * A timing source based upon a Swing {@link Timer} and the
  * {@link SwingUtilities#invokeLater(Runnable)} method. This implementation
@@ -40,8 +43,10 @@ import org.jdesktop.core.animation.timing.TimingSource;
  * 
  * @author Tim Halloran
  */
+@ThreadSafe
 public final class SwingTimerTimingSource extends TimingSource {
 
+  @Vouch("ThreadSafe")
   private final Timer f_timer;
 
   /**
