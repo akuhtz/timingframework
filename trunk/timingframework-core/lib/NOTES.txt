@@ -16,7 +16,7 @@ Report bugs, read the documentation, and get new releases at:
    http://java.net/projects/timingframework/
    
 ++-------------------++
-|| 3.1 Release Notes ||
+|| 4.0 Release Notes ||
 ++-------------------++
 
 o AnimatorBuilder has been changed to Animator.Builder to better match the
@@ -29,6 +29,9 @@ o setDefaultTimingSource is now a static method on the Animator class
 o KeyFramesBuilder has been changed to KeyFrames.Builder  to better match the
   implementation suggested by Josh Bloch in Effective Java (second edition)
   Item 2: Consider a builder when faced with many constructor parameters.
+  
+o Maven is now supported for the core and Swing releases. For more information
+  please see the project Wiki.
 
 ++-------------------++
 || 3.0 Release Notes ||
