@@ -9,9 +9,9 @@
   <artifactId>timingframework-core</artifactId>
   <packaging>jar</packaging>
   <name>Timing Framework - Core</name>
-  <version>3.0.0</version>
+  <version>4.0.0</version>
   <description>
-    This project provides a framework and sample code for time-based animations in Swing and SWT.
+    This project provides a framework and sample code for time-based animations.
   </description>
   <url>http://java.net/projects/timingframework</url>
   <licenses>
