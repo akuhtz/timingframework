@@ -16,7 +16,7 @@ Report bugs, read the documentation, and get new releases at:
    http://java.net/projects/timingframework/
    
 ++-------------------++
-|| 4.0 Release Notes ||
+|| 4.1 Release Notes ||
 ++-------------------++
 
 o AnimatorBuilder has been changed to Animator.Builder to better match the
