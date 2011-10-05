@@ -230,8 +230,8 @@ public final class SplineInterpolator implements Interpolator {
    */
   @Immutable
   private static final class Point2D {
-    final double x;
-    final double y;
+    private final double x;
+    private final double y;
 
     Point2D(double x, double y) {
       this.x = x;
