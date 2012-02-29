@@ -48,20 +48,6 @@ public final class SWTTimingSource extends TimingSource {
   private final AtomicBoolean f_running = new AtomicBoolean(true);
   @Vouch("ThreadSafe")
   private final Display f_display;
-
-  /**
-   * Constructs a new instance. The {@link #init()} must be called on the new
-   * instance to start the timer. The {@link #dispose()} method should be called
-   * to stop the timer.
-   * <p>
-   * The SWT timer requires a period of at least 1 millisecond. If the period
-   * passed is smaller it is rounded up to 1 millisecond.
-   * 
-   * @param period
-   *          the period of time between "tick" events.
-   * @param unit
-   *          the time unit of period parameter.
-   */
   @Vouch("ThreadSafe")
   private final Runnable f_periodic = new Runnable() {
     public void run() {
