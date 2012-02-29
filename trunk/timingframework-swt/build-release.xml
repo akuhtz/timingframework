@@ -5,10 +5,7 @@
 
 	<property name="swt" location="${basedir}${fs}timingframework-swt" />
 	<property name="swt-src" location="${swt}${fs}src" />
-	<property name="swt-src-main-java" location="${swt-src}${fs}main${fs}java" />
-	<property name="swt-src-main-resources" location="${swt-src}${fs}main${fs}resources" />
-	<property name="swt-src-test-java" location="${swt-src}${fs}test${fs}java" />
-	<property name="swt-src-test-resources" location="${swt-src}${fs}test${fs}resources" />
+	<property name="swt-test" location="${swt}${fs}test" />
 	<property name="swt-lib" location="${swt}${fs}lib" />
 	<property name="swt-release" location="${swt}${fs}release" />
 	<property name="swt-release-work" location="${swt-release}${fs}timingframework-swt-${release-version}" />
@@ -34,10 +31,8 @@
 			<fileset dir="${promises-src}" />
 			<fileset dir="${core-src-main-java}" />
 			<fileset dir="${core-src-main-resources}" />
-			<fileset dir="${swt-src-main-java}" />
-			<fileset dir="${swt-src-main-resources}" />
-			<fileset dir="${swt-src-test-java}" />
-			<fileset dir="${swt-src-test-resources}" />
+			<fileset dir="${swt-src}" />
+			<fileset dir="${swt-test}" />
 		</copy>
 
 		<mkdir dir="${swt-release-work}${fs}bin" />
