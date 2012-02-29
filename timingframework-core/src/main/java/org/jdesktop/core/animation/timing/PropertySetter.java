@@ -1,7 +1,5 @@
 package org.jdesktop.core.animation.timing;
 
-import java.beans.IntrospectionException;
-import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicReference;
@@ -246,14 +244,23 @@ public final class PropertySetter {
     /*
      * Find the setter method for the property.
      */
-    Method propertySetter;
     final String firstChar = propertyName.substring(0, 1);
     final String remainder = propertyName.substring(1);
     final String propertySetterName = "set" + firstChar.toUpperCase(Locale.ENGLISH) + remainder;
+    Method propertySetter = null;
     try {
-      final PropertyDescriptor pd = new PropertyDescriptor(propertyName, object.getClass(), null, propertySetterName);
-      propertySetter = pd.getWriteMethod();
-    } catch (IntrospectionException e) {
+      for (Method m : object.getClass().getMethods()) {
+        if (m.getName().equals(propertySetterName)) {
+          if (m.getParameterTypes().length == 1) {
+            propertySetter = m;
+            break;
+          }
+        }
+      }
+      if (propertySetter == null) {
+        throw new IllegalArgumentException(I18N.err(30, propertySetterName, propertyName, object.toString()));
+      }
+    } catch (SecurityException e) {
       throw new IllegalArgumentException(I18N.err(30, propertySetterName, propertyName, object.toString()), e);
     }
     /*
@@ -261,16 +268,26 @@ public final class PropertySetter {
      */
     if (isToAnimation) {
       final String propertyGetterName = "get" + firstChar.toUpperCase(Locale.ENGLISH) + remainder;
+      Method propertyGetter = null;
       try {
-        final PropertyDescriptor pd = new PropertyDescriptor(propertyName, object.getClass(), propertyGetterName, null);
-        final Method propertyGetter = pd.getReadMethod();
-        /*
-         * Setup "to" animation.
-         */
-        return new PropertySetterToTimingTarget(objectKeyFrames, object, propertyGetter, propertySetter);
-      } catch (IntrospectionException e) {
+        for (Method m : object.getClass().getMethods()) {
+          if (m.getName().equals(propertyGetterName)) {
+            if (m.getParameterTypes().length == 0) {
+              propertyGetter = m;
+              break;
+            }
+          }
+        }
+        if (propertyGetter == null) {
+          throw new IllegalArgumentException(I18N.err(30, propertyGetterName, propertyName, object.toString()));
+        }
+      } catch (SecurityException e) {
         throw new IllegalArgumentException(I18N.err(30, propertyGetterName, propertyName, object.toString()), e);
       }
+      /*
+       * Setup "to" animation.
+       */
+      return new PropertySetterToTimingTarget(objectKeyFrames, object, propertyGetter, propertySetter);
     } else {
       /*
        * Setup animation.

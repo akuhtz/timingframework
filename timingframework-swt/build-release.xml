@@ -41,7 +41,7 @@
 		</copy>
 
 		<mkdir dir="${swt-release-work}${fs}bin" />
-		<javac srcdir="${swt-release-work}${fs}src" destdir="${swt-release-work}${fs}bin" classpath="${org.eclipse.swt-jar}" debug="on" source="1.6" target="1.6" />
+		<javac srcdir="${swt-release-work}${fs}src" destdir="${swt-release-work}${fs}bin" classpath="${org.eclipse.swt-jar}" debug="on" source="1.6" target="1.6" includeantruntime="false" />
 		<jar destfile="${swt-release-work}${fs}lib${fs}${swt-jar}">
 			<fileset dir="${swt-release-work}${fs}bin" excludes="**/demos/**" />
 			<manifest />
