@@ -5,7 +5,6 @@
 
 	<property name="swt" location="${basedir}${fs}timingframework-swt" />
 	<property name="swt-src" location="${swt}${fs}src" />
-	<property name="swt-test" location="${swt}${fs}test" />
 	<property name="swt-lib" location="${swt}${fs}lib" />
 	<property name="swt-release" location="${swt}${fs}release" />
 	<property name="swt-release-work" location="${swt-release}${fs}timingframework-swt-${release-version}" />
@@ -32,7 +31,6 @@
 			<fileset dir="${core-src-main-java}" />
 			<fileset dir="${core-src-main-resources}" />
 			<fileset dir="${swt-src}" />
-			<fileset dir="${swt-test}" />
 		</copy>
 
 		<mkdir dir="${swt-release-work}${fs}bin" />
