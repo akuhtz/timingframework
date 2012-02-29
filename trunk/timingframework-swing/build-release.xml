@@ -39,7 +39,7 @@
 		</copy>
 
 		<mkdir dir="${swing-release-work}${fs}bin" />
-		<javac srcdir="${swing-release-work}${fs}src" destdir="${swing-release-work}${fs}bin" debug="on" source="1.6" target="1.6" />
+		<javac srcdir="${swing-release-work}${fs}src" destdir="${swing-release-work}${fs}bin" debug="on" source="1.6" target="1.6" includeantruntime="false" />
 		<jar destfile="${swing-release-work}${fs}lib${fs}${swing-jar}">
 			<fileset dir="${swing-release-work}${fs}bin" excludes="**/demos/**" />
 			<manifest />

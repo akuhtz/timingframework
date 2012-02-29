@@ -16,6 +16,15 @@ Report bugs, read the documentation, and get new releases at:
    http://java.net/projects/timingframework/
    
 ++-------------------++
+|| 5.0 Release Notes ||
+++-------------------++
+
+o Support for Android added. This involved a few changes to core code
+  (shared by Swing, SWT, and Android) because Android doesn't support
+  use of the PropertyDescriptor and IntrospectionException classes in
+  the java.beans package.
+   
+++-------------------++
 || 4.1 Release Notes ||
 ++-------------------++
 
