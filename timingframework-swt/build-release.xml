@@ -30,6 +30,8 @@
 			<fileset dir="${promises-src}" />
 			<fileset dir="${core-src-main-java}" />
 			<fileset dir="${core-src-main-resources}" />
+			<fileset dir="${core-src-test-java}" includes="**/demos/**" />
+			<fileset dir="${core-src-test-resources}" />
 			<fileset dir="${swt-src}" />
 		</copy>
 
