@@ -7,6 +7,8 @@
 	<property name="core-src" location="${core}${fs}src" />
 	<property name="core-src-main-java" location="${core-src}${fs}main${fs}java" />
 	<property name="core-src-main-resources" location="${core-src}${fs}main${fs}resources" />
+	<property name="core-src-test-java" location="${core-src}${fs}test${fs}java" />
+	<property name="core-src-test-resources" location="${core-src}${fs}test${fs}resources" />
 	<property name="core-lib" location="${core}${fs}lib" />
 	<property file="${core-lib}${fs}release.properties" />
 	<property name="core-release" location="${core}${fs}release" />
