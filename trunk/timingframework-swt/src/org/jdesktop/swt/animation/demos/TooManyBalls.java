@@ -19,6 +19,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
+import org.jdesktop.core.animation.demos.DemoResources;
 import org.jdesktop.core.animation.rendering.JRenderer;
 import org.jdesktop.core.animation.rendering.JRendererTarget;
 import org.jdesktop.core.animation.timing.Animator;
@@ -284,7 +285,7 @@ public class TooManyBalls implements JRendererTarget<Display, GC> {
     f_ballImages = new Image[DemoResources.SPHERES.length];
     int index = 0;
     for (String resourceName : DemoResources.SPHERES) {
-      f_ballImages[index++] = DemoResources.getImage(resourceName, d);
+      f_ballImages[index++] = DemoImages.getImage(resourceName, d);
     }
   }
 

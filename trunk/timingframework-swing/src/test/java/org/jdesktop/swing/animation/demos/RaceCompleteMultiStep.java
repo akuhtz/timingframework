@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit;
 import javax.swing.JButton;
 import javax.swing.SwingUtilities;
 
+import org.jdesktop.core.animation.demos.RaceSoundEffects;
 import org.jdesktop.core.animation.timing.Animator;
 import org.jdesktop.core.animation.timing.Animator.RepeatBehavior;
 import org.jdesktop.core.animation.timing.Interpolator;

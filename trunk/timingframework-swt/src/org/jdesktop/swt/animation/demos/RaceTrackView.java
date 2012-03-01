@@ -8,6 +8,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Transform;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
+import org.jdesktop.core.animation.demos.DemoResources;
 
 /**
  * This class does the work of rendering the current view of the racetrack. It
@@ -42,8 +43,8 @@ public class RaceTrackView extends Canvas {
   public RaceTrackView(Composite parent, int style) {
     super(parent, style);
     try {
-      car = DemoResources.getImage(DemoResources.BEETLE_RED, parent.getDisplay());
-      track = DemoResources.getImage(DemoResources.TRACK, parent.getDisplay());
+      car = DemoImages.getImage(DemoResources.BEETLE_RED, parent.getDisplay());
+      track = DemoImages.getImage(DemoResources.TRACK, parent.getDisplay());
     } catch (Exception e) {
       System.out.println("Problem loading track/car images: " + e);
     }
