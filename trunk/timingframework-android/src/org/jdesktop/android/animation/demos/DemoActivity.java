@@ -22,5 +22,14 @@ public class DemoActivity extends Activity {
         startActivity(new Intent(getApplicationContext(), TimingSourceResolution.class));
       }
     });
+
+    Button button_tmb = (Button) findViewById(R.id.button_tmb);
+    button_tmb.setOnClickListener(new OnClickListener() {
+
+      @Override
+      public void onClick(View v) {
+        startActivity(new Intent(getApplicationContext(), TooManyBalls.class));
+      }
+    });
   }
 }

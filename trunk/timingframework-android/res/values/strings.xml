@@ -2,6 +2,7 @@
 <resources>
 
     <string name="demo_tsr">Timing Source Resolution</string>
+    <string name="demo_tmb">Too Many Balls</string>
     <string name="app_name">Timing Framework Demos</string>
 
 </resources>

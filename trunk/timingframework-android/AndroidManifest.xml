@@ -22,6 +22,10 @@
             android:name=".TimingSourceResolution"
             android:label="@string/demo_tsr" >
         </activity>
+        <activity
+            android:name=".TooManyBalls"
+            android:label="@string/demo_tmb" >
+        </activity>
     </application>
 
 </manifest>
