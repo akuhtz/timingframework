@@ -4,10 +4,23 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <Button
-        android:id="@+id/button_tsr"
+    <LinearLayout
+        android:id="@+id/linearLayout1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/demo_tsr" />
+        android:orientation="vertical" >
+
+        <Button
+            android:id="@+id/button_tsr"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/demo_tsr" />
+
+        <Button
+            android:id="@+id/button_tmb"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/demo_tmb" />
+    </LinearLayout>
 
 </ScrollView>
