@@ -15,6 +15,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import org.jdesktop.core.animation.demos.DemoResources;
 import org.jdesktop.core.animation.timing.Animator;
 import org.jdesktop.core.animation.timing.Interpolator;
 import org.jdesktop.core.animation.timing.PropertySetter;

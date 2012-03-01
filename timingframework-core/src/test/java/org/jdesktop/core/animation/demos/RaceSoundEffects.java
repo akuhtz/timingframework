@@ -1,7 +1,8 @@
-package org.jdesktop.swt.animation.demos;
+package org.jdesktop.core.animation.demos;
 
 import java.applet.AudioClip;
 
+import org.jdesktop.core.animation.demos.DemoResources;
 import org.jdesktop.core.animation.timing.Animator;
 import org.jdesktop.core.animation.timing.KeyFrames;
 import org.jdesktop.core.animation.timing.TimingTargetAdapter;

@@ -5,10 +5,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
@@ -16,8 +13,10 @@ import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
+import org.jdesktop.core.animation.demos.ScheduledExecutorFactory;
+import org.jdesktop.core.animation.demos.TimingSourceFactory;
+import org.jdesktop.core.animation.demos.TimingSourceResolutionThread;
 import org.jdesktop.core.animation.timing.TimingSource;
-import org.jdesktop.core.animation.timing.TimingSource.TickListener;
 import org.jdesktop.core.animation.timing.sources.ScheduledExecutorTimingSource;
 import org.jdesktop.swing.animation.timing.sources.SwingTimerTimingSource;
 
@@ -44,7 +43,7 @@ import org.jdesktop.swing.animation.timing.sources.SwingTimerTimingSource;
  * @author Chet Haase
  * @author Tim Halloran
  */
-public class TimingSourceResolution {
+public class TimingSourceResolution implements TimingSourceResolutionThread.Depository {
 
   public static void main(String args[]) {
     System.setProperty("swing.defaultlaf", "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
@@ -52,115 +51,16 @@ public class TimingSourceResolution {
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
-        setupGUI();
+        new TimingSourceResolution().setupGUI();
       }
     });
-  }
-
-  private static final JTextArea f_benchmarkOutput = new JTextArea("");
-
-  /**
-   * This method outputs the string to the GUI {@link #f_benchmarkOutput}.
-   * 
-   * @param s
-   *          a string to append to the output.
-   */
-  private static void out(final String s) {
-    final Runnable addToTextArea = new Runnable() {
-      @Override
-      public void run() {
-        final StringBuffer b = new StringBuffer(f_benchmarkOutput.getText());
-        b.append(s);
-        b.append("\n");
-        f_benchmarkOutput.setText(b.toString());
-      }
-    };
-    if (SwingUtilities.isEventDispatchThread()) {
-      addToTextArea.run();
-    } else {
-      SwingUtilities.invokeLater(addToTextArea);
-    }
-  }
-
-  /**
-   * This method measures the accuracy of a timing source, which is internally
-   * dependent upon both the internal timing mechanisms.
-   */
-  public void measureTimingSource(TimingSourceFactory factory, String testName, final boolean edt) {
-    final AtomicInteger timerIteration = new AtomicInteger();
-
-    out("BENCHMARK: " + testName);
-    out("                          measured");
-    out("period  iterations  total time  per-tick");
-    out("------  ----------  --------------------");
-    for (int periodMillis = 1; periodMillis <= 20; periodMillis++) {
-      final long startTime = System.nanoTime();
-      final int thisPeriodMillis = periodMillis;
-      final int iterations = 1000 / periodMillis;
-      timerIteration.set(1);
-      final TimingSource source = factory.getTimingSource(periodMillis);
-      final CountDownLatch testComplete = new CountDownLatch(1);
-      final AtomicBoolean outputResults = new AtomicBoolean(true);
-      source.addTickListener(new TickListener() {
-        @Override
-        public void timingSourceTick(TimingSource source, long nanoTime) {
-          if (edt && !SwingUtilities.isEventDispatchThread()) {
-            out("!! We are not in the Swing EDT when we should be !!");
-          }
-          if (timerIteration.incrementAndGet() > iterations) {
-            if (outputResults.get()) {
-              outputResults.set(false); // only output once
-
-              source.dispose(); // end timer
-
-              final long endTime = System.nanoTime();
-              final long totalTime = TimeUnit.NANOSECONDS.toMillis(endTime - startTime);
-              final float calculatedDelayTime = totalTime / (float) iterations;
-              out(String.format(" %2d ms       %5d    %5d ms  %5.2f ms", thisPeriodMillis, iterations, totalTime,
-                  calculatedDelayTime));
-              testComplete.countDown();
-            }
-          }
-        }
-      });
-      source.init();
-      try {
-        testComplete.await();
-      } catch (InterruptedException e) {
-        // should not happen
-        e.printStackTrace();
-      }
-    }
-    out("\n");
-  }
-
-  /*
-   * Factories to provide timing sources to the benchmark code.
-   */
-
-  interface TimingSourceFactory {
-    TimingSource getTimingSource(int periodMillis);
-  }
-
-  static class SwingTimerFactory implements TimingSourceFactory {
-    @Override
-    public TimingSource getTimingSource(int periodMillis) {
-      return new SwingTimerTimingSource(periodMillis, TimeUnit.MILLISECONDS);
-    }
-  }
-
-  static class ScheduledExecutorFactory implements TimingSourceFactory {
-    @Override
-    public TimingSource getTimingSource(int periodMillis) {
-      return new ScheduledExecutorTimingSource(periodMillis, TimeUnit.MILLISECONDS);
-    }
   }
 
   /**
    * Sets up the simple text output window and then starts a thread to perform
    * the benchmark runs.
    */
-  private static void setupGUI() {
+  private void setupGUI() {
     JFrame frame = new JFrame("Swing TimingSource Resolution Benchmark");
     frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     frame.addWindowListener(new WindowAdapter() {
@@ -185,24 +85,47 @@ public class TimingSourceResolution {
     /*
      * Run the benchmarks in a thread outside the EDT.
      */
-    new Thread(f_runBenchmarks).start();
+    f_benchmarkThread = new TimingSourceResolutionThread(this, new ScheduledExecutorFactory(), new SwingTimerFactory());
+    f_benchmarkThread.start();
   }
 
+  private final JTextArea f_benchmarkOutput = new JTextArea("");
+
+  private TimingSourceResolutionThread f_benchmarkThread = null;
+
   /**
-   * Invokes the benchmark runs.
+   * This method outputs the string to the GUI {@link #f_benchmarkOutput}.
+   * 
+   * @param s
+   *          a string to append to the output.
    */
-  private static final Runnable f_runBenchmarks = new Runnable() {
-    @Override
-    public void run() {
-      TimingSourceResolution timeResolution = new TimingSourceResolution();
-
-      out(String.format("%d processors available on this machine\n", Runtime.getRuntime().availableProcessors()));
-
-      timeResolution.measureTimingSource(new SwingTimerFactory(), "SwingTimerTimingSource (Calls in EDT)", true);
-      timeResolution.measureTimingSource(new ScheduledExecutorFactory(), "ScheduledExecutorTimingSource (Calls in timer thread)",
-          false);
-
-      out("Runs complete...");
+  public void out(final String s) {
+    final Runnable addToTextArea = new Runnable() {
+      @Override
+      public void run() {
+        final StringBuffer b = new StringBuffer(f_benchmarkOutput.getText());
+        b.append(s);
+        b.append("\n");
+        f_benchmarkOutput.setText(b.toString());
+      }
+    };
+    if (SwingUtilities.isEventDispatchThread()) {
+      addToTextArea.run();
+    } else {
+      SwingUtilities.invokeLater(addToTextArea);
     }
-  };
+  }
+
+  static class SwingTimerFactory implements TimingSourceFactory {
+
+    @Override
+    public TimingSource getTimingSource(int periodMillis) {
+      return new SwingTimerTimingSource(periodMillis, TimeUnit.MILLISECONDS);
+    }
+
+    @Override
+    public String toString() {
+      return "SwingTimerTimingSource (Calls in EDT)";
+    }
+  }
 }

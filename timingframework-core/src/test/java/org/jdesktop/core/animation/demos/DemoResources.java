@@ -1,10 +1,8 @@
-package org.jdesktop.swt.animation.demos;
+package org.jdesktop.core.animation.demos;
 
-import java.io.IOException;
 import java.net.URL;
 
-import org.eclipse.swt.graphics.Device;
-import org.eclipse.swt.graphics.Image;
+import com.surelogic.Utility;
 
 /**
  * Manages all the resources used by demonstration programs. This avoids
@@ -13,6 +11,7 @@ import org.eclipse.swt.graphics.Image;
  * 
  * @author Tim Halloran
  */
+@Utility
 public final class DemoResources {
 
   public static final String BEETLE_RED = "beetle-red.gif";
@@ -27,7 +26,7 @@ public final class DemoResources {
 
   public static final String[] SPHERES = { BLUE_SPHERE, GRAY_SPHERE, GREEN_SPHERE, RED_SPHERE, YELLOW_SPHERE };
 
-  private static final String PREFIX = "org/jdesktop/swt/animation/demos/";
+  private static final String PREFIX = "org/jdesktop/core/animation/demos/";
 
   /**
    * Gets the passed resource in the classpath.
@@ -42,24 +41,5 @@ public final class DemoResources {
       throw new IllegalStateException("Unable to load resource: " + name);
     else
       return result;
-  }
-
-  /**
-   * Returns an SWT image loaded from the resource name.
-   * 
-   * @param name
-   *          the resource name.
-   * @return an SWT image.
-   * @throws IllegalStateException
-   *           if something goes wrong.
-   */
-  public static Image getImage(String name, Device device) {
-    try {
-      final URL url = getResource(name);
-      final Image image = new Image(device, url.openStream());
-      return image;
-    } catch (IOException e) {
-      throw new IllegalStateException("Unable to load image: " + name, e);
-    }
   }
 }

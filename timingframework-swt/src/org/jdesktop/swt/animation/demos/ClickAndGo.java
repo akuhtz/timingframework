@@ -19,6 +19,7 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.jdesktop.core.animation.demos.DemoResources;
 import org.jdesktop.core.animation.timing.Animator;
 import org.jdesktop.core.animation.timing.Evaluator;
 import org.jdesktop.core.animation.timing.PropertySetter;
@@ -102,7 +103,7 @@ public final class ClickAndGo extends Canvas {
   private static final Random f_die = new Random();
 
   public static void setupGUI(Shell shell, TimingSource ts) {
-    f_ball.image = DemoResources.getImage(DemoResources.BLUE_SPHERE, shell.getDisplay());
+    f_ball.image = DemoImages.getImage(DemoResources.BLUE_SPHERE, shell.getDisplay());
     f_ball.setLocation(new Point(50, 90));
     final int rectSize = f_ball.image.getBounds().width;
     f_ball.setRect(new Rectangle(50, 90, rectSize, rectSize));

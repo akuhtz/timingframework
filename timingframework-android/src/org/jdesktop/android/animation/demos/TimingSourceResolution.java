@@ -1,21 +1,22 @@
 package org.jdesktop.android.animation.demos;
 
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.jdesktop.android.animation.timing.sources.AndroidTimingSource;
+import org.jdesktop.core.animation.demos.ScheduledExecutorFactory;
+import org.jdesktop.core.animation.demos.TimingSourceFactory;
+import org.jdesktop.core.animation.demos.TimingSourceResolutionThread;
 import org.jdesktop.core.animation.timing.TimingSource;
-import org.jdesktop.core.animation.timing.TimingSource.TickListener;
 import org.jdesktop.core.animation.timing.sources.ScheduledExecutorTimingSource;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 /**
- * A Swing application that outputs benchmarks of the available
+ * An Android application that outputs benchmarks of the available
  * {@link TimingSource} implementations.
  * <p>
  * This is based upon the TimingResolution demo discussed in Chapter 12 on pages
@@ -26,9 +27,9 @@ import android.widget.TextView;
  * <p>
  * Two timing source configurations are benchmarked:
  * <ol>
- * <li>{@link SwingTimerTimingSource} (within Swing EDT) &ndash; As discussed in
- * the book, this timer has the advantage that all calls made from it are within
- * the EDT.</li>
+ * <li>{@link AndroidTimingSource} (within Android UI thread) &ndash; As
+ * discussed in the book, this timer has the advantage that all calls made from
+ * it are within the Android UI thread.</li>
  * <li>{@link ScheduledExecutorTimingSource} (within timer thread) &ndash; This
  * timing source is provided by a <tt>util.concurrent</tt> and calls from it are
  * within its tread context.</li>
@@ -37,7 +38,7 @@ import android.widget.TextView;
  * @author Chet Haase
  * @author Tim Halloran
  */
-public class TimingSourceResolution extends Activity {
+public class TimingSourceResolution extends Activity implements TimingSourceResolutionThread.Depository {
 
   /**
    * Called when the activity is first created.
@@ -47,16 +48,32 @@ public class TimingSourceResolution extends Activity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.timing_source_resolution);
 
-    TextView text = (TextView) findViewById(R.id.TextViewTSR);
-
-    /*
-     * Run the benchmarks in a thread outside the EDT.
-     */
-    f_benchmarkOutput = text;
-    new Thread(f_runBenchmarks).start();
+    f_benchmarkOutput = (TextView) findViewById(R.id.TextViewTSR);
+    f_scrollOutput = (ScrollView) findViewById(R.id.scrollViewTSR);
   }
 
+  @Override
+  protected void onResume() {
+    super.onResume();
+
+    f_benchmarkThread = new TimingSourceResolutionThread(this, new ScheduledExecutorFactory(), new AndroidFactory(this));
+    f_benchmarkThread.start();
+  }
+
+  @Override
+  protected void onPause() {
+    super.onPause();
+
+    if (f_benchmarkThread != null) {
+      f_benchmarkThread.stopSafely();
+      f_benchmarkThread = null;
+    }
+  }
+
+  private ScrollView f_scrollOutput = null;
   private TextView f_benchmarkOutput = null;
+
+  private TimingSourceResolutionThread f_benchmarkThread = null;
 
   /**
    * This method outputs the string to the GUI {@link #f_benchmarkOutput}.
@@ -64,7 +81,7 @@ public class TimingSourceResolution extends Activity {
    * @param s
    *          a string to append to the output.
    */
-  private void out(final String s) {
+  public void out(final String s) {
     final Runnable addToTextArea = new Runnable() {
       @Override
       public void run() {
@@ -72,73 +89,17 @@ public class TimingSourceResolution extends Activity {
         b.append(s);
         b.append("\n");
         f_benchmarkOutput.setText(b.toString());
+        f_scrollOutput.fullScroll(View.FOCUS_DOWN);
       }
     };
     runOnUiThread(addToTextArea);
-  }
-
-  /**
-   * This method measures the accuracy of a timing source, which is internally
-   * dependent upon both the internal timing mechanisms.
-   */
-  public void measureTimingSource(TimingSourceFactory factory, String testName) {
-    final AtomicInteger timerIteration = new AtomicInteger();
-
-    out("BENCHMARK: " + testName);
-    out("                   measured");
-    out("period  iter  duration  per-tick");
-    out("------  ----  ------------------");
-    for (int periodMillis = 1; periodMillis <= 20; periodMillis++) {
-      final long startTime = System.nanoTime();
-      final int thisPeriodMillis = periodMillis;
-      final int iterations = 1000 / periodMillis;
-      timerIteration.set(1);
-      final TimingSource source = factory.getTimingSource(periodMillis);
-      final CountDownLatch testComplete = new CountDownLatch(1);
-      final AtomicBoolean outputResults = new AtomicBoolean(true);
-      source.addTickListener(new TickListener() {
-        @Override
-        public void timingSourceTick(TimingSource source, long nanoTime) {
-
-          if (timerIteration.incrementAndGet() > iterations) {
-            if (outputResults.get()) {
-              outputResults.set(false); // only output once
-
-              source.dispose(); // end timer
-
-              final long endTime = System.nanoTime();
-              final long totalTime = TimeUnit.NANOSECONDS.toMillis(endTime - startTime);
-              final float calculatedDelayTime = totalTime / (float) iterations;
-              out(String.format(" %2d ms %5d  %5d ms  %5.2f ms", thisPeriodMillis, iterations, totalTime, calculatedDelayTime));
-              testComplete.countDown();
-            }
-          }
-        }
-      });
-      source.init();
-      try {
-        testComplete.await();
-      } catch (InterruptedException e) {
-        // should not happen
-        e.printStackTrace();
+    final Runnable scrollToBottom = new Runnable() {
+      @Override
+      public void run() {
+        f_scrollOutput.fullScroll(View.FOCUS_DOWN);
       }
-    }
-    out("\n");
-  }
-
-  /*
-   * Factories to provide timing sources to the benchmark code.
-   */
-
-  interface TimingSourceFactory {
-    TimingSource getTimingSource(int periodMillis);
-  }
-
-  static class ScheduledExecutorFactory implements TimingSourceFactory {
-    @Override
-    public TimingSource getTimingSource(int periodMillis) {
-      return new ScheduledExecutorTimingSource(periodMillis, TimeUnit.MILLISECONDS);
-    }
+    };
+    runOnUiThread(scrollToBottom);
   }
 
   static class AndroidFactory implements TimingSourceFactory {
@@ -152,20 +113,10 @@ public class TimingSourceResolution extends Activity {
     public TimingSource getTimingSource(int periodMillis) {
       return new AndroidTimingSource(periodMillis, TimeUnit.MILLISECONDS, f_activity);
     }
-  }
 
-  /**
-   * Invokes the benchmark runs.
-   */
-  private final Runnable f_runBenchmarks = new Runnable() {
     @Override
-    public void run() {
-      out(String.format("%d processors available on this machine\n", Runtime.getRuntime().availableProcessors()));
-
-      measureTimingSource(new ScheduledExecutorFactory(), "ScheduledExecutorTimingSource (Calls in timer thread)");
-      measureTimingSource(new AndroidFactory(TimingSourceResolution.this), "AndroidTimingSource (Calls in UI thread)");
-
-      out("Runs complete...");
+    public String toString() {
+      return "AndroidTimingSource (Calls in UI thread)";
     }
-  };
+  }
 }

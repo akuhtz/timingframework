@@ -9,6 +9,8 @@ import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 
+import org.jdesktop.core.animation.demos.DemoResources;
+
 
 /**
  * This class does the work of rendering the current view of the racetrack. It
