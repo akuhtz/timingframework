@@ -14,21 +14,23 @@ public class DemoActivity extends Activity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.main);
 
-    Button button_tsr = (Button) findViewById(R.id.button_tsr);
-    button_tsr.setOnClickListener(new OnClickListener() {
+    setupButton(R.id.button_tsr, TimingSourceResolution.class);
+    setupButton(R.id.button_tmb, TooManyBalls.class);
+  }
+
+  private void setupButton(int viewId, final Class<? extends Activity> cls) {
+    if (cls == null)
+      throw new IllegalArgumentException("The activity class, cls, must be non-null");
+
+    Button button = (Button) findViewById(viewId);
+    if (button == null)
+      throw new IllegalArgumentException("The view id " + viewId + " does not reference a view");
+
+    button.setOnClickListener(new OnClickListener() {
 
       @Override
       public void onClick(View v) {
-        startActivity(new Intent(getApplicationContext(), TimingSourceResolution.class));
-      }
-    });
-
-    Button button_tmb = (Button) findViewById(R.id.button_tmb);
-    button_tmb.setOnClickListener(new OnClickListener() {
-
-      @Override
-      public void onClick(View v) {
-        startActivity(new Intent(getApplicationContext(), TooManyBalls.class));
+        startActivity(new Intent(getApplicationContext(), cls));
       }
     });
   }
