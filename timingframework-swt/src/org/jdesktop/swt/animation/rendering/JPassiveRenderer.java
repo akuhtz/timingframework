@@ -14,7 +14,7 @@ import org.jdesktop.core.animation.timing.TimingSource;
 import org.jdesktop.core.animation.timing.TimingSource.PostTickListener;
 
 /**
- * Manages passive rendering on a Swing {@link Canvas}.
+ * Manages passive rendering on a SWT {@link Canvas}.
  * <p>
  * To use this renderer a client constructs a {@link Canvas} and passes it to
  * the constructor with a {@link JRendererTarget} implementation and a timing
