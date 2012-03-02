@@ -150,6 +150,19 @@ public final class Animator implements TickListener {
   }
 
   /**
+   * Gets the timing source being used as the default for the construction on
+   * animations. The no-argument constructor for {@link Animator.Builder} uses
+   * the default timing source. A {@code null} result indicates that no default
+   * timing source has been set.
+   * 
+   * @return the timing source being used as the default for the construction on
+   *         animations, or {@code null} if none.
+   */
+  public static TimingSource getDefaultTimingSource() {
+    return Builder.getDefaultTimingSource();
+  }
+
+  /**
    * This class is used to construct {@link Animator} instances.
    * <p>
    * The default values are listed in the table below.
@@ -236,6 +249,17 @@ public final class Animator implements TickListener {
      */
     private static void setDefaultTimingSource(TimingSource timingSource) {
       f_defaultTimingSource.set(timingSource);
+    }
+
+    /**
+     * Gets the timing source being used as the default for the construction on
+     * animations.
+     * 
+     * @return the timing source being used as the default for the construction
+     *         on animations, or {@code null} if none.
+     */
+    private static TimingSource getDefaultTimingSource() {
+      return f_defaultTimingSource.get();
     }
 
     private long f_duration = 1;
