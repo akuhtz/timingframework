@@ -12,9 +12,10 @@ import com.surelogic.Vouch;
 
 /**
  * A timing source based upon the SWT {@link Display#timerExec(int, Runnable)}
- * and {@link Display#asyncExec(Runnable)} methods. This implementation ensures
- * that calls to registered {@code TickListener} and {@code PostTickListener}
- * objects are always made within the thread context of the SWT UI thread.
+ * and {@link Display#asyncExec(Runnable)} methods. Drift correction is
+ * performed by this implementation. This implementation ensures that calls to
+ * registered {@code TickListener} and {@code PostTickListener} objects are
+ * always made within the thread context of the SWT UI thread.
  * <p>
  * A typical use, where {@code tl} is a {@code TickListener} object, would be
  * 
@@ -44,16 +45,51 @@ import com.surelogic.Vouch;
 @ThreadSafe
 public final class SWTTimingSource extends TimingSource {
 
-  private final int f_periodMillis;
+  /**
+   * Flags that no ideal time for the next callback to the periodic task
+   * {@link #f_periodic} declared below has been setup. I.e., the task just
+   * started running.
+   */
+  static private final long NONE = -1;
+
+  private final long f_periodNanos;
   private final AtomicBoolean f_running = new AtomicBoolean(true);
   @Vouch("ThreadSafe")
   private final Display f_display;
+
   @Vouch("ThreadSafe")
   private final Runnable f_periodic = new Runnable() {
+
+    /**
+     * This represents a relative {@link System#nanoTime()} at which the next
+     * callback in the future to this periodic task should occur.
+     * <p>
+     * This state is thread confined to the Android UI thread.
+     */
+    private long f_ideaNextTickNanoTime = NONE;
+
     public void run() {
       if (f_running.get()) {
         getNotifyTickListenersTask().run();
-        f_display.timerExec(f_periodMillis, f_periodic);
+        final long now = System.nanoTime();
+        final long delayNanos;
+        if (f_ideaNextTickNanoTime != NONE) {
+          final long delayUntilNext = f_ideaNextTickNanoTime - now;
+          if (delayUntilNext > 0)
+            delayNanos = delayUntilNext;
+          else
+            delayNanos = 0;
+          f_ideaNextTickNanoTime += f_periodNanos;
+        } else {
+          delayNanos = f_periodNanos;
+          f_ideaNextTickNanoTime = now + f_periodNanos;
+        }
+        long delayMillis = TimeUnit.NANOSECONDS.toMillis(delayNanos);
+        if (delayMillis > 0) {
+          f_display.timerExec((int) delayMillis, f_periodic);
+        } else {
+          f_display.asyncExec(f_periodic);
+        }
       }
     }
   };
@@ -82,10 +118,11 @@ public final class SWTTimingSource extends TimingSource {
    *           if <tt>display<tt> is {@code null}.
    */
   public SWTTimingSource(long period, TimeUnit unit, final Display display) {
-    int periodMillis = (int) unit.toMillis(period);
-    if (periodMillis < 1)
-      periodMillis = 1;
-    f_periodMillis = periodMillis;
+    final long one = TimeUnit.MILLISECONDS.toNanos(1);
+    long periodNanos = unit.toNanos(period);
+    if (periodNanos < one)
+      periodNanos = one;
+    f_periodNanos = periodNanos;
     if (display == null)
       throw new IllegalArgumentException(I18N.err(1, "display"));
     f_display = display;
