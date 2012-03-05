@@ -89,17 +89,17 @@ public class TimingSourceResolution extends Activity implements TimingSourceReso
         b.append(s);
         b.append("\n");
         f_benchmarkOutput.setText(b.toString());
-        f_scrollOutput.fullScroll(View.FOCUS_DOWN);
+
+        final Runnable scrollToBottom = new Runnable() {
+          @Override
+          public void run() {
+            f_scrollOutput.fullScroll(View.FOCUS_DOWN);
+          }
+        };
+        runOnUiThread(scrollToBottom);
       }
     };
     runOnUiThread(addToTextArea);
-    final Runnable scrollToBottom = new Runnable() {
-      @Override
-      public void run() {
-        f_scrollOutput.fullScroll(View.FOCUS_DOWN);
-      }
-    };
-    runOnUiThread(scrollToBottom);
   }
 
   static class AndroidFactory implements TimingSourceFactory {
