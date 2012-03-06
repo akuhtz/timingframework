@@ -15,6 +15,7 @@ public class DemoActivity extends Activity {
     setContentView(R.layout.main);
 
     setupButton(R.id.button_tsr, TimingSourceResolution.class);
+    setupButton(R.id.button_race_b, RaceBasic.class);
     setupButton(R.id.button_tmb, TooManyBalls.class);
   }
 

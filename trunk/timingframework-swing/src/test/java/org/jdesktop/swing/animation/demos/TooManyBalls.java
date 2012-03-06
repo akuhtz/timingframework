@@ -83,7 +83,7 @@ public class TooManyBalls implements JRendererTarget<GraphicsConfiguration, Grap
 
   private final JFrame f_frame;
   private final JRendererPanel f_panel;
-  private final JRenderer<JRendererPanel> f_renderer;
+  private final JRenderer f_renderer;
   private final JLabel f_infoLabel;
   private int f_ballCount = 0;
 

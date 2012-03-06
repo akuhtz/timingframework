@@ -9,18 +9,7 @@ import org.jdesktop.core.animation.timing.TimingSource;
  * 
  * @see JRendererTarget
  */
-public interface JRenderer<T> {
-
-  /**
-   * Gets the on-screen component that is being actively rendered.
-   * <p>
-   * Should only be invoked from the user interface thread.
-   * 
-   * @return a window or component to draw on.
-   * @throws IllegalStateException
-   *           if invoked outside of the user interface thread.
-   */
-  T getOn();
+public interface JRenderer {
 
   /**
    * Submits a task to be run by the renderer in the same thread context that

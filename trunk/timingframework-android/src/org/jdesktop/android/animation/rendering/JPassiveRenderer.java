@@ -1,10 +1,6 @@
-package org.jdesktop.swing.animation.rendering;
+package org.jdesktop.android.animation.rendering;
 
-import java.awt.Graphics2D;
-import java.awt.GraphicsConfiguration;
 import java.util.concurrent.TimeUnit;
-
-import javax.swing.SwingUtilities;
 
 import org.jdesktop.core.animation.i18n.I18N;
 import org.jdesktop.core.animation.rendering.JRenderer;
@@ -12,36 +8,17 @@ import org.jdesktop.core.animation.rendering.JRendererTarget;
 import org.jdesktop.core.animation.timing.TimingSource;
 import org.jdesktop.core.animation.timing.TimingSource.PostTickListener;
 
-/**
- * Manages passive rendering on a Swing {@link JRendererPanel}.
- * <p>
- * To use this renderer a client constructs a {@link JRendererPanel} and passes
- * it to the constructor with a {@link JRendererTarget} implementation and a
- * timing source. A typical sequence would be
- * 
- * <pre>
- * JFrame frame = new JFrame(&quot;Renderer Demonstration&quot;);
- * final JRendererPanel on = new JRendererPanel();
- * frame.setContentPane(on);
- * final JRendererTarget&lt;GraphicsConfiguration, Graphics2D&gt; target = this;
- * final TimingSource timingSource = new SwingTimerTimingSource();
- * JRenderer renderer = new JPassiveRenderer(on, target, timingSource);
- * timingSource.init();
- * </pre>
- * 
- * In the above snippet <tt>on</tt> will be rendered to. The enclosing instance,
- * <tt>this</tt>, implements {@link JRendererTarget} and will be called to
- * customize what is displayed on-screen.
- * 
- * @author Tim Halloran
- */
-public class JPassiveRenderer implements JRenderer {
+import android.graphics.Canvas;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
+
+public final class JPassiveRenderer implements JRenderer, SurfaceHolder.Callback {
 
   /*
-   * Thread-confined to the EDT thread
+   * Thread-confined to the SWT UI thread
    */
-  private final JRendererPanel f_on;
-  private final JRendererTarget<GraphicsConfiguration, Graphics2D> f_target;
+  private final SurfaceView f_on;
+  private final JRendererTarget<SurfaceView, Canvas> f_target;
   private final TimingSource f_ts;
   private final PostTickListener f_postTick = new PostTickListener() {
     public void timingSourcePostTick(TimingSource source, long nanoTime) {
@@ -52,7 +29,16 @@ public class JPassiveRenderer implements JRenderer {
       f_lastRenderTimeNanos = now;
       f_renderCount++;
       f_target.renderUpdate();
-      f_on.repaint();
+
+      final SurfaceHolder sh = f_on.getHolder();
+      Canvas c = null;
+      try {
+        c = sh.lockCanvas();
+        f_target.render(c, c.getWidth(), c.getHeight());
+      } finally {
+        if (c != null)
+          sh.unlockCanvasAndPost(c);
+      }
     }
   };
 
@@ -63,30 +49,25 @@ public class JPassiveRenderer implements JRenderer {
   private long f_totalRenderTime = 0;
   private long f_renderCount = 0;
 
-  public JPassiveRenderer(JRendererPanel on, JRendererTarget<GraphicsConfiguration, Graphics2D> target, TimingSource timingSource) {
-    if (!SwingUtilities.isEventDispatchThread())
-      throw new IllegalStateException(I18N.err(100));
-
+  public JPassiveRenderer(SurfaceView on, JRendererTarget<SurfaceView, Canvas> target, TimingSource timingSource) {
     if (on == null)
       throw new IllegalArgumentException(I18N.err(1, "on"));
     f_on = on;
 
     if (target == null)
-      throw new IllegalArgumentException(I18N.err(1, "target"));
+      throw new IllegalArgumentException(I18N.err(1, "life"));
     f_target = target;
 
     if (timingSource == null)
       throw new IllegalArgumentException(I18N.err(1, "timingSource"));
     f_ts = timingSource;
 
-    f_on.setDoubleBuffered(true);
-    f_on.setOpaque(true);
-    f_on.setTarget(f_target, f_ts, f_postTick);
+    f_on.getHolder().addCallback(this);
   }
 
   @Override
   public void invokeLater(Runnable task) {
-    SwingUtilities.invokeLater(task);
+    f_on.post(task);
   }
 
   @Override
@@ -113,7 +94,24 @@ public class JPassiveRenderer implements JRenderer {
 
   @Override
   public void shutdown() {
-    f_on.clearTarget();
+    f_on.getHolder().removeCallback(this);
+
     f_target.renderShutdown();
+  }
+
+  @Override
+  public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+    // Nothing to do
+  }
+
+  @Override
+  public void surfaceCreated(SurfaceHolder holder) {
+    f_target.renderSetup(f_on);
+    f_ts.addPostTickListener(f_postTick);
+  }
+
+  @Override
+  public void surfaceDestroyed(SurfaceHolder holder) {
+    f_ts.removePostTickListener(f_postTick);
   }
 }
