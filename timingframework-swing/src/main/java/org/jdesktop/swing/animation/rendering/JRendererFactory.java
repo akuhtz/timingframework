@@ -57,9 +57,9 @@ public final class JRendererFactory {
    *          improve performance if no child components are ever used.
    * @return a renderer for <tt>on</tt>.
    */
-  public static JRenderer<JRendererPanel> getDefaultRenderer(JRendererPanel on,
-      JRendererTarget<GraphicsConfiguration, Graphics2D> target, boolean hasChildren) {
-    final JRenderer<JRendererPanel> result;
+  public static JRenderer getDefaultRenderer(JRendererPanel on, JRendererTarget<GraphicsConfiguration, Graphics2D> target,
+      boolean hasChildren) {
+    final JRenderer result;
     if (useActiveRenderer()) {
       result = new JActiveRenderer(on, target, hasChildren);
     } else {

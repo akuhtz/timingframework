@@ -23,6 +23,10 @@
             android:label="@string/demo_tsr" >
         </activity>
         <activity
+            android:name=".RaceBasic"
+            android:label="@string/demo_race_b" >
+        </activity>
+        <activity
             android:name=".TooManyBalls"
             android:label="@string/demo_tmb" >
         </activity>

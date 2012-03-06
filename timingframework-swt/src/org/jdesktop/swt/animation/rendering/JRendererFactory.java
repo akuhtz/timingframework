@@ -31,8 +31,8 @@ public final class JRendererFactory {
    *          the rendering implementation to callback to.
    * @return a renderer for <tt>on</tt>.
    */
-  public static JRenderer<Canvas> getDefaultRenderer(Canvas on, JRendererTarget<Display, GC> target) {
-    final JRenderer<Canvas> result;
+  public static JRenderer getDefaultRenderer(Canvas on, JRendererTarget<Display, GC> target) {
+    final JRenderer result;
     final TimingSource timingSource = new SWTTimingSource(on.getDisplay());
     result = new JPassiveRenderer(on, target, timingSource);
     timingSource.init();

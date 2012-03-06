@@ -162,7 +162,7 @@ import org.jdesktop.core.animation.timing.sources.ManualTimingSource;
  * @see JRendererTarget
  * @see ManualTimingSource
  */
-public final class JActiveRenderer implements JRenderer<JRendererPanel> {
+public final class JActiveRenderer implements JRenderer {
 
   /*
    * Shared state
@@ -225,7 +225,7 @@ public final class JActiveRenderer implements JRenderer<JRendererPanel> {
     f_on = on;
 
     if (target == null)
-      throw new IllegalArgumentException(I18N.err(1, "life"));
+      throw new IllegalArgumentException(I18N.err(1, "target"));
     f_target = target;
 
     f_hasChildren = hasChildren;
@@ -356,13 +356,6 @@ public final class JActiveRenderer implements JRenderer<JRendererPanel> {
       return totalPaintTime / paintCount;
     else
       return totalPaintTime;
-  }
-
-  public JRendererPanel getOn() {
-    if (SwingUtilities.isEventDispatchThread()) {
-      return f_on;
-    } else
-      throw new IllegalStateException(I18N.err(100));
   }
 
   @Override

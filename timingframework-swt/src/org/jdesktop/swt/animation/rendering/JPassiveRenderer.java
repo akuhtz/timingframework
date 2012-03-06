@@ -34,7 +34,7 @@ import org.jdesktop.core.animation.timing.TimingSource.PostTickListener;
  * 
  * @author Tim Halloran
  */
-public class JPassiveRenderer implements JRenderer<Canvas> {
+public class JPassiveRenderer implements JRenderer {
 
   /*
    * Thread-confined to the SWT UI thread
@@ -72,7 +72,7 @@ public class JPassiveRenderer implements JRenderer<Canvas> {
       throw new IllegalStateException(I18N.err(200));
 
     if (target == null)
-      throw new IllegalArgumentException(I18N.err(1, "life"));
+      throw new IllegalArgumentException(I18N.err(1, "target"));
     f_target = target;
 
     if (timingSource == null)
@@ -95,11 +95,6 @@ public class JPassiveRenderer implements JRenderer<Canvas> {
         f_target.render(g, width, height);
       }
     });
-  }
-
-  @Override
-  public Canvas getOn() {
-    return f_on;
   }
 
   @Override

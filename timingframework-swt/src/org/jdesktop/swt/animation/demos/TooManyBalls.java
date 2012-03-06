@@ -186,7 +186,7 @@ public class TooManyBalls implements JRendererTarget<Display, GC> {
     f_panel.setLayoutData(gridData);
     f_panel.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
 
-    JRenderer<Canvas> renderer = JRendererFactory.getDefaultRenderer(f_panel, this);
+    JRenderer renderer = JRendererFactory.getDefaultRenderer(f_panel, this);
 
     infoTimer.addTickListener(new TickListener() {
       @Override
