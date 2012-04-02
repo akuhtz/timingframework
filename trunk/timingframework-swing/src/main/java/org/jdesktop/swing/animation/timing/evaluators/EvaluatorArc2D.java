@@ -5,6 +5,7 @@ import java.awt.geom.Arc2D;
 import org.jdesktop.core.animation.timing.Evaluator;
 
 import com.surelogic.Immutable;
+import com.surelogic.RegionEffects;
 
 /**
  * An evaluator for {@link Arc2D}.
@@ -15,7 +16,7 @@ import com.surelogic.Immutable;
 @Immutable
 public final class EvaluatorArc2D implements Evaluator<Arc2D> {
 
-  @Override
+  @RegionEffects("none")
   public Arc2D evaluate(Arc2D v0, Arc2D v1, double fraction) {
     double x = v0.getX() + ((v1.getX() - v0.getX()) * fraction);
     double y = v0.getY() + ((v1.getY() - v0.getY()) * fraction);
@@ -28,7 +29,7 @@ public final class EvaluatorArc2D implements Evaluator<Arc2D> {
     return value;
   }
 
-  @Override
+  @RegionEffects("reads All")
   public Class<Arc2D> getEvaluatorClass() {
     return Arc2D.class;
   }

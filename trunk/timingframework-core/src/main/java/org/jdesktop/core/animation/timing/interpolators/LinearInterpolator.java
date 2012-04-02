@@ -3,6 +3,7 @@ package org.jdesktop.core.animation.timing.interpolators;
 import org.jdesktop.core.animation.timing.Interpolator;
 
 import com.surelogic.Immutable;
+import com.surelogic.RegionEffects;
 import com.surelogic.Singleton;
 
 /**
@@ -45,6 +46,7 @@ public final class LinearInterpolator implements Interpolator {
    *          has been set)
    * @return the value passed in as the <code>fraction</code> parameter.
    */
+  @RegionEffects("reads Instance")
   public double interpolate(double fraction) {
     return fraction;
   }

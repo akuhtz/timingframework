@@ -5,6 +5,7 @@ import java.awt.geom.CubicCurve2D;
 import org.jdesktop.core.animation.timing.Evaluator;
 
 import com.surelogic.Immutable;
+import com.surelogic.RegionEffects;
 
 /**
  * An evaluator for {@link CubicCurve2D}.
@@ -15,7 +16,7 @@ import com.surelogic.Immutable;
 @Immutable
 public final class EvaluatorCubicCurve2D implements Evaluator<CubicCurve2D> {
 
-  @Override
+  @RegionEffects("none")
   public CubicCurve2D evaluate(CubicCurve2D v0, CubicCurve2D v1, double fraction) {
     double x1 = v0.getX1() + ((v1.getX1() - v0.getX1()) * fraction);
     double y1 = v0.getY1() + ((v1.getY1() - v0.getY1()) * fraction);
@@ -30,7 +31,7 @@ public final class EvaluatorCubicCurve2D implements Evaluator<CubicCurve2D> {
     return value;
   }
 
-  @Override
+  @RegionEffects("reads All")
   public Class<CubicCurve2D> getEvaluatorClass() {
     return CubicCurve2D.class;
   }

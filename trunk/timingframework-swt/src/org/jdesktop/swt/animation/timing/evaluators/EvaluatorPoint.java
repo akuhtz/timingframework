@@ -4,6 +4,7 @@ import org.eclipse.swt.graphics.Point;
 import org.jdesktop.core.animation.timing.Evaluator;
 
 import com.surelogic.Immutable;
+import com.surelogic.RegionEffects;
 
 /**
  * An evaluator for {@link Point}.
@@ -14,7 +15,7 @@ import com.surelogic.Immutable;
 @Immutable
 public final class EvaluatorPoint implements Evaluator<Point> {
 
-  @Override
+  @RegionEffects("none")
   public Point evaluate(Point v0, Point v1, double fraction) {
     double x = v0.x + ((v1.x - v0.x) * fraction);
     double y = v0.y + ((v1.y - v0.y) * fraction);
@@ -22,7 +23,7 @@ public final class EvaluatorPoint implements Evaluator<Point> {
     return value;
   }
 
-  @Override
+  @RegionEffects("none")
   public Class<Point> getEvaluatorClass() {
     return Point.class;
   }

@@ -5,6 +5,7 @@ import java.awt.geom.Line2D;
 import org.jdesktop.core.animation.timing.Evaluator;
 
 import com.surelogic.Immutable;
+import com.surelogic.RegionEffects;
 
 /**
  * An evaluator for {@link Line2D}.
@@ -15,7 +16,7 @@ import com.surelogic.Immutable;
 @Immutable
 public final class EvaluatorLine2D implements Evaluator<Line2D> {
 
-  @Override
+  @RegionEffects("none")
   public Line2D evaluate(Line2D v0, Line2D v1, double fraction) {
     double x1 = v0.getX1() + ((v1.getX1() - v0.getX1()) * fraction);
     double y1 = v0.getY1() + ((v1.getY1() - v0.getY1()) * fraction);
@@ -26,7 +27,7 @@ public final class EvaluatorLine2D implements Evaluator<Line2D> {
     return value;
   }
 
-  @Override
+  @RegionEffects("reads All")
   public Class<Line2D> getEvaluatorClass() {
     return Line2D.class;
   }

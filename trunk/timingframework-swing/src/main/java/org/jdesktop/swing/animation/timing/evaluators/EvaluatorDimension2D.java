@@ -5,6 +5,7 @@ import java.awt.geom.Dimension2D;
 import org.jdesktop.core.animation.timing.Evaluator;
 
 import com.surelogic.Immutable;
+import com.surelogic.RegionEffects;
 
 /**
  * An evaluator for {@link Dimension2D}.
@@ -15,7 +16,7 @@ import com.surelogic.Immutable;
 @Immutable
 public final class EvaluatorDimension2D implements Evaluator<Dimension2D> {
 
-  @Override
+  @RegionEffects("none")
   public Dimension2D evaluate(Dimension2D v0, Dimension2D v1, double fraction) {
     double w = v0.getWidth() + ((v1.getWidth() - v0.getWidth()) * fraction);
     double h = v0.getHeight() + ((v1.getHeight() - v0.getHeight()) * fraction);
@@ -24,7 +25,7 @@ public final class EvaluatorDimension2D implements Evaluator<Dimension2D> {
     return value;
   }
 
-  @Override
+  @RegionEffects("reads All")
   public Class<Dimension2D> getEvaluatorClass() {
     return Dimension2D.class;
   }

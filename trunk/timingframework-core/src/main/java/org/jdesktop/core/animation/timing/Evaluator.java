@@ -1,6 +1,7 @@
 package org.jdesktop.core.animation.timing;
 
 import com.surelogic.Immutable;
+import com.surelogic.RegionEffects;
 
 /**
  * This interface provides a mechanism for evaluating between two boundary
@@ -34,6 +35,7 @@ public interface Evaluator<T> {
    * calculations with new/unknown types, not to provide another mechanism for
    * non-linear interpolation.
    */
+  @RegionEffects("reads All")
   T evaluate(T v0, T v1, double fraction);
 
   /**
@@ -41,5 +43,6 @@ public interface Evaluator<T> {
    * 
    * @return the class that the evaluator provides an implementation.
    */
+  @RegionEffects("reads All")
   Class<T> getEvaluatorClass();
 }
