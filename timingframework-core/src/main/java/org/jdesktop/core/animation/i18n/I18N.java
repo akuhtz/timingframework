@@ -2,6 +2,7 @@ package org.jdesktop.core.animation.i18n;
 
 import java.util.ResourceBundle;
 
+import com.surelogic.RegionEffects;
 import com.surelogic.Utility;
 
 /**
@@ -19,8 +20,9 @@ public final class I18N {
 
   private static final String ERROR_FORMAT = "(Timing Framework #%d) %s";
 
-  private static String getString(final ResourceBundle bundle, final String keyTemplate, final Object... args) {
-    return bundle.getString(String.format(keyTemplate, args));
+  @RegionEffects("reads any(java.util.ResourceBundle):Instance")
+  private static String getString(final String keyTemplate, final Object... args) {
+    return ERR.getString(String.format(keyTemplate, args));
   }
 
   /**
@@ -36,8 +38,9 @@ public final class I18N {
    *          the error message number.
    * @return the error message for the given number.
    */
+  @RegionEffects("reads any(java.util.ResourceBundle):Instance")
   public static String err(final int number) {
-    final String result = getString(ERR, "error.%05d", number);
+    final String result = getString("error.%05d", number);
     return String.format(ERROR_FORMAT, number, result);
   }
 
@@ -60,6 +63,7 @@ public final class I18N {
    * @return the formatted error message for the given number.
    * @see String#format(String, Object...)
    */
+  @RegionEffects("reads any(java.util.ResourceBundle):Instance")
   public static String err(final int number, Object... args) {
     return String.format(I18N.err(number), args);
   }
