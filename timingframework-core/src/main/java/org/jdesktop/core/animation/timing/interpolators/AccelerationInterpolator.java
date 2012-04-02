@@ -3,6 +3,7 @@ package org.jdesktop.core.animation.timing.interpolators;
 import org.jdesktop.core.animation.timing.Interpolator;
 
 import com.surelogic.Immutable;
+import com.surelogic.RegionEffects;
 
 /**
  * This class interpolates fractional values to animate movement with
@@ -43,7 +44,7 @@ public class AccelerationInterpolator implements Interpolator {
     f_deceleration = deceleration;
   }
 
-  @Override
+  @RegionEffects("reads Instance")
   public double interpolate(double fraction) {
     if (f_acceleration != 0 || f_deceleration != 0) {
       double runRate = 1.0 / (1.0 - f_acceleration / 2.0 - f_deceleration / 2.0);

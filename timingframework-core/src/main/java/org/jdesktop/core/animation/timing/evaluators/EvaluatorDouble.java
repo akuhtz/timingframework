@@ -3,6 +3,7 @@ package org.jdesktop.core.animation.timing.evaluators;
 import org.jdesktop.core.animation.timing.Evaluator;
 
 import com.surelogic.Immutable;
+import com.surelogic.RegionEffects;
 
 /**
  * An evaluator for {@link Double}.
@@ -13,12 +14,12 @@ import com.surelogic.Immutable;
 @Immutable
 public final class EvaluatorDouble implements Evaluator<Double> {
 
-  @Override
+  @RegionEffects("none")
   public Double evaluate(Double v0, Double v1, double fraction) {
     return v0 + ((v1 - v0) * fraction);
   }
 
-  @Override
+  @RegionEffects("reads All")
   public Class<Double> getEvaluatorClass() {
     return Double.class;
   }

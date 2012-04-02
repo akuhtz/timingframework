@@ -5,6 +5,7 @@ import java.awt.geom.Ellipse2D;
 import org.jdesktop.core.animation.timing.Evaluator;
 
 import com.surelogic.Immutable;
+import com.surelogic.RegionEffects;
 
 /**
  * An evaluator for {@link Ellipse2D}.
@@ -15,7 +16,7 @@ import com.surelogic.Immutable;
 @Immutable
 public final class EvaluatorEllipse2D implements Evaluator<Ellipse2D> {
 
-  @Override
+  @RegionEffects("none")
   public Ellipse2D evaluate(Ellipse2D v0, Ellipse2D v1, double fraction) {
     double x = v0.getX() + ((v1.getX() - v0.getX()) * fraction);
     double y = v0.getY() + ((v1.getY() - v0.getY()) * fraction);
@@ -26,7 +27,7 @@ public final class EvaluatorEllipse2D implements Evaluator<Ellipse2D> {
     return value;
   }
 
-  @Override
+  @RegionEffects("reads All")
   public Class<Ellipse2D> getEvaluatorClass() {
     return Ellipse2D.class;
   }

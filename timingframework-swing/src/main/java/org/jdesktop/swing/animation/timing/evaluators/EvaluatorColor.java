@@ -5,6 +5,7 @@ import java.awt.Color;
 import org.jdesktop.core.animation.timing.Evaluator;
 
 import com.surelogic.Immutable;
+import com.surelogic.RegionEffects;
 
 /**
  * An evaluator for {@link Color}.
@@ -15,7 +16,7 @@ import com.surelogic.Immutable;
 @Immutable
 public final class EvaluatorColor implements Evaluator<Color> {
 
-  @Override
+  @RegionEffects("none")
   public Color evaluate(Color v0, Color v1, double fraction) {
     int r = v0.getRed() + (int) ((v1.getRed() - v0.getRed()) * fraction + 0.5f);
     int g = v0.getGreen() + (int) ((v1.getGreen() - v0.getGreen()) * fraction + 0.5f);
@@ -25,7 +26,7 @@ public final class EvaluatorColor implements Evaluator<Color> {
     return value;
   }
 
-  @Override
+  @RegionEffects("reads All")
   public Class<Color> getEvaluatorClass() {
     return Color.class;
   }

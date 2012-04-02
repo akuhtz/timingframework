@@ -13,8 +13,11 @@ import org.jdesktop.core.animation.timing.KeyFrames.Frame;
 import org.jdesktop.core.animation.timing.evaluators.KnownEvaluators;
 import org.jdesktop.core.animation.timing.interpolators.LinearInterpolator;
 
+import com.surelogic.Borrowed;
 import com.surelogic.Immutable;
 import com.surelogic.NotThreadSafe;
+import com.surelogic.RegionEffects;
+import com.surelogic.Unique;
 import com.surelogic.Vouch;
 
 /**
@@ -107,6 +110,7 @@ public class KeyFrames<T> implements Iterable<Frame<T>> {
      * @throws IllegalArgumentException
      *           if <tt>value</tt> is {@code null}.
      */
+    @RegionEffects("reads All")
     public Frame(T value, double atTimeFraction, Interpolator interpolator) {
       if (value == null)
         throw new IllegalArgumentException(I18N.err(1, "value"));
@@ -215,6 +219,7 @@ public class KeyFrames<T> implements Iterable<Frame<T>> {
      * 
      * @return a time fraction in the range [0,1], or a negative number.
      */
+    @RegionEffects("reads this:Instance")
     public double getTimeFraction() {
       return f_timeFraction;
     }
@@ -239,6 +244,8 @@ public class KeyFrames<T> implements Iterable<Frame<T>> {
      * 
      * @return an interpolator, or {@code null}.
      */
+    @Borrowed("this")
+    @RegionEffects("none")
     public Interpolator getInterpolator() {
       return f_interpolator;
     }
@@ -610,6 +617,7 @@ public class KeyFrames<T> implements Iterable<Frame<T>> {
        * Try to find an evaluator unless one was set.
        */
       if (f_evaluator == null) {
+        @SuppressWarnings("unchecked")
         final Class<T> c = (Class<T>) frames[0].getValue().getClass();
         f_evaluator = KnownEvaluators.getInstance().getEvaluatorFor(c);
       }
@@ -623,6 +631,7 @@ public class KeyFrames<T> implements Iterable<Frame<T>> {
    * The ordered list of key frames managed by this instance.
    */
   @Vouch("Immutable")
+  @Unique
   private final Frame<T>[] f_frames;
 
   /**
@@ -636,7 +645,8 @@ public class KeyFrames<T> implements Iterable<Frame<T>> {
    * This constructor should only be called from
    * {@link KeyFrames.Builder#build()}.
    */
-  KeyFrames(Frame<T>[] frames, Evaluator<T> evaluator) {
+  @RegionEffects("none")
+  KeyFrames(@Unique Frame<T>[] frames, Evaluator<T> evaluator) {
     f_frames = frames;
     f_evaluator = evaluator;
   }
@@ -647,6 +657,8 @@ public class KeyFrames<T> implements Iterable<Frame<T>> {
    * 
    * @return the number of key frames in this list.
    */
+  @Borrowed("this")
+  @RegionEffects("reads this:Instance")
   public int size() {
     return f_frames.length;
   }
@@ -666,15 +678,30 @@ public class KeyFrames<T> implements Iterable<Frame<T>> {
   }
 
   @Override
+  @Borrowed(value = "this", allowReturn = true)
+  @RegionEffects("writes this:Instance")
+  @Unique("return")
   public Iterator<Frame<T>> iterator() {
-    final Iterator<Frame<T>> result = new Iterator<Frame<T>>() {
-
+    @Borrowed("KeyFrames.this")
+    class It implements Iterator<Frame<T>> {
+      @Unique
       final AtomicInteger f_index = new AtomicInteger(0);
 
+      @Unique("return")
+      @Borrowed(value = "KeyFrames.this", allowReturn = true)
+      @RegionEffects("writes KeyFrames.this:Instance")
+      public It() {
+        super();
+      }
+
+      @Borrowed("this")
+      @RegionEffects("reads Instance")
       public boolean hasNext() {
         return f_index.get() < size();
       }
 
+      @Borrowed("this")
+      @RegionEffects("reads any(java.util.ResourceBundle):Instance; writes Instance")
       public Frame<T> next() {
         if (!hasNext())
           throw new NoSuchElementException(I18N.err(27));
@@ -683,10 +710,14 @@ public class KeyFrames<T> implements Iterable<Frame<T>> {
         return result;
       }
 
+      @Borrowed("this")
+      @RegionEffects("reads any(java.util.ResourceBundle):Instance; writes Instance")
       public void remove() {
         throw new UnsupportedOperationException(I18N.err(28));
       }
-    };
+    }
+
+    final Iterator<Frame<T>> result = new It();
     return result;
   }
 
@@ -793,6 +824,7 @@ public class KeyFrames<T> implements Iterable<Frame<T>> {
    * @return the index of the key frame closest to, but not after, the passed
    *         time fraction.
    */
+  @RegionEffects("reads any(org.jdesktop.core.animation.timing.KeyFrames.Frame):Instance, this:Instance")
   public int getFrameIndexAt(double fraction) {
     final int size = size();
     for (int i = 1; i < size; ++i) {

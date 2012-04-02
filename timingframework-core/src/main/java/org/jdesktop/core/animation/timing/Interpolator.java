@@ -6,6 +6,7 @@ import org.jdesktop.core.animation.timing.interpolators.LinearInterpolator;
 import org.jdesktop.core.animation.timing.interpolators.SplineInterpolator;
 
 import com.surelogic.Immutable;
+import com.surelogic.RegionEffects;
 
 /**
  * This interface provides a mechanism for animating object properties between
@@ -37,5 +38,6 @@ public interface Interpolator {
    * @return a value between 0 and 1, inclusive. Values outside of this boundary
    *         may be clamped to the interval [0,1] and cause undefined results.
    */
+  @RegionEffects("reads All")
   public double interpolate(double fraction);
 }

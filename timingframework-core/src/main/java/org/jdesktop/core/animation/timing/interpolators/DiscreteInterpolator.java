@@ -3,6 +3,7 @@ package org.jdesktop.core.animation.timing.interpolators;
 import org.jdesktop.core.animation.timing.Interpolator;
 
 import com.surelogic.Immutable;
+import com.surelogic.RegionEffects;
 import com.surelogic.Singleton;
 
 /**
@@ -54,6 +55,7 @@ public final class DiscreteInterpolator implements Interpolator {
    * @return a number representing the start of the current interval, usually
    *         {@code 0}, but if {@code fraction == 1}, returns {@code 1}.
    */
+  @RegionEffects("reads Instance")
   public double interpolate(double fraction) {
     if (fraction < 1) {
       return 0;

@@ -6,7 +6,10 @@ import java.util.List;
 
 import org.jdesktop.core.animation.timing.Interpolator;
 
+import com.surelogic.Borrowed;
 import com.surelogic.Immutable;
+import com.surelogic.RegionEffects;
+import com.surelogic.Unique;
 import com.surelogic.Vouch;
 
 /**
@@ -30,10 +33,8 @@ public final class SplineInterpolator implements Interpolator {
 
   private final double f_x1, f_y1, f_x2, f_y2;
 
-  /**
-   * Constructed with {@link Collections#unmodifiableList(List)}.
-   */
-  @Vouch("Immutable")
+  @Vouch(value = "Immutable", reason = "Instance wrapped via Collections.unmodifiableList(List)")
+  @Unique
   private final List<LengthItem> f_lengths;
 
   /**
@@ -54,6 +55,7 @@ public final class SplineInterpolator implements Interpolator {
    *           This exception is thrown when values beyond the allowed [0,1]
    *           range are passed in.
    */
+  @Unique("return")
   public SplineInterpolator(double x1, double y1, double x2, double y2) {
     if (x1 < 0 || x1 > 1 || y1 < 0 || y1 > 1.0f || x2 < 0 || x2 > 1 || y2 < 0 || y2 > 1) {
       throw new IllegalArgumentException("Control points must be in the range [0,1].");
@@ -111,6 +113,8 @@ public final class SplineInterpolator implements Interpolator {
    * @param t
    *          parametric value for spline calculation.
    */
+  @Borrowed("this")
+  @RegionEffects("reads Instance")
   private Point2D getXY(double t) {
     final double invT = 1 - t;
     final double b1 = 3 * t * invT * invT;
@@ -124,6 +128,8 @@ public final class SplineInterpolator implements Interpolator {
    * Utility function: When we are evaluating the spline, we only care about the
    * Y values. See {@link #getXY} for the details.
    */
+  @Borrowed("this")
+  @RegionEffects("reads Instance")
   private double getY(double t) {
     final double invT = 1 - t;
     final double b1 = 3 * t * invT * invT;
@@ -146,6 +152,7 @@ public final class SplineInterpolator implements Interpolator {
    *          time interval.
    * @return an interpolated fraction between 0 and 1.
    */
+  @RegionEffects("reads All")
   public double interpolate(double fraction) {
     int low = 1;
     int high = f_lengths.size() - 1;
@@ -186,15 +193,18 @@ public final class SplineInterpolator implements Interpolator {
     private final double f_length;
     private final double f_t;
 
+    @RegionEffects("none")
     LengthItemBase(double length, double t) {
       f_length = length;
       f_t = t;
     }
 
+    @RegionEffects("reads Instance")
     public double getLength() {
       return f_length;
     }
 
+    @RegionEffects("reads Instance")
     public double getT() {
       return f_t;
     }
@@ -215,11 +225,13 @@ public final class SplineInterpolator implements Interpolator {
   private static final class LengthItem extends LengthItemBase {
     private final double fraction;
 
+    @RegionEffects("none")
     LengthItem(double length, double t, double totalLength) {
       super(length, t);
       fraction = length / totalLength;
     }
 
+    @RegionEffects("reads Instance")
     public double getFraction() {
       return fraction;
     }
@@ -233,6 +245,7 @@ public final class SplineInterpolator implements Interpolator {
     private final double x;
     private final double y;
 
+    @RegionEffects("none")
     Point2D(double x, double y) {
       this.x = x;
       this.y = y;

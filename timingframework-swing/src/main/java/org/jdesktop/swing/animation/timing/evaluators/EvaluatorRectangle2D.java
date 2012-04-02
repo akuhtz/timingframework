@@ -5,6 +5,7 @@ import java.awt.geom.Rectangle2D;
 import org.jdesktop.core.animation.timing.Evaluator;
 
 import com.surelogic.Immutable;
+import com.surelogic.RegionEffects;
 
 /**
  * An evaluator for {@link Rectangle2D}.
@@ -15,7 +16,7 @@ import com.surelogic.Immutable;
 @Immutable
 public final class EvaluatorRectangle2D implements Evaluator<Rectangle2D> {
 
-  @Override
+  @RegionEffects("none")
   public Rectangle2D evaluate(Rectangle2D v0, Rectangle2D v1, double fraction) {
     double x = v0.getX() + ((v1.getX() - v0.getX()) * fraction);
     double y = v0.getY() + ((v1.getY() - v0.getY()) * fraction);
@@ -26,7 +27,7 @@ public final class EvaluatorRectangle2D implements Evaluator<Rectangle2D> {
     return value;
   }
 
-  @Override
+  @RegionEffects("reads All")
   public Class<Rectangle2D> getEvaluatorClass() {
     return Rectangle2D.class;
   }

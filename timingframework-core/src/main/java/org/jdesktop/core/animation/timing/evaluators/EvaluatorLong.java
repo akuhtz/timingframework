@@ -3,6 +3,7 @@ package org.jdesktop.core.animation.timing.evaluators;
 import org.jdesktop.core.animation.timing.Evaluator;
 
 import com.surelogic.Immutable;
+import com.surelogic.RegionEffects;
 
 /**
  * An evaluator for {@link Long}.
@@ -13,12 +14,12 @@ import com.surelogic.Immutable;
 @Immutable
 public final class EvaluatorLong implements Evaluator<Long> {
 
-  @Override
+  @RegionEffects("none")
   public Long evaluate(Long v0, Long v1, double fraction) {
     return v0 + (long) ((v1 - v0) * fraction);
   }
 
-  @Override
+  @RegionEffects("reads All")
   public Class<Long> getEvaluatorClass() {
     return Long.class;
   }

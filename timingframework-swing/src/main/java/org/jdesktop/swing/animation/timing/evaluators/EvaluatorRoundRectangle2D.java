@@ -5,6 +5,7 @@ import java.awt.geom.RoundRectangle2D;
 import org.jdesktop.core.animation.timing.Evaluator;
 
 import com.surelogic.Immutable;
+import com.surelogic.RegionEffects;
 
 /**
  * An evaluator for {@link RoundRectangle2D}.
@@ -15,7 +16,7 @@ import com.surelogic.Immutable;
 @Immutable
 public final class EvaluatorRoundRectangle2D implements Evaluator<RoundRectangle2D> {
 
-  @Override
+  @RegionEffects("none")
   public RoundRectangle2D evaluate(RoundRectangle2D v0, RoundRectangle2D v1, double fraction) {
     double x = v0.getX() + ((v1.getX() - v0.getX()) * fraction);
     double y = v0.getY() + ((v1.getY() - v0.getY()) * fraction);
@@ -28,7 +29,7 @@ public final class EvaluatorRoundRectangle2D implements Evaluator<RoundRectangle
     return value;
   }
 
-  @Override
+  @RegionEffects("reads All")
   public Class<RoundRectangle2D> getEvaluatorClass() {
     return RoundRectangle2D.class;
   }

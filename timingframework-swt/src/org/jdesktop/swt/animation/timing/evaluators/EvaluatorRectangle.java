@@ -4,6 +4,7 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.jdesktop.core.animation.timing.Evaluator;
 
 import com.surelogic.Immutable;
+import com.surelogic.RegionEffects;
 
 /**
  * An evaluator for {@link Rectangle}.
@@ -14,7 +15,7 @@ import com.surelogic.Immutable;
 @Immutable
 public final class EvaluatorRectangle implements Evaluator<Rectangle> {
 
-  @Override
+  @RegionEffects("none")
   public Rectangle evaluate(Rectangle v0, Rectangle v1, double fraction) {
     double x = v0.x + ((v1.x - v0.x) * fraction);
     double y = v0.y + ((v1.y - v0.y) * fraction);
@@ -24,7 +25,7 @@ public final class EvaluatorRectangle implements Evaluator<Rectangle> {
     return value;
   }
 
-  @Override
+  @RegionEffects("reads All")
   public Class<Rectangle> getEvaluatorClass() {
     return Rectangle.class;
   }

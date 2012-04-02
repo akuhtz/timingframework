@@ -3,6 +3,7 @@ package org.jdesktop.core.animation.timing.evaluators;
 import org.jdesktop.core.animation.timing.Evaluator;
 
 import com.surelogic.Immutable;
+import com.surelogic.RegionEffects;
 
 /**
  * An evaluator for {@link Short}.
@@ -13,12 +14,12 @@ import com.surelogic.Immutable;
 @Immutable
 public final class EvaluatorShort implements Evaluator<Short> {
 
-  @Override
+  @RegionEffects("none")
   public Short evaluate(Short v0, Short v1, double fraction) {
     return (short) (v0 + (short) ((v1 - v0) * fraction));
   }
 
-  @Override
+  @RegionEffects("reads All")
   public Class<Short> getEvaluatorClass() {
     return Short.class;
   }
