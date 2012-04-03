@@ -701,19 +701,19 @@ public class KeyFrames<T> implements Iterable<Frame<T>> {
       }
 
       @Borrowed("this")
-      @RegionEffects("reads any(java.util.ResourceBundle):Instance; writes Instance")
+      @RegionEffects("writes Instance")
       public Frame<T> next() {
         if (!hasNext())
-          throw new NoSuchElementException(I18N.err(27));
+          throw new NoSuchElementException("No further key frames exist.");
         final int index = f_index.getAndIncrement();
         final Frame<T> result = f_frames[index];
         return result;
       }
 
       @Borrowed("this")
-      @RegionEffects("reads any(java.util.ResourceBundle):Instance; writes Instance")
+      @RegionEffects("writes Instance")
       public void remove() {
-        throw new UnsupportedOperationException(I18N.err(28));
+        throw new UnsupportedOperationException("Removal of a key frame is not supported.");
       }
     }
 
