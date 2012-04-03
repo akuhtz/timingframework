@@ -27,7 +27,7 @@ public final class EvaluatorLine2D implements Evaluator<Line2D> {
     return value;
   }
 
-  @RegionEffects("reads All")
+  @RegionEffects("none")
   public Class<Line2D> getEvaluatorClass() {
     return Line2D.class;
   }

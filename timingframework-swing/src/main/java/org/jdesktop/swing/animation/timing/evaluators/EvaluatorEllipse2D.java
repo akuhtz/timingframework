@@ -27,7 +27,7 @@ public final class EvaluatorEllipse2D implements Evaluator<Ellipse2D> {
     return value;
   }
 
-  @RegionEffects("reads All")
+  @RegionEffects("none")
   public Class<Ellipse2D> getEvaluatorClass() {
     return Ellipse2D.class;
   }

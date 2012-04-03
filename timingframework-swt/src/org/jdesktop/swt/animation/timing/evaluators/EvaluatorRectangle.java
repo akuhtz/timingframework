@@ -25,7 +25,7 @@ public final class EvaluatorRectangle implements Evaluator<Rectangle> {
     return value;
   }
 
-  @RegionEffects("reads All")
+  @RegionEffects("none")
   public Class<Rectangle> getEvaluatorClass() {
     return Rectangle.class;
   }

@@ -19,7 +19,7 @@ public final class EvaluatorDouble implements Evaluator<Double> {
     return v0 + ((v1 - v0) * fraction);
   }
 
-  @RegionEffects("reads All")
+  @RegionEffects("none")
   public Class<Double> getEvaluatorClass() {
     return Double.class;
   }

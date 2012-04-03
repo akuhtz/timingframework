@@ -19,7 +19,7 @@ public final class EvaluatorFloat implements Evaluator<Float> {
     return v0 + ((v1 - v0) * (float) fraction);
   }
 
-  @RegionEffects("reads All")
+  @RegionEffects("none")
   public Class<Float> getEvaluatorClass() {
     return Float.class;
   }

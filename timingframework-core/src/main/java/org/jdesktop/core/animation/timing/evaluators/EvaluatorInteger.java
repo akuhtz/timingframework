@@ -19,7 +19,7 @@ public final class EvaluatorInteger implements Evaluator<Integer> {
     return v0 + (int) ((v1 - v0) * fraction);
   }
 
-  @RegionEffects("reads All")
+  @RegionEffects("none")
   public Class<Integer> getEvaluatorClass() {
     return Integer.class;
   }
