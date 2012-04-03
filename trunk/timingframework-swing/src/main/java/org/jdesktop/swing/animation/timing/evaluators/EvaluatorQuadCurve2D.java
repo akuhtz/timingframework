@@ -29,7 +29,7 @@ public final class EvaluatorQuadCurve2D implements Evaluator<QuadCurve2D> {
     return value;
   }
 
-  @RegionEffects("reads All")
+  @RegionEffects("none")
   public Class<QuadCurve2D> getEvaluatorClass() {
     return QuadCurve2D.class;
   }

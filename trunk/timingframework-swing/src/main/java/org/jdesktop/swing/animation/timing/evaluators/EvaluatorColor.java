@@ -26,7 +26,7 @@ public final class EvaluatorColor implements Evaluator<Color> {
     return value;
   }
 
-  @RegionEffects("reads All")
+  @RegionEffects("none")
   public Class<Color> getEvaluatorClass() {
     return Color.class;
   }

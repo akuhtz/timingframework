@@ -25,7 +25,7 @@ public final class EvaluatorDimension2D implements Evaluator<Dimension2D> {
     return value;
   }
 
-  @RegionEffects("reads All")
+  @RegionEffects("none")
   public Class<Dimension2D> getEvaluatorClass() {
     return Dimension2D.class;
   }

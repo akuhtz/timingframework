@@ -25,7 +25,7 @@ public final class EvaluatorPoint2D implements Evaluator<Point2D> {
     return value;
   }
 
-  @RegionEffects("reads All")
+  @RegionEffects("none")
   public Class<Point2D> getEvaluatorClass() {
     return Point2D.class;
   }

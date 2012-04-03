@@ -29,7 +29,7 @@ public final class EvaluatorArc2D implements Evaluator<Arc2D> {
     return value;
   }
 
-  @RegionEffects("reads All")
+  @RegionEffects("none")
   public Class<Arc2D> getEvaluatorClass() {
     return Arc2D.class;
   }

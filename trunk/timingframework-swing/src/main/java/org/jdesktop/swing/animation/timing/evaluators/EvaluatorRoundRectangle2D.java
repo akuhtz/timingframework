@@ -29,7 +29,7 @@ public final class EvaluatorRoundRectangle2D implements Evaluator<RoundRectangle
     return value;
   }
 
-  @RegionEffects("reads All")
+  @RegionEffects("none")
   public Class<RoundRectangle2D> getEvaluatorClass() {
     return RoundRectangle2D.class;
   }

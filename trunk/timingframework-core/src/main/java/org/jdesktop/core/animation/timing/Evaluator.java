@@ -43,6 +43,6 @@ public interface Evaluator<T> {
    * 
    * @return the class that the evaluator provides an implementation.
    */
-  @RegionEffects("reads All")
+  @RegionEffects("none")
   Class<T> getEvaluatorClass();
 }

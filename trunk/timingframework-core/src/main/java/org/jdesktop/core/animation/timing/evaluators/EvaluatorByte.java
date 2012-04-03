@@ -19,7 +19,7 @@ public final class EvaluatorByte implements Evaluator<Byte> {
     return (byte) (v0 + (byte) ((v1 - v0) * fraction));
   }
 
-  @RegionEffects("reads All")
+  @RegionEffects("none")
   public Class<Byte> getEvaluatorClass() {
     return Byte.class;
   }

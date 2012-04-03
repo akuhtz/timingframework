@@ -19,7 +19,7 @@ public final class EvaluatorLong implements Evaluator<Long> {
     return v0 + (long) ((v1 - v0) * fraction);
   }
 
-  @RegionEffects("reads All")
+  @RegionEffects("none")
   public Class<Long> getEvaluatorClass() {
     return Long.class;
   }

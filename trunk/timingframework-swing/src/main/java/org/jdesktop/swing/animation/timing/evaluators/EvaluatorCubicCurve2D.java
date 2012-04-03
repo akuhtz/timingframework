@@ -31,7 +31,7 @@ public final class EvaluatorCubicCurve2D implements Evaluator<CubicCurve2D> {
     return value;
   }
 
-  @RegionEffects("reads All")
+  @RegionEffects("none")
   public Class<CubicCurve2D> getEvaluatorClass() {
     return CubicCurve2D.class;
   }

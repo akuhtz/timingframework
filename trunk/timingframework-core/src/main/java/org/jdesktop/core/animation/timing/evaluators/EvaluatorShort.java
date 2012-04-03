@@ -19,7 +19,7 @@ public final class EvaluatorShort implements Evaluator<Short> {
     return (short) (v0 + (short) ((v1 - v0) * fraction));
   }
 
-  @RegionEffects("reads All")
+  @RegionEffects("none")
   public Class<Short> getEvaluatorClass() {
     return Short.class;
   }
