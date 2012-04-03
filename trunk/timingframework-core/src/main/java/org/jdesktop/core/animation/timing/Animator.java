@@ -15,6 +15,7 @@ import com.surelogic.Immutable;
 import com.surelogic.InRegion;
 import com.surelogic.NotThreadSafe;
 import com.surelogic.Region;
+import com.surelogic.RegionEffects;
 import com.surelogic.RegionLock;
 import com.surelogic.RequiresLock;
 import com.surelogic.ThreadSafe;
@@ -637,6 +638,7 @@ public final class Animator implements TickListener {
    * @param target
    *          a {@link TimingTarget} object.
    */
+  @RegionEffects("writes any(java.util.concurrent.CopyOnWriteArraySet):Instance")
   public void addTarget(TimingTarget target) {
     if (target != null)
       f_targets.add(target);
