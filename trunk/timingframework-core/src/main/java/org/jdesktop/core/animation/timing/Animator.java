@@ -2,7 +2,7 @@ package org.jdesktop.core.animation.timing;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -215,6 +215,12 @@ public final class Animator implements TickListener {
    * <td>the start direction for the initial animation cycle</td>
    * <td align="right">{@link Animator.Direction#FORWARD}</td>
    * </tr>
+   * <tr>
+   * <td>{@link #setDebugName(String)}</td>
+   * <td>a meaningful name for the animation used by the
+   * {@link Animator#toString()} method and the</td>
+   * <td align="right">"Animator"</td>
+   * </tr>
    * </table>
    * 
    * <p>
@@ -263,6 +269,9 @@ public final class Animator implements TickListener {
       return f_defaultTimingSource.get();
     }
 
+    private static final String DEBUG_NAME = "Animator";
+
+    private String f_debugName = DEBUG_NAME;
     private long f_duration = 1;
     private TimeUnit f_durationTimeUnit = TimeUnit.SECONDS;
     private Animator.EndBehavior f_endBehavior = Animator.EndBehavior.HOLD;
@@ -309,6 +318,20 @@ public final class Animator implements TickListener {
     }
 
     /**
+     * Sets the "debug" name of the animation. The default value is
+     * <tt>"Animator"</tt>.
+     * 
+     * @param name
+     *          a name of the animation. A {@code null} value is equivalent to
+     *          setting the default value.
+     * @return this builder (to allow chained operations).
+     */
+    public Builder setDebugName(String name) {
+      f_debugName = name != null ? name : DEBUG_NAME;
+      return this;
+    }
+
+    /**
      * Sets the duration of one cycle of the animation. The default value is one
      * second.
      * 
@@ -317,7 +340,7 @@ public final class Animator implements TickListener {
      * @param unit
      *          the time unit of the value parameter. A {@code null} value is
      *          equivalent to setting the default unit of
-     *          {@link TimeUnit#SECONDS} .
+     *          {@link TimeUnit#SECONDS}.
      * @return this builder (to allow chained operations).
      * 
      * @throws IllegalStateException
@@ -415,8 +438,8 @@ public final class Animator implements TickListener {
      * @return an animation.
      */
     public Animator build() {
-      final Animator result = new Animator(f_duration, f_durationTimeUnit, f_endBehavior, f_interpolator, f_repeatBehavior,
-          f_repeatCount, f_startDirection, f_timingSource);
+      final Animator result = new Animator(f_debugName, f_duration, f_durationTimeUnit, f_endBehavior, f_interpolator,
+          f_repeatBehavior, f_repeatCount, f_startDirection, f_timingSource);
       for (TimingTarget target : f_targets) {
         result.addTarget(target);
       }
@@ -428,14 +451,24 @@ public final class Animator implements TickListener {
    * Immutable state set by the builder.
    */
 
+  private final String f_debugName;
   private final long f_duration;
   private final TimeUnit f_durationTimeUnit;
   private final EndBehavior f_endBehavior;
-  private final Interpolator f_interpolator;
+  private final Interpolator f_interpolator; // null means linear
   private final RepeatBehavior f_repeatBehavior;
   private final long f_repeatCount;
   private final Direction f_startDirection;
   private final TimingSource f_timingSource;
+
+  /**
+   * Gets the "debug" name of this animation.
+   * 
+   * @return the "debug" name of this animation.
+   */
+  public String getDebugName() {
+    return f_debugName;
+  }
 
   /**
    * Gets the duration of one cycle of this animation. The units of this value
@@ -478,7 +511,7 @@ public final class Animator implements TickListener {
    * @return the interpolation to use each animation cycle.
    */
   public Interpolator getInterpolator() {
-    return f_interpolator;
+    return f_interpolator != null ? f_interpolator : LinearInterpolator.getInstance();
   }
 
   /**
@@ -526,7 +559,7 @@ public final class Animator implements TickListener {
   /**
    * This animation may have multiple {@link TimingTarget} listeners.
    */
-  private final CopyOnWriteArraySet<TimingTarget> f_targets = new CopyOnWriteArraySet<TimingTarget>();
+  private final CopyOnWriteArrayList<TimingTarget> f_targets = new CopyOnWriteArrayList<TimingTarget>();
 
   /**
    * Protects the mutable state of this animation.
@@ -613,8 +646,9 @@ public final class Animator implements TickListener {
    * This constructor should only be called from {@link Builder#build()}.
    */
   @Unique("return")
-  Animator(long duration, TimeUnit durationTimeUnit, EndBehavior endBehavior, Interpolator interpolator,
+  Animator(String debugName, long duration, TimeUnit durationTimeUnit, EndBehavior endBehavior, Interpolator interpolator,
       RepeatBehavior repeatBehavior, long repeatCount, Direction startDirection, TimingSource timingSource) {
+    f_debugName = debugName;
     f_duration = duration;
     f_durationTimeUnit = durationTimeUnit;
     f_endBehavior = endBehavior;
@@ -631,14 +665,14 @@ public final class Animator implements TickListener {
    * <p>
    * This can be done at any time before, during, or after the animation has
    * started or completed; the new target will begin having its methods called
-   * as soon as it is added. If {@code target} is already on the list of targets
-   * in this animation, it is not added again (there will be only one instance
-   * of any given target in any animation's list of targets).
+   * as soon as it is added.
+   * <p>
+   * {@link TimingTarget}s will be called in the order they are added.
    * 
    * @param target
    *          a {@link TimingTarget} object.
    */
-  @RegionEffects("writes any(java.util.concurrent.CopyOnWriteArraySet):Instance")
+  @RegionEffects("writes any(java.util.concurrent.CopyOnWriteArrayList):Instance")
   public void addTarget(TimingTarget target) {
     if (target != null)
       f_targets.add(target);
@@ -923,6 +957,21 @@ public final class Animator implements TickListener {
     synchronized (f_lock) {
       return (currentTimeNanos - f_startTimeNanos);
     }
+  }
+
+  @Override
+  public String toString() {
+    final StringBuilder b = new StringBuilder();
+    b.append(f_debugName);
+    b.append("(duration=").append(f_duration).append(' ').append(f_durationTimeUnit.toString());
+    b.append(", interpolator=").append(getInterpolator().toString());
+    b.append(", startDirection=").append(f_startDirection.toString());
+    b.append(", repeatBehavior=").append(f_repeatBehavior.toString());
+    b.append(", repeatCount=").append(f_repeatCount);
+    b.append(", endBehavior=").append(f_endBehavior.toString());
+    b.append(", timingSource=").append(f_timingSource.toString());
+    b.append(')');
+    return b.toString();
   }
 
   /**

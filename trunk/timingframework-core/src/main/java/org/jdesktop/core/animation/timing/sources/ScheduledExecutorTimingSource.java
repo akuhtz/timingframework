@@ -91,4 +91,13 @@ public final class ScheduledExecutorTimingSource extends TimingSource {
   protected void runTaskInThreadContext(Runnable task) {
     f_executor.submit(task);
   }
+
+  @Override
+  public String toString() {
+    final StringBuilder b = new StringBuilder();
+    b.append(ScheduledExecutorTimingSource.class.getSimpleName());
+    b.append("(period=").append(f_period).append(' ').append(f_periodTimeUnit.toString());
+    b.append(')');
+    return b.toString();
+  }
 }

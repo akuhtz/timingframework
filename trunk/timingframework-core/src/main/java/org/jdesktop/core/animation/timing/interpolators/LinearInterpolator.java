@@ -50,4 +50,9 @@ public final class LinearInterpolator implements Interpolator {
   public double interpolate(double fraction) {
     return fraction;
   }
+
+  @Override
+  public String toString() {
+    return LinearInterpolator.class.getSimpleName();
+  }
 }

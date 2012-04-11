@@ -162,4 +162,13 @@ public final class SWTTimingSource extends TimingSource {
       });
     }
   }
+
+  @Override
+  public String toString() {
+    final StringBuilder b = new StringBuilder();
+    b.append(SWTTimingSource.class.getSimpleName());
+    b.append("(period=").append(TimeUnit.NANOSECONDS.toMillis(f_periodNanos)).append(' ').append(TimeUnit.MILLISECONDS.toString());
+    b.append(')');
+    return b.toString();
+  }
 }
