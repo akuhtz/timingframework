@@ -181,6 +181,18 @@ public final class SplineInterpolator implements Interpolator {
     return getY(interpolatedT);
   }
 
+  @Override
+  public String toString() {
+    final StringBuilder b = new StringBuilder();
+    b.append(SplineInterpolator.class.getSimpleName());
+    b.append("(x1=").append(f_x1);
+    b.append(", y1=").append(f_y1);
+    b.append(", x1=").append(f_x2);
+    b.append(", y2=").append(f_y2);
+    b.append(')');
+    return b.toString();
+  }
+
   /**
    * Base class used to store information about length values. This base class
    * allows the construction of full {@link LengthItem} instances that are

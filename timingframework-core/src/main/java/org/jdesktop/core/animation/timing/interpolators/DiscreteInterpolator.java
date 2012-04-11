@@ -62,4 +62,9 @@ public final class DiscreteInterpolator implements Interpolator {
     }
     return 1;
   }
+
+  @Override
+  public String toString() {
+    return DiscreteInterpolator.class.getSimpleName();
+  }
 }

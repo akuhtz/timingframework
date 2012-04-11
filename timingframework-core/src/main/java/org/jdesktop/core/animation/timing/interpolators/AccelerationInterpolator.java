@@ -81,4 +81,14 @@ public class AccelerationInterpolator implements Interpolator {
     }
     return fraction;
   }
+
+  @Override
+  public String toString() {
+    final StringBuilder b = new StringBuilder();
+    b.append(AccelerationInterpolator.class.getSimpleName());
+    b.append("(acceleration=").append(f_acceleration);
+    b.append(", deceleration=").append(f_deceleration);
+    b.append(')');
+    return b.toString();
+  }
 }
