@@ -218,7 +218,7 @@ public final class Animator implements TickListener {
    * <tr>
    * <td>{@link #setDebugName(String)}</td>
    * <td>a meaningful name for the animation used by the
-   * {@link Animator#toString()} method and the</td>
+   * {@link Animator#toString()} method</td>
    * <td align="right">"Animator"</td>
    * </tr>
    * </table>
