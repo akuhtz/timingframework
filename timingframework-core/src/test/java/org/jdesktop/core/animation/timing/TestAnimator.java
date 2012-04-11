@@ -1,5 +1,7 @@
 package org.jdesktop.core.animation.timing;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.jdesktop.core.animation.timing.sources.ManualTimingSource;
@@ -258,5 +260,158 @@ public class TestAnimator {
     int ticks = counter.getTimingEventCount();
     Assert.assertTrue("roughly 66 ticks", ticks > 63 && ticks < 69);
     ts.dispose();
+  }
+
+  @Test
+  public void timingTargetOrder1() throws InterruptedException {
+    ManualTimingSource ts = new ManualTimingSource();
+    Animator a = new Animator.Builder(ts).build();
+    // Add targets to Animator
+    List<OrderedTimingTarget> targets = getTargets();
+    for (OrderedTimingTarget ott : targets) {
+      a.addTarget(ott);
+    }
+    a.start();
+    OrderedTimingTarget.resetCallOrder();
+    ts.tick();
+    for (OrderedTimingTarget ott : targets) {
+      Assert.assertFalse(ott.getFailedMessage(), ott.getFailed());
+    }
+    OrderedTimingTarget.resetCallOrder();
+    ts.tick();
+    for (OrderedTimingTarget ott : targets) {
+      Assert.assertFalse(ott.getFailedMessage(), ott.getFailed());
+    }
+    Assert.assertTrue(a.stop());
+  }
+
+  @Test
+  public void timingTargetOrder2() throws InterruptedException {
+    ManualTimingSource ts = new ManualTimingSource();
+    Animator.Builder b = new Animator.Builder(ts);
+    // Add targets to Builder
+    List<OrderedTimingTarget> targets = getTargets();
+    for (OrderedTimingTarget ott : targets) {
+      b.addTarget(ott);
+    }
+    Animator a = b.build();
+    a.start();
+    OrderedTimingTarget.resetCallOrder();
+    ts.tick();
+    for (OrderedTimingTarget ott : targets) {
+      Assert.assertFalse(ott.getFailedMessage(), ott.getFailed());
+    }
+    OrderedTimingTarget.resetCallOrder();
+    ts.tick();
+    for (OrderedTimingTarget ott : targets) {
+      Assert.assertFalse(ott.getFailedMessage(), ott.getFailed());
+    }
+    Assert.assertTrue(a.stop());
+  }
+
+  @Test
+  public void timingTargetOrder3() throws InterruptedException {
+    ManualTimingSource ts = new ManualTimingSource();
+    Animator.Builder b = new Animator.Builder(ts);
+    // Add half of targets to Builder
+    List<OrderedTimingTarget> targets = getTargets();
+    int half = targets.size() / 2;
+    for (OrderedTimingTarget ott : targets) {
+      if (ott.getIndex() <= half)
+        b.addTarget(ott);
+    }
+    Animator a = b.build();
+    // Add half of targets to Animator
+    for (OrderedTimingTarget ott : targets) {
+      if (ott.getIndex() > half)
+        a.addTarget(ott);
+    }
+    a.start();
+    OrderedTimingTarget.resetCallOrder();
+    ts.tick();
+    for (OrderedTimingTarget ott : targets) {
+      Assert.assertFalse(ott.getFailedMessage(), ott.getFailed());
+    }
+    OrderedTimingTarget.resetCallOrder();
+    ts.tick();
+    for (OrderedTimingTarget ott : targets) {
+      Assert.assertFalse(ott.getFailedMessage(), ott.getFailed());
+    }
+    Assert.assertTrue(a.stop());
+  }
+
+  private static class OrderedTimingTarget implements TimingTarget {
+
+    private static int f_callOrder = 0;
+
+    static void resetCallOrder() {
+      f_callOrder = 0;
+    }
+
+    private final int f_index;
+
+    private String f_failed = null;
+
+    OrderedTimingTarget(int index) {
+      f_index = index;
+    }
+
+    int getIndex() {
+      return f_index;
+    }
+
+    boolean getFailed() {
+      return f_failed != null;
+    }
+
+    String getFailedMessage() {
+      return f_failed;
+    }
+
+    @Override
+    public void begin(Animator source) {
+      // nothing
+    }
+
+    @Override
+    public void end(Animator source) {
+      // nothing
+
+    }
+
+    @Override
+    public void repeat(Animator source) {
+      // nothing
+
+    }
+
+    @Override
+    public void reverse(Animator source) {
+      // nothing
+
+    }
+
+    @Override
+    public void timingEvent(Animator source, double fraction) {
+      /*
+       * Reset
+       */
+      f_failed = null;
+      /*
+       * Signal a failure if we were not called in the right order.
+       */
+      if (f_index != f_callOrder)
+        f_failed = "Was #" + f_callOrder + " target called but should have been #" + f_index + " target called";
+      f_callOrder++;
+    }
+
+  }
+
+  private List<OrderedTimingTarget> getTargets() {
+    final List<OrderedTimingTarget> result = new ArrayList<TestAnimator.OrderedTimingTarget>();
+    for (int i = 0; i < 10; i++) {
+      result.add(new OrderedTimingTarget(i));
+    }
+    return result;
   }
 }
