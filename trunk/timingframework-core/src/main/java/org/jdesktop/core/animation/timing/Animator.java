@@ -1,7 +1,7 @@
 package org.jdesktop.core.animation.timing;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -279,7 +279,7 @@ public final class Animator implements TickListener {
     private Animator.RepeatBehavior f_repeatBehavior = Animator.RepeatBehavior.REVERSE;
     private long f_repeatCount = 1;
     private Animator.Direction f_startDirection = Animator.Direction.FORWARD;
-    private final Set<TimingTarget> f_targets = new HashSet<TimingTarget>();
+    private final List<TimingTarget> f_targets = new ArrayList<TimingTarget>();
     private final TimingSource f_timingSource;
 
     /**
@@ -306,6 +306,8 @@ public final class Animator implements TickListener {
     /**
      * Adds a {@link TimingTarget} to the list of targets that get notified of
      * each timing event while the animation is running.
+     * <p>
+     * {@link TimingTarget}s will be called in the order they are added.
      * 
      * @param target
      *          a {@link TimingTarget} object.
