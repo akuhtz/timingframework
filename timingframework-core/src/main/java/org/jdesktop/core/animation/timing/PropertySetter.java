@@ -94,6 +94,30 @@ import com.surelogic.Utility;
  * animator.start();
  * </pre>
  * 
+ * <p>
+ * All the methods in this utility return a {@link TimingTargetAdapter} so that
+ * a "debug" name can be explicitly set on a returned timing target. In the
+ * example code below calling {@link TimingTargetAdapter#getDebugName()
+ * ps.getDebugName()} will result in <tt>"BlueToRed"</tt> and calling
+ * {@link TimingTargetAdapter#toString() ps.toString()} will result in
+ * <tt>"PropertySetterTimingTarget@BlueToRed"</tt>.
+ * 
+ * <pre>
+ * TimingTargetAdapter ps = PropertySetter.getTarget(obj, &quot;background&quot;, Color.BLUE, Color.RED);
+ * ps.setDebugName(&quot;BlueToRed&quot;);
+ * </pre>
+ * 
+ * <p>
+ * The "debug" name is automatically set to the value passed for the property
+ * name. In the example code below the {@link TimingTargetAdapter} type doesn't
+ * need to be used but calling {@link TimingTargetAdapter#toString()
+ * ps.toString()} will result in
+ * <tt>"PropertySetterTimingTarget@background"</tt>.
+ * 
+ * <pre>
+ * TimingTarget ps = PropertySetter.getTarget(obj, &quot;background&quot;, Color.BLUE, Color.RED);
+ * </pre>
+ * 
  * @author Chet Haase
  * @author Tim Halloran
  */
@@ -115,7 +139,7 @@ public final class PropertySetter {
    *          over time.
    * @return a timing target.
    */
-  public static <T> TimingTarget getTarget(Object object, String propertyName, KeyFrames<T> keyFrames) {
+  public static <T> TimingTargetAdapter getTarget(Object object, String propertyName, KeyFrames<T> keyFrames) {
     return getTargetHelper(object, propertyName, keyFrames, false);
   }
 
@@ -134,7 +158,7 @@ public final class PropertySetter {
    *          {@link LinearInterpolator} will be used.
    * @return a timing target.
    */
-  public static <T> TimingTarget getTarget(Object object, String propertyName, T... values) {
+  public static <T> TimingTargetAdapter getTarget(Object object, String propertyName, T... values) {
     final KeyFrames<T> keyFrames = new KeyFrames.Builder<T>().addFrames(values).build();
     return getTarget(object, propertyName, keyFrames);
   }
@@ -156,7 +180,7 @@ public final class PropertySetter {
    *          interpolator will be used.
    * @return a timing target.
    */
-  public static <T> TimingTarget getTarget(Object object, String propertyName, Interpolator interpolator, T... values) {
+  public static <T> TimingTargetAdapter getTarget(Object object, String propertyName, Interpolator interpolator, T... values) {
     final KeyFrames<T> keyFrames = new KeyFrames.Builder<T>().setInterpolator(interpolator).addFrames(values).build();
     return getTarget(object, propertyName, keyFrames);
   }
@@ -177,7 +201,7 @@ public final class PropertySetter {
    *          current value of the object's property.
    * @return a timing target.
    */
-  public static <T> TimingTarget getTargetTo(Object object, String propertyName, KeyFrames<T> keyFrames) {
+  public static <T> TimingTargetAdapter getTargetTo(Object object, String propertyName, KeyFrames<T> keyFrames) {
     return getTargetHelper(object, propertyName, keyFrames, true);
   }
 
@@ -198,7 +222,7 @@ public final class PropertySetter {
    *          in time and a {@link LinearInterpolator} will be used.
    * @return a timing target.
    */
-  public static <T> TimingTarget getTargetTo(Object object, String propertyName, T... values) {
+  public static <T> TimingTargetAdapter getTargetTo(Object object, String propertyName, T... values) {
     final KeyFrames<T> keyFrames = new KeyFrames.Builder<T>(values[0]).addFrames(values).build();
     return getTargetTo(object, propertyName, keyFrames);
   }
@@ -222,7 +246,7 @@ public final class PropertySetter {
    *          in time and the passed interpolator will be used.
    * @return a timing target.
    */
-  public static <T> TimingTarget getTargetTo(Object object, String propertyName, Interpolator interpolator, T... values) {
+  public static <T> TimingTargetAdapter getTargetTo(Object object, String propertyName, Interpolator interpolator, T... values) {
     final KeyFrames<T> keyFrames = new KeyFrames.Builder<T>(values[0]).setInterpolator(interpolator).addFrames(values).build();
     return getTargetTo(object, propertyName, keyFrames);
   }
@@ -231,7 +255,7 @@ public final class PropertySetter {
     throw new AssertionError();
   }
 
-  private static TimingTarget getTargetHelper(final Object object, final String propertyName, final KeyFrames<?> keyFrames,
+  private static TimingTargetAdapter getTargetHelper(final Object object, final String propertyName, final KeyFrames<?> keyFrames,
       final boolean isToAnimation) {
     if (object == null)
       throw new IllegalArgumentException(I18N.err(1, "object"));
@@ -287,12 +311,12 @@ public final class PropertySetter {
       /*
        * Setup "to" animation.
        */
-      return new PropertySetterToTimingTarget(objectKeyFrames, object, propertyGetter, propertySetter);
+      return new PropertySetterToTimingTarget(objectKeyFrames, object, propertyGetter, propertySetter, propertyName);
     } else {
       /*
        * Setup animation.
        */
-      return new PropertySetterTimingTarget(objectKeyFrames, object, propertySetter);
+      return new PropertySetterTimingTarget(objectKeyFrames, object, propertySetter, propertyName);
     }
   }
 
@@ -301,10 +325,11 @@ public final class PropertySetter {
     protected final Object f_object;
     protected final Method f_propertySetter;
 
-    public PropertySetterTimingTarget(KeyFrames<Object> keyFrames, Object object, Method propertySetter) {
+    public PropertySetterTimingTarget(KeyFrames<Object> keyFrames, Object object, Method propertySetter, String propertyName) {
       super(keyFrames);
       f_object = object;
       f_propertySetter = propertySetter;
+      setDebugName(propertyName);
     }
 
     @Override
@@ -322,8 +347,9 @@ public final class PropertySetter {
     private final AtomicReference<KeyFrames<Object>> f_keyFrames = new AtomicReference<KeyFrames<Object>>();
     private final Method f_propertyGetter;
 
-    public PropertySetterToTimingTarget(KeyFrames<Object> keyFrames, Object object, Method propertyGetter, Method propertySetter) {
-      super(keyFrames, object, propertySetter);
+    public PropertySetterToTimingTarget(KeyFrames<Object> keyFrames, Object object, Method propertyGetter, Method propertySetter,
+        String propertyName) {
+      super(keyFrames, object, propertySetter, propertyName);
       f_propertyGetter = propertyGetter;
     }
 

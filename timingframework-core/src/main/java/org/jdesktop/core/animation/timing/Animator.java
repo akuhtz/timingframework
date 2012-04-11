@@ -269,9 +269,7 @@ public final class Animator implements TickListener {
       return f_defaultTimingSource.get();
     }
 
-    private static final String DEBUG_NAME = "Animator";
-
-    private String f_debugName = DEBUG_NAME;
+    private String f_debugName = null;
     private long f_duration = 1;
     private TimeUnit f_durationTimeUnit = TimeUnit.SECONDS;
     private Animator.EndBehavior f_endBehavior = Animator.EndBehavior.HOLD;
@@ -320,16 +318,15 @@ public final class Animator implements TickListener {
     }
 
     /**
-     * Sets the "debug" name of the animation. The default value is
-     * <tt>"Animator"</tt>.
+     * Sets the "debug" name of the animation. The default value is {@code null}
+     * .
      * 
      * @param name
-     *          a name of the animation. A {@code null} value is equivalent to
-     *          setting the default value.
+     *          a name of the animation. A {@code null} value is allowed.
      * @return this builder (to allow chained operations).
      */
     public Builder setDebugName(String name) {
-      f_debugName = name != null ? name : DEBUG_NAME;
+      f_debugName = name;
       return this;
     }
 
@@ -453,7 +450,7 @@ public final class Animator implements TickListener {
    * Immutable state set by the builder.
    */
 
-  private final String f_debugName;
+  private final String f_debugName; // may be null
   private final long f_duration;
   private final TimeUnit f_durationTimeUnit;
   private final EndBehavior f_endBehavior;
@@ -466,7 +463,7 @@ public final class Animator implements TickListener {
   /**
    * Gets the "debug" name of this animation.
    * 
-   * @return the "debug" name of this animation.
+   * @return the "debug" name of this animation. May be {@code null}.
    */
   public String getDebugName() {
     return f_debugName;
@@ -964,7 +961,8 @@ public final class Animator implements TickListener {
   @Override
   public String toString() {
     final StringBuilder b = new StringBuilder();
-    b.append(f_debugName);
+    b.append(Animator.class.getSimpleName()).append('@');
+    b.append(f_debugName != null ? f_debugName : Integer.toHexString(hashCode()));
     b.append("(duration=").append(f_duration).append(' ').append(f_durationTimeUnit.toString());
     b.append(", interpolator=").append(getInterpolator().toString());
     b.append(", startDirection=").append(f_startDirection.toString());

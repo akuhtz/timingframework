@@ -1,6 +1,6 @@
 package org.jdesktop.core.animation.timing;
 
-import com.surelogic.Immutable;
+import com.surelogic.ThreadSafe;
 
 /**
  * Implements the {@link TimingTarget} interface, providing stubs for all timing
@@ -9,11 +9,13 @@ import com.surelogic.Immutable;
  * events provided. For example, sequencing animations may only require
  * monitoring the {@link TimingTarget#end} method, so subclasses of this adapter
  * may ignore the other methods such as timingEvent.
+ * <p>
+ * This class provides a useful
  * 
  * @author Chet Haase
  * @author Tim Halloran
  */
-@Immutable(implementationOnly = true)
+@ThreadSafe(implementationOnly = true)
 public class TimingTargetAdapter implements TimingTarget {
 
   @Override
@@ -39,5 +41,24 @@ public class TimingTargetAdapter implements TimingTarget {
   @Override
   public void timingEvent(Animator source, double fraction) {
     // default is to do nothing
+  }
+
+  private volatile String f_debugName = null;
+
+  public final void setDebugName(String name) {
+    f_debugName = name;
+  }
+
+  public final String getDebugName() {
+    return f_debugName;
+  }
+
+  @Override
+  public String toString() {
+    final String debugName = f_debugName;
+    final StringBuilder b = new StringBuilder();
+    b.append(getClass().getSimpleName()).append('@');
+    b.append(debugName != null ? debugName : Integer.toHexString(hashCode()));
+    return b.toString();
   }
 }
