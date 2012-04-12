@@ -95,4 +95,38 @@ public final class TestPropertySetter {
       ts.tick();
     Assert.assertEquals(3, pt.getValue());
   }
+
+  @Test
+  public void valueSetInBegin() {
+    class Expected extends TimingTargetAdapter {
+
+      private PropTest f_object;
+      private int f_value;
+
+      Expected(PropTest object) {
+        f_object = object;
+      }
+
+      public int getValueAtBegin() {
+        return f_value;
+      }
+
+      @Override
+      public void begin(Animator source) {
+        f_value = f_object.getValue();
+      }
+    }
+    PropTest pt = new PropTest();
+    TimingTarget tt = PropertySetter.getTarget(pt, "value", 1, 2);
+    Expected ee = new Expected(pt);
+    ManualTimingSource ts = new ManualTimingSource();
+    Animator a = new Animator.Builder(ts).addTarget(tt).addTarget(ee).build();
+    pt.setValue(-999);
+    a.start();
+    ts.tick();
+    Assert.assertEquals(1, ee.getValueAtBegin());
+    while (a.isRunning())
+      ts.tick();
+    Assert.assertEquals(2, pt.getValue());
+  }
 }
