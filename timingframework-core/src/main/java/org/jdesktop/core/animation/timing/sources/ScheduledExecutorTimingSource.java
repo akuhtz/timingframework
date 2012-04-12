@@ -95,7 +95,7 @@ public final class ScheduledExecutorTimingSource extends TimingSource {
   @Override
   public String toString() {
     final StringBuilder b = new StringBuilder();
-    b.append(ScheduledExecutorTimingSource.class.getSimpleName());
+    b.append(ScheduledExecutorTimingSource.class.getSimpleName()).append('@').append(Integer.toHexString(hashCode()));
     b.append("(period=").append(f_period).append(' ').append(f_periodTimeUnit.toString());
     b.append(')');
     return b.toString();
