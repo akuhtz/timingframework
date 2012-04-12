@@ -21,8 +21,10 @@ package org.jdesktop.core.animation.timing;
 public interface TimingTarget {
 
   /**
-   * Called when the animation begins. This provides a chance for targets to
-   * perform any setup required at animation start time.
+   * Called once when the animation begins. This provides a chance for targets
+   * to perform any setup required at animation start time.
+   * <p>
+   * This is always the first call made to any timing target.
    * 
    * @param source
    *          the animation.
@@ -30,7 +32,9 @@ public interface TimingTarget {
   public void begin(Animator source);
 
   /**
-   * Called when the animation ends.
+   * Called once when the animation ends.
+   * <p>
+   * This is always the last call made to any timing target.
    * 
    * @param source
    *          the animation.
