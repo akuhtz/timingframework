@@ -341,6 +341,11 @@ public final class PropertySetter {
         throw new IllegalStateException(I18N.err(31, f_propertySetter.getName(), f_object.toString()), e);
       }
     }
+
+    @Override
+    public void begin(Animator source) {
+      timingEvent(source, 0.0);
+    }
   }
 
   private static final class PropertySetterToTimingTarget extends PropertySetterTimingTarget {
@@ -369,6 +374,7 @@ public final class PropertySetter {
       } catch (Exception e) {
         throw new IllegalStateException(I18N.err(31, f_propertyGetter.getName(), f_object.toString()), e);
       }
+      super.begin(source); // set the initial value
     }
   }
 }
