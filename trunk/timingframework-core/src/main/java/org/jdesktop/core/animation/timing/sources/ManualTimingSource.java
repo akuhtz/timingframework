@@ -39,4 +39,11 @@ public final class ManualTimingSource extends TimingSource {
       return;
     task.run();
   }
+
+  @Override
+  public String toString() {
+    final StringBuilder b = new StringBuilder();
+    b.append(ManualTimingSource.class.getSimpleName()).append('@').append(Integer.toHexString(hashCode()));
+    return b.toString();
+  }
 }

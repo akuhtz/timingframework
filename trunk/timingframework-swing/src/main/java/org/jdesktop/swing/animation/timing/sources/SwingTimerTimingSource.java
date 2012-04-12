@@ -113,7 +113,7 @@ public final class SwingTimerTimingSource extends TimingSource {
   @Override
   public String toString() {
     final StringBuilder b = new StringBuilder();
-    b.append(SwingTimerTimingSource.class.getSimpleName());
+    b.append(SwingTimerTimingSource.class.getSimpleName()).append('@').append(Integer.toHexString(hashCode()));
     b.append("(period=").append(f_timer.getDelay()).append(' ').append(TimeUnit.MILLISECONDS.toString());
     b.append(')');
     return b.toString();
