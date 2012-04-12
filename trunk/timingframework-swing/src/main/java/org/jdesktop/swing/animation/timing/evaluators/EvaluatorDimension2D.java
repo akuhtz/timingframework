@@ -16,7 +16,7 @@ import com.surelogic.RegionEffects;
 @Immutable
 public final class EvaluatorDimension2D implements Evaluator<Dimension2D> {
 
-  @RegionEffects("none")
+  @RegionEffects("reads All")
   public Dimension2D evaluate(Dimension2D v0, Dimension2D v1, double fraction) {
     double w = v0.getWidth() + ((v1.getWidth() - v0.getWidth()) * fraction);
     double h = v0.getHeight() + ((v1.getHeight() - v0.getHeight()) * fraction);

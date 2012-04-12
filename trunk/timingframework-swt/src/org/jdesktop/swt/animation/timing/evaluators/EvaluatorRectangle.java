@@ -15,7 +15,7 @@ import com.surelogic.RegionEffects;
 @Immutable
 public final class EvaluatorRectangle implements Evaluator<Rectangle> {
 
-  @RegionEffects("none")
+  @RegionEffects("reads All")
   public Rectangle evaluate(Rectangle v0, Rectangle v1, double fraction) {
     double x = v0.x + ((v1.x - v0.x) * fraction);
     double y = v0.y + ((v1.y - v0.y) * fraction);

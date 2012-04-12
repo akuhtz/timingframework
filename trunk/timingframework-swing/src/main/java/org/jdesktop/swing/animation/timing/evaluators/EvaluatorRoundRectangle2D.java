@@ -16,7 +16,7 @@ import com.surelogic.RegionEffects;
 @Immutable
 public final class EvaluatorRoundRectangle2D implements Evaluator<RoundRectangle2D> {
 
-  @RegionEffects("none")
+  @RegionEffects("reads All")
   public RoundRectangle2D evaluate(RoundRectangle2D v0, RoundRectangle2D v1, double fraction) {
     double x = v0.getX() + ((v1.getX() - v0.getX()) * fraction);
     double y = v0.getY() + ((v1.getY() - v0.getY()) * fraction);

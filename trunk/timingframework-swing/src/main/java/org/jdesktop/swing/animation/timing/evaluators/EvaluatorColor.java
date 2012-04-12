@@ -16,7 +16,7 @@ import com.surelogic.RegionEffects;
 @Immutable
 public final class EvaluatorColor implements Evaluator<Color> {
 
-  @RegionEffects("none")
+  @RegionEffects("reads All")
   public Color evaluate(Color v0, Color v1, double fraction) {
     int r = v0.getRed() + (int) ((v1.getRed() - v0.getRed()) * fraction + 0.5f);
     int g = v0.getGreen() + (int) ((v1.getGreen() - v0.getGreen()) * fraction + 0.5f);

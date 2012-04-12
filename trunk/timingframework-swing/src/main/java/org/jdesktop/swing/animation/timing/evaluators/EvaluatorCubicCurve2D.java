@@ -16,7 +16,7 @@ import com.surelogic.RegionEffects;
 @Immutable
 public final class EvaluatorCubicCurve2D implements Evaluator<CubicCurve2D> {
 
-  @RegionEffects("none")
+  @RegionEffects("reads All")
   public CubicCurve2D evaluate(CubicCurve2D v0, CubicCurve2D v1, double fraction) {
     double x1 = v0.getX1() + ((v1.getX1() - v0.getX1()) * fraction);
     double y1 = v0.getY1() + ((v1.getY1() - v0.getY1()) * fraction);
