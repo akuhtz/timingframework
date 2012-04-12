@@ -22,13 +22,23 @@ Report bugs, read the documentation, and get new releases at:
 o Support for Android added. This involved a few changes to core code
   (shared by Swing, SWT, and Android) because Android doesn't support
   use of the PropertyDescriptor and IntrospectionException classes in
-  the java.beans package.
-o A useful "toString()" method was added to several classes to help
-  debugging. These include Animator, TimingTargetAdapter (the root
-  class of most TimingTarget implementations). A "debug" name which can
-  be set was also added.
+  the java.beans package. The Android version is not released yet but
+  can be obtained from the project's subversion.
+o A bug was fixed: http://java.net/jira/browse/TIMINGFRAMEWORK-11
+  This bug could cause timingEvent() to be called before begin() on
+  a TimingTarget.
+o A bug was fixed: http://java.net/jira/browse/TIMINGFRAMEWORK-12
+  TimingTarget(s) now get called in the order they were added to Animator.
+o A bug was fixed: http://java.net/jira/browse/TIMINGFRAMEWORK-13
+  The initial value of a PropertySetter is now set upon begin(), rather
+  than the first call to timingEvent(). This is highly useful in some
+  use cases.
+o A useful "toString()" method was added to Animator, the TimingSource(s),
+  and TimingTargetAdapter to help debugging.  A "debug" name which can
+  be set was added to Animator and TimingTargetAdapter.
 o Removed the KeyFramesTimingTarget class. This can be purpose built by
-  any client that needs a similar class.
+  any client that needs it. (Copy an old version into your source code if
+  you really need this class.)
    
 ++-------------------++
 || 4.1 Release Notes ||
