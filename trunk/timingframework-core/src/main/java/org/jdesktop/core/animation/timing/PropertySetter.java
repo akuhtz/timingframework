@@ -320,22 +320,23 @@ public final class PropertySetter {
     }
   }
 
-  private static class PropertySetterTimingTarget extends KeyFramesTimingTarget<Object> {
+  private static class PropertySetterTimingTarget extends TimingTargetAdapter {
 
+    protected final AtomicReference<KeyFrames<Object>> f_keyFrames = new AtomicReference<KeyFrames<Object>>();
     protected final Object f_object;
     protected final Method f_propertySetter;
 
     public PropertySetterTimingTarget(KeyFrames<Object> keyFrames, Object object, Method propertySetter, String propertyName) {
-      super(keyFrames);
+      f_keyFrames.set(keyFrames);
       f_object = object;
       f_propertySetter = propertySetter;
       setDebugName(propertyName);
     }
 
     @Override
-    public void valueAtTimingEvent(Object value, double fraction, Animator source) {
+    public void timingEvent(Animator source, double fraction) {
       try {
-        f_propertySetter.invoke(f_object, value);
+        f_propertySetter.invoke(f_object, f_keyFrames.get().getInterpolatedValueAt(fraction));
       } catch (Exception e) {
         throw new IllegalStateException(I18N.err(31, f_propertySetter.getName(), f_object.toString()), e);
       }
@@ -344,7 +345,6 @@ public final class PropertySetter {
 
   private static final class PropertySetterToTimingTarget extends PropertySetterTimingTarget {
 
-    private final AtomicReference<KeyFrames<Object>> f_keyFrames = new AtomicReference<KeyFrames<Object>>();
     private final Method f_propertyGetter;
 
     public PropertySetterToTimingTarget(KeyFrames<Object> keyFrames, Object object, Method propertyGetter, Method propertySetter,
@@ -359,7 +359,7 @@ public final class PropertySetter {
         final Object startValue = f_propertyGetter.invoke(f_object);
         final KeyFrames.Builder<Object> builder = new KeyFrames.Builder<Object>(startValue);
         boolean first = true;
-        for (KeyFrames.Frame<Object> frame : getKeyFrames()) {
+        for (KeyFrames.Frame<Object> frame : f_keyFrames.get()) {
           if (first)
             first = false;
           else
@@ -369,11 +369,6 @@ public final class PropertySetter {
       } catch (Exception e) {
         throw new IllegalStateException(I18N.err(31, f_propertyGetter.getName(), f_object.toString()), e);
       }
-    }
-
-    @Override
-    public void timingEvent(Animator source, double fraction) {
-      valueAtTimingEvent(f_keyFrames.get().getInterpolatedValueAt(fraction), fraction, source);
     }
   }
 }
