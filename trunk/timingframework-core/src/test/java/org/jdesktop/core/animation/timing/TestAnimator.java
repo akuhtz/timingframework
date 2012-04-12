@@ -9,7 +9,7 @@ import org.jdesktop.core.animation.timing.sources.ScheduledExecutorTimingSource;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class TestAnimator {
+public final class TestAnimator {
 
   @Test(expected = IllegalArgumentException.class)
   public void noTimingSource1() {

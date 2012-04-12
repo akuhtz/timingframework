@@ -4,7 +4,7 @@ import org.jdesktop.core.animation.timing.sources.ManualTimingSource;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class TestPropertySetter {
+public final class TestPropertySetter {
 
   @SuppressWarnings("unused")
   private static class PropTest {
