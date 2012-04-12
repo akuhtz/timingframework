@@ -36,10 +36,9 @@ import com.surelogic.Vouch;
  * {@link #SwingTimerTimingSource()} constructor which uses a reasonable default
  * value of 15 milliseconds.
  * <p>
- * Calls to registered {@code TickListener} and {@code PostTickListener} objects
- * from this timing source are always made in the context of the Swing EDT.
- * Further, any tasks submitted to {@link #submit(Runnable)} are run in the
- * thread context of the Swing EDT as well.
+ * Tasks submitted to {@link #submit(Runnable)} and calls to registered
+ * {@code TickListener} and {@code PostTickListener} objects from this timing
+ * source are always made in the context of the Swing EDT.
  * 
  * @author Tim Halloran
  */
@@ -72,7 +71,7 @@ public final class SwingTimerTimingSource extends TimingSource {
     f_timer = new Timer(periodMillis, new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        getNotifyTickListenersTask().run();
+        getPerTickTask().run();
       }
     });
   }
@@ -94,20 +93,6 @@ public final class SwingTimerTimingSource extends TimingSource {
   @Override
   public void dispose() {
     f_timer.stop();
-  }
-
-  @Override
-  protected void runTaskInThreadContext(final Runnable task) {
-    if (SwingUtilities.isEventDispatchThread()) {
-      task.run();
-    } else {
-      SwingUtilities.invokeLater(new Runnable() {
-        @Override
-        public void run() {
-          task.run();
-        }
-      });
-    }
   }
 
   @Override

@@ -1,5 +1,6 @@
 package org.jdesktop.core.animation.timing;
 
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import com.surelogic.ThreadSafe;
@@ -18,15 +19,16 @@ import com.surelogic.Vouch;
  * {@link PostTickListener}s after the registered set of {@link TickListener}s
  * has been notified. For example, a {@link PostTickListener} could be used to
  * call <tt>repaint()</tt> after a large number of animations (which register
- * themselves as {@link TickListener}s) have updated the program's state.
+ * themselves as {@link TickListener}s) have updated the program's state. One
+ * time tasks can be queued to be run at the next tick of time (before any other
+ * listeners are called) using {@link #submit(Runnable)}.
  * <p>
  * A timer should begin ticking after {@link #init()} is called and should be
  * stopped and disposed after {@link #dispose()} is called. The timer cannot be
  * restarted after {@link #dispose()} is called.
  * <p>
- * A timing source should document the thread context in which it makes calls to
- * registered listeners. In addition, it should ensure that tasks passed to
- * {@link #submit(Runnable)} are run in the same thread context.
+ * A timing source implementation should document the thread context in which it
+ * makes calls to registered listeners.
  * 
  * @author Chet Haase
  * @author Tim Halloran
@@ -96,18 +98,6 @@ public abstract class TimingSource {
   public abstract void dispose();
 
   /**
-   * Submits a task to be run in the thread context of this timing source.
-   * <p>
-   * Implementers should check the the correct thread context of this call
-   * before queuing the task for later execution. If <tt>task.run()</tt> can be
-   * directly invoked this is preferred.
-   * 
-   * @param task
-   *          a task.
-   */
-  protected abstract void runTaskInThreadContext(Runnable task);
-
-  /**
    * Listeners that will receive "tick" events.
    */
   private final CopyOnWriteArraySet<TickListener> f_tickListeners = new CopyOnWriteArraySet<TickListener>();
@@ -171,56 +161,22 @@ public abstract class TimingSource {
   }
 
   /**
-   * A task to notify registered {@link TickListener} and
-   * {@link PostTickListener} objects that a tick of time has elapsed.
+   * Holds "one shot" tasks to be run on the next tick.
    */
-  @Vouch("ThreadSafe")
-  private final Runnable f_notifyTickListenersTask = new Runnable() {
-    public void run() {
-      final long nanoTime = System.nanoTime();
-      if (!f_tickListeners.isEmpty())
-        for (TickListener listener : f_tickListeners) {
-          listener.timingSourceTick(TimingSource.this, nanoTime);
-        }
-      if (!f_postTickListeners.isEmpty())
-        for (PostTickListener listener : f_postTickListeners) {
-          listener.timingSourcePostTick(TimingSource.this, nanoTime);
-        }
-    }
-  };
-
-  /**
-   * Used by implementations to directly execute the registered listeners
-   * notification task rather than calling {@link #notifyTickListeners()}. If
-   * the implementation knows that it is within the correct thread context this
-   * approach can improve performance.
-   * 
-   * @return the tick listener notification task.
-   */
-  protected Runnable getNotifyTickListenersTask() {
-    return f_notifyTickListenersTask;
-  }
-
-  /**
-   * This method notifies this object's {@link TickListener}s and, subsequently,
-   * {@link PostTickListener}s that a tick of time has elapsed.
-   * <p>
-   * Calls will be made in the thread context of this timing source.
-   */
-  protected final void notifyTickListeners() {
-    runTaskInThreadContext(f_notifyTickListenersTask);
-  }
+  private final ConcurrentLinkedQueue<Runnable> f_oneShotQueue = new ConcurrentLinkedQueue<Runnable>();
 
   /**
    * Runs the passed task in the thread context of this timing source. The task
-   * is wrapped, via {@link WrappedRunnable}, to log an error if it fails due to
-   * an unhandled exception. This method is used to execute a snippet of code in
-   * the thread context used to callback to {@link TimingSource.TickListener}
-   * and {@link TimingSource.PostTickListener}.
+   * is not run immediately but, rather, it is run at the next tick of time
+   * (before calling any {@link TickListener}s). In particular, this method will
+   * not block for execution of the task and the task will not execute until
+   * after {@link #init()} has not been called.
    * <p>
-   * The task may be run immediately or it may be queued for execution in a
-   * different thread context. Hence, this method may or may not block for
-   * execution of the task.
+   * The task is wrapped, via {@link WrappedRunnable}, to log an error if it
+   * fails due to an unhandled exception.
+   * <p>
+   * This method is used to execute a snippet of code in the thread context used
+   * for {@link TickListener}s and {@link PostTickListener}s.
    * 
    * @param task
    *          a task.
@@ -231,6 +187,56 @@ public abstract class TimingSource {
     if (task == null)
       return;
     final WrappedRunnable wrapped = new WrappedRunnable(task);
-    runTaskInThreadContext(wrapped);
+    f_oneShotQueue.add(wrapped);
+  }
+
+  /**
+   * A task that will, when its <tt>run()</tt> is invoked, perform the following
+   * actions in the listed order:
+   * <ol>
+   * <li>Execute all queued "one shot" tasks.</li>
+   * <li>Notify all registered {@link TickListener}s</li>
+   * <li>Notify all registered {@link PostTickListener}s</li>
+   * </ol>
+   */
+  @Vouch("ThreadSafe")
+  private final Runnable f_perTickTask = new WrappedRunnable(new Runnable() {
+    public void run() {
+      while (true) {
+        final Runnable task = f_oneShotQueue.poll();
+        if (task == null)
+          break;
+        task.run();
+      }
+      final long nanoTime = System.nanoTime();
+      if (!f_tickListeners.isEmpty())
+        for (TickListener listener : f_tickListeners) {
+          listener.timingSourceTick(TimingSource.this, nanoTime);
+        }
+      if (!f_postTickListeners.isEmpty())
+        for (PostTickListener listener : f_postTickListeners) {
+          listener.timingSourcePostTick(TimingSource.this, nanoTime);
+        }
+    }
+  });
+
+  /**
+   * Used by implementations to obtain a {@link Runnable} that will, when its
+   * <tt>run()</tt> is invoked, perform the following actions in the listed
+   * order:
+   * <ol>
+   * <li>Execute all queued "one shot" tasks.</li>
+   * <li>Notify all registered {@link TickListener}s</li>
+   * <li>Notify all registered {@link PostTickListener}s</li>
+   * </ol>
+   * A typical implementation will invoke
+   * <tt>getNotifyTickListenersTask().run()</tt> when its particular timer calls
+   * back each tick of time. It is critical that the above code is run within
+   * the <i>correct thread context of the timing source</i> implementation.
+   * 
+   * @return the tick listener notification task.
+   */
+  protected Runnable getPerTickTask() {
+    return f_perTickTask;
   }
 }

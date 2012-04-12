@@ -30,12 +30,10 @@ import com.surelogic.Vouch;
  * {@link #ScheduledExecutorTimingSource()} constructor which uses a reasonable
  * default value of 15 milliseconds.
  * <p>
- * Calls to registered {@code TickListener} and {@code PostTickListener} objects
- * from this timing source are always made in the context of a single thread.
- * This thread is the thread created by
- * {@link Executors#newSingleThreadScheduledExecutor()}. Further, any tasks
- * submitted to {@link #submit(Runnable)} are run in this thread context as
- * well.
+ * Tasks submitted to {@link #submit(Runnable)} and calls to registered
+ * {@code TickListener} and {@code PostTickListener} objects from this timing
+ * source are always made in the context of a single thread. This thread is the
+ * thread created by {@link Executors#newSingleThreadScheduledExecutor()}.
  * 
  * @author Tim Halloran
  */
@@ -77,7 +75,7 @@ public final class ScheduledExecutorTimingSource extends TimingSource {
     f_executor.scheduleAtFixedRate(new Runnable() {
       @Override
       public void run() {
-        getNotifyTickListenersTask().run();
+        getPerTickTask().run();
       }
     }, 0, f_period, f_periodTimeUnit);
   }
@@ -85,11 +83,6 @@ public final class ScheduledExecutorTimingSource extends TimingSource {
   @Override
   public void dispose() {
     f_executor.shutdown();
-  }
-
-  @Override
-  protected void runTaskInThreadContext(Runnable task) {
-    f_executor.submit(task);
   }
 
   @Override

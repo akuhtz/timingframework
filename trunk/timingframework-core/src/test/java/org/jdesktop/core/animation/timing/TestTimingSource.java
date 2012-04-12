@@ -225,6 +225,7 @@ public final class TestTimingSource {
         taskCounter++;
       }
     });
+    ts.tick();
     Assert.assertEquals(1, taskCounter);
   }
 }
