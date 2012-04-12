@@ -10,7 +10,9 @@ import com.surelogic.ThreadSafe;
  * monitoring the {@link TimingTarget#end} method, so subclasses of this adapter
  * may ignore the other methods such as timingEvent.
  * <p>
- * This class provides a useful
+ * This class provides a useful "debug" name via {@link #setDebugName(String)}
+ * and {@link #getDebugName()}. The debug name is also output by
+ * {@link #toString()}. This feature is intended to aid debugging.
  * 
  * @author Chet Haase
  * @author Tim Halloran
