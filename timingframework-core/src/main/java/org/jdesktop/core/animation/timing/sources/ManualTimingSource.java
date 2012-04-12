@@ -6,7 +6,12 @@ import com.surelogic.ThreadSafe;
 
 /**
  * A timing source where ticks are manually controlled via invocation of the
- * {@link #tick()} method.
+ * {@link #tick()} method. This is <i>not</i> a general use timing source and
+ * should be used with care. It is intended for testing purposes as well as
+ * active rendering.
+ * <p>
+ * Callers of the {@link #tick()} must ensure that a consistent thread context
+ * is maintained, i.e., always call this method from the same thread.
  * <p>
  * The {@link #init()} and {@link #dispose()} methods do nothing in this
  * implementation and do not need to be invoked.
@@ -25,19 +30,12 @@ public final class ManualTimingSource extends TimingSource {
    * Called to "tick" time along.
    */
   public void tick() {
-    notifyTickListeners();
+    getPerTickTask().run();
   }
 
   @Override
   public void dispose() {
     // nothing to do
-  }
-
-  @Override
-  protected void runTaskInThreadContext(Runnable task) {
-    if (task == null)
-      return;
-    task.run();
   }
 
   @Override

@@ -39,10 +39,9 @@ import com.surelogic.Vouch;
  * {@link #AndroidTimingSource(Activity)} constructor which uses a reasonable
  * default value of 15 milliseconds.
  * <p>
- * Calls to registered {@code TickListener} and {@code PostTickListener} objects
- * from this timing source are always made in the context of the Android UI
- * thread. Further, any tasks submitted to {@link #submit(Runnable)} are run in
- * the thread context of the Android UI thread as well.
+ * Tasks submitted to {@link #submit(Runnable)} and calls to registered
+ * {@code TickListener} and {@code PostTickListener} objects from this timing
+ * source are always made in the context of the Android UI thread.
  * 
  * @author Tim Halloran
  */
@@ -82,7 +81,7 @@ public final class AndroidTimingSource extends TimingSource {
 
     public void run() {
       if (f_running.get()) {
-        getNotifyTickListenersTask().run();
+        getPerTickTask().run();
         final long now = System.nanoTime();
         final long delayNanos;
         if (f_ideaNextTickNanoTime != NONE) {
@@ -158,10 +157,5 @@ public final class AndroidTimingSource extends TimingSource {
   @Override
   public void dispose() {
     f_running.set(false);
-  }
-
-  @Override
-  protected void runTaskInThreadContext(Runnable task) {
-    f_activity.runOnUiThread(task);
   }
 }

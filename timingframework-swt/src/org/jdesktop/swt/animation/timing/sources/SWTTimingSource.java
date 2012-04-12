@@ -35,10 +35,9 @@ import com.surelogic.Vouch;
  * {@link #SWTTimingSource(Display)} constructor which uses a reasonable default
  * value of 15 milliseconds.
  * <p>
- * Calls to registered {@code TickListener} and {@code PostTickListener} objects
- * from this timing source are always made in the context of the SWT UI thread.
- * Further, any tasks submitted to {@link #submit(Runnable)} are run in the
- * thread context of the SWT UI thread as well.
+ * Tasks submitted to {@link #submit(Runnable)} and calls to registered
+ * {@code TickListener} and {@code PostTickListener} objects from this timing
+ * source are always made in the context of the SWT UI thread.
  * 
  * @author Tim Halloran
  */
@@ -64,13 +63,13 @@ public final class SWTTimingSource extends TimingSource {
      * This represents a relative {@link System#nanoTime()} at which the next
      * callback in the future to this periodic task should occur.
      * <p>
-     * This state is thread confined to the Android UI thread.
+     * This state is thread confined to the SWT UI thread.
      */
     private long f_ideaNextTickNanoTime = NONE;
 
     public void run() {
       if (f_running.get()) {
-        getNotifyTickListenersTask().run();
+        getPerTickTask().run();
         final long now = System.nanoTime();
         final long delayNanos;
         if (f_ideaNextTickNanoTime != NONE) {
@@ -145,22 +144,6 @@ public final class SWTTimingSource extends TimingSource {
   @Override
   public void dispose() {
     f_running.set(false);
-  }
-
-  @Override
-  protected void runTaskInThreadContext(final Runnable task) {
-    if (task == null)
-      return;
-    if (Thread.currentThread().equals(f_display.getThread())) {
-      task.run();
-    } else {
-      f_display.asyncExec(new Runnable() {
-        @Override
-        public void run() {
-          task.run();
-        }
-      });
-    }
   }
 
   @Override
