@@ -50,6 +50,11 @@ import com.surelogic.Unique;
  * More complex animations can be created through the use of the complete set of
  * properties in {@link Animator.Builder}.
  * <p>
+ * This class provides a useful "debug" name via
+ * {@link Builder#setDebugName(String)} and {@link #getDebugName()}. The debug
+ * name is also output by {@link #toString()}. This feature is intended to aid
+ * debugging.
+ * <p>
  * This class is thread-safe.
  * 
  * @author Chet Haase
@@ -219,13 +224,13 @@ public final class Animator implements TickListener {
    * <td>{@link #setDebugName(String)}</td>
    * <td>a meaningful name for the animation used by the
    * {@link Animator#toString()} method</td>
-   * <td align="right">"Animator"</td>
+   * <td align="right">null</td>
    * </tr>
    * </table>
    * 
    * <p>
    * Instances of this class are not thread safe and are intended to be
-   * thread-confined. However, the {@link Animator} objects produces are
+   * thread-confined. However, the {@link Animator} objects produced are
    * thread-safe.
    * 
    * @author Tim Halloran
