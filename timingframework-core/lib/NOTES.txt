@@ -23,10 +23,12 @@ o Support for Android added. This involved a few changes to core code
   (shared by Swing, SWT, and Android) because Android doesn't support
   use of the PropertyDescriptor and IntrospectionException classes in
   the java.beans package.
-o A usefu "toString()" method was added to several classes to help
+o A useful "toString()" method was added to several classes to help
   debugging. These include Animator, TimingTargetAdapter (the root
   class of most TimingTarget implementations). A "debug" name which can
   be set was also added.
+o Removed the KeyFramesTimingTarget class. This can be purpose built by
+  any client that needs a similar class.
    
 ++-------------------++
 || 4.1 Release Notes ||
