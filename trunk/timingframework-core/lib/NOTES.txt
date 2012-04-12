@@ -19,11 +19,12 @@ Report bugs, read the documentation, and get new releases at:
 || 5.0 Release Notes ||
 ++-------------------++
 
-o Support for Android added. This involved a few changes to core code
+o Support for Android started. This involved a few changes to core code
   (shared by Swing, SWT, and Android) because Android doesn't support
   use of the PropertyDescriptor and IntrospectionException classes in
   the java.beans package. The Android version is not released yet but
-  can be obtained from the project's subversion.
+  can be obtained from the project's subversion. It is still a bit of
+  a work in progress.
 o A bug was fixed: http://java.net/jira/browse/TIMINGFRAMEWORK-11
   This bug could cause timingEvent() to be called before begin() on
   a TimingTarget.
