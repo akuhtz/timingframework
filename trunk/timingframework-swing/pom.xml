@@ -70,6 +70,13 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>net.java.timingframework</groupId>
+      <artifactId>timingframework-core</artifactId>
+      <version>5.0.0</version>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.9</version>
