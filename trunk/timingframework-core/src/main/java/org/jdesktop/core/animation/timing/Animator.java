@@ -1172,7 +1172,6 @@ public final class Animator implements TickListener {
         return false;
 
       f_running = false;
-      f_currentDirection = f_startDirection;
       latch = f_awaitLatch;
       f_awaitLatch = null;
     }

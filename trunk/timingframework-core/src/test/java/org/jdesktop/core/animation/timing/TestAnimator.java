@@ -3,6 +3,7 @@ package org.jdesktop.core.animation.timing;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.jdesktop.core.animation.timing.Animator.RepeatBehavior;
 import org.jdesktop.core.animation.timing.sources.ManualTimingSource;
 import org.jdesktop.core.animation.timing.sources.ScheduledExecutorTimingSource;
 import org.junit.Assert;
@@ -392,5 +393,115 @@ public final class TestAnimator {
     for (OrderedTimingTarget ott : targets) {
       Assert.assertTrue(ott.getProtocolMsg(), ott.isProtocolOkay());
     }
+  }
+
+  @Test
+  public void timingTargetDirection1() throws InterruptedException {
+    TimingSource ts = new ScheduledExecutorTimingSource();
+    ts.init();
+    Animator a = new Animator.Builder(ts).build();
+    DirectionTimingTarget direction = new DirectionTimingTarget(a.getStartDirection());
+    a.addTarget(direction);
+    a.start();
+    a.await();
+    ts.dispose();
+    Assert.assertTrue(direction.getDirectionMsg(), direction.isDirectionOkay());
+    Assert.assertTrue(direction.allTimingEventsMsg(), direction.allTimingEventsOkay());
+  }
+
+  @Test
+  public void timingTargetDirection2() throws InterruptedException {
+    TimingSource ts = new ScheduledExecutorTimingSource();
+    ts.init();
+    Animator a = new Animator.Builder(ts).build();
+    DirectionTimingTarget direction = new DirectionTimingTarget(a.getStartDirection().getOppositeDirection());
+    a.addTarget(direction);
+    a.startReverse();
+    a.await();
+    ts.dispose();
+    Assert.assertTrue(direction.getDirectionMsg(), direction.isDirectionOkay());
+    Assert.assertTrue(direction.allTimingEventsMsg(), direction.allTimingEventsOkay());
+  }
+
+  @Test
+  public void timingTargetDirection3() throws InterruptedException {
+    TimingSource ts = new ScheduledExecutorTimingSource();
+    ts.init();
+    Animator a = new Animator.Builder(ts).setRepeatCount(2).setRepeatBehavior(RepeatBehavior.REVERSE).build();
+    DirectionTimingTarget direction = new DirectionTimingTarget(a.getStartDirection());
+    a.addTarget(direction);
+    a.start();
+    a.await();
+    ts.dispose();
+    Assert.assertTrue(direction.getDirectionMsg(), direction.isDirectionOkay());
+    Assert.assertTrue(direction.allTimingEventsMsg(), direction.allTimingEventsOkay());
+  }
+
+  @Test
+  public void timingTargetDirection4() throws InterruptedException {
+    TimingSource ts = new ScheduledExecutorTimingSource();
+    ts.init();
+    Animator a = new Animator.Builder(ts).setRepeatCount(2).setRepeatBehavior(RepeatBehavior.REVERSE).build();
+    DirectionTimingTarget direction = new DirectionTimingTarget(a.getStartDirection());
+    a.addTarget(direction);
+    a.start();
+    a.await();
+    Assert.assertTrue(direction.getDirectionMsg(), direction.isDirectionOkay());
+    Assert.assertTrue(direction.allTimingEventsMsg(), direction.allTimingEventsOkay());
+    // reuse animator
+    a.removeTarget(direction);
+    direction = new DirectionTimingTarget(a.getStartDirection());
+    a.addTarget(direction);
+    a.start();
+    a.await();
+    ts.dispose();
+    Assert.assertTrue(direction.getDirectionMsg(), direction.isDirectionOkay());
+    Assert.assertTrue(direction.allTimingEventsMsg(), direction.allTimingEventsOkay());
+  }
+
+  @Test
+  public void timingTargetDirection5() throws InterruptedException {
+    TimingSource ts = new ScheduledExecutorTimingSource();
+    ts.init();
+    Animator a = new Animator.Builder(ts).setRepeatCount(3).setRepeatBehavior(RepeatBehavior.REVERSE).build();
+    DirectionTimingTarget direction = new DirectionTimingTarget(a.getStartDirection());
+    a.addTarget(direction);
+    a.start();
+    a.await();
+    ts.dispose();
+    Assert.assertTrue(direction.getDirectionMsg(), direction.isDirectionOkay());
+    Assert.assertTrue(direction.allTimingEventsMsg(), direction.allTimingEventsOkay());
+  }
+
+  @Test
+  public void timingTargetDirection6() throws InterruptedException {
+    TimingSource ts = new ScheduledExecutorTimingSource();
+    ts.init();
+    Animator a = new Animator.Builder(ts).build();
+    DirectionTimingTarget direction = new DirectionTimingTarget(a.getStartDirection());
+    a.addTarget(direction);
+    a.start();
+    Thread.sleep(10);
+    Assert.assertTrue(a.reverseNow());
+    a.await();
+    ts.dispose();
+    Assert.assertTrue(direction.getDirectionMsg(), direction.isDirectionOkay());
+    Assert.assertTrue(direction.allTimingEventsMsg(), direction.allTimingEventsOkay());
+  }
+
+  @Test
+  public void timingTargetDirection7() throws InterruptedException {
+    TimingSource ts = new ScheduledExecutorTimingSource();
+    ts.init();
+    Animator a = new Animator.Builder(ts).setRepeatCount(2).setRepeatBehavior(RepeatBehavior.REVERSE).build();
+    DirectionTimingTarget direction = new DirectionTimingTarget(a.getStartDirection());
+    a.addTarget(direction);
+    a.start();
+    Thread.sleep(10);
+    Assert.assertTrue(a.reverseNow());
+    a.await();
+    ts.dispose();
+    Assert.assertTrue(direction.getDirectionMsg(), direction.isDirectionOkay());
+    Assert.assertTrue(direction.allTimingEventsMsg(), direction.allTimingEventsOkay());
   }
 }
