@@ -55,6 +55,14 @@ import com.surelogic.Unique;
  * name is also output by {@link #toString()}. This feature is intended to aid
  * debugging.
  * <p>
+ * Instances can be started again after they complete, however, ensure that they
+ * are not running, via <tt>!</tt>{@link #isRunning()} or {@link #await()},
+ * before {@link #start()} or {@link #startReverse()} is called. Even if you
+ * successfully invoked {@link #stop()} or {@link #cancel()} it can take some
+ * time for all the calls to registered {@link TimingTarget}s to complete. Use
+ * of {@link #await()} is far more efficient than polling the state of the
+ * animation with {@link #isRunning()}.
+ * <p>
  * This class is thread-safe.
  * 
  * @author Chet Haase
@@ -592,15 +600,7 @@ public final class Animator implements TickListener {
   private long f_cycleStartTimeNanos;
 
   /**
-   * This get triggered during fraction calculation.
-   * <p>
-   * Accesses must be guarded by a lock on {@link #f_lock}.
-   */
-  @InRegion("AnimatorState")
-  private boolean f_timeToStop;
-
-  /**
-   * This get triggered during fraction calculation.
+   * This gets triggered during fraction calculation.
    * <p>
    * Accesses must be guarded by a lock on {@link #f_lock}.
    */
@@ -617,18 +617,6 @@ public final class Animator implements TickListener {
   private long f_pauseBeginTimeNanos;
 
   /**
-   * Indicates that the animation has been started and has not yet completed. An
-   * animation is running from when it is started via a call to {@link #start()}
-   * or {@link #startReverse()} and when it completes or {@link #stop()} or
-   * {@link #cancel()} is called on it. Note that a paused animation is still
-   * considered to be running.
-   * <p>
-   * Accesses must be guarded by a lock on {@link #f_lock}.
-   */
-  @InRegion("AnimatorState")
-  private boolean f_running = false;
-
-  /**
    * The current direction of the animation.
    * <p>
    * Accesses must be guarded by a lock on {@link #f_lock}.
@@ -637,12 +625,43 @@ public final class Animator implements TickListener {
   private Direction f_currentDirection;
 
   /**
-   * A latch used to wait until the animation is completed.
+   * A latch used to indicate the animation is running and wait until the
+   * animation is completed. When this field is non-{@code null} then the
+   * animation is running (note that a paused animation is still considered to
+   * be running).
+   * <p>
+   * This field may be non-{@code null} long after {@link #stop()} or
+   * {@link #cancel()} are called because the latch is not triggered and changed
+   * to a {@code null} value until all callbacks to the client code, all the
+   * registered {@link TimingTarget}s, have completed.
    * <p>
    * Accesses must be guarded by a lock on {@link #f_lock}.
    */
   @InRegion("AnimatorState")
-  private CountDownLatch f_awaitLatch;
+  private CountDownLatch f_runningAnimationLatch;
+
+  /**
+   * This gets set during the fraction calculation and when {@link #stop()} or
+   * {@link #cancel()} are invoked by the client. A value of {@code true}
+   * indicates that a running animation is in a shutdown phase and is finishing
+   * up any needed callbacks to registered {@link TimingSource}s.
+   * <p>
+   * This flag is used as a guard so that we don't run try to stop the animation
+   * multiple times. Its name could also have been <tt>workingToStop</tt>,
+   * <tt>shuttingDownTheAnimation</tt>, or <tt>stopping</tt>. Perhaps these
+   * alternative names help to convey its purpose.
+   * <p>
+   * This guard is needed because a long period of time can elapse between when
+   * the animation knows it is trying to stop (it finishes normally,
+   * {@link #stop()} or {@link #cancel()} are called) and when the callbacks to
+   * the client code complete. The animation is still running but should not try
+   * to shutdown again &mdash; avoiding this problem is the purpose of this
+   * guard.
+   * <p>
+   * Accesses must be guarded by a lock on {@link #f_lock}.
+   */
+  @InRegion("AnimatorState")
+  private boolean f_timeToStop;
 
   /**
    * Constructs an animation.
@@ -733,16 +752,19 @@ public final class Animator implements TickListener {
   /**
    * Returns whether this has been started and has not yet completed. An
    * animation is running from when it is started via a call to {@link #start()}
-   * or {@link #startReverse()} and when it completes or {@link #stop()} or
-   * {@link #cancel()} is called on it. Note that a paused animation is still
-   * considered to be running.
+   * or {@link #startReverse()} and when it (a) completes normally, (b)
+   * {@link #stop()} is called on it and all callbacks to registered
+   * {@link TimingTarget}s have completed, or (c) {@link #cancel()} is called on
+   * it.
+   * <p>
+   * A paused animation is still considered to be running.
    * 
    * @return {@code true} if the animation is running, {@code false} if it is
    *         not.
    */
   public boolean isRunning() {
     synchronized (f_lock) {
-      return f_running;
+      return f_runningAnimationLatch != null;
     }
   }
 
@@ -761,15 +783,15 @@ public final class Animator implements TickListener {
 
   /**
    * Clients may invoke this method to stop a running animation, however, most
-   * animations will stop on their own. If the animation was not running then
-   * this method returns {@code false}.
+   * animations will stop on their own. If the animation is not running, or is
+   * stopping, then this method returns {@code false}.
    * <p>
    * This call will result in calls to the {@link TimingTarget#end(Animator)}
    * method of all the registered timing targets of this animation.
    * 
    * @return {@code true} if the animation was running and was successfully
-   *         stopped, {@code false} if the animation was not running and didn't
-   *         need to be stopped.
+   *         stopped, {@code false} if the animation was not running or was in
+   *         the process of stopping and didn't need to be stopped.
    * 
    * @see #cancel()
    */
@@ -781,12 +803,12 @@ public final class Animator implements TickListener {
    * This method is like the {@link #stop} method, only this one will not result
    * in a calls to the {@link TimingTarget#end(Animator)} method of all the
    * registered timing targets of this animation; it simply stops the animation
-   * immediately and returns. If the animation was not running then this method
-   * returns {@code false}.
+   * immediately and returns. If the animation is not running, or is stopping,
+   * then this method returns {@code false}.
    * 
    * @return {@code true} if the animation was running and was successfully
-   *         stopped, {@code false} if the animation was not running and didn't
-   *         need to be stopped.
+   *         stopped, {@code false} if the animation was not running or was in
+   *         the process of stopping and didn't need to be stopped.
    * 
    * @see #stop()
    */
@@ -799,32 +821,33 @@ public final class Animator implements TickListener {
    * registered timing targets. A paused animation may be started again by
    * calling the {@link #resume} method.
    * <p>
-   * Pausing a non-running or already paused animation has no effect.
+   * Pausing a non-running, stopping, or already paused animation has no effect.
    * 
    * @see #resume()
    * @see #isRunning()
    * @see #isPaused()
    */
   public void pause() {
-    final boolean canPause;
     synchronized (f_lock) {
-      canPause = isRunning() && !isPaused();
-      if (canPause)
+      final boolean canPause = isRunning() && !f_timeToStop && f_pauseBeginTimeNanos == 0;
+      if (canPause) {
+        f_timingSource.removeTickListener(this);
         f_pauseBeginTimeNanos = System.nanoTime();
+      }
     }
-    if (canPause)
-      f_timingSource.removeTickListener(this);
   }
 
   /**
-   * Returns whether this animation is currently running, but paused.
+   * Returns whether this animation is currently running &mdash; but paused. If
+   * the animation is not running or is in the process of stopping {@code false}
+   * is returned.
    * 
-   * @return {@code true} if the animation is paused, {@code false} if it is
-   *         not.
+   * @return {@code true} if the animation is currently running &mdash; but
+   *         paused, {@code false} otherwise.
    */
   public boolean isPaused() {
     synchronized (f_lock) {
-      return isRunning() && f_pauseBeginTimeNanos > 0;
+      return isRunning() && !f_timeToStop && f_pauseBeginTimeNanos > 0;
     }
   }
 
@@ -835,58 +858,68 @@ public final class Animator implements TickListener {
    * @see #pause()
    */
   public void resume() {
-    final boolean paused;
     synchronized (f_lock) {
-      paused = isPaused();
+      final boolean paused = isPaused();
       if (paused) {
         long pauseDeltaNanos = System.nanoTime() - f_pauseBeginTimeNanos;
         f_startTimeNanos += pauseDeltaNanos;
         f_cycleStartTimeNanos += pauseDeltaNanos;
         f_pauseBeginTimeNanos = 0;
+        f_timingSource.addTickListener(this);
       }
     }
-    if (paused)
-      f_timingSource.addTickListener(this);
   }
 
   /**
-   * Reverses the direction of the animation if it is running and not paused. If
-   * it is not possible to reverse the animation now, the method returns
-   * {@code false}.
+   * Reverses the direction of the animation if it is running and is not paused
+   * or stopping. If it is not possible to reverse the animation now, the method
+   * returns {@code false}.
    * 
    * @return {@code true} if the animation was reversed, {@code false} if the
-   *         attempt to reverse the animation failed because the animation was
-   *         not running or it was paused.
+   *         attempt to reverse the animation failed.
    */
   public boolean reverseNow() {
     synchronized (f_lock) {
-      if (!isRunning() || isPaused())
+      final boolean canReverse = isRunning() && !f_timeToStop && f_pauseBeginTimeNanos == 0;
+      if (canReverse) {
+        final long now = System.nanoTime();
+        final long cycleElapsedTimeNanos = getCycleElapsedTime(now);
+        final long durationNanos = f_durationTimeUnit.toNanos(f_duration);
+        final long timeLeft = durationNanos - cycleElapsedTimeNanos;
+        final long deltaNanos = (now - timeLeft) - f_cycleStartTimeNanos;
+        f_cycleStartTimeNanos += deltaNanos;
+        f_startTimeNanos += deltaNanos;
+        f_currentDirection = f_currentDirection.getOppositeDirection();
+        /*
+         * This queuing of the reverse call needs to be done holding the lock or
+         * it is possible to see a timing event callback before the reverse
+         * callback reflecting the reverse.
+         * 
+         * Because the submit() call only places the Runnable into a queue
+         * holding the lock below cannot lead to a deadlock.
+         */
+        f_timingSource.submit(new Runnable() {
+          @Override
+          public void run() {
+            for (TimingTarget target : f_targets) {
+              target.reverse(Animator.this);
+            }
+          }
+        });
+        return true;
+      } else {
         return false;
-
-      final long now = System.nanoTime();
-      final long cycleElapsedTimeNanos = getCycleElapsedTime(now);
-      final long durationNanos = f_durationTimeUnit.toNanos(f_duration);
-      final long timeLeft = durationNanos - cycleElapsedTimeNanos;
-      final long deltaNanos = (now - timeLeft) - f_cycleStartTimeNanos;
-      f_cycleStartTimeNanos += deltaNanos;
-      f_startTimeNanos += deltaNanos;
-      f_currentDirection = f_currentDirection.getOppositeDirection();
-    }
-    f_timingSource.submit(new Runnable() {
-      @Override
-      public void run() {
-        for (TimingTarget target : f_targets) {
-          target.reverse(Animator.this);
-        }
       }
-    });
-    return true;
+    }
   }
 
   /**
    * Causes the current thread to wait until the animation completes, either on
    * its own or due to a call to {@link #stop()} or {@link #cancel()}, unless
-   * the thread is {@linkplain Thread#interrupt interrupted}.
+   * the thread is {@linkplain Thread#interrupt interrupted}. All callbacks to
+   * registered {@link TimingTarget}s have been completed when this method
+   * returns (unless, as noted above, the thread is
+   * {@linkplain Thread#interrupt interrupted}).
    * <p>
    * If the animation is not running then this method returns immediately.
    * <p>
@@ -904,11 +937,10 @@ public final class Animator implements TickListener {
   public void await() throws InterruptedException {
     final CountDownLatch latch;
     synchronized (f_lock) {
-      if (!isRunning())
-        return;
-      latch = f_awaitLatch;
+      latch = f_runningAnimationLatch;
     }
-    latch.await();
+    if (latch != null)
+      latch.await();
   }
 
   /**
@@ -977,45 +1009,6 @@ public final class Animator implements TickListener {
     b.append(", timingSource=").append(f_timingSource.toString());
     b.append(')');
     return b.toString();
-  }
-
-  /**
-   * Do not call this method holding {@link #f_lock}.
-   * 
-   * @param nanoTime
-   *          the current value of the most precise available system timer, in
-   *          nanoseconds.
-   */
-  private void notifyListenersAboutATimingSourceTick(long nanoTime) {
-    /*
-     * We can't hold f_lock when we invoke callbacks so we calculate results
-     * from the mutable state and save it in local variables.
-     */
-    final double fraction;
-    final boolean timeToStop;
-    final boolean notifyRepeat;
-    synchronized (f_lock) {
-      fraction = calcInterpolatedTimingFraction(nanoTime);
-      timeToStop = f_timeToStop;
-      if (f_tellListenersAboutRepeat) {
-        notifyRepeat = true;
-        f_tellListenersAboutRepeat = false;
-      } else {
-        notifyRepeat = false;
-      }
-    }
-    if (notifyRepeat && !f_targets.isEmpty()) {
-      for (TimingTarget target : f_targets) {
-        target.repeat(this);
-      }
-    }
-    if (!f_targets.isEmpty())
-      for (TimingTarget target : f_targets) {
-        target.timingEvent(this, fraction);
-      }
-    if (timeToStop) {
-      stopHelper(true, true);
-    }
   }
 
   /**
@@ -1129,19 +1122,26 @@ public final class Animator implements TickListener {
       f_currentDirection = direction;
       f_timeToStop = f_tellListenersAboutRepeat = false;
       f_pauseBeginTimeNanos = 0;
-      f_running = true;
-      f_awaitLatch = new CountDownLatch(1);
-    }
-    if (!f_targets.isEmpty()) {
-      final Runnable task = new Runnable() {
-        @Override
-        public void run() {
-          for (TimingTarget target : f_targets) {
-            target.begin(Animator.this);
+      f_runningAnimationLatch = new CountDownLatch(1);
+      /*
+       * Because the submit() call only places the Runnable into a queue holding
+       * the lock below cannot lead to a deadlock.
+       * 
+       * Holding the lock is not really necessary, but it makes this code
+       * similar to reverseNow() (where holding the lock is critical to correct
+       * behavior).
+       */
+      if (!f_targets.isEmpty()) {
+        final Runnable task = new Runnable() {
+          @Override
+          public void run() {
+            for (TimingTarget target : f_targets) {
+              target.begin(Animator.this);
+            }
           }
-        }
-      };
-      f_timingSource.submit(task);
+        };
+        f_timingSource.submit(task);
+      }
     }
     f_timingSource.addTickListener(this);
   }
@@ -1156,42 +1156,72 @@ public final class Animator implements TickListener {
    *          {@code true} if the {@link TimingTarget#end(Animator)} method
    *          should be called for registered timing targets, {@code false} if
    *          calls should not be made.
-   * @param inCallbackContext
+   * @param calledFromTimingSourceTick
    *          {@link true} if the call to this method was made from the thread
    *          context of {@link TimingSource.TickListener}, {@link false} if it
    *          was not.
    * 
    * @return {@code true} if the animation was running and was successfully
-   *         stopped, {@code false} if the animation was not running and didn't
-   *         need to be stopped.
+   *         stopped, {@code false} if the animation was not running or was in
+   *         the process of stopping and didn't need to be stopped.
    */
-  private boolean stopHelper(boolean notify, boolean inCallbackContext) {
-    final CountDownLatch latch;
+  private boolean stopHelper(final boolean notify, boolean calledFromTimingSourceTick) {
     synchronized (f_lock) {
-      if (!isRunning())
+      /*
+       * If we are not running at all we return immediately.
+       */
+      if (f_runningAnimationLatch == null)
+        return false;
+      /*
+       * If f_timeToStop is true and we were NOT just called from
+       * timingSourceTick() then the animation is already in the process of
+       * stopping and we return immediately.
+       * 
+       * If f_timeToStop is true and we were called from timingSourceTick() then
+       * we are stopping because the animation completed normally BUT we need to
+       * execute the logic in this method so we don't return immediately. This
+       * case can only happen once (because timingSourceTick() will now return
+       * immediately when it is called).
+       */
+      if (!calledFromTimingSourceTick && f_timeToStop)
         return false;
 
-      f_running = false;
-      latch = f_awaitLatch;
-      f_awaitLatch = null;
+      f_timeToStop = true;
     }
     f_timingSource.removeTickListener(this);
-    if (notify && !f_targets.isEmpty()) {
-      final Runnable task = new Runnable() {
-        @Override
-        public void run() {
-          for (TimingTarget target : f_targets) {
-            target.end(Animator.this);
-          }
+    final Runnable task = new Runnable() {
+      @Override
+      public void run() {
+        try {
+          if (notify)
+            for (TimingTarget target : f_targets) {
+              target.end(Animator.this);
+            }
+        } finally {
+          latchCountDown();
         }
-      };
-      if (inCallbackContext)
-        task.run();
-      else
-        f_timingSource.submit(task);
+      }
+    };
+    if (calledFromTimingSourceTick)
+      task.run();
+    else
+      f_timingSource.submit(task);
+    return true;
+  }
+
+  /**
+   * Helper routine to trip the latch after all callbacks have finished up that
+   * need to finish up.
+   * <p>
+   * {@link #f_lock} should NOT be held when invoking this method.
+   */
+  private void latchCountDown() {
+    final CountDownLatch latch;
+    synchronized (f_lock) {
+      latch = f_runningAnimationLatch;
+      f_runningAnimationLatch = null;
     }
     latch.countDown();
-    return true;
   }
 
   /**
@@ -1199,7 +1229,42 @@ public final class Animator implements TickListener {
    */
   @Override
   public void timingSourceTick(TimingSource source, long nanoTime) {
-    if (isRunning())
-      notifyListenersAboutATimingSourceTick(nanoTime);
+    /*
+     * We can't hold f_lock when we invoke callbacks so we calculate results
+     * from the mutable state and save it in local variables.
+     */
+    final double fraction;
+    final boolean timeToStop;
+    final boolean notifyRepeat;
+    synchronized (f_lock) {
+      /*
+       * If f_timeToStop is true, then we have been called after stopHelper().
+       * If this is the case then we we return immediately. We do not, in this
+       * case, want to callback into client code.
+       */
+      if (f_timeToStop)
+        return;
+
+      fraction = calcInterpolatedTimingFraction(nanoTime);
+      timeToStop = f_timeToStop;
+      if (f_tellListenersAboutRepeat) {
+        notifyRepeat = true;
+        f_tellListenersAboutRepeat = false;
+      } else {
+        notifyRepeat = false;
+      }
+    }
+    if (notifyRepeat && !f_targets.isEmpty()) {
+      for (TimingTarget target : f_targets) {
+        target.repeat(this);
+      }
+    }
+    if (!f_targets.isEmpty())
+      for (TimingTarget target : f_targets) {
+        target.timingEvent(this, fraction);
+      }
+    if (timeToStop) {
+      stopHelper(true, true);
+    }
   }
 }

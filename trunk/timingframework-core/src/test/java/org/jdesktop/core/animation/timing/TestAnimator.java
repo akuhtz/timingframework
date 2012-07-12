@@ -165,6 +165,21 @@ public final class TestAnimator {
   }
 
   @Test
+  public void stop5() throws InterruptedException {
+    TimingSource ts = new ScheduledExecutorTimingSource();
+    ts.init();
+    Animator a = new Animator.Builder(ts).build();
+    SleepOnTickTimingTarget sleeper = new SleepOnTickTimingTarget();
+    a.addTarget(sleeper);
+    a.start();
+    Thread.sleep(100);
+    Assert.assertTrue(a.stop());
+    a.await();
+    ts.dispose();
+    Assert.assertTrue(sleeper.getProtocolMsg(), sleeper.isProtocolOkay());
+  }
+
+  @Test
   public void cancel1() {
     ManualTimingSource ts = new ManualTimingSource();
     Animator a = new Animator.Builder(ts).build();
@@ -226,6 +241,21 @@ public final class TestAnimator {
     Assert.assertFalse(a.cancel());
     ts.tick();
     Assert.assertTrue(counter.getProtocolMsg(), counter.isProtocolOkay());
+  }
+
+  @Test
+  public void cancel5() throws InterruptedException {
+    TimingSource ts = new ScheduledExecutorTimingSource();
+    ts.init();
+    Animator a = new Animator.Builder(ts).build();
+    SleepOnTickTimingTarget sleeper = new SleepOnTickTimingTarget();
+    a.addTarget(sleeper);
+    a.start();
+    Thread.sleep(100);
+    Assert.assertTrue(a.cancel());
+    a.await();
+    ts.dispose();
+    Assert.assertTrue(sleeper.getProtocolMsg(), sleeper.isProtocolOkay());
   }
 
   @Test
@@ -303,6 +333,9 @@ public final class TestAnimator {
     Assert.assertEquals(2, counter.getReverseCount());
     Assert.assertEquals(0, counter.getRepeatCount());
     int ticks = counter.getTimingEventCount();
+    /*
+     * If this fails try again (it is highly timing dependent)
+     */
     Assert.assertTrue("roughly 66 ticks", ticks > 63 && ticks < 69);
     ts.dispose();
     Assert.assertTrue(counter.getProtocolMsg(), counter.isProtocolOkay());
@@ -481,7 +514,7 @@ public final class TestAnimator {
     DirectionTimingTarget direction = new DirectionTimingTarget(a.getStartDirection());
     a.addTarget(direction);
     a.start();
-    Thread.sleep(10);
+    Thread.sleep(40);
     Assert.assertTrue(a.reverseNow());
     a.await();
     ts.dispose();
@@ -497,7 +530,7 @@ public final class TestAnimator {
     DirectionTimingTarget direction = new DirectionTimingTarget(a.getStartDirection());
     a.addTarget(direction);
     a.start();
-    Thread.sleep(10);
+    Thread.sleep(40);
     Assert.assertTrue(a.reverseNow());
     a.await();
     ts.dispose();
