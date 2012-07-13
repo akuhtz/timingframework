@@ -30,7 +30,7 @@ import com.surelogic.ThreadSafe;
  * @author Chet Haase
  * @author Tim Halloran
  */
-@ThreadSafe(implementationOnly=true)
+@ThreadSafe(implementationOnly = true)
 public abstract class AbstractTrigger implements Trigger {
 
   /**
@@ -142,7 +142,7 @@ public abstract class AbstractTrigger implements Trigger {
         if (reverseSucceeded)
           return;
       }
-      f_target.stop();
+      f_target.stopAndAwait();
       f_target.start();
     } else if (f_oppositeEvent == event) {
       /*
@@ -155,7 +155,7 @@ public abstract class AbstractTrigger implements Trigger {
         if (reverseSucceeded)
           return;
       }
-      f_target.stop();
+      f_target.stopAndAwait();
       f_target.startReverse();
     }
   }

@@ -347,7 +347,7 @@ public final class TestAnimator {
     Assert.assertEquals(0, counter.getReverseCount());
     Assert.assertEquals(0, counter.getRepeatCount());
     int ticks = counter.getTimingEventCount();
-    Assert.assertTrue("expected roughly 66 ticks; actually " + ticks + " ticks", ticks > 56 && ticks < 76);
+    Assert.assertTrue("expected roughly 66 ticks; actually " + ticks + " ticks", ticks > 55 && ticks < 75);
     ts.dispose();
     Assert.assertTrue(counter.getProtocolMsg(), counter.isProtocolOkay());
   }
@@ -366,7 +366,7 @@ public final class TestAnimator {
     Assert.assertEquals(0, counter.getReverseCount());
     Assert.assertEquals(3, counter.getRepeatCount());
     int ticks = counter.getTimingEventCount();
-    Assert.assertTrue("roughly 40 ticks", ticks > 36 && ticks < 44);
+    Assert.assertTrue("expected roughly 40 ticks; actually " + ticks + " ticks", ticks > 35 && ticks < 45);
     ts.dispose();
     Assert.assertTrue(counter.getProtocolMsg(), counter.isProtocolOkay());
   }

@@ -784,15 +784,47 @@ public final class Animator implements TickListener {
    * <p>
    * This call will result in calls to the {@link TimingTarget#end(Animator)}
    * method of all the registered timing targets of this animation.
+   * <p>
+   * The animation may take some period of time to actually stop, it waits for
+   * all calls to registered {@link TimingTarget}s to complete. Invoking
+   * {@link #await()} after this method will wait until the animation stops.
+   * This means that the code snippet "{@code a.stop(); a.start();}" could fail
+   * throwing an {@link IllegalStateException} at the call to {@link #start()}
+   * because the animation may not have stopped right away. This can be fixed by
+   * inserting a call to {@link #await()} or using the snippet "
+   * {@code a.stopAndAwait(); a.start();}" instead.
    * 
    * @return {@code true} if the animation was running and was successfully
    *         stopped, {@code false} if the animation was not running or was in
    *         the process of stopping and didn't need to be stopped.
    * 
+   * @see #await()
+   * @see #stopAndAwait()
    * @see #cancel()
    */
   public boolean stop() {
     return stopHelper(true);
+  }
+
+  /**
+   * A convenience method that is equivalent to the code below.
+   * 
+   * <pre>
+   * a.stop();
+   * try {
+   *   a.await();
+   * } catch (InterruptedException ignore) {
+   * }
+   * </pre>
+   * 
+   * {@code a} is the animator this method is invoked on.
+   */
+  public void stopAndAwait() {
+    stop();
+    try {
+      await();
+    } catch (InterruptedException ignore) {
+    }
   }
 
   /**
@@ -801,15 +833,47 @@ public final class Animator implements TickListener {
    * registered timing targets of this animation; it simply stops the animation
    * immediately and returns. If the animation is not running, or is stopping,
    * then this method returns {@code false}.
+   * <p>
+   * The animation may take some period of time to actually stop, it waits for
+   * all calls to registered {@link TimingTarget}s to complete. Invoking
+   * {@link #await()} after this method will wait until the animation stops.
+   * This means that the code snippet "{@code a.cancel(); a.start();}" could
+   * fail throwing an {@link IllegalStateException} at the call to
+   * {@link #start()} because the animation may not have stopped right away.
+   * This can be fixed by inserting a call to {@link #await()} or using the
+   * snippet " {@code a.cancelAndAwait(); a.start();}" instead.
    * 
    * @return {@code true} if the animation was running and was successfully
    *         stopped, {@code false} if the animation was not running or was in
    *         the process of stopping and didn't need to be stopped.
    * 
+   * @see #await()
+   * @see #cancelAndAwait()
    * @see #stop()
    */
   public boolean cancel() {
     return stopHelper(false);
+  }
+
+  /**
+   * A convenience method that is equivalent to the code below.
+   * 
+   * <pre>
+   * a.cancel();
+   * try {
+   *   a.await();
+   * } catch (InterruptedException ignore) {
+   * }
+   * </pre>
+   * 
+   * {@code a} is the animator this method is invoked on.
+   */
+  public void cancelAndAwait() {
+    cancel();
+    try {
+      await();
+    } catch (InterruptedException ignore) {
+    }
   }
 
   /**
