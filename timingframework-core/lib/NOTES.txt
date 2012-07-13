@@ -14,7 +14,40 @@ A library for making Java animation and timing-based control easier!
 
 Report bugs, read the documentation, and get new releases at:
    http://java.net/projects/timingframework/
-   
+
+
+++-------------------++
+|| 5.1 Release Notes ||
+++-------------------++
+
+o Core, Swing, and SWT were tested under Java 7 as well as Java 6.
+  Note that release and source code is still Java 6, however, folks
+  using Java 7 should be okay).
+o The semantics of Animator.isRunning() changed to include waiting
+  for calls to registered TimingTargets to complete. Not doing this
+  causes several subtle bugs if calls into a TimingTarget are very
+  long running. The stop() and cancel() calls return immediately,
+  but you need to call await() to be sure the animation has stopped.
+  This only becomes a factor if you have code like:
+    a.stop();
+    a.start();
+  This snippet may fail with an IllegalStateException thrown during
+  the call to start() because a is still stopping. To fix this you
+  could use
+    a.stop();
+    try { a.await(); } catch(InterruptedException ignore) {}
+    a.start()
+  but this is a bit clunky so two convenience methods were added to
+  Animator: stopAndAwait() and cancelAndAwait(). Thus you can use:
+    a.stopAndAwait();
+    a.start();
+o Javadoc was added to the TimingTarget reverse(Animator) to clarify
+  when and how it is invoked by an animation.
+o A bug was fixed: http://java.net/jira/browse/TIMINGFRAMEWORK-15
+  This bug could cause getCurrentDirection() to report the wrong
+  direction in the end(Animator) TimingTarget callback after a
+  call to reverseNow().
+  
 ++-------------------++
 || 5.0 Release Notes ||
 ++-------------------++
