@@ -3,6 +3,7 @@ package org.jdesktop.core.animation.timing;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.jdesktop.core.animation.timing.Animator.Direction;
 import org.jdesktop.core.animation.timing.Animator.RepeatBehavior;
 import org.jdesktop.core.animation.timing.sources.ManualTimingSource;
 import org.jdesktop.core.animation.timing.sources.ScheduledExecutorTimingSource;
@@ -94,6 +95,80 @@ public final class TestAnimator {
     a.start();
     ts.tick();
     Assert.assertTrue(a.reverseNow());
+  }
+
+  @Test
+  public void reverseNow6() {
+    ManualTimingSource ts = new ManualTimingSource();
+    Animator a = new Animator.Builder(ts).build();
+    a.start();
+    ts.tick();
+    Direction going = a.getCurrentDirection();
+    Assert.assertTrue(a.reverseNow());
+    Assert.assertTrue(a.reverseNow()); // even
+    ts.tick();
+    Assert.assertSame(going, a.getCurrentDirection());
+  }
+
+  @Test
+  public void reverseNow7() {
+    ManualTimingSource ts = new ManualTimingSource();
+    Animator a = new Animator.Builder(ts).build();
+    a.start();
+    ts.tick();
+    Direction going = a.getCurrentDirection();
+    Assert.assertTrue(a.reverseNow());
+    Assert.assertTrue(a.reverseNow());
+    Assert.assertTrue(a.reverseNow());
+    Assert.assertTrue(a.reverseNow());
+    Assert.assertTrue(a.reverseNow());
+    Assert.assertTrue(a.reverseNow());
+    Assert.assertTrue(a.reverseNow());
+    Assert.assertTrue(a.reverseNow());
+    Assert.assertTrue(a.reverseNow());
+    Assert.assertTrue(a.reverseNow());
+    Assert.assertTrue(a.reverseNow());
+    Assert.assertTrue(a.reverseNow()); // even
+    ts.tick();
+    Assert.assertSame(going, a.getCurrentDirection());
+  }
+
+  @Test
+  public void reverseNow8() {
+    ManualTimingSource ts = new ManualTimingSource();
+    Animator a = new Animator.Builder(ts).build();
+    a.start();
+    ts.tick();
+    Direction going = a.getCurrentDirection();
+    Assert.assertTrue(a.reverseNow());
+    Assert.assertTrue(a.reverseNow());
+    Assert.assertTrue(a.reverseNow()); // odd
+    ts.tick();
+    Assert.assertSame(going.getOppositeDirection(), a.getCurrentDirection());
+  }
+
+  @Test
+  public void reverseNow9() {
+    ManualTimingSource ts = new ManualTimingSource();
+    Animator a = new Animator.Builder(ts).build();
+    a.start();
+    ts.tick();
+    Direction going = a.getCurrentDirection();
+    Assert.assertTrue(a.reverseNow());
+    Assert.assertTrue(a.reverseNow());
+    Assert.assertTrue(a.reverseNow());
+    Assert.assertTrue(a.reverseNow());
+    Assert.assertTrue(a.reverseNow());
+    Assert.assertTrue(a.reverseNow());
+    Assert.assertTrue(a.reverseNow());
+    Assert.assertTrue(a.reverseNow());
+    Assert.assertTrue(a.reverseNow());
+    Assert.assertTrue(a.reverseNow());
+    Assert.assertTrue(a.reverseNow());
+    Assert.assertTrue(a.reverseNow());
+    Assert.assertTrue(a.reverseNow()); // odd
+    ts.tick();
+    Assert.assertSame(going.getOppositeDirection(), a.getCurrentDirection());
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -330,7 +405,7 @@ public final class TestAnimator {
     a.await();
     Assert.assertEquals(1, counter.getBeginCount());
     Assert.assertEquals(1, counter.getEndCount());
-    Assert.assertEquals(2, counter.getReverseCount());
+    Assert.assertTrue("counter.getReverseCount()=" + counter.getReverseCount() + " should be >= 1", counter.getReverseCount() >= 1);
     Assert.assertEquals(0, counter.getRepeatCount());
     int ticks = counter.getTimingEventCount();
     /*
@@ -535,6 +610,8 @@ public final class TestAnimator {
     a.await();
     ts.dispose();
     Assert.assertTrue(direction.getDirectionMsg(), direction.isDirectionOkay());
+    // Because of the way the reverse callback works the below could fail
+    // (rarely) if it hits right at a reversal
     Assert.assertTrue(direction.allTimingEventsMsg(), direction.allTimingEventsOkay());
   }
 }
