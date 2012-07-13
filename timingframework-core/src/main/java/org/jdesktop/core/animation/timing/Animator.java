@@ -17,7 +17,6 @@ import com.surelogic.NotThreadSafe;
 import com.surelogic.Region;
 import com.surelogic.RegionEffects;
 import com.surelogic.RegionLock;
-import com.surelogic.RequiresLock;
 import com.surelogic.ThreadSafe;
 import com.surelogic.Unique;
 
@@ -600,14 +599,6 @@ public final class Animator implements TickListener {
   private long f_cycleStartTimeNanos;
 
   /**
-   * This gets triggered during fraction calculation.
-   * <p>
-   * Accesses must be guarded by a lock on {@link #f_lock}.
-   */
-  @InRegion("AnimatorState")
-  private boolean f_tellListenersAboutRepeat;
-
-  /**
    * Used for pause/resume. If this value is non-zero and the animation is
    * running, then the animation is paused.
    * <p>
@@ -625,15 +616,16 @@ public final class Animator implements TickListener {
   private Direction f_currentDirection;
 
   /**
-   * A latch used to indicate the animation is running and wait until the
-   * animation is completed. When this field is non-{@code null} then the
-   * animation is running (note that a paused animation is still considered to
-   * be running).
+   * A latch used to indicate the animation is running and to allow client code
+   * to wait until the animation is completed. When this field is non-
+   * {@code null} then the animation is running (note that a paused animation is
+   * still considered to be running).
    * <p>
    * This field may be non-{@code null} long after {@link #stop()} or
    * {@link #cancel()} are called because the latch is not triggered and changed
-   * to a {@code null} value until all callbacks to the client code, all the
-   * registered {@link TimingTarget}s, have completed.
+   * to a {@code null} value until all callbacks to registered
+   * {@link TimingTarget}s have completed. The flag {@link #f_stopping}
+   * indicates the animation is in the process of stopping.
    * <p>
    * Accesses must be guarded by a lock on {@link #f_lock}.
    */
@@ -641,27 +633,24 @@ public final class Animator implements TickListener {
   private CountDownLatch f_runningAnimationLatch;
 
   /**
-   * This gets set during the fraction calculation and when {@link #stop()} or
+   * Indicates the animation is stopping &mdash; it is in a shutdown phase. This
+   * gets set when the animation completes normally or when {@link #stop()} /
    * {@link #cancel()} are invoked by the client. A value of {@code true}
    * indicates that a running animation is in a shutdown phase and is finishing
    * up any needed callbacks to registered {@link TimingSource}s.
    * <p>
    * This flag is used as a guard so that we don't run try to stop the animation
-   * multiple times. Its name could also have been <tt>workingToStop</tt>,
-   * <tt>shuttingDownTheAnimation</tt>, or <tt>stopping</tt>. Perhaps these
-   * alternative names help to convey its purpose.
+   * multiple times.
    * <p>
    * This guard is needed because a long period of time can elapse between when
-   * the animation knows it is trying to stop (it finishes normally,
-   * {@link #stop()} or {@link #cancel()} are called) and when the callbacks to
-   * the client code complete. The animation is still running but should not try
-   * to shutdown again &mdash; avoiding this problem is the purpose of this
-   * guard.
+   * the animation knows it is trying to stop and when the callbacks to the
+   * client code complete. The animation is still running but should not try to
+   * stop again &mdash; avoiding this problem is the purpose of this guard.
    * <p>
    * Accesses must be guarded by a lock on {@link #f_lock}.
    */
   @InRegion("AnimatorState")
-  private boolean f_timeToStop;
+  private boolean f_stopping;
 
   /**
    * Constructs an animation.
@@ -796,7 +785,7 @@ public final class Animator implements TickListener {
    * @see #cancel()
    */
   public boolean stop() {
-    return stopHelper(true, false);
+    return stopHelper(true);
   }
 
   /**
@@ -813,7 +802,7 @@ public final class Animator implements TickListener {
    * @see #stop()
    */
   public boolean cancel() {
-    return stopHelper(false, false);
+    return stopHelper(false);
   }
 
   /**
@@ -829,7 +818,7 @@ public final class Animator implements TickListener {
    */
   public void pause() {
     synchronized (f_lock) {
-      final boolean canPause = isRunning() && !f_timeToStop && f_pauseBeginTimeNanos == 0;
+      final boolean canPause = isRunning() && !f_stopping && f_pauseBeginTimeNanos == 0;
       if (canPause) {
         f_timingSource.removeTickListener(this);
         f_pauseBeginTimeNanos = System.nanoTime();
@@ -847,7 +836,7 @@ public final class Animator implements TickListener {
    */
   public boolean isPaused() {
     synchronized (f_lock) {
-      return isRunning() && !f_timeToStop && f_pauseBeginTimeNanos > 0;
+      return isRunning() && !f_stopping && f_pauseBeginTimeNanos > 0;
     }
   }
 
@@ -880,7 +869,7 @@ public final class Animator implements TickListener {
    */
   public boolean reverseNow() {
     synchronized (f_lock) {
-      final boolean canReverse = isRunning() && !f_timeToStop && f_pauseBeginTimeNanos == 0;
+      final boolean canReverse = isRunning() && !f_stopping && f_pauseBeginTimeNanos == 0;
       if (canReverse) {
         final long now = System.nanoTime();
         final long cycleElapsedTimeNanos = getCycleElapsedTime(now);
@@ -1012,95 +1001,6 @@ public final class Animator implements TickListener {
   }
 
   /**
-   * This method calculates and returns the fraction elapsed of the current
-   * cycle based on the current time and the {@link Interpolator} used by the
-   * animation.
-   * <p>
-   * {@link #f_lock} should be held when invoking this method.
-   * 
-   * @param nanoTime
-   *          the current value of the most precise available system timer, in
-   *          nanoseconds.
-   * @return fraction elapsed of the current animation cycle.
-   */
-  @RequiresLock("AnimatorLock")
-  private double calcInterpolatedTimingFraction(long nanoTime) {
-    final long cycleElapsedTimeNanos = getCycleElapsedTime(nanoTime);
-    final long totalElapsedTimeNanos = getTotalElapsedTime(nanoTime);
-    final long durationNanos = f_durationTimeUnit.toNanos(f_duration);
-    final long currentCycleCount = totalElapsedTimeNanos / durationNanos;
-
-    double fraction;
-
-    if (f_repeatCount != INFINITE && currentCycleCount >= f_repeatCount) {
-      /*
-       * Animation End: Stop based on specified end behavior.
-       */
-      switch (f_endBehavior) {
-      case HOLD:
-        /*
-         * HOLD requires setting the final end value.
-         */
-        if (f_currentDirection == Direction.BACKWARD) {
-          fraction = 0;
-        } else {
-          fraction = 1;
-        }
-        break;
-      case RESET:
-        /*
-         * RESET requires setting the final value to the start value.
-         */
-        fraction = 0;
-        break;
-      default:
-        throw new IllegalStateException(I18N.err(2, EndBehavior.class.getName(), f_endBehavior.toString()));
-      }
-      f_timeToStop = true;
-    } else if (cycleElapsedTimeNanos > durationNanos) {
-      /*
-       * Animation Cycle End: Time to stop or change the behavior of the timer.
-       */
-      long overCycleTimeNanos = cycleElapsedTimeNanos % durationNanos;
-      fraction = (double) overCycleTimeNanos / durationNanos;
-      /*
-       * Set a new start time for this cycle.
-       */
-      f_cycleStartTimeNanos = nanoTime - overCycleTimeNanos;
-
-      if (f_repeatBehavior == RepeatBehavior.REVERSE) {
-        /*
-         * Reverse the direction of the animation.
-         */
-        f_currentDirection = f_currentDirection.getOppositeDirection();
-      }
-      if (f_currentDirection == Direction.BACKWARD) {
-        fraction = 1 - fraction;
-      }
-      f_tellListenersAboutRepeat = true;
-    } else {
-      /*
-       * Animation Mid-Stream: Calculate fraction of animation between start and
-       * end times and send fraction to target.
-       */
-      fraction = (double) cycleElapsedTimeNanos / (double) durationNanos;
-      if (f_currentDirection == Direction.BACKWARD) {
-        /*
-         * If this is a backwards cycle, want to send the inverse fraction; how
-         * much from start to finish, not finish to start.
-         */
-        fraction = 1.0 - fraction;
-      }
-      /*
-       * Clamp fraction in case timing mechanism caused out of bounds value.
-       */
-      fraction = Math.min(fraction, 1.0);
-      fraction = Math.max(fraction, 0.0);
-    }
-    return f_interpolator == null ? fraction : f_interpolator.interpolate(fraction);
-  }
-
-  /**
    * Factors out common code between {@link #start()} and
    * {@link #startReverse()}.
    * 
@@ -1120,7 +1020,7 @@ public final class Animator implements TickListener {
 
       f_startTimeNanos = f_cycleStartTimeNanos = System.nanoTime();
       f_currentDirection = direction;
-      f_timeToStop = f_tellListenersAboutRepeat = false;
+      f_stopping = false;
       f_pauseBeginTimeNanos = 0;
       f_runningAnimationLatch = new CountDownLatch(1);
       /*
@@ -1149,23 +1049,19 @@ public final class Animator implements TickListener {
   /**
    * Helper routine to stop the running animation. It optionally invokes the
    * {@link TimingTarget#end(Animator)} method of registered timing targets in
-   * the correct thread context. If the animation was not running then this
-   * method returns {@code false}.
+   * the correct thread context. If the animation was not running (or is already
+   * stopping) then this method returns {@code false}.
    * 
    * @param notify
    *          {@code true} if the {@link TimingTarget#end(Animator)} method
    *          should be called for registered timing targets, {@code false} if
    *          calls should not be made.
-   * @param calledFromTimingSourceTick
-   *          {@link true} if the call to this method was made from the thread
-   *          context of {@link TimingSource.TickListener}, {@link false} if it
-   *          was not.
    * 
    * @return {@code true} if the animation was running and was successfully
    *         stopped, {@code false} if the animation was not running or was in
    *         the process of stopping and didn't need to be stopped.
    */
-  private boolean stopHelper(final boolean notify, boolean calledFromTimingSourceTick) {
+  private boolean stopHelper(final boolean notify) {
     synchronized (f_lock) {
       /*
        * If we are not running at all we return immediately.
@@ -1173,20 +1069,12 @@ public final class Animator implements TickListener {
       if (f_runningAnimationLatch == null)
         return false;
       /*
-       * If f_timeToStop is true and we were NOT just called from
-       * timingSourceTick() then the animation is already in the process of
-       * stopping and we return immediately.
-       * 
-       * If f_timeToStop is true and we were called from timingSourceTick() then
-       * we are stopping because the animation completed normally BUT we need to
-       * execute the logic in this method so we don't return immediately. This
-       * case can only happen once (because timingSourceTick() will now return
-       * immediately when it is called).
+       * If we are already stopping we return immediately.
        */
-      if (!calledFromTimingSourceTick && f_timeToStop)
+      if (f_stopping)
         return false;
 
-      f_timeToStop = true;
+      f_stopping = true;
     }
     f_timingSource.removeTickListener(this);
     final Runnable task = new Runnable() {
@@ -1202,10 +1090,7 @@ public final class Animator implements TickListener {
         }
       }
     };
-    if (calledFromTimingSourceTick)
-      task.run();
-    else
-      f_timingSource.submit(task);
+    f_timingSource.submit(task);
     return true;
   }
 
@@ -1230,30 +1115,110 @@ public final class Animator implements TickListener {
   @Override
   public void timingSourceTick(TimingSource source, long nanoTime) {
     /*
+     * Implementation note: This is a big method, however, breaking it up
+     * requires the introduction of several fields that are really
+     * implementation details of the calculations below and flags about what to
+     * do next.
+     */
+
+    /*
      * We can't hold f_lock when we invoke callbacks so we calculate results
      * from the mutable state and save it in local variables.
      */
     final double fraction;
-    final boolean timeToStop;
-    final boolean notifyRepeat;
+    boolean timeToStop = false;
+    boolean notifyRepeat = false;
     synchronized (f_lock) {
       /*
-       * If f_timeToStop is true, then we have been called after stopHelper().
-       * If this is the case then we we return immediately. We do not, in this
-       * case, want to callback into client code.
+       * If the animation is stopping, then we have been called after
+       * stopHelper(). If this is the case then we want to return immediately.
+       * We do not, in this case, want to callback into client code.
        */
-      if (f_timeToStop)
+      if (f_stopping)
         return;
 
-      fraction = calcInterpolatedTimingFraction(nanoTime);
-      timeToStop = f_timeToStop;
-      if (f_tellListenersAboutRepeat) {
+      /*
+       * This code calculates and returns the fraction elapsed of the current
+       * cycle based on the current time and the {@link Interpolator} used by
+       * the animation.
+       */
+
+      final long cycleElapsedTimeNanos = getCycleElapsedTime(nanoTime);
+      final long totalElapsedTimeNanos = getTotalElapsedTime(nanoTime);
+      final long durationNanos = f_durationTimeUnit.toNanos(f_duration);
+      final long currentCycleCount = totalElapsedTimeNanos / durationNanos;
+
+      double fractionScratch;
+
+      if (f_repeatCount != INFINITE && currentCycleCount >= f_repeatCount) {
+        /*
+         * Animation End: Stop based on specified end behavior.
+         */
+        switch (f_endBehavior) {
+        case HOLD:
+          /*
+           * HOLD requires setting the final end value.
+           */
+          if (f_currentDirection == Direction.BACKWARD) {
+            fractionScratch = 0;
+          } else {
+            fractionScratch = 1;
+          }
+          break;
+        case RESET:
+          /*
+           * RESET requires setting the final value to the start value.
+           */
+          fractionScratch = 0;
+          break;
+        default:
+          throw new IllegalStateException(I18N.err(2, EndBehavior.class.getName(), f_endBehavior.toString()));
+        }
+        timeToStop = true;
+      } else if (cycleElapsedTimeNanos > durationNanos) {
+        /*
+         * Animation Cycle End: Time to stop or change the behavior of the
+         * timer.
+         */
+        final long overCycleTimeNanos = cycleElapsedTimeNanos % durationNanos;
+        fractionScratch = (double) overCycleTimeNanos / durationNanos;
+        /*
+         * Set a new start time for this cycle.
+         */
+        f_cycleStartTimeNanos = nanoTime - overCycleTimeNanos;
+
+        if (f_repeatBehavior == RepeatBehavior.REVERSE) {
+          /*
+           * Reverse the direction of the animation.
+           */
+          f_currentDirection = f_currentDirection.getOppositeDirection();
+        }
+        if (f_currentDirection == Direction.BACKWARD) {
+          fractionScratch = 1 - fractionScratch;
+        }
         notifyRepeat = true;
-        f_tellListenersAboutRepeat = false;
       } else {
-        notifyRepeat = false;
+        /*
+         * Animation Mid-Stream: Calculate fraction of animation between start
+         * and end times and send fraction to target.
+         */
+        fractionScratch = (double) cycleElapsedTimeNanos / (double) durationNanos;
+        if (f_currentDirection == Direction.BACKWARD) {
+          /*
+           * If this is a backwards cycle, want to send the inverse fraction;
+           * how much from start to finish, not finish to start.
+           */
+          fractionScratch = 1.0 - fractionScratch;
+        }
+        /*
+         * Clamp fraction in case timing mechanism caused out of bounds value.
+         */
+        fractionScratch = Math.min(fractionScratch, 1.0);
+        fractionScratch = Math.max(fractionScratch, 0.0);
       }
-    }
+      fraction = f_interpolator == null ? fractionScratch : f_interpolator.interpolate(fractionScratch);
+    } // lock release
+
     if (notifyRepeat && !f_targets.isEmpty()) {
       for (TimingTarget target : f_targets) {
         target.repeat(this);
@@ -1264,7 +1229,7 @@ public final class Animator implements TickListener {
         target.timingEvent(this, fraction);
       }
     if (timeToStop) {
-      stopHelper(true, true);
+      stopHelper(true);
     }
   }
 }
