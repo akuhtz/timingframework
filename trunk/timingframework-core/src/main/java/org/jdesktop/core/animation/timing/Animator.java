@@ -71,7 +71,7 @@ import com.surelogic.Unique;
  */
 @ThreadSafe
 @Region("private AnimatorState")
-@RegionLock("AnimatorLock is f_lock protects AnimatorState")
+@RegionLock("AnimatorLock is f_targets protects AnimatorState")
 public final class Animator implements TickListener {
 
   /**
@@ -569,23 +569,21 @@ public final class Animator implements TickListener {
 
   /**
    * This animation may have multiple {@link TimingTarget} listeners.
-   */
-  private final CopyOnWriteArrayList<TimingTarget> f_targets = new CopyOnWriteArrayList<TimingTarget>();
-
-  /**
-   * Protects the mutable state of this animation.
+   * <p>
+   * Protects the mutable state of this animation (rather than creating a new
+   * Object).
    * <p>
    * Do not hold this lock when invoking any callbacks, e.g., looping through
    * {@link #f_targets}.
    * <p>
    * Do not hold this lock when invoking any method on {@link #f_timingSource}.
    */
-  private final Object f_lock = new Object();
+  private final CopyOnWriteArrayList<TimingTarget> f_targets = new CopyOnWriteArrayList<TimingTarget>();
 
   /**
    * Tracks the original start time in nanoseconds of the animation.
    * <p>
-   * Accesses must be guarded by a lock on {@link #f_lock}.
+   * Accesses must be guarded by a lock on {@link #f_targets}.
    */
   @InRegion("AnimatorState")
   private long f_startTimeNanos;
@@ -593,7 +591,7 @@ public final class Animator implements TickListener {
   /**
    * Tracks start time of current cycle.
    * <p>
-   * Accesses must be guarded by a lock on {@link #f_lock}.
+   * Accesses must be guarded by a lock on {@link #f_targets}.
    */
   @InRegion("AnimatorState")
   private long f_cycleStartTimeNanos;
@@ -602,7 +600,7 @@ public final class Animator implements TickListener {
    * Used for pause/resume. If this value is non-zero and the animation is
    * running, then the animation is paused.
    * <p>
-   * Accesses must be guarded by a lock on {@link #f_lock}.
+   * Accesses must be guarded by a lock on {@link #f_targets}.
    */
   @InRegion("AnimatorState")
   private long f_pauseBeginTimeNanos;
@@ -610,10 +608,19 @@ public final class Animator implements TickListener {
   /**
    * The current direction of the animation.
    * <p>
-   * Accesses must be guarded by a lock on {@link #f_lock}.
+   * Accesses must be guarded by a lock on {@link #f_targets}.
    */
   @InRegion("AnimatorState")
   private Direction f_currentDirection;
+
+  /**
+   * Indicates that {@link #reverseNow()} was invoked <i>x</i> times. The actual
+   * reverse occurs during the next call to this animation's
+   * {@link #timingSourceTick(TimingSource, long)} method so we need to remember
+   * how many calls were made.
+   */
+  @InRegion("AnimatorState")
+  private int f_reverseNowCallCount;
 
   /**
    * A latch used to indicate the animation is running and to allow client code
@@ -627,7 +634,7 @@ public final class Animator implements TickListener {
    * {@link TimingTarget}s have completed. The flag {@link #f_stopping}
    * indicates the animation is in the process of stopping.
    * <p>
-   * Accesses must be guarded by a lock on {@link #f_lock}.
+   * Accesses must be guarded by a lock on {@link #f_targets}.
    */
   @InRegion("AnimatorState")
   private CountDownLatch f_runningAnimationLatch;
@@ -647,7 +654,7 @@ public final class Animator implements TickListener {
    * client code complete. The animation is still running but should not try to
    * stop again &mdash; avoiding this problem is the purpose of this guard.
    * <p>
-   * Accesses must be guarded by a lock on {@link #f_lock}.
+   * Accesses must be guarded by a lock on {@link #f_targets}.
    */
   @InRegion("AnimatorState")
   private boolean f_stopping;
@@ -752,7 +759,7 @@ public final class Animator implements TickListener {
    *         not.
    */
   public boolean isRunning() {
-    synchronized (f_lock) {
+    synchronized (f_targets) {
       return f_runningAnimationLatch != null;
     }
   }
@@ -765,7 +772,7 @@ public final class Animator implements TickListener {
    * @return the current direction of the animation.
    */
   public Direction getCurrentDirection() {
-    synchronized (f_lock) {
+    synchronized (f_targets) {
       return f_currentDirection;
     }
   }
@@ -817,7 +824,7 @@ public final class Animator implements TickListener {
    * @see #isPaused()
    */
   public void pause() {
-    synchronized (f_lock) {
+    synchronized (f_targets) {
       final boolean canPause = isRunning() && !f_stopping && f_pauseBeginTimeNanos == 0;
       if (canPause) {
         f_timingSource.removeTickListener(this);
@@ -835,7 +842,7 @@ public final class Animator implements TickListener {
    *         paused, {@code false} otherwise.
    */
   public boolean isPaused() {
-    synchronized (f_lock) {
+    synchronized (f_targets) {
       return isRunning() && !f_stopping && f_pauseBeginTimeNanos > 0;
     }
   }
@@ -847,7 +854,7 @@ public final class Animator implements TickListener {
    * @see #pause()
    */
   public void resume() {
-    synchronized (f_lock) {
+    synchronized (f_targets) {
       final boolean paused = isPaused();
       if (paused) {
         long pauseDeltaNanos = System.nanoTime() - f_pauseBeginTimeNanos;
@@ -863,38 +870,19 @@ public final class Animator implements TickListener {
    * Reverses the direction of the animation if it is running and is not paused
    * or stopping. If it is not possible to reverse the animation now, the method
    * returns {@code false}.
+   * <p>
+   * The actual reverse occurs at the next tick of this animation's
+   * {@link TimingSource}. All calls are remembered, however, so no successful
+   * reversals are lost.
    * 
-   * @return {@code true} if the animation was reversed, {@code false} if the
-   *         attempt to reverse the animation failed.
+   * @return {@code true} if the animation was successfully reversed,
+   *         {@code false} if the attempt to reverse the animation failed.
    */
   public boolean reverseNow() {
-    synchronized (f_lock) {
+    synchronized (f_targets) {
       final boolean canReverse = isRunning() && !f_stopping && f_pauseBeginTimeNanos == 0;
       if (canReverse) {
-        final long now = System.nanoTime();
-        final long cycleElapsedTimeNanos = getCycleElapsedTime(now);
-        final long durationNanos = f_durationTimeUnit.toNanos(f_duration);
-        final long timeLeft = durationNanos - cycleElapsedTimeNanos;
-        final long deltaNanos = (now - timeLeft) - f_cycleStartTimeNanos;
-        f_cycleStartTimeNanos += deltaNanos;
-        f_startTimeNanos += deltaNanos;
-        f_currentDirection = f_currentDirection.getOppositeDirection();
-        /*
-         * This queuing of the reverse call needs to be done holding the lock or
-         * it is possible to see a timing event callback before the reverse
-         * callback reflecting the reverse.
-         * 
-         * Because the submit() call only places the Runnable into a queue
-         * holding the lock below cannot lead to a deadlock.
-         */
-        f_timingSource.submit(new Runnable() {
-          @Override
-          public void run() {
-            for (TimingTarget target : f_targets) {
-              target.reverse(Animator.this);
-            }
-          }
-        });
+        f_reverseNowCallCount++;
         return true;
       } else {
         return false;
@@ -925,7 +913,7 @@ public final class Animator implements TickListener {
    */
   public void await() throws InterruptedException {
     final CountDownLatch latch;
-    synchronized (f_lock) {
+    synchronized (f_targets) {
       latch = f_runningAnimationLatch;
     }
     if (latch != null)
@@ -953,7 +941,7 @@ public final class Animator implements TickListener {
    *         and the passed time.
    */
   public long getCycleElapsedTime(long currentTimeNanos) {
-    synchronized (f_lock) {
+    synchronized (f_targets) {
       return (currentTimeNanos - f_cycleStartTimeNanos);
     }
   }
@@ -979,7 +967,7 @@ public final class Animator implements TickListener {
    *         the passed time.
    */
   public long getTotalElapsedTime(long currentTimeNanos) {
-    synchronized (f_lock) {
+    synchronized (f_targets) {
       return (currentTimeNanos - f_startTimeNanos);
     }
   }
@@ -1014,14 +1002,14 @@ public final class Animator implements TickListener {
    *           if the this animation is already running.
    */
   private void startHelper(Direction direction, String methodName) {
-    synchronized (f_lock) {
+    synchronized (f_targets) {
       if (isRunning())
         throw new IllegalStateException(I18N.err(12, methodName));
 
       f_startTimeNanos = f_cycleStartTimeNanos = System.nanoTime();
       f_currentDirection = direction;
       f_stopping = false;
-      f_pauseBeginTimeNanos = 0;
+      f_pauseBeginTimeNanos = f_reverseNowCallCount = 0;
       f_runningAnimationLatch = new CountDownLatch(1);
       /*
        * Because the submit() call only places the Runnable into a queue holding
@@ -1062,7 +1050,7 @@ public final class Animator implements TickListener {
    *         the process of stopping and didn't need to be stopped.
    */
   private boolean stopHelper(final boolean notify) {
-    synchronized (f_lock) {
+    synchronized (f_targets) {
       /*
        * If we are not running at all we return immediately.
        */
@@ -1098,11 +1086,11 @@ public final class Animator implements TickListener {
    * Helper routine to trip the latch after all callbacks have finished up that
    * need to finish up.
    * <p>
-   * {@link #f_lock} should NOT be held when invoking this method.
+   * {@link #f_targets} should NOT be held when invoking this method.
    */
   private void latchCountDown() {
     final CountDownLatch latch;
-    synchronized (f_lock) {
+    synchronized (f_targets) {
       latch = f_runningAnimationLatch;
       f_runningAnimationLatch = null;
     }
@@ -1121,28 +1109,49 @@ public final class Animator implements TickListener {
      * do next.
      */
 
-    /*
-     * We can't hold f_lock when we invoke callbacks so we calculate results
-     * from the mutable state and save it in local variables.
-     */
     final double fraction;
     boolean timeToStop = false;
     boolean notifyRepeat = false;
-    synchronized (f_lock) {
+    boolean notifyOfReverse = false;
+    synchronized (f_targets) {
       /*
-       * If the animation is stopping, then we have been called after
-       * stopHelper(). If this is the case then we want to return immediately.
-       * We do not, in this case, want to callback into client code.
+       * A guard against running logic within this method if any of the
+       * following conditions are true:
+       * 
+       * o The animation is not running
+       * 
+       * o The animation is stopping
+       * 
+       * o The animation is paused
        */
-      if (f_stopping)
+      final boolean skipTick = f_runningAnimationLatch == null || f_stopping || f_pauseBeginTimeNanos != 0;
+      if (skipTick)
         return;
+
+      /*
+       * Note that we need to notify of a reverseNow() call and reset the field.
+       */
+      if (f_reverseNowCallCount > 0) {
+        notifyOfReverse = true;
+        final boolean reverseCallsCancelOut = /* isEven */(f_reverseNowCallCount & 1) == 0;
+        f_reverseNowCallCount = 0;
+
+        if (!reverseCallsCancelOut) {
+          final long cycleElapsedTimeNanos = getCycleElapsedTime(nanoTime);
+          final long durationNanos = f_durationTimeUnit.toNanos(f_duration);
+          final long timeLeft = durationNanos - cycleElapsedTimeNanos;
+          final long deltaNanos = (nanoTime - timeLeft) - f_cycleStartTimeNanos;
+          f_cycleStartTimeNanos += deltaNanos;
+          f_startTimeNanos += deltaNanos;
+          f_currentDirection = f_currentDirection.getOppositeDirection();
+        }
+      }
 
       /*
        * This code calculates and returns the fraction elapsed of the current
        * cycle based on the current time and the {@link Interpolator} used by
        * the animation.
        */
-
       final long cycleElapsedTimeNanos = getCycleElapsedTime(nanoTime);
       final long totalElapsedTimeNanos = getTotalElapsedTime(nanoTime);
       final long durationNanos = f_durationTimeUnit.toNanos(f_duration);
@@ -1219,6 +1228,11 @@ public final class Animator implements TickListener {
       fraction = f_interpolator == null ? fractionScratch : f_interpolator.interpolate(fractionScratch);
     } // lock release
 
+    if (notifyOfReverse && !f_targets.isEmpty()) {
+      for (TimingTarget target : f_targets) {
+        target.reverse(this);
+      }
+    }
     if (notifyRepeat && !f_targets.isEmpty()) {
       for (TimingTarget target : f_targets) {
         target.repeat(this);

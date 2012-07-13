@@ -46,6 +46,9 @@ public interface TimingTarget {
    * invoked {@link Animator#getRepeatCount()} - 1 times, unless
    * {@link Animator#getRepeatCount()} == {@link Animator#INFINITE} in which
    * case it will be invoked until the animation is manually stopped.
+   * <p>
+   * if {@link Animator.RepeatBehavior#REVERSE} is used then the animation will
+   * reverse direction on repeat.
    * 
    * @param source
    *          the animation.
@@ -55,8 +58,29 @@ public interface TimingTarget {
   /**
    * Called when a running animation is reversed via
    * {@link Animator#reverseNow()}. This method is not invoked when
-   * {@link Animator#startReverse()} is called&mdash;it is only used as a
-   * notification when a running animation is reversed.
+   * {@link Animator#startReverse()} is called or when the direction changes on
+   * repeat&mdash;it is only used as a notification when an animation is
+   * reversed via {@link Animator#reverseNow()}.
+   * <p>
+   * Notifications occur at the rate of the {@link TimingSource} being used by
+   * the animation. Therefore, several calls to {@link Animator#reverseNow()}
+   * may be coalesced into a single call of this method. However, all directed
+   * reversals take place, i.e., calls to {@link Animator#reverseNow()} are not
+   * ignored.
+   * <p>
+   * It is also possible, if {@link Animator.RepeatBehavior#REVERSE} is used,
+   * that a repeat which reverses the animation could occur during the same tick
+   * of the {@link TimingSource} that a reversal due to
+   * {@link Animator#reverseNow()} does. In this case both reversals are taken
+   * into account before this method is invoked. If this occurs this method is
+   * invoked before {@link #repeat(Animator)}.
+   * <p>
+   * Overall, client code should understand that this method is not a general
+   * notification that the animation's direction has changed. If such a
+   * mechanism is needed the value of {@link Animator#getCurrentDirection()}
+   * should be monitored in calls to {@link #timingEvent(Animator, double)}.
+   * This method's purpose is to inform that the {@link Animator#reverseNow()}
+   * method has been invoked one or more times on the animation.
    * 
    * @param source
    *          the animation.
@@ -73,10 +97,12 @@ public interface TimingTarget {
    *          the fraction of completion between the start and end of the
    *          current cycle. Note that on reversing cycles (
    *          {@link Animator.Direction#BACKWARD}) the fraction decreases from
-   *          1.0 to 0 on backwards-running cycles. Note also that animations
-   *          with a duration of {@link Animator#INFINITE INFINITE} will have an
-   *          undefined value for the fraction, since there is no fraction that
-   *          makes sense if the animation has no defined length.
+   *          1.0 to 0 on backwards-running cycles (A call to
+   *          {@link Animator#getCurrentDirection()} will report which direction
+   *          the animation is going). Note also that animations with a duration
+   *          of {@link Animator#INFINITE INFINITE} will have an undefined value
+   *          for the fraction, since there is no fraction that makes sense if
+   *          the animation has no defined length.
    */
   public void timingEvent(Animator source, double fraction);
 }
