@@ -65,17 +65,14 @@ public final class JPassiveRenderer implements JRenderer, SurfaceHolder.Callback
     f_on.getHolder().addCallback(this);
   }
 
-  @Override
   public void invokeLater(Runnable task) {
     f_on.post(task);
   }
 
-  @Override
   public TimingSource getTimingSource() {
     return f_ts;
   }
 
-  @Override
   public long getFPS() {
     final long avgCycleTime = getAverageCycleTimeNanos();
     if (avgCycleTime != 0) {
@@ -84,7 +81,6 @@ public final class JPassiveRenderer implements JRenderer, SurfaceHolder.Callback
       return 0;
   }
 
-  @Override
   public long getAverageCycleTimeNanos() {
     if (f_renderCount != 0) {
       return (f_totalRenderTime) / f_renderCount;
@@ -92,25 +88,21 @@ public final class JPassiveRenderer implements JRenderer, SurfaceHolder.Callback
       return 0;
   }
 
-  @Override
   public void shutdown() {
     f_on.getHolder().removeCallback(this);
 
     f_target.renderShutdown();
   }
 
-  @Override
   public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
     // Nothing to do
   }
 
-  @Override
   public void surfaceCreated(SurfaceHolder holder) {
     f_target.renderSetup(f_on);
     f_ts.addPostTickListener(f_postTick);
   }
 
-  @Override
   public void surfaceDestroyed(SurfaceHolder holder) {
     f_ts.removePostTickListener(f_postTick);
   }

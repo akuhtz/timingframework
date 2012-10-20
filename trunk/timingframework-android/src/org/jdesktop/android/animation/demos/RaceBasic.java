@@ -52,26 +52,22 @@ public final class RaceBasic extends Activity implements SurfaceHolder.Callback 
     f_trackView = null;
   }
 
-  @Override
   public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
     Log.v(RaceBasic.class.toString(), "surfaceChanged(" + holder + ", " + format + ", " + width + ", " + height + ")");
 
   }
 
-  @Override
   public void surfaceCreated(SurfaceHolder holder) {
     f_timingSource.addTickListener(f_tickListener);
 
   }
 
-  @Override
   public void surfaceDestroyed(SurfaceHolder holder) {
     f_timingSource.removeTickListener(f_tickListener);
 
   }
 
   private final TickListener f_tickListener = new TickListener() {
-    @Override
     public void timingSourceTick(TimingSource source, long nanoTime) {
       final SurfaceHolder sh = f_trackView.getHolder();
       Canvas c = null;

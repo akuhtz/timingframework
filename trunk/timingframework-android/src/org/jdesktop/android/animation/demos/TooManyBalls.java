@@ -44,7 +44,6 @@ public final class TooManyBalls extends Activity implements JRendererTarget<Surf
     if (addButton == null)
       throw new IllegalArgumentException("R.id.button_add_ball does not reference a Button");
     addButton.setOnClickListener(new OnClickListener() {
-      @Override
       public void onClick(View v) {
         addBall();
       }
@@ -54,7 +53,6 @@ public final class TooManyBalls extends Activity implements JRendererTarget<Surf
     if (removeButton == null)
       throw new IllegalArgumentException("R.id.button_remove_ball does not reference a Button");
     removeButton.setOnClickListener(new OnClickListener() {
-      @Override
       public void onClick(View v) {
         removeBall();
       }
@@ -204,19 +202,16 @@ public final class TooManyBalls extends Activity implements JRendererTarget<Surf
     }
   }
 
-  @Override
   public void renderSetup(SurfaceView d) {
     // TODO Auto-generated method stub
 
   }
 
-  @Override
   public void renderUpdate() {
     // TODO Auto-generated method stub
 
   }
 
-  @Override
   public void render(Canvas g, int width, int height) {
 
     g.drawColor(Color.WHITE);
@@ -236,7 +231,6 @@ public final class TooManyBalls extends Activity implements JRendererTarget<Surf
     }
   }
 
-  @Override
   public void renderShutdown() {
     // TODO Auto-generated method stub
   }

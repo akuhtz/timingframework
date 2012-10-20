@@ -9,7 +9,6 @@ import android.widget.Button;
 
 public class DemoActivity extends Activity {
   /** Called when the activity is first created. */
-  @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.main);
@@ -29,7 +28,6 @@ public class DemoActivity extends Activity {
 
     button.setOnClickListener(new OnClickListener() {
 
-      @Override
       public void onClick(View v) {
         startActivity(new Intent(getApplicationContext(), cls));
       }
