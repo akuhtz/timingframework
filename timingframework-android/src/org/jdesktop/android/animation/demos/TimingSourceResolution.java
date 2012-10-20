@@ -83,7 +83,6 @@ public class TimingSourceResolution extends Activity implements TimingSourceReso
    */
   public void out(final String s) {
     final Runnable addToTextArea = new Runnable() {
-      @Override
       public void run() {
         final StringBuffer b = new StringBuffer(f_benchmarkOutput.getText());
         b.append(s);
@@ -91,7 +90,6 @@ public class TimingSourceResolution extends Activity implements TimingSourceReso
         f_benchmarkOutput.setText(b.toString());
 
         final Runnable scrollToBottom = new Runnable() {
-          @Override
           public void run() {
             f_scrollOutput.fullScroll(View.FOCUS_DOWN);
           }
@@ -109,7 +107,6 @@ public class TimingSourceResolution extends Activity implements TimingSourceReso
       f_activity = activity;
     }
 
-    @Override
     public TimingSource getTimingSource(int periodMillis) {
       return new AndroidTimingSource(periodMillis, TimeUnit.MILLISECONDS, f_activity);
     }
