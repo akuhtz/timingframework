@@ -3,6 +3,7 @@ package org.jdesktop.core.animation.timing;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import com.surelogic.ReferenceObject;
 import com.surelogic.ThreadSafe;
 import com.surelogic.Vouch;
 
@@ -71,6 +72,7 @@ public abstract class TimingSource {
    * <tt>repaint()</tt> after a large number of animations (which register
    * themselves as {@link TickListener}s) have updated the program's state.
    */
+  @ReferenceObject
   public interface PostTickListener {
 
     /**
@@ -100,6 +102,7 @@ public abstract class TimingSource {
   /**
    * Listeners that will receive "tick" events.
    */
+  @Vouch("ThreadSafe")
   private final CopyOnWriteArraySet<TickListener> f_tickListeners = new CopyOnWriteArraySet<TickListener>();
 
   /**
@@ -163,6 +166,7 @@ public abstract class TimingSource {
   /**
    * Holds "one shot" tasks to be run on the next tick.
    */
+  @Vouch("ThreadSafe")
   private final ConcurrentLinkedQueue<Runnable> f_oneShotQueue = new ConcurrentLinkedQueue<Runnable>();
 
   /**

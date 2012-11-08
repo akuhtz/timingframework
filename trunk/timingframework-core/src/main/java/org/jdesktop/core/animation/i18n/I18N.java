@@ -20,7 +20,7 @@ public final class I18N {
 
   private static final String ERROR_FORMAT = "(Timing Framework #%d) %s";
 
-  @RegionEffects("reads any(java.util.ResourceBundle):Instance")
+  @RegionEffects("reads any(java.util.ResourceBundle):Instance, arg1:Instance")
   private static String getString(final String keyTemplate, final Object... args) {
     return ERR.getString(String.format(keyTemplate, args));
   }
@@ -63,7 +63,7 @@ public final class I18N {
    * @return the formatted error message for the given number.
    * @see String#format(String, Object...)
    */
-  @RegionEffects("reads any(java.util.ResourceBundle):Instance")
+  @RegionEffects("reads any(java.util.ResourceBundle):Instance, arg1:Instance")
   public static String err(final int number, Object... args) {
     return String.format(I18N.err(number), args);
   }
