@@ -14,11 +14,13 @@ import org.jdesktop.core.animation.timing.interpolators.LinearInterpolator;
 import com.surelogic.Immutable;
 import com.surelogic.InRegion;
 import com.surelogic.NotThreadSafe;
+import com.surelogic.ReferenceObject;
 import com.surelogic.Region;
 import com.surelogic.RegionEffects;
 import com.surelogic.RegionLock;
 import com.surelogic.ThreadSafe;
 import com.surelogic.Unique;
+import com.surelogic.Vouch;
 
 /**
  * This class controls the timing of animations. Instances are constructed by a
@@ -70,6 +72,7 @@ import com.surelogic.Unique;
  * @see Builder
  */
 @ThreadSafe
+@ReferenceObject
 @Region("private AnimatorState")
 @RegionLock("AnimatorLock is f_targets protects AnimatorState")
 public final class Animator implements TickListener {
@@ -578,6 +581,7 @@ public final class Animator implements TickListener {
    * <p>
    * Do not hold this lock when invoking any method on {@link #f_timingSource}.
    */
+  @Vouch("ThreadSafe")
   private final CopyOnWriteArrayList<TimingTarget> f_targets = new CopyOnWriteArrayList<TimingTarget>();
 
   /**
@@ -1037,6 +1041,8 @@ public final class Animator implements TickListener {
   }
 
   @Override
+  @RegionEffects("reads Instance")
+  @Vouch("Use of StringBuilder")
   public String toString() {
     final StringBuilder b = new StringBuilder();
     b.append(Animator.class.getSimpleName()).append('@');
