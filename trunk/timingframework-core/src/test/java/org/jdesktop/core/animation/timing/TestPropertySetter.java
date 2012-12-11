@@ -1,6 +1,8 @@
 package org.jdesktop.core.animation.timing;
 
+import org.jdesktop.core.animation.timing.Animator.Direction;
 import org.jdesktop.core.animation.timing.sources.ManualTimingSource;
+import org.jdesktop.core.animation.timing.sources.ScheduledExecutorTimingSource;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -101,19 +103,19 @@ public final class TestPropertySetter {
     class Expected extends TimingTargetAdapter {
 
       private PropTest f_object;
-      private int f_value;
+      private int f_valueAtBegin;
 
       Expected(PropTest object) {
         f_object = object;
       }
 
       public int getValueAtBegin() {
-        return f_value;
+        return f_valueAtBegin;
       }
 
       @Override
       public void begin(Animator source) {
-        f_value = f_object.getValue();
+        f_valueAtBegin = f_object.getValue();
       }
     }
     PropTest pt = new PropTest();
@@ -128,5 +130,58 @@ public final class TestPropertySetter {
     while (a.isRunning())
       ts.tick();
     Assert.assertEquals(2, pt.getValue());
+  }
+
+  @Test
+  public void backwardsAnimation() throws InterruptedException {
+    class Expected extends TimingTargetAdapter {
+
+      private PropTest f_object;
+      private int f_valueAtBegin;
+      private boolean f_firstTimingEvent = true;
+      private int f_valueAtFirstTimingEvent;
+
+      Expected(PropTest object) {
+        f_object = object;
+      }
+
+      public int getValueAtBegin() {
+        return f_valueAtBegin;
+      }
+
+      public int getValueAtFirstTimingEvent() {
+        return f_valueAtFirstTimingEvent;
+      }
+
+      @Override
+      public void begin(Animator source) {
+        f_valueAtBegin = f_object.getValue();
+        System.out.println(f_object.getValue());
+      }
+
+      @Override
+      public void timingEvent(Animator source, double fraction) {
+        if (f_firstTimingEvent) {
+          f_firstTimingEvent = false;
+          f_valueAtFirstTimingEvent = f_object.getValue();
+        }
+        System.out.println(f_object.getValue());
+      }
+    }
+    PropTest pt = new PropTest();
+    TimingTarget tt = PropertySetter.getTarget(pt, "value", 1, 50);
+    Expected ee = new Expected(pt);
+    TimingSource ts = new ScheduledExecutorTimingSource();
+    ts.init();
+    Animator a = new Animator.Builder(ts).addTarget(tt).addTarget(ee).setStartDirection(Direction.BACKWARD).build();
+    pt.setValue(-999);
+    a.start();
+    a.await();
+    ts.dispose();
+
+    Assert.assertEquals(50, ee.getValueAtBegin());
+    Assert.assertTrue(ee.getValueAtFirstTimingEvent() > 48);
+    Assert.assertEquals(1, pt.getValue());
+
   }
 }
