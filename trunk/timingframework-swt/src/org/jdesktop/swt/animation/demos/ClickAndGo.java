@@ -45,11 +45,7 @@ public final class ClickAndGo extends Canvas {
     shell.setText("SWT Click and Go!");
     shell.setLayout(new FillLayout());
 
-    final TimingSource ts = new SWTTimingSource(display);
-    Animator.setDefaultTimingSource(ts);
-    ts.init();
-
-    setupGUI(shell, ts);
+    setupGUI(shell);
 
     shell.setSize(800, 600);
     shell.open();
@@ -57,7 +53,6 @@ public final class ClickAndGo extends Canvas {
       if (!display.readAndDispatch())
         display.sleep();
     }
-    ts.dispose();
     display.dispose();
   }
 
@@ -101,8 +96,9 @@ public final class ClickAndGo extends Canvas {
 
   private static final Ball f_ball = new Ball();
   private static final Random f_die = new Random();
+  private static Canvas f_panel = null;
 
-  public static void setupGUI(Shell shell, TimingSource ts) {
+  public static void setupGUI(Shell shell) {
     f_ball.image = DemoImages.getImage(DemoResources.BLUE_SPHERE, shell.getDisplay());
     f_ball.setLocation(new Point(50, 90));
     final int rectSize = f_ball.image.getBounds().width;
@@ -111,14 +107,8 @@ public final class ClickAndGo extends Canvas {
 
     shell.setLayout(new FillLayout());
 
-    final Canvas panel = new ClickAndGo(shell, SWT.DOUBLE_BUFFERED);
+    f_panel = new ClickAndGo(shell, SWT.DOUBLE_BUFFERED);
 
-    ts.addPostTickListener(new PostTickListener() {
-      @Override
-      public void timingSourcePostTick(TimingSource source, long nanoTime) {
-        panel.redraw();
-      }
-    });
   }
 
   public ClickAndGo(Composite parent, int style) {
@@ -150,7 +140,17 @@ public final class ClickAndGo extends Canvas {
         if (f_ball.animator != null)
           f_ball.animator.stop();
 
-        f_ball.animator = new Animator.Builder().setDuration(2, TimeUnit.SECONDS).build();
+        final TimingSource ts = new SWTTimingSource(e.widget.getDisplay());
+        ts.addPostTickListener(new PostTickListener() {
+          @Override
+          public void timingSourcePostTick(TimingSource source, long nanoTime) {
+            if (f_panel != null && !f_panel.isDisposed())
+              f_panel.redraw();
+          }
+        });
+        ts.init();
+
+        f_ball.animator = new Animator.Builder(ts).setDuration(2, TimeUnit.SECONDS).setDisposeTimingSource(true).build();
 
         final Point clickPoint = new Point(e.x, e.y);
         f_ball.animator.addTarget(PropertySetter
