@@ -9,8 +9,6 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -47,7 +45,6 @@ public final class ClickAndGo extends JPanel {
 
   public static void main(String[] args) {
     System.setProperty("swing.defaultlaf", "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
-    Animator.setDefaultTimingSource(f_animationTimer);
 
     SwingUtilities.invokeLater(new Runnable() {
       @Override
@@ -56,11 +53,6 @@ public final class ClickAndGo extends JPanel {
       }
     });
   }
-
-  /**
-   * Used for ball animations.
-   */
-  private static final SwingTimerTimingSource f_animationTimer = new SwingTimerTimingSource();
 
   public static class Ball {
     Point location;
@@ -112,25 +104,10 @@ public final class ClickAndGo extends JPanel {
 
     final JFrame frame = new JFrame("Swing Click and Go!");
     frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-    frame.addWindowListener(new WindowAdapter() {
-      @Override
-      public void windowClosed(WindowEvent e) {
-        super.windowClosed(e);
-        f_animationTimer.dispose();
-      }
-    });
     frame.setLayout(new BorderLayout());
 
     final JPanel panel = new ClickAndGo();
     frame.add(panel, BorderLayout.CENTER);
-
-    f_animationTimer.init();
-    f_animationTimer.addPostTickListener(new PostTickListener() {
-      @Override
-      public void timingSourcePostTick(TimingSource source, long nanoTime) {
-        panel.repaint();
-      }
-    });
 
     frame.setMinimumSize(new Dimension(800, 600));
     frame.validate();
@@ -146,7 +123,17 @@ public final class ClickAndGo extends JPanel {
         if (f_ball.animator != null)
           f_ball.animator.stop();
 
-        f_ball.animator = new Animator.Builder().setDuration(2, TimeUnit.SECONDS).build();
+        SwingTimerTimingSource animationTimer = new SwingTimerTimingSource();
+        animationTimer.init();
+        animationTimer.addPostTickListener(new PostTickListener() {
+          @Override
+          public void timingSourcePostTick(TimingSource source, long nanoTime) {
+            ClickAndGo.this.repaint();
+          }
+        });
+
+        f_ball.animator = new Animator.Builder(animationTimer).setDuration(2, TimeUnit.SECONDS).setDisposeTimingSource(true)
+            .build();
 
         final Point clickPoint = new Point(e.getX(), e.getY());
         f_ball.animator.addTarget(PropertySetter
