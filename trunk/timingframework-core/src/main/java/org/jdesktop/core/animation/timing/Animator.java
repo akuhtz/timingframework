@@ -206,6 +206,12 @@ public final class Animator implements TickListener {
    * <td align="right">1 second</td>
    * </tr>
    * <tr>
+   * <td>{@link #setDisposeTimingSource(boolean)}</td>
+   * <td>if the {@link TimingSource} used by the animation should be disposed at
+   * the end of the animation.</td>
+   * <td align="right">{@code false}</td>
+   * </tr>
+   * <tr>
    * <td>{@link #setEndBehavior(Animator.EndBehavior)}</td>
    * <td>what happens at the end of the animation</td>
    * <td align="right">{@link Animator.EndBehavior#HOLD}</td>

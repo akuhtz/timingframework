@@ -156,7 +156,6 @@ public final class TestPropertySetter {
       @Override
       public void begin(Animator source) {
         f_valueAtBegin = f_object.getValue();
-        System.out.println(f_object.getValue());
       }
 
       @Override
@@ -165,7 +164,6 @@ public final class TestPropertySetter {
           f_firstTimingEvent = false;
           f_valueAtFirstTimingEvent = f_object.getValue();
         }
-        System.out.println(f_object.getValue());
       }
     }
     PropTest pt = new PropTest();
