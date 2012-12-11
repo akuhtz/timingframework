@@ -100,6 +100,14 @@ public abstract class TimingSource {
   public abstract void dispose();
 
   /**
+   * Gets if this timing target has had {@link #dispose()} invoked on it.
+   * 
+   * @return {@code true} if this timing target has had {@link #dispose()}
+   *         invoked on it, {@code false} otherwise.
+   */
+  public abstract boolean isDisposed();
+
+  /**
    * Listeners that will receive "tick" events.
    */
   @Vouch("ThreadSafe")

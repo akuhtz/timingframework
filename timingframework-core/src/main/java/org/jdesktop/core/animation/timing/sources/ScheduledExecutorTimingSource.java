@@ -86,6 +86,11 @@ public final class ScheduledExecutorTimingSource extends TimingSource {
   }
 
   @Override
+  public boolean isDisposed() {
+    return f_executor.isShutdown();
+  }
+
+  @Override
   public String toString() {
     final StringBuilder b = new StringBuilder();
     b.append(ScheduledExecutorTimingSource.class.getSimpleName()).append('@').append(Integer.toHexString(hashCode()));

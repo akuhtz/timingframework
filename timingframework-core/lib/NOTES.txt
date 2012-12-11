@@ -20,6 +20,20 @@ Report bugs, read the documentation, and get new releases at:
 || 5.1 Release Notes ||
 ++-------------------++
 
+o The ability to have an Animation dispose its TimingSource when it
+  ends was added.
+o A bug was fixed: http://java.net/jira/browse/TIMINGFRAMEWORK-16
+  This bug caused property setters begin call to have the wrong value
+  when start direction was BACKWARD. For example a property animation
+  on an int from 1 to 50 backwards would say: 1, 50, 49, ...
+o A bug was fixed: http://java.net/jira/browse/TIMINGFRAMEWORK-17
+  The core jar in Maven was including images from the demos making
+  it balloon from 200K to over 1M.
+
+++-------------------++
+|| 5.1 Release Notes ||
+++-------------------++
+
 o Core, Swing, and SWT were tested under Java 7 as well as Java 6.
   Note that release and source code is still Java 6, however, folks
   using Java 7 should be okay).
