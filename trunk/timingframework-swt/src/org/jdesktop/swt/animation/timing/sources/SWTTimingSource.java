@@ -147,6 +147,11 @@ public final class SWTTimingSource extends TimingSource {
   }
 
   @Override
+  public boolean isDisposed() {
+    return !f_running.get();
+  }
+
+  @Override
   public String toString() {
     final StringBuilder b = new StringBuilder();
     b.append(SWTTimingSource.class.getSimpleName()).append('@').append(Integer.toHexString(hashCode()));

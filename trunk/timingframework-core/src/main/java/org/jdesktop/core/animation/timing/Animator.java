@@ -294,6 +294,7 @@ public final class Animator implements TickListener {
     private Animator.Direction f_startDirection = Animator.Direction.FORWARD;
     private final List<TimingTarget> f_targets = new ArrayList<TimingTarget>();
     private final TimingSource f_timingSource;
+    private boolean f_disposeTimingSource = false;
 
     /**
      * Constructs an animation builder instance.
@@ -342,6 +343,21 @@ public final class Animator implements TickListener {
      */
     public Builder setDebugName(String name) {
       f_debugName = name;
+      return this;
+    }
+
+    /**
+     * Sets if the animation should invoke {@link TimingSource#dispose()} on its
+     * timing source when it ends. The default value is {@code false}.
+     * 
+     * @param value
+     *          {@code true} if the animation should invoke
+     *          {@link TimingSource#dispose()} on its timing source when it
+     *          ends, {@code false} if not.
+     * @return this builder (to allow chained operations).
+     */
+    public Builder setDisposeTimingSource(boolean value) {
+      f_disposeTimingSource = value;
       return this;
     }
 
@@ -453,7 +469,7 @@ public final class Animator implements TickListener {
      */
     public Animator build() {
       final Animator result = new Animator(f_debugName, f_duration, f_durationTimeUnit, f_endBehavior, f_interpolator,
-          f_repeatBehavior, f_repeatCount, f_startDirection, f_timingSource);
+          f_repeatBehavior, f_repeatCount, f_startDirection, f_timingSource, f_disposeTimingSource);
       for (TimingTarget target : f_targets) {
         result.addTarget(target);
       }
@@ -474,6 +490,7 @@ public final class Animator implements TickListener {
   private final long f_repeatCount;
   private final Direction f_startDirection;
   private final TimingSource f_timingSource;
+  private final boolean f_disposeTimingSource; // at end
 
   /**
    * Gets the "debug" name of this animation.
@@ -670,7 +687,8 @@ public final class Animator implements TickListener {
    */
   @Unique("return")
   Animator(String debugName, long duration, TimeUnit durationTimeUnit, EndBehavior endBehavior, Interpolator interpolator,
-      RepeatBehavior repeatBehavior, long repeatCount, Direction startDirection, TimingSource timingSource) {
+      RepeatBehavior repeatBehavior, long repeatCount, Direction startDirection, TimingSource timingSource,
+      boolean disposeTimingSource) {
     f_debugName = debugName;
     f_duration = duration;
     f_durationTimeUnit = durationTimeUnit;
@@ -680,6 +698,7 @@ public final class Animator implements TickListener {
     f_repeatCount = repeatCount;
     f_startDirection = f_currentDirection = startDirection;
     f_timingSource = timingSource;
+    f_disposeTimingSource = disposeTimingSource;
   }
 
   /**
@@ -1139,6 +1158,8 @@ public final class Animator implements TickListener {
       @Override
       public void run() {
         try {
+          if (f_disposeTimingSource)
+            f_timingSource.dispose();
           if (notify)
             for (TimingTarget target : f_targets) {
               target.end(Animator.this);

@@ -1,5 +1,7 @@
 package org.jdesktop.core.animation.timing.sources;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.jdesktop.core.animation.timing.TimingSource;
 
 import com.surelogic.ThreadSafe;
@@ -14,7 +16,8 @@ import com.surelogic.ThreadSafe;
  * is maintained, i.e., always call this method from the same thread.
  * <p>
  * The {@link #init()} and {@link #dispose()} methods do nothing in this
- * implementation and do not need to be invoked.
+ * implementation and do not need to be invoked. However, {@link #isDisposed()}
+ * will reflect if {@link #dispose()} has been invoked.
  * 
  * @author Tim Halloran
  */
@@ -30,12 +33,21 @@ public final class ManualTimingSource extends TimingSource {
    * Called to "tick" time along.
    */
   public void tick() {
+    if (f_isDisposed.get())
+      throw new IllegalStateException("tick() invoked after dispose()");
     getPerTickTask().run();
   }
 
+  private final AtomicBoolean f_isDisposed = new AtomicBoolean(false);
+
   @Override
   public void dispose() {
-    // nothing to do
+    f_isDisposed.set(true);
+  }
+
+  @Override
+  public boolean isDisposed() {
+    return f_isDisposed.get();
   }
 
   @Override

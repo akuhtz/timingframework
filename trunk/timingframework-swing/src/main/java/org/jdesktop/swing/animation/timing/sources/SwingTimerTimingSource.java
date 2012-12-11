@@ -96,6 +96,11 @@ public final class SwingTimerTimingSource extends TimingSource {
   }
 
   @Override
+  public boolean isDisposed() {
+    return !f_timer.isRunning();
+  }
+
+  @Override
   public String toString() {
     final StringBuilder b = new StringBuilder();
     b.append(SwingTimerTimingSource.class.getSimpleName()).append('@').append(Integer.toHexString(hashCode()));
