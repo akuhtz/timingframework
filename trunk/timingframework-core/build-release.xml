@@ -14,6 +14,7 @@
 	<property name="core-release" location="${core}${fs}release" />
 	<property name="core-release-work" location="${core-release}${fs}timingframework-core-${release-version}" />
 	<property name="core-jar" value="timingframework-core-${release-version}.jar" />
+	<property name="promises-src" location="${basedir}${fs}promises${fs}src${fs}main${fs}java" />
 
 	<target name="build-release-core">
 		<delete quiet="true" includeemptydirs="true">
