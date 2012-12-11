@@ -5,6 +5,7 @@ import java.util.Locale;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.jdesktop.core.animation.i18n.I18N;
+import org.jdesktop.core.animation.timing.Animator.Direction;
 import org.jdesktop.core.animation.timing.interpolators.LinearInterpolator;
 import org.jdesktop.core.animation.timing.interpolators.SplineInterpolator;
 
@@ -344,7 +345,8 @@ public final class PropertySetter {
 
     @Override
     public void begin(Animator source) {
-      timingEvent(source, 0.0);
+      final double fraction = source.getStartDirection() == Direction.FORWARD ? 0.0 : 1.0;
+      timingEvent(source, fraction);
     }
   }
 
