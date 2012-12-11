@@ -614,4 +614,47 @@ public final class TestAnimator {
     // (rarely) if it hits right at a reversal
     Assert.assertTrue(direction.allTimingEventsMsg(), direction.allTimingEventsOkay());
   }
+
+  @Test
+  public void disposeTimingTarget1() throws InterruptedException {
+    TimingSource ts = new ScheduledExecutorTimingSource();
+    ts.init();
+    Animator a = new Animator.Builder(ts).setDisposeTimingSource(true).build();
+    a.start();
+    a.await();
+    Assert.assertTrue(ts.isDisposed());
+  }
+
+  @Test
+  public void disposeTimingTarget2() throws InterruptedException {
+    TimingSource ts = new ScheduledExecutorTimingSource();
+    ts.init();
+    Animator a = new Animator.Builder(ts).setRepeatCount(2).setRepeatBehavior(RepeatBehavior.REVERSE).setDisposeTimingSource(true)
+        .build();
+    a.start();
+    a.await();
+    Assert.assertTrue(ts.isDisposed());
+  }
+
+  @Test
+  public void disposeTimingTarget3() throws InterruptedException {
+    TimingSource ts = new ScheduledExecutorTimingSource();
+    ts.init();
+    Animator a = new Animator.Builder(ts).build();
+    a.start();
+    a.await();
+    Assert.assertFalse(ts.isDisposed());
+    ts.dispose();
+  }
+
+  @Test
+  public void disposeTimingTarget4() throws InterruptedException {
+    TimingSource ts = new ScheduledExecutorTimingSource();
+    ts.init();
+    Animator a = new Animator.Builder(ts).setDisposeTimingSource(false).build();
+    a.start();
+    a.await();
+    Assert.assertFalse(ts.isDisposed());
+    ts.dispose();
+  }
 }
