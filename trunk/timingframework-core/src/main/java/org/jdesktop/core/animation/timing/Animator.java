@@ -604,7 +604,7 @@ public final class Animator implements TickListener {
    * <p>
    * Do not hold this lock when invoking any method on {@link #f_timingSource}.
    */
-  @Vouch("ThreadSafe")
+  @Vouch("AnnotationBounds")
   private final CopyOnWriteArrayList<TimingTarget> f_targets = new CopyOnWriteArrayList<TimingTarget>();
 
   /**
@@ -1067,7 +1067,7 @@ public final class Animator implements TickListener {
 
   @Override
   @RegionEffects("reads Instance")
-  @Vouch("Use of StringBuilder")
+  @Vouch("Uses StringBuilder")
   public String toString() {
     final StringBuilder b = new StringBuilder();
     b.append(Animator.class.getSimpleName()).append('@');

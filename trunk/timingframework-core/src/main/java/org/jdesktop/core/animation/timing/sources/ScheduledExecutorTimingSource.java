@@ -7,7 +7,6 @@ import java.util.concurrent.TimeUnit;
 import org.jdesktop.core.animation.timing.TimingSource;
 
 import com.surelogic.ThreadSafe;
-import com.surelogic.Vouch;
 
 /**
  * A timing source using a {@link ScheduledExecutorService} as returned from
@@ -40,7 +39,6 @@ import com.surelogic.Vouch;
 @ThreadSafe
 public final class ScheduledExecutorTimingSource extends TimingSource {
 
-  @Vouch("ThreadSafe")
   private final ScheduledExecutorService f_executor;
   private final long f_period;
   private final TimeUnit f_periodTimeUnit;

@@ -10,6 +10,7 @@ import org.jdesktop.core.animation.timing.TimingSource;
 import org.jdesktop.core.animation.timing.sources.ManualTimingSource;
 import org.jdesktop.swing.animation.timing.sources.SwingTimerTimingSource;
 
+import com.surelogic.Immutable;
 import com.surelogic.Utility;
 
 /**
@@ -26,6 +27,7 @@ import com.surelogic.Utility;
  * 
  * @author Tim Halloran
  */
+@Immutable
 @Utility
 public final class JRendererFactory {
 

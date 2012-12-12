@@ -16,7 +16,7 @@ import com.surelogic.RegionEffects;
 @Immutable
 public final class EvaluatorLine2D implements Evaluator<Line2D> {
 
-  @RegionEffects("reads All")
+  @RegionEffects("reads Instance, v0:Instance, v1:Instance")
   public Line2D evaluate(Line2D v0, Line2D v1, double fraction) {
     double x1 = v0.getX1() + ((v1.getX1() - v0.getX1()) * fraction);
     double y1 = v0.getY1() + ((v1.getY1() - v0.getY1()) * fraction);

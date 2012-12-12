@@ -16,7 +16,7 @@ import com.surelogic.RegionEffects;
 @Immutable
 public final class EvaluatorEllipse2D implements Evaluator<Ellipse2D> {
 
-  @RegionEffects("reads All")
+  @RegionEffects("reads Instance, v0:Instance, v1:Instance")
   public Ellipse2D evaluate(Ellipse2D v0, Ellipse2D v1, double fraction) {
     double x = v0.getX() + ((v1.getX() - v0.getX()) * fraction);
     double y = v0.getY() + ((v1.getY() - v0.getY()) * fraction);
