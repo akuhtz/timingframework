@@ -6,7 +6,6 @@ import org.jdesktop.core.animation.timing.Evaluator;
 
 import com.surelogic.Immutable;
 import com.surelogic.RegionEffects;
-import com.surelogic.Vouch;
 
 /**
  * An evaluator for {@link Dimension2D}.
