@@ -17,11 +17,13 @@ Report bugs, read the documentation, and get new releases at:
 
 
 ++-------------------++
-|| 5.1 Release Notes ||
+|| 5.5 Release Notes ||
 ++-------------------++
 
 o The ability to have an Animation dispose its TimingSource when it
-  ends was added.
+  ends was added. See Animator.Builder.setDisposeTimingSource(boolean)
+  for more information. This capability is useful if you have long
+  periods of time in your program with no animations running.
 o A bug was fixed: http://java.net/jira/browse/TIMINGFRAMEWORK-16
   This bug caused property setters begin call to have the wrong value
   when start direction was BACKWARD. For example a property animation
