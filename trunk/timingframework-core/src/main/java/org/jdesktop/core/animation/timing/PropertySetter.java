@@ -345,7 +345,7 @@ public final class PropertySetter {
 
     @Override
     public void begin(Animator source) {
-      final double fraction = source.getStartDirection() == Direction.FORWARD ? 0.0 : 1.0;
+      final double fraction = source.getCurrentDirection() == Direction.FORWARD ? 0.0 : 1.0;
       timingEvent(source, fraction);
     }
   }

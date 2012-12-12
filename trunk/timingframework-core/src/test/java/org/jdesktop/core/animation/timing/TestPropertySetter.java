@@ -8,10 +8,9 @@ import org.junit.Test;
 
 public final class TestPropertySetter {
 
-  @SuppressWarnings("unused")
-  private static class PropTest {
+  static class MyProps {
 
-    private int value;
+    int value;
 
     public int getValue() {
       return value;
@@ -37,27 +36,62 @@ public final class TestPropertySetter {
     }
   }
 
+  static class ValueTarget extends TimingTargetAdapter {
+
+    // values to check
+    int valueAtBegin;
+    Direction startDirectionAtBegin;
+    Direction currentDirectionAtBegin;
+
+    int valueAtFirstTimingEvent;
+    Direction currentDirectionAtFirstTimingEvent;
+
+    // internals
+    private final MyProps props;
+    private boolean firstTimingEvent = true;
+
+    ValueTarget(MyProps value) {
+      props = value;
+    }
+
+    @Override
+    public void begin(Animator source) {
+      valueAtBegin = props.getValue();
+      startDirectionAtBegin = source.getStartDirection();
+      currentDirectionAtBegin = source.getCurrentDirection();
+    }
+
+    @Override
+    public void timingEvent(Animator source, double fraction) {
+      if (firstTimingEvent) {
+        firstTimingEvent = false;
+        valueAtFirstTimingEvent = props.getValue();
+        currentDirectionAtFirstTimingEvent = source.getCurrentDirection();
+      }
+    }
+  }
+
   @Test(expected = IllegalArgumentException.class)
   public void noSuchProperty1() {
-    PropTest pt = new PropTest();
+    MyProps pt = new MyProps();
     PropertySetter.getTarget(pt, "wrong", 1, 2, 3);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void noSuchPropertyTo1() {
-    PropTest pt = new PropTest();
+    MyProps pt = new MyProps();
     PropertySetter.getTargetTo(pt, "wrong", 1, 2, 3);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void noSuchPropertyTo2() {
-    PropTest pt = new PropTest();
+    MyProps pt = new MyProps();
     PropertySetter.getTargetTo(pt, "byteValue", (byte) 1, (byte) 2, (byte) 3);
   }
 
   @Test
   public void valueProperty() {
-    PropTest pt = new PropTest();
+    MyProps pt = new MyProps();
     TimingTarget tt = PropertySetter.getTarget(pt, "value", 1, 2, 3);
     ManualTimingSource ts = new ManualTimingSource();
     Animator a = new Animator.Builder(ts).addTarget(tt).build();
@@ -71,7 +105,7 @@ public final class TestPropertySetter {
 
   @Test
   public void byteValueProperty() {
-    PropTest pt = new PropTest();
+    MyProps pt = new MyProps();
     TimingTarget tt = PropertySetter.getTarget(pt, "byteValue", (byte) 1, (byte) 2, (byte) 3);
     ManualTimingSource ts = new ManualTimingSource();
     Animator a = new Animator.Builder(ts).addTarget(tt).build();
@@ -85,7 +119,7 @@ public final class TestPropertySetter {
 
   @Test
   public void valuePropertyTo() {
-    PropTest pt = new PropTest();
+    MyProps pt = new MyProps();
     pt.setValue(100);
     TimingTarget tt = PropertySetter.getTargetTo(pt, "value", 1, 2, 3);
     ManualTimingSource ts = new ManualTimingSource();
@@ -100,86 +134,109 @@ public final class TestPropertySetter {
 
   @Test
   public void valueSetInBegin() {
-    class Expected extends TimingTargetAdapter {
-
-      private PropTest f_object;
-      private int f_valueAtBegin;
-
-      Expected(PropTest object) {
-        f_object = object;
-      }
-
-      public int getValueAtBegin() {
-        return f_valueAtBegin;
-      }
-
-      @Override
-      public void begin(Animator source) {
-        f_valueAtBegin = f_object.getValue();
-      }
-    }
-    PropTest pt = new PropTest();
+    MyProps pt = new MyProps();
     TimingTarget tt = PropertySetter.getTarget(pt, "value", 1, 2);
-    Expected ee = new Expected(pt);
+    ValueTarget vt = new ValueTarget(pt);
     ManualTimingSource ts = new ManualTimingSource();
-    Animator a = new Animator.Builder(ts).addTarget(tt).addTarget(ee).build();
+    Animator a = new Animator.Builder(ts).addTarget(tt).addTarget(vt).build();
     pt.setValue(-999);
     a.start();
     ts.tick();
-    Assert.assertEquals(1, ee.getValueAtBegin());
+    Assert.assertEquals(1, vt.valueAtBegin);
     while (a.isRunning())
       ts.tick();
     Assert.assertEquals(2, pt.getValue());
   }
 
   @Test
-  public void backwardsAnimation() throws InterruptedException {
-    class Expected extends TimingTargetAdapter {
-
-      private PropTest f_object;
-      private int f_valueAtBegin;
-      private boolean f_firstTimingEvent = true;
-      private int f_valueAtFirstTimingEvent;
-
-      Expected(PropTest object) {
-        f_object = object;
-      }
-
-      public int getValueAtBegin() {
-        return f_valueAtBegin;
-      }
-
-      public int getValueAtFirstTimingEvent() {
-        return f_valueAtFirstTimingEvent;
-      }
-
-      @Override
-      public void begin(Animator source) {
-        f_valueAtBegin = f_object.getValue();
-      }
-
-      @Override
-      public void timingEvent(Animator source, double fraction) {
-        if (f_firstTimingEvent) {
-          f_firstTimingEvent = false;
-          f_valueAtFirstTimingEvent = f_object.getValue();
-        }
-      }
-    }
-    PropTest pt = new PropTest();
+  public void forwardStartCalled() throws InterruptedException {
+    MyProps pt = new MyProps();
     TimingTarget tt = PropertySetter.getTarget(pt, "value", 1, 50);
-    Expected ee = new Expected(pt);
+    ValueTarget vt = new ValueTarget(pt);
     TimingSource ts = new ScheduledExecutorTimingSource();
     ts.init();
-    Animator a = new Animator.Builder(ts).addTarget(tt).addTarget(ee).setStartDirection(Direction.BACKWARD).build();
+    Animator a = new Animator.Builder(ts).addTarget(tt).addTarget(vt).setStartDirection(Direction.FORWARD).build();
     pt.setValue(-999);
     a.start();
     a.await();
     ts.dispose();
 
-    Assert.assertEquals(50, ee.getValueAtBegin());
-    Assert.assertTrue(ee.getValueAtFirstTimingEvent() > 48);
-    Assert.assertEquals(1, pt.getValue());
+    Assert.assertEquals(1, vt.valueAtBegin);
+    Assert.assertSame(vt.startDirectionAtBegin, Direction.FORWARD);
+    Assert.assertSame(vt.currentDirectionAtBegin, Direction.FORWARD);
 
+    Assert.assertTrue(vt.valueAtFirstTimingEvent < 4); // time dependent
+    Assert.assertSame(vt.currentDirectionAtFirstTimingEvent, Direction.FORWARD);
+
+    Assert.assertEquals(50, pt.getValue());
+  }
+
+  @Test
+  public void backwardStartCalled() throws InterruptedException {
+    MyProps pt = new MyProps();
+    TimingTarget tt = PropertySetter.getTarget(pt, "value", 1, 50);
+    ValueTarget vt = new ValueTarget(pt);
+    TimingSource ts = new ScheduledExecutorTimingSource();
+    ts.init();
+    Animator a = new Animator.Builder(ts).addTarget(tt).addTarget(vt).setStartDirection(Direction.BACKWARD).build();
+    pt.setValue(-999);
+    a.start();
+    a.await();
+    ts.dispose();
+
+    Assert.assertEquals(50, vt.valueAtBegin);
+    Assert.assertSame(vt.startDirectionAtBegin, Direction.BACKWARD);
+    Assert.assertSame(vt.currentDirectionAtBegin, Direction.BACKWARD);
+
+    Assert.assertTrue(vt.valueAtFirstTimingEvent > 46); // time dependent
+    Assert.assertSame(vt.currentDirectionAtFirstTimingEvent, Direction.BACKWARD);
+
+    Assert.assertEquals(1, pt.getValue());
+  }
+
+  @Test
+  public void forwardStartReverseCalled() throws InterruptedException {
+    MyProps pt = new MyProps();
+    TimingTarget tt = PropertySetter.getTarget(pt, "value", 1, 50);
+    ValueTarget vt = new ValueTarget(pt);
+    TimingSource ts = new ScheduledExecutorTimingSource();
+    ts.init();
+    Animator a = new Animator.Builder(ts).addTarget(tt).addTarget(vt).setStartDirection(Direction.FORWARD).build();
+    pt.setValue(-999);
+    a.startReverse();
+    a.await();
+    ts.dispose();
+
+    Assert.assertEquals(50, vt.valueAtBegin);
+    Assert.assertSame(vt.startDirectionAtBegin, Direction.FORWARD);
+    Assert.assertSame(vt.currentDirectionAtBegin, Direction.BACKWARD);
+
+    Assert.assertTrue(vt.valueAtFirstTimingEvent > 46); // time dependent
+    Assert.assertSame(vt.currentDirectionAtFirstTimingEvent, Direction.BACKWARD);
+
+    Assert.assertEquals(1, pt.getValue());
+  }
+
+  @Test
+  public void backwardStartReverseCalled() throws InterruptedException {
+    MyProps pt = new MyProps();
+    TimingTarget tt = PropertySetter.getTarget(pt, "value", 1, 50);
+    ValueTarget vt = new ValueTarget(pt);
+    TimingSource ts = new ScheduledExecutorTimingSource();
+    ts.init();
+    Animator a = new Animator.Builder(ts).addTarget(tt).addTarget(vt).setStartDirection(Direction.BACKWARD).build();
+    pt.setValue(-999);
+    a.startReverse();
+    a.await();
+    ts.dispose();
+
+    Assert.assertEquals(1, vt.valueAtBegin);
+    Assert.assertSame(vt.startDirectionAtBegin, Direction.BACKWARD);
+    Assert.assertSame(vt.currentDirectionAtBegin, Direction.FORWARD);
+
+    Assert.assertTrue(vt.valueAtFirstTimingEvent < 4); // time dependent
+    Assert.assertSame(vt.currentDirectionAtFirstTimingEvent, Direction.FORWARD);
+
+    Assert.assertEquals(50, pt.getValue());
   }
 }
