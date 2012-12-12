@@ -158,4 +158,9 @@ public final class AndroidTimingSource extends TimingSource {
   public void dispose() {
     f_running.set(false);
   }
+
+  @Override
+  public boolean isDisposed() {
+    return !f_running.get();
+  }
 }
