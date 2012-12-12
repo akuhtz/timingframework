@@ -9,7 +9,7 @@
   <artifactId>timingframework-core</artifactId>
   <packaging>jar</packaging>
   <name>Timing Framework - Core</name>
-  <version>5.1.0</version>
+  <version>5.5.0</version>
   <description>
     This project provides a framework and sample code for time-based animations.
   </description>
