@@ -3,7 +3,6 @@ package org.jdesktop.core.animation.timing;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import com.surelogic.ReferenceObject;
 import com.surelogic.ThreadSafe;
 import com.surelogic.Vouch;
 
@@ -72,7 +71,6 @@ public abstract class TimingSource {
    * <tt>repaint()</tt> after a large number of animations (which register
    * themselves as {@link TickListener}s) have updated the program's state.
    */
-  @ReferenceObject
   public interface PostTickListener {
 
     /**
@@ -110,7 +108,7 @@ public abstract class TimingSource {
   /**
    * Listeners that will receive "tick" events.
    */
-  @Vouch("ThreadSafe")
+  @Vouch("AnnotationBounds")
   private final CopyOnWriteArraySet<TickListener> f_tickListeners = new CopyOnWriteArraySet<TickListener>();
 
   /**
@@ -143,6 +141,7 @@ public abstract class TimingSource {
    * Listeners that will receive "tick" events after all the registered
    * {@link TickListener}s have been notified.
    */
+  @Vouch("AnnotationBounds")
   private final CopyOnWriteArraySet<PostTickListener> f_postTickListeners = new CopyOnWriteArraySet<PostTickListener>();
 
   /**
@@ -174,7 +173,7 @@ public abstract class TimingSource {
   /**
    * Holds "one shot" tasks to be run on the next tick.
    */
-  @Vouch("ThreadSafe")
+  @Vouch("AnnotationBounds")
   private final ConcurrentLinkedQueue<Runnable> f_oneShotQueue = new ConcurrentLinkedQueue<Runnable>();
 
   /**
@@ -212,7 +211,7 @@ public abstract class TimingSource {
    * </ol>
    */
   @Vouch("ThreadSafe")
-  private final Runnable f_perTickTask = new WrappedRunnable(new Runnable() {
+  private final WrappedRunnable f_perTickTask = new WrappedRunnable(new Runnable() {
     public void run() {
       while (true) {
         final Runnable task = f_oneShotQueue.poll();

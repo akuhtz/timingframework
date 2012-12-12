@@ -1,12 +1,13 @@
 package org.jdesktop.core.animation.timing.evaluators;
 
 import java.lang.reflect.Constructor;
-import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.jdesktop.core.animation.timing.Evaluator;
 
 import com.surelogic.Singleton;
+import com.surelogic.ThreadSafe;
+import com.surelogic.Vouch;
 
 /**
  * Manages a set of known immutable evaluator implementations that the program
@@ -18,6 +19,7 @@ import com.surelogic.Singleton;
  * 
  * @author Tim Halloran
  */
+@ThreadSafe
 @Singleton
 public final class KnownEvaluators {
 
@@ -60,6 +62,7 @@ public final class KnownEvaluators {
     }
   }
 
+  @Vouch("Immutable")
   private final String[] f_nonCoreImmutable = { "org.jdesktop.swing.animation.timing.evaluators.EvaluatorArc2D",
       "org.jdesktop.swing.animation.timing.evaluators.EvaluatorColor",
       "org.jdesktop.swing.animation.timing.evaluators.EvaluatorCubicCurve2D",
@@ -78,7 +81,7 @@ public final class KnownEvaluators {
    * A list of known immutable evaluators. The single instance stored in this
    * list is shared by all requesters.
    */
-  private final List<Evaluator<?>> f_immutableImplementations = new CopyOnWriteArrayList<Evaluator<?>>();
+  private final CopyOnWriteArrayList<Evaluator<?>> f_immutableImplementations = new CopyOnWriteArrayList<Evaluator<?>>();
 
   /**
    * Registers an immutable evaluator as known. The single instance passed to

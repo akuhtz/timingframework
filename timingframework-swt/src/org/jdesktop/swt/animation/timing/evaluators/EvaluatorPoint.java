@@ -15,7 +15,7 @@ import com.surelogic.RegionEffects;
 @Immutable
 public final class EvaluatorPoint implements Evaluator<Point> {
 
-  @RegionEffects("reads All")
+  @RegionEffects("reads Instance, v0:Instance, v1:Instance")
   public Point evaluate(Point v0, Point v1, double fraction) {
     double x = v0.x + ((v1.x - v0.x) * fraction);
     double y = v0.y + ((v1.y - v0.y) * fraction);

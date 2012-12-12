@@ -35,7 +35,7 @@ public interface Evaluator<T> {
    * calculations with new/unknown types, not to provide another mechanism for
    * non-linear interpolation.
    */
-  @RegionEffects("reads All")
+  @RegionEffects("reads Instance, v0:Instance, v1:Instance")
   T evaluate(T v0, T v1, double fraction);
 
   /**
