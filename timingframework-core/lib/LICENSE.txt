@@ -18,7 +18,7 @@ Report bugs, read the documentation, and get new releases at:
 The modern Timing Framework implementation and the SureLogic promises
 are released under the following terms:
 
-   Copyright (c) 2012, SureLogic, Inc
+   Copyright (c) 2013, SureLogic, Inc
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.

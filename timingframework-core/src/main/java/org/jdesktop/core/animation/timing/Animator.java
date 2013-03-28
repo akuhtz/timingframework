@@ -13,7 +13,9 @@ import org.jdesktop.core.animation.timing.interpolators.LinearInterpolator;
 
 import com.surelogic.Immutable;
 import com.surelogic.InRegion;
+import com.surelogic.NonNull;
 import com.surelogic.NotThreadSafe;
+import com.surelogic.Nullable;
 import com.surelogic.ReferenceObject;
 import com.surelogic.Region;
 import com.surelogic.RegionEffects;
@@ -161,7 +163,7 @@ public final class Animator implements TickListener {
    * @param timingSource
    *          a timing source or {@code null} to clear the default.
    */
-  public static void setDefaultTimingSource(TimingSource timingSource) {
+  public static void setDefaultTimingSource(@Nullable TimingSource timingSource) {
     Builder.setDefaultTimingSource(timingSource);
   }
 
@@ -174,6 +176,7 @@ public final class Animator implements TickListener {
    * @return the timing source being used as the default for the construction on
    *         animations, or {@code null} if none.
    */
+  @Nullable
   public static TimingSource getDefaultTimingSource() {
     return Builder.getDefaultTimingSource();
   }
@@ -237,6 +240,12 @@ public final class Animator implements TickListener {
    * <td align="right">{@link Animator.Direction#FORWARD}</td>
    * </tr>
    * <tr>
+   * <td>{@link #setStartDelay(long, TimeUnit)}</td>
+   * <td>a delay prior to starting the first animation cycle after the call to
+   * {@link Animator#start} or {@link Animator#startReverse}.</td>
+   * <td align="right"><i>none</i></td>
+   * </tr>
+   * <tr>
    * <td>{@link #setDebugName(String)}</td>
    * <td>a meaningful name for the animation used by the
    * {@link Animator#toString()} method</td>
@@ -275,7 +284,7 @@ public final class Animator implements TickListener {
      * @param timingSource
      *          a timing source or {@code null} to clear the default.
      */
-    private static void setDefaultTimingSource(TimingSource timingSource) {
+    private static void setDefaultTimingSource(@Nullable TimingSource timingSource) {
       f_defaultTimingSource.set(timingSource);
     }
 
@@ -286,18 +295,24 @@ public final class Animator implements TickListener {
      * @return the timing source being used as the default for the construction
      *         on animations, or {@code null} if none.
      */
+    @Nullable
     private static TimingSource getDefaultTimingSource() {
       return f_defaultTimingSource.get();
     }
 
+    @Nullable
     private String f_debugName = null;
     private long f_duration = 1;
+    @NonNull
     private TimeUnit f_durationTimeUnit = TimeUnit.SECONDS;
     private Animator.EndBehavior f_endBehavior = Animator.EndBehavior.HOLD;
     private Interpolator f_interpolator = null; // use the built-in default
     private Animator.RepeatBehavior f_repeatBehavior = Animator.RepeatBehavior.REVERSE;
     private long f_repeatCount = 1;
     private Animator.Direction f_startDirection = Animator.Direction.FORWARD;
+    private long f_startDelayDuration = 0;
+    @NonNull
+    private TimeUnit f_startDelayTimeUnit = TimeUnit.SECONDS;
     private final List<TimingTarget> f_targets = new ArrayList<TimingTarget>();
     private final TimingSource f_timingSource;
     private boolean f_disposeTimingSource = false;
@@ -333,6 +348,7 @@ public final class Animator implements TickListener {
      *          a {@link TimingTarget} object.
      * @return this builder (to allow chained operations).
      */
+    @NonNull
     public Builder addTarget(TimingTarget target) {
       if (target != null)
         f_targets.add(target);
@@ -347,6 +363,7 @@ public final class Animator implements TickListener {
      *          a name of the animation. A {@code null} value is allowed.
      * @return this builder (to allow chained operations).
      */
+    @NonNull
     public Builder setDebugName(String name) {
       f_debugName = name;
       return this;
@@ -362,6 +379,7 @@ public final class Animator implements TickListener {
      *          ends, {@code false} if not.
      * @return this builder (to allow chained operations).
      */
+    @NonNull
     public Builder setDisposeTimingSource(boolean value) {
       f_disposeTimingSource = value;
       return this;
@@ -382,6 +400,7 @@ public final class Animator implements TickListener {
      * @throws IllegalStateException
      *           if value is not >= 1.
      */
+    @NonNull
     public Builder setDuration(long value, TimeUnit unit) {
       if (value < 1)
         throw new IllegalArgumentException(I18N.err(10, value));
@@ -400,6 +419,7 @@ public final class Animator implements TickListener {
      *          is equivalent to setting the default value.
      * @return this builder (to allow chained operations).
      */
+    @NonNull
     public Builder setEndBehavior(Animator.EndBehavior value) {
       f_endBehavior = value != null ? value : Animator.EndBehavior.HOLD;
       return this;
@@ -414,6 +434,7 @@ public final class Animator implements TickListener {
      *          value is equivalent to setting the default value.
      * @return this builder (to allow chained operations).
      */
+    @NonNull
     public Builder setInterpolator(Interpolator value) {
       f_interpolator = value;
       return this;
@@ -428,6 +449,7 @@ public final class Animator implements TickListener {
      *          value is equivalent to setting the default value.
      * @return this builder (to allow chained operations).
      */
+    @NonNull
     public Builder setRepeatBehavior(Animator.RepeatBehavior value) {
       f_repeatBehavior = value != null ? value : Animator.RepeatBehavior.REVERSE;
       return this;
@@ -446,6 +468,7 @@ public final class Animator implements TickListener {
      * @throws IllegalArgumentException
      *           if value is not >=1 or {@link Animator#INFINITE}.
      */
+    @NonNull
     public Builder setRepeatCount(long value) {
       if (value < 1 && value != Animator.INFINITE)
         throw new IllegalArgumentException(I18N.err(10, value));
@@ -463,8 +486,36 @@ public final class Animator implements TickListener {
      *          equivalent to setting the default value.
      * @return this builder (to allow chained operations).
      */
+    @NonNull
     public Builder setStartDirection(Animator.Direction value) {
       f_startDirection = value != null ? value : Animator.Direction.FORWARD;
+      return this;
+    }
+
+    /**
+     * Sets the start delay of the animation. This sets a delay prior to
+     * starting the first animation cycle after the call to
+     * {@link Animator#start} or {@link Animator#startReverse}. The default
+     * value is none.
+     * 
+     * @param value
+     *          the start delay of the animation. This value must be >= 0.
+     * @param unit
+     *          the time unit of the value parameter. A {@code null} value is
+     *          equivalent to setting the default unit of
+     *          {@link TimeUnit#SECONDS}.
+     * @return this builder (to allow chained operations).
+     * 
+     * @throws IllegalStateException
+     *           if value is not >= 0.
+     */
+    @NonNull
+    public Builder setStartDelay(long value, TimeUnit unit) {
+      if (value < 0)
+        throw new IllegalArgumentException(I18N.err(13, value));
+
+      f_startDelayDuration = value;
+      f_startDelayTimeUnit = unit != null ? unit : TimeUnit.SECONDS;
       return this;
     }
 
@@ -473,9 +524,11 @@ public final class Animator implements TickListener {
      * 
      * @return an animation.
      */
+    @NonNull
     public Animator build() {
       final Animator result = new Animator(f_debugName, f_duration, f_durationTimeUnit, f_endBehavior, f_interpolator,
-          f_repeatBehavior, f_repeatCount, f_startDirection, f_timingSource, f_disposeTimingSource);
+          f_repeatBehavior, f_repeatCount, f_startDirection, f_startDelayDuration, f_startDelayTimeUnit, f_timingSource,
+          f_disposeTimingSource);
       for (TimingTarget target : f_targets) {
         result.addTarget(target);
       }
@@ -487,14 +540,23 @@ public final class Animator implements TickListener {
    * Immutable state set by the builder.
    */
 
-  private final String f_debugName; // may be null
+  @Nullable
+  private final String f_debugName;
   private final long f_duration;
+  @NonNull
   private final TimeUnit f_durationTimeUnit;
   private final EndBehavior f_endBehavior;
+  @Nullable
   private final Interpolator f_interpolator; // null means linear
+  @NonNull
   private final RepeatBehavior f_repeatBehavior;
   private final long f_repeatCount;
+  @NonNull
   private final Direction f_startDirection;
+  private final long f_startDelayDuration;
+  @NonNull
+  private final TimeUnit f_startDelayTimeUnit;
+  @NonNull
   private final TimingSource f_timingSource;
   private final boolean f_disposeTimingSource; // at end
 
@@ -503,6 +565,7 @@ public final class Animator implements TickListener {
    * 
    * @return the "debug" name of this animation. May be {@code null}.
    */
+  @Nullable
   public String getDebugName() {
     return f_debugName;
   }
@@ -529,6 +592,7 @@ public final class Animator implements TickListener {
    * 
    * @see #getDuration()
    */
+  @NonNull
   public TimeUnit getDurationTimeUnit() {
     return f_durationTimeUnit;
   }
@@ -693,8 +757,8 @@ public final class Animator implements TickListener {
    */
   @Unique("return")
   Animator(String debugName, long duration, TimeUnit durationTimeUnit, EndBehavior endBehavior, Interpolator interpolator,
-      RepeatBehavior repeatBehavior, long repeatCount, Direction startDirection, TimingSource timingSource,
-      boolean disposeTimingSource) {
+      RepeatBehavior repeatBehavior, long repeatCount, Direction startDirection, long startDelayDuration,
+      TimeUnit startDelayTimeUnit, TimingSource timingSource, boolean disposeTimingSource) {
     f_debugName = debugName;
     f_duration = duration;
     f_durationTimeUnit = durationTimeUnit;
@@ -703,6 +767,8 @@ public final class Animator implements TickListener {
     f_repeatBehavior = repeatBehavior;
     f_repeatCount = repeatCount;
     f_startDirection = f_currentDirection = startDirection;
+    f_startDelayDuration = startDelayDuration;
+    f_startDelayTimeUnit = startDelayTimeUnit;
     f_timingSource = timingSource;
     f_disposeTimingSource = disposeTimingSource;
   }
