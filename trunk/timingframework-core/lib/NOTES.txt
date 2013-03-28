@@ -15,6 +15,9 @@ A library for making Java animation and timing-based control easier!
 Report bugs, read the documentation, and get new releases at:
    http://java.net/projects/timingframework/
 
+++-------------------++
+|| 6.0 Release Notes ||
+++-------------------++
 
 ++-------------------++
 || 5.5 Release Notes ||
