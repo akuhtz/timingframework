@@ -26,10 +26,6 @@ o When a timing target is added to a running animation the begin()
   method was not invoked. This protocol problem has been fixed in
   this release. (I'm really hoping that no code relies on begin() not
   being invoked and that adding targets after animation start is rare).
-o Animator.getTotalElapsedTime(long currentTimeNanos) and
-  Animator.getCycleElapsedTime(long currentTimeNanos) are no longer
-  public. These are probably not used by any client code, but if
-  I'm wrong please file a bug.
 o "default" visibility is now used in many class implementations for
   fields rather than "private" visibility. This is to avoid generation
   of synthetic accessors for these fields. This should not impact

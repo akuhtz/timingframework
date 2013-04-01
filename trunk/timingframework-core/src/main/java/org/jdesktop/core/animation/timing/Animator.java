@@ -547,6 +547,7 @@ public final class Animator implements TickListener {
   final long f_duration;
   @NonNull
   final TimeUnit f_durationTimeUnit;
+  final long f_durationNanos; // calculated
   @NonNull
   final EndBehavior f_endBehavior;
   @Nullable
@@ -559,6 +560,7 @@ public final class Animator implements TickListener {
   final long f_startDelay;
   @NonNull
   final TimeUnit f_startDelayTimeUnit;
+  final long f_startDelayNanos; // calculated
   @NonNull
   final TimingSource f_timingSource;
   final boolean f_disposeTimingSource; // at end
@@ -718,7 +720,8 @@ public final class Animator implements TickListener {
   long f_startTimeNanos;
 
   /**
-   * Tracks start time of current cycle.
+   * Tracks start time of current cycle. For the first cycle this time may be in
+   * the future if and only if the user set a start delay.
    * <p>
    * Accesses must be guarded by a lock on {@link #f_targets}.
    */
@@ -812,6 +815,9 @@ public final class Animator implements TickListener {
     f_timingSource = timingSource;
     f_disposeTimingSource = disposeTimingSource;
     f_targets.addAll(targets);
+
+    f_durationNanos = f_durationTimeUnit.toNanos(f_duration);
+    f_startDelayNanos = f_startDelayTimeUnit.toNanos(f_startDelay);
   }
 
   /**
@@ -1149,6 +1155,11 @@ public final class Animator implements TickListener {
   /**
    * Returns the elapsed time in nanoseconds for the current animation
    * cycle.Uses {@link System#nanoTime()} to get the current time.
+   * <p>
+   * If a start delay is set on this animation, then it is possible that the
+   * value returned from this method will be negative. This situation occurs
+   * when the animation has been started but is waiting for the start delay to
+   * elapse.
    * 
    * @return the time elapsed in nanoseconds between the time the current
    *         animation cycle started and the current time.
@@ -1158,7 +1169,13 @@ public final class Animator implements TickListener {
   }
 
   /**
-   * Returns the elapsed time in nanoseconds for the current animation cycle.
+   * Returns the elapsed time in nanoseconds for the current animation cycle
+   * from the passed time.
+   * <p>
+   * If a start delay is set on this animation, then it is possible that the
+   * value returned from this method will be negative. This situation occurs
+   * when the animation has been started but is waiting for the start delay to
+   * elapse.
    * 
    * @param currentTimeNanos
    *          value of current time, from {@link System#nanoTime()}, to use in
@@ -1166,7 +1183,7 @@ public final class Animator implements TickListener {
    * @return the time elapsed in nanoseconds between the time this cycle started
    *         and the passed time.
    */
-  long getCycleElapsedTime(long currentTimeNanos) {
+  public long getCycleElapsedTime(long currentTimeNanos) {
     synchronized (f_targets) {
       return (currentTimeNanos - f_cycleStartTimeNanos);
     }
@@ -1175,6 +1192,9 @@ public final class Animator implements TickListener {
   /**
    * Returns the total elapsed time in nanoseconds for the current animation.
    * Uses {@link System#nanoTime()} to get the current time.
+   * <p>
+   * This value does not consider any start delay, it simple returns the time
+   * elapsed from when the animation was started until now.
    * 
    * @return the total time elapsed in nanoseconds between the time this
    *         animation started and the current time.
@@ -1184,15 +1204,19 @@ public final class Animator implements TickListener {
   }
 
   /**
-   * Returns the total elapsed time in nanoseconds for the current animation.
+   * Returns the total elapsed time in nanoseconds for the current animation
+   * from the passed time.
+   * <p>
+   * This value does not consider any start delay, it simple returns the time
+   * elapsed from when the animation was started until the passed time.
    * 
    * @param currentTimeNanos
    *          value of current time, from {@link System#nanoTime()}, to use in
    *          calculating elapsed time.
-   * @return the total time elapsed between the time the Animator started and
+   * @return the total time elapsed between the time this animation started and
    *         the passed time.
    */
-  long getTotalElapsedTime(long currentTimeNanos) {
+  public long getTotalElapsedTime(long currentTimeNanos) {
     synchronized (f_targets) {
       return (currentTimeNanos - f_startTimeNanos);
     }
@@ -1236,7 +1260,9 @@ public final class Animator implements TickListener {
       if (isRunning())
         throw new IllegalStateException(I18N.err(12, methodName));
 
-      f_startTimeNanos = f_cycleStartTimeNanos = System.nanoTime();
+      final long nanoTime = System.nanoTime();
+      f_startTimeNanos = nanoTime;
+      f_cycleStartTimeNanos = nanoTime + f_startDelayNanos;
       f_currentDirection = direction;
       f_stopping = false;
       f_pauseBeginTimeNanos = f_reverseNowCallCount = 0;
@@ -1354,8 +1380,11 @@ public final class Animator implements TickListener {
        * o The animation is stopping
        * 
        * o The animation is paused
+       * 
+       * o The animation is waiting for its start delay to elapse
        */
-      final boolean skipTick = f_runningAnimationLatch == null || f_stopping || f_pauseBeginTimeNanos != 0;
+      final boolean skipTick = f_runningAnimationLatch == null || f_stopping || f_pauseBeginTimeNanos != 0
+          || f_cycleStartTimeNanos >= nanoTime;
       if (skipTick)
         return;
 
@@ -1365,12 +1394,11 @@ public final class Animator implements TickListener {
       if (f_reverseNowCallCount > 0) {
         notifyOfReverse = true;
         final boolean reverseCallsCancelOut = /* isEven */(f_reverseNowCallCount & 1) == 0;
-        f_reverseNowCallCount = 0;
+        f_reverseNowCallCount = 0; // reset
 
         if (!reverseCallsCancelOut) {
           final long cycleElapsedTimeNanos = getCycleElapsedTime(nanoTime);
-          final long durationNanos = f_durationTimeUnit.toNanos(f_duration);
-          final long timeLeft = durationNanos - cycleElapsedTimeNanos;
+          final long timeLeft = f_durationNanos - cycleElapsedTimeNanos;
           final long deltaNanos = (nanoTime - timeLeft) - f_cycleStartTimeNanos;
           f_cycleStartTimeNanos += deltaNanos;
           f_startTimeNanos += deltaNanos;
@@ -1384,9 +1412,7 @@ public final class Animator implements TickListener {
        * the animation.
        */
       final long cycleElapsedTimeNanos = getCycleElapsedTime(nanoTime);
-      final long totalElapsedTimeNanos = getTotalElapsedTime(nanoTime);
-      final long durationNanos = f_durationTimeUnit.toNanos(f_duration);
-      final long currentCycleCount = totalElapsedTimeNanos / durationNanos;
+      final long currentCycleCount = (getTotalElapsedTime(nanoTime) - f_startDelayNanos) / f_durationNanos;
 
       double fractionScratch;
 
@@ -1415,13 +1441,13 @@ public final class Animator implements TickListener {
           throw new IllegalStateException(I18N.err(2, EndBehavior.class.getName(), f_endBehavior.toString()));
         }
         timeToStop = true;
-      } else if (cycleElapsedTimeNanos > durationNanos) {
+      } else if (cycleElapsedTimeNanos > f_durationNanos) {
         /*
          * Animation Cycle End: Time to stop or change the behavior of the
          * timer.
          */
-        final long overCycleTimeNanos = cycleElapsedTimeNanos % durationNanos;
-        fractionScratch = (double) overCycleTimeNanos / durationNanos;
+        final long overCycleTimeNanos = cycleElapsedTimeNanos % f_durationNanos;
+        fractionScratch = (double) cycleElapsedTimeNanos / (double) f_durationNanos;
         /*
          * Set a new start time for this cycle.
          */
@@ -1442,7 +1468,7 @@ public final class Animator implements TickListener {
          * Animation Mid-Stream: Calculate fraction of animation between start
          * and end times and send fraction to target.
          */
-        fractionScratch = (double) cycleElapsedTimeNanos / (double) durationNanos;
+        fractionScratch = (double) cycleElapsedTimeNanos / (double) f_durationNanos;
         if (f_currentDirection == Direction.BACKWARD) {
           /*
            * If this is a backwards cycle, want to send the inverse fraction;
