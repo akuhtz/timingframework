@@ -57,6 +57,78 @@ public final class TestAnimator {
     a.startReverse();
   }
 
+  @Test
+  public void reuse1() throws InterruptedException {
+    TimingSource ts = new ScheduledExecutorTimingSource();
+    ts.init();
+    Animator a = new Animator.Builder(ts).build();
+    Assert.assertFalse(a.isRunning());
+    a.start();
+    Assert.assertTrue(a.isRunning());
+    Assert.assertSame(Animator.Direction.FORWARD, a.getCurrentDirection());
+    a.await();
+    Assert.assertFalse(a.isRunning());
+    a.start();
+    Assert.assertTrue(a.isRunning());
+    Assert.assertSame(Animator.Direction.FORWARD, a.getCurrentDirection());
+    a.await();
+    Assert.assertFalse(a.isRunning());
+    a.start();
+    Assert.assertTrue(a.isRunning());
+    Assert.assertSame(Animator.Direction.FORWARD, a.getCurrentDirection());
+    a.await();
+    Assert.assertFalse(a.isRunning());
+    ts.dispose();
+  }
+
+  @Test
+  public void reuse2() throws InterruptedException {
+    TimingSource ts = new ScheduledExecutorTimingSource();
+    ts.init();
+    Animator a = new Animator.Builder(ts).build();
+    Assert.assertFalse(a.isRunning());
+    a.startReverse();
+    Assert.assertTrue(a.isRunning());
+    Assert.assertSame(Animator.Direction.BACKWARD, a.getCurrentDirection());
+    a.await();
+    Assert.assertFalse(a.isRunning());
+    a.start();
+    Assert.assertTrue(a.isRunning());
+    Assert.assertSame(Animator.Direction.FORWARD, a.getCurrentDirection());
+    a.await();
+    Assert.assertFalse(a.isRunning());
+    a.startReverse();
+    Assert.assertTrue(a.isRunning());
+    Assert.assertSame(Animator.Direction.BACKWARD, a.getCurrentDirection());
+    a.await();
+    Assert.assertFalse(a.isRunning());
+    ts.dispose();
+  }
+
+  @Test
+  public void reuse3() throws InterruptedException {
+    TimingSource ts = new ScheduledExecutorTimingSource();
+    ts.init();
+    Animator a = new Animator.Builder(ts).build();
+    Assert.assertFalse(a.isRunning());
+    a.start();
+    Assert.assertTrue(a.isRunning());
+    Assert.assertSame(Animator.Direction.FORWARD, a.getCurrentDirection());
+    a.await();
+    Assert.assertFalse(a.isRunning());
+    a.startReverse();
+    Assert.assertTrue(a.isRunning());
+    Assert.assertSame(Animator.Direction.BACKWARD, a.getCurrentDirection());
+    a.await();
+    Assert.assertFalse(a.isRunning());
+    a.start();
+    Assert.assertTrue(a.isRunning());
+    Assert.assertSame(Animator.Direction.FORWARD, a.getCurrentDirection());
+    a.await();
+    Assert.assertFalse(a.isRunning());
+    ts.dispose();
+  }
+
   public void reverseNow1() {
     Animator a = new Animator.Builder(new ManualTimingSource()).build();
     Assert.assertFalse(a.reverseNow());
@@ -656,5 +728,21 @@ public final class TestAnimator {
     a.await();
     Assert.assertFalse(ts.isDisposed());
     ts.dispose();
+  }
+  
+  @Test
+  public void addTimingTargetAfterStart() {
+    ManualTimingSource ts = new ManualTimingSource();
+    Animator a = new Animator.Builder(ts).build();
+    CountingTimingTarget counter = new CountingTimingTarget();
+    a.start();
+    a.addTarget(counter);
+    Assert.assertTrue(a.stop());
+    ts.tick();
+  //  Assert.assertEquals(1, counter.getBeginCount());
+    Assert.assertEquals(1, counter.getEndCount());
+    Assert.assertEquals(0, counter.getReverseCount());
+    Assert.assertEquals(0, counter.getRepeatCount());
+    Assert.assertTrue(counter.getProtocolMsg(), counter.isProtocolOkay());
   }
 }

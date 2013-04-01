@@ -109,7 +109,7 @@ public abstract class TimingSource {
    * Listeners that will receive "tick" events.
    */
   @Vouch("AnnotationBounds")
-  private final CopyOnWriteArraySet<TickListener> f_tickListeners = new CopyOnWriteArraySet<TickListener>();
+  final CopyOnWriteArraySet<TickListener> f_tickListeners = new CopyOnWriteArraySet<TickListener>();
 
   /**
    * Adds a {@link TickListener} to the set of listeners that receive timing
@@ -142,7 +142,7 @@ public abstract class TimingSource {
    * {@link TickListener}s have been notified.
    */
   @Vouch("AnnotationBounds")
-  private final CopyOnWriteArraySet<PostTickListener> f_postTickListeners = new CopyOnWriteArraySet<PostTickListener>();
+  final CopyOnWriteArraySet<PostTickListener> f_postTickListeners = new CopyOnWriteArraySet<PostTickListener>();
 
   /**
    * Adds a {@link PostTickListener} to the set of listeners that receive timing
@@ -174,7 +174,7 @@ public abstract class TimingSource {
    * Holds "one shot" tasks to be run on the next tick.
    */
   @Vouch("AnnotationBounds")
-  private final ConcurrentLinkedQueue<Runnable> f_oneShotQueue = new ConcurrentLinkedQueue<Runnable>();
+  final ConcurrentLinkedQueue<Runnable> f_oneShotQueue = new ConcurrentLinkedQueue<Runnable>();
 
   /**
    * Runs the passed task in the thread context of this timing source. The task

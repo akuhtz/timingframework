@@ -256,7 +256,7 @@ public final class PropertySetter {
     throw new AssertionError();
   }
 
-  private static TimingTargetAdapter getTargetHelper(final Object object, final String propertyName, final KeyFrames<?> keyFrames,
+  static TimingTargetAdapter getTargetHelper(final Object object, final String propertyName, final KeyFrames<?> keyFrames,
       final boolean isToAnimation) {
     if (object == null)
       throw new IllegalArgumentException(I18N.err(1, "object"));
@@ -321,7 +321,7 @@ public final class PropertySetter {
     }
   }
 
-  private static class PropertySetterTimingTarget extends TimingTargetAdapter {
+  static class PropertySetterTimingTarget extends TimingTargetAdapter {
 
     protected final AtomicReference<KeyFrames<Object>> f_keyFrames = new AtomicReference<KeyFrames<Object>>();
     protected final Object f_object;
@@ -350,9 +350,9 @@ public final class PropertySetter {
     }
   }
 
-  private static final class PropertySetterToTimingTarget extends PropertySetterTimingTarget {
+  static final class PropertySetterToTimingTarget extends PropertySetterTimingTarget {
 
-    private final Method f_propertyGetter;
+    final Method f_propertyGetter;
 
     public PropertySetterToTimingTarget(KeyFrames<Object> keyFrames, Object object, Method propertyGetter, Method propertySetter,
         String propertyName) {

@@ -19,6 +19,22 @@ Report bugs, read the documentation, and get new releases at:
 || 6.0 Release Notes ||
 ++-------------------++
 
+o Added ability to set a start delay for the animation. This existed
+  in the original library but was removed in the 2.0 release.
+  See the discussion at http://java.net/jira/browse/TIMINGFRAMEWORK-18
+o When a timing target is added to a running animation the begin()
+  method was not invoked. This protocol problem has been fixed in
+  this release. (I'm really hoping that no code relies on begin() not
+  being invoked and that adding targets after animation start is rare).
+o Animator.getTotalElapsedTime(long currentTimeNanos) and
+  Animator.getCycleElapsedTime(long currentTimeNanos) are no longer
+  public. These are probably not used by any client code, but if
+  I'm wrong please file a bug.
+o "default" visibility is now used in many class implementations for
+  fields rather than "private" visibility. This is to avoid generation
+  of synthetic accessors for these fields. This should not impact
+  client code and improves performance.
+
 ++-------------------++
 || 5.5 Release Notes ||
 ++-------------------++

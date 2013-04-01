@@ -46,7 +46,7 @@ public final class Viewport {
    * A default source to obtain the rate of animated viewport movement in
    * nanoseconds per pixels.
    */
-  private static final class DefaultMovementRateSource implements MovementRateSource {
+  static final class DefaultMovementRateSource implements MovementRateSource {
 
     /**
      * the rate of animated viewport movement in nanoseconds per pixel.
@@ -78,54 +78,54 @@ public final class Viewport {
   /**
    * Width of the overall image being viewed into.
    */
-  private final int f_intoWidth;
+  final int f_intoWidth;
 
   /**
    * Height of the overall image being viewed into.
    */
-  private final int f_intoHeight;
+  final int f_intoHeight;
 
   /**
    * X coordinate of the upper-left of this viewport.
    */
-  private int f_x = 0;
+  int f_x = 0;
 
   /**
    * Y coordinate of the upper-left of this viewport.
    */
-  private int f_y = 0;
+  int f_y = 0;
 
   /**
    * Width of this viewport.
    */
-  private int f_width;
+  int f_width;
 
   /**
    * Height of this viewport.
    */
-  private int f_height;
+  int f_height;
 
   /**
    * An interpolator to provide a slight acceleration when animated movement is
    * started.
    */
-  private final Interpolator f_moveI = new AccelerationInterpolator(0.2, 0);
+  final Interpolator f_moveI = new AccelerationInterpolator(0.2, 0);
 
   /**
    * The source to obtain the rate of animated viewport movement in nanoseconds
    * per pixel.
    */
-  private MovementRateSource f_rate = new DefaultMovementRateSource();;
+  MovementRateSource f_rate = new DefaultMovementRateSource();
 
   /**
    * An animation to move the viewport horizontally.
    */
-  private Animator f_moveHorizontalAnimator = null;
+  Animator f_moveHorizontalAnimator = null;
 
   /**
    * An animation to move the viewport vertically.
    */
-  private Animator f_moveVerticalAnimator = null;
+  Animator f_moveVerticalAnimator = null;
 
   public Viewport(int intoWidth, int intoHeight) {
     f_intoWidth = intoWidth;
@@ -135,12 +135,12 @@ public final class Viewport {
   /**
    * A timing target for horizontal and vertical animated movement.
    */
-  private class Mover extends TimingTargetAdapter {
+  class Mover extends TimingTargetAdapter {
 
-    private final int f_pixelsToMove;
-    private final boolean f_horizontal;
-    private final int f_startViewXY;
-    private final boolean f_add;
+    final int f_pixelsToMove;
+    final boolean f_horizontal;
+    final int f_startViewXY;
+    final boolean f_add;
 
     Mover(int pixelsToMove, boolean horizontal, int startViewXY, boolean add) {
       f_pixelsToMove = pixelsToMove;

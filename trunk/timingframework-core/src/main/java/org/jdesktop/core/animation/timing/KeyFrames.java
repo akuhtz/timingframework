@@ -632,12 +632,12 @@ public class KeyFrames<T> implements Iterable<Frame<T>> {
    */
   @Vouch("Immutable")
   @Unique
-  private final Frame<T>[] f_frames;
+  final Frame<T>[] f_frames;
 
   /**
    * Used to evaluates between two key frame values.
    */
-  private final Evaluator<T> f_evaluator;
+  final Evaluator<T> f_evaluator;
 
   /**
    * Constructs a key frames instance.
