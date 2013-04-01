@@ -20,7 +20,6 @@ import org.jdesktop.core.animation.i18n.I18N;
  * This would ensure that if an exception is thrown that it will be logged.
  * 
  * @author Tim Halloran
- * 
  */
 public class WrappedRunnable implements Runnable {
 
