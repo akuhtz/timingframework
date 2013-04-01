@@ -1,5 +1,6 @@
 package org.jdesktop.core.animation.timing;
 
+import com.surelogic.Nullable;
 import com.surelogic.ThreadSafe;
 
 /**
@@ -45,12 +46,14 @@ public class TimingTargetAdapter implements TimingTarget {
     // default is to do nothing
   }
 
-  private volatile String f_debugName = null;
+  @Nullable
+  volatile String f_debugName = null;
 
-  public final void setDebugName(String name) {
+  public final void setDebugName(@Nullable String name) {
     f_debugName = name;
   }
 
+  @Nullable
   public final String getDebugName() {
     return f_debugName;
   }

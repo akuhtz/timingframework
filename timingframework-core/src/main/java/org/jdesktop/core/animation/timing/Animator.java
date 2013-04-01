@@ -1,6 +1,7 @@
 package org.jdesktop.core.animation.timing;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
@@ -122,6 +123,7 @@ public final class Animator implements TickListener {
         return FORWARD;
       }
     };
+
     abstract public Direction getOppositeDirection();
   };
 
@@ -269,7 +271,7 @@ public final class Animator implements TickListener {
      * <i>Implementation note:</i> The setting and getting of the default timing
      * source is thread safe.
      */
-    private static AtomicReference<TimingSource> f_defaultTimingSource = new AtomicReference<TimingSource>();
+    static AtomicReference<TimingSource> f_defaultTimingSource = new AtomicReference<TimingSource>();
 
     /**
      * Sets the passed timing source as the default used for the construction of
@@ -284,7 +286,7 @@ public final class Animator implements TickListener {
      * @param timingSource
      *          a timing source or {@code null} to clear the default.
      */
-    private static void setDefaultTimingSource(@Nullable TimingSource timingSource) {
+    static void setDefaultTimingSource(@Nullable TimingSource timingSource) {
       f_defaultTimingSource.set(timingSource);
     }
 
@@ -296,7 +298,7 @@ public final class Animator implements TickListener {
      *         on animations, or {@code null} if none.
      */
     @Nullable
-    private static TimingSource getDefaultTimingSource() {
+    static TimingSource getDefaultTimingSource() {
       return f_defaultTimingSource.get();
     }
 
@@ -310,7 +312,7 @@ public final class Animator implements TickListener {
     private Animator.RepeatBehavior f_repeatBehavior = Animator.RepeatBehavior.REVERSE;
     private long f_repeatCount = 1;
     private Animator.Direction f_startDirection = Animator.Direction.FORWARD;
-    private long f_startDelayDuration = 0;
+    private long f_startDelay = 0;
     @NonNull
     private TimeUnit f_startDelayTimeUnit = TimeUnit.SECONDS;
     private final List<TimingTarget> f_targets = new ArrayList<TimingTarget>();
@@ -343,6 +345,7 @@ public final class Animator implements TickListener {
      * each timing event while the animation is running.
      * <p>
      * {@link TimingTarget}s will be called in the order they are added.
+     * Duplicate additions are ignored.
      * 
      * @param target
      *          a {@link TimingTarget} object.
@@ -350,7 +353,7 @@ public final class Animator implements TickListener {
      */
     @NonNull
     public Builder addTarget(TimingTarget target) {
-      if (target != null)
+      if (target != null && !f_targets.contains(target))
         f_targets.add(target);
       return this;
     }
@@ -496,10 +499,11 @@ public final class Animator implements TickListener {
      * Sets the start delay of the animation. This sets a delay prior to
      * starting the first animation cycle after the call to
      * {@link Animator#start} or {@link Animator#startReverse}. The default
-     * value is none.
+     * value is 0 indicating no start delay.
      * 
      * @param value
-     *          the start delay of the animation. This value must be >= 0.
+     *          the start delay of the animation. This value must be >= 0 where
+     *          a value of 0 means no start delay.
      * @param unit
      *          the time unit of the value parameter. A {@code null} value is
      *          equivalent to setting the default unit of
@@ -514,7 +518,7 @@ public final class Animator implements TickListener {
       if (value < 0)
         throw new IllegalArgumentException(I18N.err(13, value));
 
-      f_startDelayDuration = value;
+      f_startDelay = value;
       f_startDelayTimeUnit = unit != null ? unit : TimeUnit.SECONDS;
       return this;
     }
@@ -527,38 +531,37 @@ public final class Animator implements TickListener {
     @NonNull
     public Animator build() {
       final Animator result = new Animator(f_debugName, f_duration, f_durationTimeUnit, f_endBehavior, f_interpolator,
-          f_repeatBehavior, f_repeatCount, f_startDirection, f_startDelayDuration, f_startDelayTimeUnit, f_timingSource,
-          f_disposeTimingSource);
-      for (TimingTarget target : f_targets) {
-        result.addTarget(target);
-      }
+          f_repeatBehavior, f_repeatCount, f_startDirection, f_startDelay, f_startDelayTimeUnit, f_timingSource,
+          f_disposeTimingSource, f_targets);
       return result;
     }
   }
 
   /*
-   * Immutable state set by the builder.
+   * Immutable state set by the builder. We use "default" to avoid synthetic
+   * accessors being generated.
    */
 
   @Nullable
-  private final String f_debugName;
-  private final long f_duration;
+  final String f_debugName;
+  final long f_duration;
   @NonNull
-  private final TimeUnit f_durationTimeUnit;
-  private final EndBehavior f_endBehavior;
+  final TimeUnit f_durationTimeUnit;
+  @NonNull
+  final EndBehavior f_endBehavior;
   @Nullable
-  private final Interpolator f_interpolator; // null means linear
+  final Interpolator f_interpolator; // null means linear
   @NonNull
-  private final RepeatBehavior f_repeatBehavior;
-  private final long f_repeatCount;
+  final RepeatBehavior f_repeatBehavior;
+  final long f_repeatCount;
   @NonNull
-  private final Direction f_startDirection;
-  private final long f_startDelayDuration;
+  final Direction f_startDirection;
+  final long f_startDelay;
   @NonNull
-  private final TimeUnit f_startDelayTimeUnit;
+  final TimeUnit f_startDelayTimeUnit;
   @NonNull
-  private final TimingSource f_timingSource;
-  private final boolean f_disposeTimingSource; // at end
+  final TimingSource f_timingSource;
+  final boolean f_disposeTimingSource; // at end
 
   /**
    * Gets the "debug" name of this animation.
@@ -602,6 +605,7 @@ public final class Animator implements TickListener {
    * 
    * @return the behavior at the end of the animation.
    */
+  @NonNull
   public EndBehavior getEndBehavior() {
     return f_endBehavior;
   }
@@ -611,6 +615,7 @@ public final class Animator implements TickListener {
    * 
    * @return the interpolation to use each animation cycle.
    */
+  @NonNull
   public Interpolator getInterpolator() {
     return f_interpolator != null ? f_interpolator : LinearInterpolator.getInstance();
   }
@@ -620,6 +625,7 @@ public final class Animator implements TickListener {
    * 
    * @return the behavior for each successive animation cycle.
    */
+  @NonNull
   public RepeatBehavior getRepeatBehavior() {
     return f_repeatBehavior;
   }
@@ -640,8 +646,39 @@ public final class Animator implements TickListener {
    * 
    * @return initial animation cycle direction.
    */
+  @NonNull
   public Direction getStartDirection() {
     return f_startDirection;
+  }
+
+  /**
+   * Gets the start delay of this animation. This is the delay prior to starting
+   * the first animation cycle after the call to {@link Animator#start} or
+   * {@link Animator#startReverse}. The units of this value are obtained by
+   * calling {@link #getStartDelayTimeUnit()}.
+   * 
+   * @return the start delay of the animation. This value must be >= 0 where a
+   *         value of 0 means no start delay.
+   * 
+   * @see #getStartDelayTimeUnit()
+   */
+  public long getStartDelay() {
+    return f_startDelay;
+  }
+
+  /**
+   * Gets the time unit of the start delay of this animation. This is the delay
+   * prior to starting the first animation cycle after the call to
+   * {@link Animator#start} or {@link Animator#startReverse}. The duration is
+   * obtained by calling {@link #getStartDelay()}.
+   * 
+   * @return the time unit of the value parameter.
+   * 
+   * @see #getStartDelay()
+   */
+  @NonNull
+  public TimeUnit getStartDelayTimeUnit() {
+    return f_startDelayTimeUnit;
   }
 
   /**
@@ -649,6 +686,7 @@ public final class Animator implements TickListener {
    * 
    * @return a timing source.
    */
+  @NonNull
   public TimingSource getTimingSource() {
     return f_timingSource;
   }
@@ -669,7 +707,7 @@ public final class Animator implements TickListener {
    * Do not hold this lock when invoking any method on {@link #f_timingSource}.
    */
   @Vouch("AnnotationBounds")
-  private final CopyOnWriteArrayList<TimingTarget> f_targets = new CopyOnWriteArrayList<TimingTarget>();
+  final CopyOnWriteArrayList<TimingTarget> f_targets = new CopyOnWriteArrayList<TimingTarget>();
 
   /**
    * Tracks the original start time in nanoseconds of the animation.
@@ -677,7 +715,7 @@ public final class Animator implements TickListener {
    * Accesses must be guarded by a lock on {@link #f_targets}.
    */
   @InRegion("AnimatorState")
-  private long f_startTimeNanos;
+  long f_startTimeNanos;
 
   /**
    * Tracks start time of current cycle.
@@ -685,7 +723,7 @@ public final class Animator implements TickListener {
    * Accesses must be guarded by a lock on {@link #f_targets}.
    */
   @InRegion("AnimatorState")
-  private long f_cycleStartTimeNanos;
+  long f_cycleStartTimeNanos;
 
   /**
    * Used for pause/resume. If this value is non-zero and the animation is
@@ -694,15 +732,16 @@ public final class Animator implements TickListener {
    * Accesses must be guarded by a lock on {@link #f_targets}.
    */
   @InRegion("AnimatorState")
-  private long f_pauseBeginTimeNanos;
+  long f_pauseBeginTimeNanos;
 
   /**
    * The current direction of the animation.
    * <p>
    * Accesses must be guarded by a lock on {@link #f_targets}.
    */
+  @NonNull
   @InRegion("AnimatorState")
-  private Direction f_currentDirection;
+  Direction f_currentDirection;
 
   /**
    * Indicates that {@link #reverseNow()} was invoked <i>x</i> times. The actual
@@ -711,7 +750,7 @@ public final class Animator implements TickListener {
    * how many calls were made.
    */
   @InRegion("AnimatorState")
-  private int f_reverseNowCallCount;
+  int f_reverseNowCallCount;
 
   /**
    * A latch used to indicate the animation is running and to allow client code
@@ -728,7 +767,8 @@ public final class Animator implements TickListener {
    * Accesses must be guarded by a lock on {@link #f_targets}.
    */
   @InRegion("AnimatorState")
-  private CountDownLatch f_runningAnimationLatch;
+  @Nullable
+  CountDownLatch f_runningAnimationLatch;
 
   /**
    * Indicates the animation is stopping &mdash; it is in a shutdown phase. This
@@ -748,7 +788,7 @@ public final class Animator implements TickListener {
    * Accesses must be guarded by a lock on {@link #f_targets}.
    */
   @InRegion("AnimatorState")
-  private boolean f_stopping;
+  boolean f_stopping;
 
   /**
    * Constructs an animation.
@@ -757,8 +797,8 @@ public final class Animator implements TickListener {
    */
   @Unique("return")
   Animator(String debugName, long duration, TimeUnit durationTimeUnit, EndBehavior endBehavior, Interpolator interpolator,
-      RepeatBehavior repeatBehavior, long repeatCount, Direction startDirection, long startDelayDuration,
-      TimeUnit startDelayTimeUnit, TimingSource timingSource, boolean disposeTimingSource) {
+      RepeatBehavior repeatBehavior, long repeatCount, Direction startDirection, long startDelay, TimeUnit startDelayTimeUnit,
+      TimingSource timingSource, boolean disposeTimingSource, Collection<TimingTarget> targets) {
     f_debugName = debugName;
     f_duration = duration;
     f_durationTimeUnit = durationTimeUnit;
@@ -767,10 +807,11 @@ public final class Animator implements TickListener {
     f_repeatBehavior = repeatBehavior;
     f_repeatCount = repeatCount;
     f_startDirection = f_currentDirection = startDirection;
-    f_startDelayDuration = startDelayDuration;
+    f_startDelay = startDelay;
     f_startDelayTimeUnit = startDelayTimeUnit;
     f_timingSource = timingSource;
     f_disposeTimingSource = disposeTimingSource;
+    f_targets.addAll(targets);
   }
 
   /**
@@ -781,15 +822,40 @@ public final class Animator implements TickListener {
    * started or completed; the new target will begin having its methods called
    * as soon as it is added.
    * <p>
-   * {@link TimingTarget}s will be called in the order they are added.
+   * {@link TimingTarget}s will be called in the order they are added. Duplicate
+   * additions are ignored.
    * 
    * @param target
    *          a {@link TimingTarget} object.
    */
   @RegionEffects("writes any(java.util.concurrent.CopyOnWriteArrayList):Instance")
-  public void addTarget(TimingTarget target) {
-    if (target != null)
-      f_targets.add(target);
+  public void addTarget(final TimingTarget target) {
+    /*
+     * This is complicated because a target can be added after the animation has
+     * started. In this case we need to call its begin(Animator) method via a
+     * submit(Runnable) call on the timing source.
+     * 
+     * Because we don't want the state of the animation to change during this
+     * call, in particular to start or stop running, we hold the lock. This
+     * creates a dependency on how the isRunning() method works or, more
+     * specifically, how the animation defines when it is running.
+     */
+    synchronized (f_targets) {
+      if (target != null && !f_targets.contains(target)) {
+        if (isRunning()) {
+          final Runnable task = new Runnable() {
+            @Override
+            public void run() {
+              for (TimingTarget target : f_targets) {
+                target.begin(Animator.this);
+              }
+            }
+          };
+          f_timingSource.submit(task);
+        }
+        f_targets.add(target);
+      }
+    }
   }
 
   /**
@@ -866,6 +932,7 @@ public final class Animator implements TickListener {
    * 
    * @return the current direction of the animation.
    */
+  @NonNull
   public Direction getCurrentDirection() {
     synchronized (f_targets) {
       return f_currentDirection;
@@ -1099,7 +1166,7 @@ public final class Animator implements TickListener {
    * @return the time elapsed in nanoseconds between the time this cycle started
    *         and the passed time.
    */
-  public long getCycleElapsedTime(long currentTimeNanos) {
+  long getCycleElapsedTime(long currentTimeNanos) {
     synchronized (f_targets) {
       return (currentTimeNanos - f_cycleStartTimeNanos);
     }
@@ -1125,13 +1192,14 @@ public final class Animator implements TickListener {
    * @return the total time elapsed between the time the Animator started and
    *         the passed time.
    */
-  public long getTotalElapsedTime(long currentTimeNanos) {
+  long getTotalElapsedTime(long currentTimeNanos) {
     synchronized (f_targets) {
       return (currentTimeNanos - f_startTimeNanos);
     }
   }
 
   @Override
+  @NonNull
   @RegionEffects("reads Instance")
   @Vouch("Uses StringBuilder")
   public String toString() {
@@ -1144,6 +1212,7 @@ public final class Animator implements TickListener {
     b.append(", repeatBehavior=").append(f_repeatBehavior.toString());
     b.append(", repeatCount=").append(f_repeatCount);
     b.append(", endBehavior=").append(f_endBehavior.toString());
+    b.append(", startDelay=").append(f_startDelay).append(' ').append(f_startDelayTimeUnit.toString());
     b.append(", timingSource=").append(f_timingSource.toString());
     b.append(')');
     return b.toString();
@@ -1162,7 +1231,7 @@ public final class Animator implements TickListener {
    * @throws IllegalStateException
    *           if the this animation is already running.
    */
-  private void startHelper(Direction direction, String methodName) {
+  void startHelper(Direction direction, String methodName) {
     synchronized (f_targets) {
       if (isRunning())
         throw new IllegalStateException(I18N.err(12, methodName));
@@ -1210,7 +1279,7 @@ public final class Animator implements TickListener {
    *         stopped, {@code false} if the animation was not running or was in
    *         the process of stopping and didn't need to be stopped.
    */
-  private boolean stopHelper(final boolean notify) {
+  boolean stopHelper(final boolean notify) {
     synchronized (f_targets) {
       /*
        * If we are not running at all we return immediately.
@@ -1251,7 +1320,7 @@ public final class Animator implements TickListener {
    * <p>
    * {@link #f_targets} should NOT be held when invoking this method.
    */
-  private void latchCountDown() {
+  void latchCountDown() {
     final CountDownLatch latch;
     synchronized (f_targets) {
       latch = f_runningAnimationLatch;
@@ -1271,7 +1340,6 @@ public final class Animator implements TickListener {
      * implementation details of the calculations below and flags about what to
      * do next.
      */
-
     final double fraction;
     boolean timeToStop = false;
     boolean notifyRepeat = false;

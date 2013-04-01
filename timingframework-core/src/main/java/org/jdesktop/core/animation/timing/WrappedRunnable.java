@@ -40,7 +40,7 @@ public class WrappedRunnable implements Runnable {
   /**
    * The wrapped task,
    */
-  private final Runnable f_task;
+  final Runnable f_task;
 
   @Override
   public void run() {
