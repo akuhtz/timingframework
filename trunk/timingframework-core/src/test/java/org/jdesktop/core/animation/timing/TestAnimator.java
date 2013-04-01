@@ -729,7 +729,7 @@ public final class TestAnimator {
     Assert.assertFalse(ts.isDisposed());
     ts.dispose();
   }
-  
+
   @Test
   public void addTimingTargetAfterStart() {
     ManualTimingSource ts = new ManualTimingSource();
@@ -739,10 +739,59 @@ public final class TestAnimator {
     a.addTarget(counter);
     Assert.assertTrue(a.stop());
     ts.tick();
-  //  Assert.assertEquals(1, counter.getBeginCount());
+    Assert.assertEquals(1, counter.getBeginCount());
     Assert.assertEquals(1, counter.getEndCount());
     Assert.assertEquals(0, counter.getReverseCount());
     Assert.assertEquals(0, counter.getRepeatCount());
     Assert.assertTrue(counter.getProtocolMsg(), counter.isProtocolOkay());
+  }
+
+  @Test
+  public void startDelay1() throws InterruptedException {
+    TimingSource ts = new ScheduledExecutorTimingSource();
+    ts.init();
+    Animator a = new Animator.Builder(ts).setStartDelay(1, TimeUnit.SECONDS).build();
+    long duration = System.nanoTime();
+    a.start();
+    a.await();
+    duration = System.nanoTime() - duration;
+    Assert.assertTrue(duration + TimeUnit.MILLISECONDS.toNanos(10) > TimeUnit.SECONDS.toNanos(2));
+    ts.dispose();
+  }
+
+  @Test
+  public void startDelay2() throws InterruptedException {
+    TimingSource ts = new ScheduledExecutorTimingSource();
+    ts.init();
+    Animator a = new Animator.Builder(ts).setStartDelay(50, TimeUnit.MILLISECONDS).build();
+    Assert.assertEquals(50, a.getStartDelay());
+    Assert.assertSame(TimeUnit.MILLISECONDS, a.getStartDelayTimeUnit());
+    a.start();
+    a.stopAndAwait();
+    ts.dispose();
+  }
+
+  @Test
+  public void startDelay3() throws InterruptedException {
+    TimingSource ts = new ScheduledExecutorTimingSource();
+    ts.init();
+    Animator a = new Animator.Builder(ts).setStartDelay(25, null).build();
+    Assert.assertEquals(25, a.getStartDelay());
+    Assert.assertSame(TimeUnit.SECONDS, a.getStartDelayTimeUnit());
+    a.start();
+    a.stopAndAwait();
+    ts.dispose();
+  }
+
+  @Test
+  public void startDelay4() throws InterruptedException {
+    TimingSource ts = new ScheduledExecutorTimingSource();
+    ts.init();
+    Animator a = new Animator.Builder(ts).build();
+    Assert.assertEquals(0, a.getStartDelay());
+    Assert.assertSame(TimeUnit.SECONDS, a.getStartDelayTimeUnit());
+    a.start();
+    a.stopAndAwait();
+    ts.dispose();
   }
 }
