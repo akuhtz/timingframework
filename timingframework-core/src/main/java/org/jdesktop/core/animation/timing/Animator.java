@@ -1447,7 +1447,7 @@ public final class Animator implements TickListener {
          * timer.
          */
         final long overCycleTimeNanos = cycleElapsedTimeNanos % f_durationNanos;
-        fractionScratch = (double) cycleElapsedTimeNanos / (double) f_durationNanos;
+        fractionScratch = (double) overCycleTimeNanos / (double) f_durationNanos;
         /*
          * Set a new start time for this cycle.
          */
