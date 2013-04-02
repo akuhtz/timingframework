@@ -9,7 +9,7 @@
   <artifactId>timingframework-swing</artifactId>
   <packaging>jar</packaging>
   <name>Timing Framework - Swing</name>
-  <version>5.5.0</version>
+  <version>6.0.0</version>
   <description>
     This project provides a framework and sample code for time-based animations in Swing.
   </description>
@@ -65,14 +65,14 @@
     <dependency>
       <groupId>net.java.timingframework</groupId>
       <artifactId>timingframework-core</artifactId>
-      <version>5.5.0</version>
+      <version>6.0.0</version>
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>net.java.timingframework</groupId>
       <artifactId>timingframework-core</artifactId>
-      <version>5.5.0</version>
+      <version>6.0.0</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
