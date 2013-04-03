@@ -132,7 +132,7 @@ public final class TooManyBalls extends Activity implements JRendererTarget<Surf
   long f_lastPaintNanos = 0;
   long f_totalPaintTimeNanos = 0;
 
-  private long getFPS() {
+  long getFPS() {
     if (f_paintCount < 1)
       return 0;
     final long avgCycleTime = f_totalPaintTimeNanos / f_paintCount;
@@ -142,7 +142,7 @@ public final class TooManyBalls extends Activity implements JRendererTarget<Surf
       return 0;
   }
 
-  private void addBall() {
+  void addBall() {
     final Ball ball = new Ball();
     ball.imageIndex = f_die.nextInt(5);
 
@@ -192,7 +192,7 @@ public final class TooManyBalls extends Activity implements JRendererTarget<Surf
     f_balls.add(ball);
   }
 
-  private void removeBall() {
+  void removeBall() {
     if (f_balls.isEmpty())
       return;
 

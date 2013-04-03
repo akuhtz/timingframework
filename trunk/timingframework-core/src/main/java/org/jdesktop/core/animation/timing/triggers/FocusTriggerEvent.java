@@ -33,6 +33,5 @@ public enum FocusTriggerEvent implements TriggerEvent {
     }
   };
 
-  @Override
   public abstract FocusTriggerEvent getOppositeEvent();
 }

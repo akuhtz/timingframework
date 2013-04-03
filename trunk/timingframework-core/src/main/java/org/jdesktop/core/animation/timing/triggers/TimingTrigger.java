@@ -142,27 +142,22 @@ public final class TimingTrigger {
     // TimingTarget implementation methods
     //
 
-    @Override
     public void begin(Animator source) {
       fire(TimingTriggerEvent.START);
     }
 
-    @Override
     public void end(Animator source) {
       fire(TimingTriggerEvent.STOP);
     }
 
-    @Override
     public void repeat(Animator source) {
       fire(TimingTriggerEvent.REPEAT);
     }
 
-    @Override
     public void reverse(Animator source) {
       fire(TimingTriggerEvent.REVERSE);
     }
 
-    @Override
     public void timingEvent(Animator source, double fraction) {
       // Nothing to do
     }

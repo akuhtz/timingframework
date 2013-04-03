@@ -70,10 +70,10 @@ public class TimingSourceResolution extends Activity implements TimingSourceReso
     }
   }
 
-  private ScrollView f_scrollOutput = null;
-  private TextView f_benchmarkOutput = null;
+  ScrollView f_scrollOutput = null;
+  TextView f_benchmarkOutput = null;
 
-  private TimingSourceResolutionThread f_benchmarkThread = null;
+  TimingSourceResolutionThread f_benchmarkThread = null;
 
   /**
    * This method outputs the string to the GUI {@link #f_benchmarkOutput}.

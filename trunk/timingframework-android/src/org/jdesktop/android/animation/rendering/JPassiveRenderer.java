@@ -17,10 +17,10 @@ public final class JPassiveRenderer implements JRenderer, SurfaceHolder.Callback
   /*
    * Thread-confined to the SWT UI thread
    */
-  private final SurfaceView f_on;
-  private final JRendererTarget<SurfaceView, Canvas> f_target;
-  private final TimingSource f_ts;
-  private final PostTickListener f_postTick = new PostTickListener() {
+  final SurfaceView f_on;
+  final JRendererTarget<SurfaceView, Canvas> f_target;
+  final TimingSource f_ts;
+  final PostTickListener f_postTick = new PostTickListener() {
     public void timingSourcePostTick(TimingSource source, long nanoTime) {
       long now = System.nanoTime();
       if (f_renderCount != 0) {
@@ -45,9 +45,9 @@ public final class JPassiveRenderer implements JRenderer, SurfaceHolder.Callback
   /*
    * Statistics counters
    */
-  private long f_lastRenderTimeNanos;
-  private long f_totalRenderTime = 0;
-  private long f_renderCount = 0;
+  long f_lastRenderTimeNanos;
+  long f_totalRenderTime = 0;
+  long f_renderCount = 0;
 
   public JPassiveRenderer(SurfaceView on, JRendererTarget<SurfaceView, Canvas> target, TimingSource timingSource) {
     if (on == null)

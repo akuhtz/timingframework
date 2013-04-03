@@ -58,7 +58,6 @@ public enum MouseTriggerEvent implements TriggerEvent {
    */
   CLICK;
 
-  @Override
   public MouseTriggerEvent getOppositeEvent() {
     return this;
   };

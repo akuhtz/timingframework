@@ -71,7 +71,6 @@ public final class ScheduledExecutorTimingSource extends TimingSource {
   @Override
   public void init() {
     f_executor.scheduleAtFixedRate(new Runnable() {
-      @Override
       public void run() {
         runPerTick();
       }
