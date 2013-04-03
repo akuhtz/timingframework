@@ -14,10 +14,23 @@ A library for making Java animation and timing-based control easier!
 
 Report bugs, read the documentation, and get new releases at:
    http://java.net/projects/timingframework/
+   
+++-------------------++
+|| 6.1 Release Notes ||
+++-------------------++
+
+03/Apr/2013
+
+o I completed removing all expressions that cause the generation of
+  synthetic accessor methods for fields, methods, and constructors.
+  This release is only to push out this change aimed at avoiding
+  rarely triggered performance glitches that could be lurking.
 
 ++-------------------++
 || 6.0 Release Notes ||
 ++-------------------++
+
+01/Apr/2013
 
 o Added ability to set a start delay for the animation. This existed
   in the original library but was removed in the 2.0 release. To use
@@ -38,6 +51,8 @@ o "default" visibility is now used in many class implementations for
 || 5.5 Release Notes ||
 ++-------------------++
 
+12/Dec/2012
+
 o The ability to have an Animation dispose its TimingSource when it
   ends was added. See Animator.Builder.setDisposeTimingSource(boolean)
   for more information. This capability is useful if you have long
@@ -53,6 +68,8 @@ o A bug was fixed: http://java.net/jira/browse/TIMINGFRAMEWORK-17
 ++-------------------++
 || 5.1 Release Notes ||
 ++-------------------++
+
+12/Jul/2012
 
 o Core, Swing, and SWT were tested under Java 7 as well as Java 6.
   Note that release and source code is still Java 6, however, folks
@@ -86,6 +103,8 @@ o A bug was fixed: http://java.net/jira/browse/TIMINGFRAMEWORK-15
 || 5.0 Release Notes ||
 ++-------------------++
 
+12/Apr/2012
+
 o Support for Android started. This involved a few changes to core code
   (shared by Swing, SWT, and Android) because Android doesn't support
   use of the PropertyDescriptor and IntrospectionException classes in
@@ -112,6 +131,8 @@ o Removed the KeyFramesTimingTarget class. This can be purpose built by
 || 4.1 Release Notes ||
 ++-------------------++
 
+16/Sep/2011
+
 o AnimatorBuilder has been changed to Animator.Builder to better match the
   implementation suggested by Josh Bloch in Effective Java (second edition)
   Item 2: Consider a builder when faced with many constructor parameters.
@@ -129,6 +150,8 @@ o Maven is now supported for the core and Swing releases. For more information
 ++-------------------++
 || 3.0 Release Notes ||
 ++-------------------++
+
+13/Apr/2011
 
 The Timing Framework API is more stable, better tested, probably now usable
 in real projects.
@@ -188,6 +211,8 @@ o The SureLogic concurrency annotations are included in the release Jar
 ++-------------------++
 || 2.0 Release Notes ||
 ++-------------------++
+
+23/Mar/2011
 
 A quick release of updates to allow feedback, however, the API is not stable.
 
