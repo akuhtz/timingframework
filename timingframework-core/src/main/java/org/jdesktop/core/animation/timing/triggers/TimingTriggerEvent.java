@@ -43,7 +43,6 @@ public enum TimingTriggerEvent implements TriggerEvent {
    */
   REVERSE;
 
-  @Override
   public TimingTriggerEvent getOppositeEvent() {
     return this;
   };

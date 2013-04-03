@@ -21,27 +21,22 @@ import com.surelogic.ThreadSafe;
 @ThreadSafe(implementationOnly = true)
 public class TimingTargetAdapter implements TimingTarget {
 
-  @Override
   public void begin(Animator source) {
     // default is to do nothing
   }
 
-  @Override
   public void end(Animator source) {
     // default is to do nothing
   }
 
-  @Override
   public void repeat(Animator source) {
     // default is to do nothing
   }
 
-  @Override
   public void reverse(Animator source) {
     // default is to do nothing
   }
 
-  @Override
   public void timingEvent(Animator source, double fraction) {
     // default is to do nothing
   }

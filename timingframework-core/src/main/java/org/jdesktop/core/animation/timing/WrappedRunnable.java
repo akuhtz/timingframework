@@ -41,7 +41,6 @@ public class WrappedRunnable implements Runnable {
    */
   final Runnable f_task;
 
-  @Override
   public void run() {
     try {
       f_task.run();

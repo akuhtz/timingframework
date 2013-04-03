@@ -850,7 +850,6 @@ public final class Animator implements TickListener {
       if (target != null && !f_targets.contains(target)) {
         if (isRunning()) {
           final Runnable task = new Runnable() {
-            @Override
             public void run() {
               for (TimingTarget target : f_targets) {
                 target.begin(Animator.this);
@@ -1277,7 +1276,6 @@ public final class Animator implements TickListener {
        */
       if (!f_targets.isEmpty()) {
         final Runnable task = new Runnable() {
-          @Override
           public void run() {
             for (TimingTarget target : f_targets) {
               target.begin(Animator.this);
@@ -1322,7 +1320,6 @@ public final class Animator implements TickListener {
     }
     f_timingSource.removeTickListener(this);
     final Runnable task = new Runnable() {
-      @Override
       public void run() {
         try {
           if (f_disposeTimingSource)
@@ -1358,7 +1355,6 @@ public final class Animator implements TickListener {
   /**
    * Not intended for use by client code.
    */
-  @Override
   public void timingSourceTick(TimingSource source, long nanoTime) {
     /*
      * Implementation note: This is a big method, however, breaking it up

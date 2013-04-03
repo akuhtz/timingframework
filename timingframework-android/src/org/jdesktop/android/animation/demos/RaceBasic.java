@@ -25,8 +25,8 @@ public final class RaceBasic extends Activity implements SurfaceHolder.Callback 
     setContentView(R.layout.race_basic);
   }
 
-  private SurfaceView f_trackView = null;
-  private AndroidTimingSource f_timingSource = null;
+  SurfaceView f_trackView = null;
+  AndroidTimingSource f_timingSource = null;
 
   @Override
   protected void onResume() {
@@ -83,7 +83,7 @@ public final class RaceBasic extends Activity implements SurfaceHolder.Callback 
 
   private boolean f_toggle = true;
 
-  private void myDraw(final Canvas c) {
+  void myDraw(final Canvas c) {
     Rect r = new Rect(0, 0, c.getWidth(), c.getHeight());
     Paint p = new Paint();
     p.setColor(f_toggle ? Color.RED : Color.BLUE);

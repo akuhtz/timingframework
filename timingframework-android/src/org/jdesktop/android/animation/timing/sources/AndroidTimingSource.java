@@ -55,10 +55,10 @@ public final class AndroidTimingSource extends TimingSource {
    */
   static private final long NONE = -1;
 
-  private final long f_periodNanos;
-  private final AtomicBoolean f_running = new AtomicBoolean(true);
+  final long f_periodNanos;
+  final AtomicBoolean f_running = new AtomicBoolean(true);
   @Vouch("ThreadSafe")
-  private final Activity f_activity;
+  final Activity f_activity;
 
   /**
    * Handler for the periodic task {@link #f_periodic} declared below.
@@ -66,10 +66,10 @@ public final class AndroidTimingSource extends TimingSource {
    * This state is thread confined to the Android UI thread.
    */
   @Vouch("ThreadSafe")
-  private Handler f_handler;
+  Handler f_handler;
 
   @Vouch("ThreadSafe")
-  private final Runnable f_periodic = new Runnable() {
+  final Runnable f_periodic = new Runnable() {
 
     /**
      * This represents a relative {@link System#nanoTime()} at which the next
@@ -81,7 +81,7 @@ public final class AndroidTimingSource extends TimingSource {
 
     public void run() {
       if (f_running.get()) {
-        getPerTickTask().run();
+        runPerTick();
         final long now = System.nanoTime();
         final long delayNanos;
         if (f_ideaNextTickNanoTime != NONE) {

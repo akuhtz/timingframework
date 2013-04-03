@@ -677,7 +677,6 @@ public class KeyFrames<T> implements Iterable<Frame<T>> {
     return f_frames[index];
   }
 
-  @Override
   @Borrowed(value = "this", allowReturn = true)
   @RegionEffects("writes this:Instance")
   @Unique("return")
