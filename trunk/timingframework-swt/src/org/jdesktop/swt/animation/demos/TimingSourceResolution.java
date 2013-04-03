@@ -76,11 +76,11 @@ public class TimingSourceResolution implements TimingSourceResolutionThread.Depo
     f_benchmarkOutput = benchmarkOutput;
   }
 
-  private final Display f_display;
+  final Display f_display;
 
-  private static Text f_benchmarkOutput;
+  static Text f_benchmarkOutput;
 
-  private TimingSourceResolutionThread f_benchmarkThread = null;
+  TimingSourceResolutionThread f_benchmarkThread = null;
 
   /**
    * This method outputs the string to the GUI {@link #f_benchmarkOutput}.

@@ -64,7 +64,7 @@ public class TooManyBalls implements JRendererTarget<GraphicsConfiguration, Grap
   /**
    * Used to update the FPS display once a second.
    */
-  private static final TimingSource f_infoTimer = new SwingTimerTimingSource(1, TimeUnit.SECONDS);
+  static final TimingSource f_infoTimer = new SwingTimerTimingSource(1, TimeUnit.SECONDS);
 
   public static void main(String[] args) {
     System.setProperty("swing.defaultlaf", "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
@@ -81,11 +81,11 @@ public class TooManyBalls implements JRendererTarget<GraphicsConfiguration, Grap
    * EDT methods and state
    */
 
-  private final JFrame f_frame;
-  private final JRendererPanel f_panel;
-  private final JRenderer f_renderer;
-  private final JLabel f_infoLabel;
-  private int f_ballCount = 0;
+  final JFrame f_frame;
+  final JRendererPanel f_panel;
+  final JRenderer f_renderer;
+  final JLabel f_infoLabel;
+  int f_ballCount = 0;
 
   public TooManyBalls() {
     final String rendererType = JRendererFactory.useActiveRenderer() ? "Active" : "Passive";
@@ -210,7 +210,7 @@ public class TooManyBalls implements JRendererTarget<GraphicsConfiguration, Grap
     f_frame.setVisible(true);
   }
 
-  private void updateBallCount() {
+  void updateBallCount() {
     f_infoLabel.setText("Balls: " + f_ballCount + "    FPS: " + f_renderer.getFPS());
     f_frame.validate();
   }
@@ -241,7 +241,7 @@ public class TooManyBalls implements JRendererTarget<GraphicsConfiguration, Grap
   private static final Interpolator SPLINE_0_1_1_0 = new SplineInterpolator(0.00, 1.00, 1.00, 1.00);
   private static final Interpolator SPLINE_1_0_1_1 = new SplineInterpolator(1.00, 0.00, 1.00, 1.00);
 
-  private void addBall() {
+  void addBall() {
     final Ball ball = new Ball();
     ball.imageIndex = f_die.nextInt(5);
     BufferedImage ballImage = f_ballImages[ball.imageIndex];
@@ -292,7 +292,7 @@ public class TooManyBalls implements JRendererTarget<GraphicsConfiguration, Grap
     f_balls.add(ball);
   }
 
-  private void removeBall() {
+  void removeBall() {
     if (f_balls.isEmpty())
       return;
 
@@ -302,7 +302,7 @@ public class TooManyBalls implements JRendererTarget<GraphicsConfiguration, Grap
     }
   }
 
-  private final List<Ball> f_balls = new ArrayList<Ball>();
+  final List<Ball> f_balls = new ArrayList<Ball>();
 
   @Override
   public void renderSetup(GraphicsConfiguration gc) {

@@ -28,7 +28,9 @@ import com.surelogic.Vouch;
  * restarted after {@link #dispose()} is called.
  * <p>
  * A timing source implementation should document the thread context in which it
- * makes calls to registered listeners.
+ * makes calls to registered listeners. Further, it should invoke
+ * {@link #runPerTick()} at each tick of time to perform the calls to registered
+ * listeners.
  * 
  * @author Chet Haase
  * @author Tim Halloran
@@ -202,52 +204,40 @@ public abstract class TimingSource {
   }
 
   /**
-   * A task that will, when its <tt>run()</tt> is invoked, perform the following
-   * actions in the listed order:
+   * Used by timing source implementations to perform the following actions in
+   * the listed order:
    * <ol>
    * <li>Execute all queued "one shot" tasks.</li>
    * <li>Notify all registered {@link TickListener}s</li>
    * <li>Notify all registered {@link PostTickListener}s</li>
    * </ol>
-   */
-  @Vouch("ThreadSafe")
-  private final WrappedRunnable f_perTickTask = new WrappedRunnable(new Runnable() {
-    public void run() {
-      while (true) {
-        final Runnable task = f_oneShotQueue.poll();
-        if (task == null)
-          break;
-        task.run();
-      }
-      final long nanoTime = System.nanoTime();
-      if (!f_tickListeners.isEmpty())
-        for (TickListener listener : f_tickListeners) {
-          listener.timingSourceTick(TimingSource.this, nanoTime);
-        }
-      if (!f_postTickListeners.isEmpty())
-        for (PostTickListener listener : f_postTickListeners) {
-          listener.timingSourcePostTick(TimingSource.this, nanoTime);
-        }
-    }
-  });
-
-  /**
-   * Used by implementations to obtain a {@link Runnable} that will, when its
-   * <tt>run()</tt> is invoked, perform the following actions in the listed
-   * order:
-   * <ol>
-   * <li>Execute all queued "one shot" tasks.</li>
-   * <li>Notify all registered {@link TickListener}s</li>
-   * <li>Notify all registered {@link PostTickListener}s</li>
-   * </ol>
-   * A typical implementation will invoke
-   * <tt>getNotifyTickListenersTask().run()</tt> when its particular timer calls
-   * back each tick of time. It is critical that the above code is run within
+   * A typical implementation will invoke this method when its particular timer
+   * calls back each tick of time. It is critical that this method is run within
    * the <i>correct thread context of the timing source</i> implementation.
-   * 
-   * @return the tick listener notification task.
+   * <p>
+   * This method should <b>never be called</b> by client code&mdash;it is only
+   * intended to be used by timing source implementations. It is declared
+   * <tt>public</tt> only to avoid the generation of a synthetic accessor method
+   * for it, because many implementations invoke this method within nested
+   * classes.
    */
-  protected Runnable getPerTickTask() {
-    return f_perTickTask;
+  public void runPerTick() {
+    while (true) {
+      final Runnable task = f_oneShotQueue.poll();
+      if (task == null)
+        break;
+      task.run();
+    }
+    final long nanoTime = System.nanoTime();
+    if (!f_tickListeners.isEmpty()) {
+      for (TickListener listener : f_tickListeners) {
+        listener.timingSourceTick(TimingSource.this, nanoTime);
+      }
+    }
+    if (!f_postTickListeners.isEmpty()) {
+      for (PostTickListener listener : f_postTickListeners) {
+        listener.timingSourcePostTick(TimingSource.this, nanoTime);
+      }
+    }
   }
 }

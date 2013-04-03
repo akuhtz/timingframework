@@ -54,7 +54,7 @@ public class SplineInterpolatorTest extends TimingTargetAdapter {
     });
   }
 
-  private static final JTextArea f_benchmarkOutput = new JTextArea("");
+  static final JTextArea f_benchmarkOutput = new JTextArea("");
 
   /**
    * This method outputs the string to the GUI {@link #f_benchmarkOutput}.
@@ -83,7 +83,7 @@ public class SplineInterpolatorTest extends TimingTargetAdapter {
    * Sets up the simple text output window and then starts a thread to perform
    * the benchmark runs.
    */
-  private static void setupGUI() {
+  static void setupGUI() {
     JFrame frame = new JFrame("Swing SplineInterpolator Test");
     frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     frame.addWindowListener(new WindowAdapter() {

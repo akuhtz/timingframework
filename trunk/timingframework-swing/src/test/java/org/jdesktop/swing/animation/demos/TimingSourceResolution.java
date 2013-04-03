@@ -60,7 +60,7 @@ public class TimingSourceResolution implements TimingSourceResolutionThread.Depo
    * Sets up the simple text output window and then starts a thread to perform
    * the benchmark runs.
    */
-  private void setupGUI() {
+  void setupGUI() {
     JFrame frame = new JFrame("Swing TimingSource Resolution Benchmark");
     frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     frame.addWindowListener(new WindowAdapter() {
@@ -89,9 +89,9 @@ public class TimingSourceResolution implements TimingSourceResolutionThread.Depo
     f_benchmarkThread.start();
   }
 
-  private final JTextArea f_benchmarkOutput = new JTextArea("");
+  final JTextArea f_benchmarkOutput = new JTextArea("");
 
-  private TimingSourceResolutionThread f_benchmarkThread = null;
+  TimingSourceResolutionThread f_benchmarkThread = null;
 
   /**
    * This method outputs the string to the GUI {@link #f_benchmarkOutput}.

@@ -67,21 +67,21 @@ public class TooManyBallsBroken {
     });
   }
 
-  private static final TimingSource f_repaintTimer = new SwingTimerTimingSource();
+  static final TimingSource f_repaintTimer = new SwingTimerTimingSource();
   /**
    * Used to update the FPS display once a second.
    */
-  private static final TimingSource f_infoTimer = new SwingTimerTimingSource(1, TimeUnit.SECONDS);
+  static final TimingSource f_infoTimer = new SwingTimerTimingSource(1, TimeUnit.SECONDS);
 
-  private static final Interpolator ACCEL_4_4 = new AccelerationInterpolator(0.4, 0.4);
-  private static final Interpolator SPLINE_0_1_1_0 = new SplineInterpolator(0.00, 1.00, 1.00, 1.00);
-  private static final Interpolator SPLINE_1_0_1_1 = new SplineInterpolator(1.00, 0.00, 1.00, 1.00);
+  static final Interpolator ACCEL_4_4 = new AccelerationInterpolator(0.4, 0.4);
+  static final Interpolator SPLINE_0_1_1_0 = new SplineInterpolator(0.00, 1.00, 1.00, 1.00);
+  static final Interpolator SPLINE_1_0_1_1 = new SplineInterpolator(1.00, 0.00, 1.00, 1.00);
 
-  private final JFrame f_frame;
-  private final JLabel f_infoLabel;
-  private final BallField f_field;
-  private final Random f_die = new Random();
-  private BufferedImage[] f_ballImages;
+  final JFrame f_frame;
+  final JLabel f_infoLabel;
+  final BallField f_field;
+  final Random f_die = new Random();
+  BufferedImage[] f_ballImages;
 
   public class Ball {
     int x, y;
@@ -98,7 +98,7 @@ public class TooManyBallsBroken {
     }
   }
 
-  private final List<Ball> f_balls = new ArrayList<Ball>();
+  final List<Ball> f_balls = new ArrayList<Ball>();
 
   public TooManyBallsBroken() {
     f_frame = new JFrame("Swing Too Many Balls! - Too Many Timers!");
@@ -214,7 +214,7 @@ public class TooManyBallsBroken {
     f_frame.setVisible(true);
   }
 
-  private void updateBallCount() {
+  void updateBallCount() {
     f_infoLabel.setText("Balls: " + f_balls.size() + "    FPS: " + getFPS());
     f_frame.validate();
   }
@@ -223,7 +223,7 @@ public class TooManyBallsBroken {
    * Renderer thread methods and state
    */
 
-  private void addBall() {
+  void addBall() {
     final Ball ball = new Ball();
     ball.imageIndex = f_die.nextInt(5);
     BufferedImage ballImage = f_ballImages[ball.imageIndex];
@@ -276,7 +276,7 @@ public class TooManyBallsBroken {
     f_balls.add(ball);
   }
 
-  private void removeBall() {
+  void removeBall() {
     if (f_balls.isEmpty())
       return;
 

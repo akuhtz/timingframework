@@ -71,7 +71,7 @@ public final class SwingTimerTimingSource extends TimingSource {
     f_timer = new Timer(periodMillis, new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        getPerTickTask().run();
+        runPerTick();
       }
     });
   }

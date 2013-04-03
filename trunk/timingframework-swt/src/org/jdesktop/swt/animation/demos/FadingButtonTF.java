@@ -35,7 +35,7 @@ import org.jdesktop.swt.animation.timing.sources.SWTTimingSource;
  */
 public final class FadingButtonTF {
 
-  private static Color f_squareColor;
+  static Color f_squareColor;
 
   public static void main(String[] args) {
     final Display display = Display.getDefault();

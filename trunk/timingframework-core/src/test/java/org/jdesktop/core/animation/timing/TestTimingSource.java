@@ -8,9 +8,9 @@ import org.junit.Test;
 
 public final class TestTimingSource {
 
-  private int taskCounter;
-  private int tickCounter;
-  private int postTickCounter;
+  int taskCounter;
+  int tickCounter;
+  int postTickCounter;
 
   @Test
   public void tick1() {

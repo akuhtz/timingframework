@@ -51,13 +51,13 @@ public final class SWTTimingSource extends TimingSource {
    */
   static private final long NONE = -1;
 
-  private final long f_periodNanos;
-  private final AtomicBoolean f_running = new AtomicBoolean(true);
+  final long f_periodNanos;
+  final AtomicBoolean f_running = new AtomicBoolean(true);
   @Vouch("ThreadSafe")
-  private final Display f_display;
+  final Display f_display;
 
   @Vouch("ThreadSafe")
-  private final Runnable f_periodic = new Runnable() {
+  final Runnable f_periodic = new Runnable() {
 
     /**
      * This represents a relative {@link System#nanoTime()} at which the next
@@ -69,7 +69,7 @@ public final class SWTTimingSource extends TimingSource {
 
     public void run() {
       if (f_running.get()) {
-        getPerTickTask().run();
+        runPerTick();
         final long now = System.nanoTime();
         final long delayNanos;
         if (f_ideaNextTickNanoTime != NONE) {

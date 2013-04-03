@@ -24,39 +24,39 @@ import java.util.List;
 import javax.swing.JComponent;
 
 public class EquationDisplay extends JComponent implements PropertyChangeListener {
-  private static final Color COLOR_BACKGROUND = Color.WHITE;
-  private static final Color COLOR_MAJOR_GRID = Color.GRAY.brighter();
-  private static final Color COLOR_MINOR_GRID = new Color(220, 220, 220);
-  private static final Color COLOR_AXIS = Color.BLACK;
+  static final Color COLOR_BACKGROUND = Color.WHITE;
+  static final Color COLOR_MAJOR_GRID = Color.GRAY.brighter();
+  static final Color COLOR_MINOR_GRID = new Color(220, 220, 220);
+  static final Color COLOR_AXIS = Color.BLACK;
 
-  private static final float STROKE_AXIS = 1.2f;
-  private static final float STROKE_GRID = 1.0f;
+  static final float STROKE_AXIS = 1.2f;
+  static final float STROKE_GRID = 1.0f;
 
-  private static final float COEFF_ZOOM = 1.1f;
+  static final float COEFF_ZOOM = 1.1f;
 
-  private List<DrawableEquation> equations;
+  List<DrawableEquation> equations;
 
   protected double minX;
   protected double maxX;
   protected double minY;
   protected double maxY;
 
-  private double originX;
-  private double originY;
+  double originX;
+  double originY;
 
-  private double majorX;
-  private int minorX;
-  private double majorY;
-  private int minorY;
+  double majorX;
+  int minorX;
+  double majorY;
+  int minorY;
 
-  private boolean drawText = true;
+  boolean drawText = true;
 
-  private Point dragStart;
+  Point dragStart;
 
-  private NumberFormat formatter;
-  private ZoomHandler zoomHandler;
-  private PanMotionHandler panMotionHandler;
-  private PanHandler panHandler;
+  NumberFormat formatter;
+  ZoomHandler zoomHandler;
+  PanMotionHandler panMotionHandler;
+  PanHandler panHandler;
 
   public EquationDisplay(double originX, double originY, double minX, double maxX, double minY, double maxY, double majorX,
       int minorX, double majorY, int minorY) {
@@ -415,7 +415,7 @@ public class EquationDisplay extends JComponent implements PropertyChangeListene
     }
   }
 
-  private class ZoomHandler implements MouseWheelListener {
+  class ZoomHandler implements MouseWheelListener {
     public void mouseWheelMoved(MouseWheelEvent e) {
       double distanceX = maxX - minX;
       double distanceY = maxY - minY;
@@ -441,14 +441,14 @@ public class EquationDisplay extends JComponent implements PropertyChangeListene
     }
   }
 
-  private class PanHandler extends MouseAdapter {
+  class PanHandler extends MouseAdapter {
     @Override
     public void mousePressed(MouseEvent e) {
       dragStart = e.getPoint();
     }
   }
 
-  private class PanMotionHandler extends MouseMotionAdapter {
+  class PanMotionHandler extends MouseMotionAdapter {
     @Override
     public void mouseDragged(MouseEvent e) {
       Point dragEnd = e.getPoint();

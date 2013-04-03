@@ -35,7 +35,7 @@ public final class ManualTimingSource extends TimingSource {
   public void tick() {
     if (f_isDisposed.get())
       throw new IllegalStateException("tick() invoked after dispose()");
-    getPerTickTask().run();
+    runPerTick();
   }
 
   private final AtomicBoolean f_isDisposed = new AtomicBoolean(false);

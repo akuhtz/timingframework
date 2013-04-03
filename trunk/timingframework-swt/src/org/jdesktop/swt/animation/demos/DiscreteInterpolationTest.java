@@ -76,10 +76,10 @@ public class DiscreteInterpolationTest extends TimingTargetAdapter {
     System.exit(0);
   }
 
-  private static Display f_display;
-  private static Text f_benchmarkOutput;
+  static Display f_display;
+  static Text f_benchmarkOutput;
 
-  private int f_intValue;
+  int f_intValue;
 
   public void setIntValue(int intValue) {
     f_intValue = intValue;

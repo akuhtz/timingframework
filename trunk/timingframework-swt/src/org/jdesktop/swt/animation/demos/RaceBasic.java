@@ -52,12 +52,12 @@ public class RaceBasic extends TimingTargetAdapter {
 
   public static final int RACE_TIME = 2;
 
-  private Point start = RaceTrackView.START_POS;
-  private Point end = RaceTrackView.FIRST_TURN_START;
-  private Point current = new Point(0, 0);
-  private Animator animator;
-  private RaceTrackView track;
-  private RaceControlPanel controlPanel;
+  Point start = RaceTrackView.START_POS;
+  Point end = RaceTrackView.FIRST_TURN_START;
+  Point current = new Point(0, 0);
+  Animator animator;
+  RaceTrackView track;
+  RaceControlPanel controlPanel;
 
   /** Creates a new instance of BasicRace */
   public RaceBasic(Shell shell, String appName) {

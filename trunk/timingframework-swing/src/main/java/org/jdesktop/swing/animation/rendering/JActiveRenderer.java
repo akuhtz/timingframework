@@ -167,35 +167,35 @@ public final class JActiveRenderer implements JRenderer {
   /*
    * Shared state
    */
-  private final ManualTimingSource f_ts = new ManualTimingSource();
-  private final ExecutorService f_executor = Executors.newSingleThreadExecutor();
-  private final AtomicBoolean f_renderingStarted = new AtomicBoolean(false);
-  private final AtomicReference<CountDownLatch> f_edtPaintLatch = new AtomicReference<CountDownLatch>();
-  private final AtomicReference<BufferedImage> f_renderingBuffer = new AtomicReference<BufferedImage>();
-  private final AtomicReference<BufferedImage> f_replacementBuffer = new AtomicReference<BufferedImage>();
-  private final AtomicBoolean f_shutdownRendering = new AtomicBoolean(false);
+  final ManualTimingSource f_ts = new ManualTimingSource();
+  final ExecutorService f_executor = Executors.newSingleThreadExecutor();
+  final AtomicBoolean f_renderingStarted = new AtomicBoolean(false);
+  final AtomicReference<CountDownLatch> f_edtPaintLatch = new AtomicReference<CountDownLatch>();
+  final AtomicReference<BufferedImage> f_renderingBuffer = new AtomicReference<BufferedImage>();
+  final AtomicReference<BufferedImage> f_replacementBuffer = new AtomicReference<BufferedImage>();
+  final AtomicBoolean f_shutdownRendering = new AtomicBoolean(false);
 
   /*
    * Statistics counters (shared)
    */
-  private final AtomicLong f_totalRenderTime = new AtomicLong(0);
-  private final AtomicLong f_renderCount = new AtomicLong(0);
-  private final AtomicLong f_paintingRequestedNanos = new AtomicLong(0);
-  private final AtomicLong f_totalPaintWaitTime = new AtomicLong(0);
-  private final AtomicLong f_paintWaitCount = new AtomicLong(0);
-  private final AtomicLong f_totalPaintTime = new AtomicLong();
-  private final AtomicLong f_paintCount = new AtomicLong(0);
+  final AtomicLong f_totalRenderTime = new AtomicLong(0);
+  final AtomicLong f_renderCount = new AtomicLong(0);
+  final AtomicLong f_paintingRequestedNanos = new AtomicLong(0);
+  final AtomicLong f_totalPaintWaitTime = new AtomicLong(0);
+  final AtomicLong f_paintWaitCount = new AtomicLong(0);
+  final AtomicLong f_totalPaintTime = new AtomicLong();
+  final AtomicLong f_paintCount = new AtomicLong(0);
 
   /*
    * Thread-confined to the renderer thread (f_executor)
    */
-  private final JRendererTarget<GraphicsConfiguration, Graphics2D> f_target;
+  final JRendererTarget<GraphicsConfiguration, Graphics2D> f_target;
 
   /*
    * Thread-confined to the EDT thread
    */
-  private final JRendererPanel f_on;
-  private final boolean f_hasChildren;
+  final JRendererPanel f_on;
+  final boolean f_hasChildren;
 
   /**
    * Constructs a new active renderer.
@@ -378,7 +378,7 @@ public final class JActiveRenderer implements JRenderer {
    * One cycle of the rendering loop. This task is always executed in the
    * rendering thread.
    */
-  private final Runnable f_renderTask = new Runnable() {
+  final Runnable f_renderTask = new Runnable() {
     @Override
     public void run() {
 
@@ -467,7 +467,7 @@ public final class JActiveRenderer implements JRenderer {
    *          signals that painting to the screen is compete when
    *          {@link CountDownLatch#countDown()} is invoked.
    */
-  private void paintOn(CountDownLatch paintingCompleted) {
+  void paintOn(CountDownLatch paintingCompleted) {
     final long t1 = System.nanoTime();
     final Graphics g = f_on.getGraphics();
     final BufferedImage buffer = f_renderingBuffer.get();

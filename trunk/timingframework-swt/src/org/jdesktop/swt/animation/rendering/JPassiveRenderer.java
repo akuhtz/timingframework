@@ -39,11 +39,11 @@ public class JPassiveRenderer implements JRenderer {
   /*
    * Thread-confined to the SWT UI thread
    */
-  private final Canvas f_on;
-  private final JRendererTarget<Display, GC> f_target;
-  private final TimingSource f_ts;
-  private boolean f_renderingStarted = false;
-  private final PostTickListener f_postTick = new PostTickListener() {
+  final Canvas f_on;
+  final JRendererTarget<Display, GC> f_target;
+  final TimingSource f_ts;
+  boolean f_renderingStarted = false;
+  final PostTickListener f_postTick = new PostTickListener() {
     public void timingSourcePostTick(TimingSource source, long nanoTime) {
       long now = System.nanoTime();
       if (f_renderCount != 0) {
@@ -59,9 +59,9 @@ public class JPassiveRenderer implements JRenderer {
   /*
    * Statistics counters
    */
-  private long f_lastRenderTimeNanos;
-  private long f_totalRenderTime = 0;
-  private long f_renderCount = 0;
+  long f_lastRenderTimeNanos;
+  long f_totalRenderTime = 0;
+  long f_renderCount = 0;
 
   public JPassiveRenderer(Canvas on, JRendererTarget<Display, GC> target, TimingSource timingSource) {
     if (on == null)

@@ -47,15 +47,15 @@ import org.jdesktop.core.animation.timing.interpolators.SplineInterpolator;
 
 class SplineControlPanel extends JPanel {
 
-  private SplineDisplay display;
-  private DropSimulator dropSimulator = new DropSimulator();
-  private BouncerSimulator bounceSimulator = new BouncerSimulator();
+  SplineDisplay display;
+  DropSimulator dropSimulator = new DropSimulator();
+  BouncerSimulator bounceSimulator = new BouncerSimulator();
 
-  private int linesCount = 0;
+  int linesCount = 0;
 
-  private JLabel labelControl1;
-  private JLabel labelControl2;
-  private Animator controller;
+  JLabel labelControl1;
+  JLabel labelControl2;
+  Animator controller;
 
   SplineControlPanel() {
     super(new BorderLayout());
@@ -148,7 +148,7 @@ class SplineControlPanel extends JPanel {
     return button;
   }
 
-  private String formatPoint(Point2D p) {
+  String formatPoint(Point2D p) {
     NumberFormat formatter = getNumberFormatter();
     return "" + formatter.format(p.getX()) + ", " + formatter.format(p.getY());
   }
@@ -207,7 +207,7 @@ class SplineControlPanel extends JPanel {
         GridBagConstraints.HORIZONTAL, new Insets(6, 6, 6, 0), 0, 0));
   }
 
-  private void startSampleAnimation() {
+  void startSampleAnimation() {
     if (controller != null && controller.isRunning()) {
       controller.stop();
     }
@@ -225,7 +225,7 @@ class SplineControlPanel extends JPanel {
     controller.start();
   }
 
-  private class TemplateSelectionHandler implements ListSelectionListener {
+  class TemplateSelectionHandler implements ListSelectionListener {
     public void valueChanged(ListSelectionEvent e) {
       if (e.getValueIsAdjusting()) {
         return;
@@ -246,7 +246,7 @@ class SplineControlPanel extends JPanel {
     }
   }
 
-  private static NumberFormat getNumberFormatter() {
+  static NumberFormat getNumberFormatter() {
     NumberFormat formatter = NumberFormat.getInstance(Locale.ENGLISH);
     formatter.setMinimumFractionDigits(2);
     formatter.setMaximumFractionDigits(2);
@@ -257,7 +257,7 @@ class SplineControlPanel extends JPanel {
     return new Template(new Point2D.Double(x1, y1), new Point2D.Double(x2, y2));
   }
 
-  private static class TemplateCellRenderer extends DefaultListCellRenderer {
+  static class TemplateCellRenderer extends DefaultListCellRenderer {
     private boolean isSelected;
 
     @Override

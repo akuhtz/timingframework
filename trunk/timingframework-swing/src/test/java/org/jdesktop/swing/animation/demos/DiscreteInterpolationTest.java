@@ -48,14 +48,14 @@ public class DiscreteInterpolationTest extends TimingTargetAdapter {
     });
   }
 
-  private int f_intValue;
+  int f_intValue;
 
   public void setIntValue(int intValue) {
     f_intValue = intValue;
     out("intValue = " + f_intValue);
   }
 
-  private static final JTextArea f_benchmarkOutput = new JTextArea("");
+  static final JTextArea f_benchmarkOutput = new JTextArea("");
 
   /**
    * This method outputs the string to the GUI {@link #f_benchmarkOutput}.
@@ -84,7 +84,7 @@ public class DiscreteInterpolationTest extends TimingTargetAdapter {
    * Sets up the simple text output window and then starts a thread to perform
    * the benchmark runs.
    */
-  private static void setupGUI() {
+  static void setupGUI() {
     JFrame frame = new JFrame("Swing DiscreteInterpolation Test");
     frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     frame.addWindowListener(new WindowAdapter() {

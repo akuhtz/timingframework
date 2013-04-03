@@ -108,7 +108,7 @@ public class FadingButtonTF extends JButton implements ActionListener, TimingTar
     repaint();
   }
 
-  private static void createAndShowGUI() {
+  static void createAndShowGUI() {
     final TimingSource ts = new SwingTimerTimingSource();
     Animator.setDefaultTimingSource(ts);
     ts.init();
@@ -133,7 +133,7 @@ public class FadingButtonTF extends JButton implements ActionListener, TimingTar
     SwingUtilities.invokeLater(doCreateAndShowGUI);
   }
 
-  private static class Checkerboard extends JPanel {
+  static class Checkerboard extends JPanel {
     static final int CHECKER_SIZE = 60;
 
     public void paintComponent(Graphics g) {
