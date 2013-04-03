@@ -144,8 +144,8 @@ o KeyFramesBuilder has been changed to KeyFrames.Builder  to better match the
   implementation suggested by Josh Bloch in Effective Java (second edition)
   Item 2: Consider a builder when faced with many constructor parameters.
   
-o Maven is now supported for the core and Swing releases. For more information
-  please see the project Wiki.
+o Maven is now supported for the core and Swing releases. For more
+  information please see the project Wiki.
 
 ++-------------------++
 || 3.0 Release Notes ||
@@ -159,10 +159,11 @@ in real projects.
 o KeyFramesBuilder added to allow KeyFrames to to be constructed using the
   builder pattern.
   
-o Overhaul of the KeyFrames implementation (removal of KeyValues and KeyTimes).
-  KeyFrames can be used without a PropertySetter via KeyFramesTimingTarget.
-  KeyFramesTimingTarget can help to avoid the cost of reflective getter/setter
-  calls. Key frames can be examined via iteration or a get method.
+o Overhaul of the KeyFrames implementation (removal of KeyValues and
+  KeyTimes). KeyFrames can be used without a PropertySetter via
+  KeyFramesTimingTarget. KeyFramesTimingTarget can help to avoid the
+  cost of reflective getter/setter calls. Key frames can be examined
+  via iteration or a get method.
 
 o Overhaul of PropertySetter implementation. PropertySetter is now a utility
   that provides TimingTarget instances. "To" animations, which get the
@@ -220,17 +221,18 @@ o AnimatorBuilder added to allow Animator to to be constructed using the
   builder pattern. In particular, a default timing source can be set for
   all Animator instances that are built.
 
-o Separated time sources from Animator to make it easier for Animator instances
-  to share a time source and not tie Animator's implementation to Swing.
-  Chet Haase discussed the noticeable performance problem of starting one
-  javax.swing.Timer per Animator instance at JavaOne 2008. The
-  TooManyBallsBroken demo (only in the Swing distribution) illustrates
-  this problem. Tim Halloran's SWT port did not exhibit this timer problem
-  because it used the SWT Display.timerExec method which shares a timer. 
+o Separated time sources from Animator to make it easier for Animator
+  instances to share a time source and not tie Animator's implementation
+  to Swing. Chet Haase discussed the noticeable performance problem
+  of starting one javax.swing.Timer per Animator instance at JavaOne
+  2008. The TooManyBallsBroken demo (only in the Swing distribution)
+  illustrates this problem. Tim Halloran's SWT port did not exhibit
+  this timer problem because it used the SWT Display.timerExec
+  method which shares a timer. 
   
 o Began work to fix parameterized type use in the Timing Framework.
 
-o Animator implementation made thread-safe. Further work is needed to make the
-  entire Timing Framework thread-safe.
+o Animator implementation made thread-safe. Further work is needed to make
+  the entire Timing Framework thread-safe.
 
 o Ported all of the Swing demos from Filthy Rich Clients to SWT.
