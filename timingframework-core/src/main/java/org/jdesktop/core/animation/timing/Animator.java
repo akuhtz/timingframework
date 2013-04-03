@@ -76,7 +76,7 @@ import com.surelogic.Vouch;
  */
 @ThreadSafe
 @ReferenceObject
-@Region("private AnimatorState")
+@Region("AnimatorState")
 @RegionLock("AnimatorLock is f_targets protects AnimatorState")
 public final class Animator implements TickListener {
 
@@ -308,7 +308,8 @@ public final class Animator implements TickListener {
     @NonNull
     private TimeUnit f_durationTimeUnit = TimeUnit.SECONDS;
     private Animator.EndBehavior f_endBehavior = Animator.EndBehavior.HOLD;
-    private Interpolator f_interpolator = null; // use the built-in default
+    @NonNull
+    private Interpolator f_interpolator = LinearInterpolator.getInstance();
     private Animator.RepeatBehavior f_repeatBehavior = Animator.RepeatBehavior.REVERSE;
     private long f_repeatCount = 1;
     private Animator.Direction f_startDirection = Animator.Direction.FORWARD;
@@ -439,7 +440,7 @@ public final class Animator implements TickListener {
      */
     @NonNull
     public Builder setInterpolator(Interpolator value) {
-      f_interpolator = value;
+      f_interpolator = value != null ? value : LinearInterpolator.getInstance();
       return this;
     }
 
@@ -550,8 +551,8 @@ public final class Animator implements TickListener {
   final long f_durationNanos; // calculated
   @NonNull
   final EndBehavior f_endBehavior;
-  @Nullable
-  final Interpolator f_interpolator; // null means linear
+  @NonNull
+  final Interpolator f_interpolator;
   @NonNull
   final RepeatBehavior f_repeatBehavior;
   final long f_repeatCount;
@@ -571,6 +572,7 @@ public final class Animator implements TickListener {
    * @return the "debug" name of this animation. May be {@code null}.
    */
   @Nullable
+  @RegionEffects("reads Instance")
   public String getDebugName() {
     return f_debugName;
   }
@@ -585,6 +587,7 @@ public final class Animator implements TickListener {
    * 
    * @see #getDurationTimeUnit()
    */
+  @RegionEffects("reads Instance")
   public long getDuration() {
     return f_duration;
   }
@@ -598,6 +601,7 @@ public final class Animator implements TickListener {
    * @see #getDuration()
    */
   @NonNull
+  @RegionEffects("reads Instance")
   public TimeUnit getDurationTimeUnit() {
     return f_durationTimeUnit;
   }
@@ -608,6 +612,7 @@ public final class Animator implements TickListener {
    * @return the behavior at the end of the animation.
    */
   @NonNull
+  @RegionEffects("reads Instance")
   public EndBehavior getEndBehavior() {
     return f_endBehavior;
   }
@@ -619,7 +624,7 @@ public final class Animator implements TickListener {
    */
   @NonNull
   public Interpolator getInterpolator() {
-    return f_interpolator != null ? f_interpolator : LinearInterpolator.getInstance();
+    return f_interpolator;
   }
 
   /**
@@ -628,6 +633,7 @@ public final class Animator implements TickListener {
    * @return the behavior for each successive animation cycle.
    */
   @NonNull
+  @RegionEffects("reads Instance")
   public RepeatBehavior getRepeatBehavior() {
     return f_repeatBehavior;
   }
@@ -639,6 +645,7 @@ public final class Animator implements TickListener {
    *         or {@link Animator#INFINITE} for animations that repeat
    *         indefinitely.
    */
+  @RegionEffects("reads Instance")
   public long getRepeatCount() {
     return f_repeatCount;
   }
@@ -649,6 +656,7 @@ public final class Animator implements TickListener {
    * @return initial animation cycle direction.
    */
   @NonNull
+  @RegionEffects("reads Instance")
   public Direction getStartDirection() {
     return f_startDirection;
   }
@@ -664,6 +672,7 @@ public final class Animator implements TickListener {
    * 
    * @see #getStartDelayTimeUnit()
    */
+  @RegionEffects("reads Instance")
   public long getStartDelay() {
     return f_startDelay;
   }
@@ -679,6 +688,7 @@ public final class Animator implements TickListener {
    * @see #getStartDelay()
    */
   @NonNull
+  @RegionEffects("reads Instance")
   public TimeUnit getStartDelayTimeUnit() {
     return f_startDelayTimeUnit;
   }
@@ -689,6 +699,7 @@ public final class Animator implements TickListener {
    * @return a timing source.
    */
   @NonNull
+  @RegionEffects("reads Instance")
   public TimingSource getTimingSource() {
     return f_timingSource;
   }
@@ -834,7 +845,6 @@ public final class Animator implements TickListener {
    * @param target
    *          a {@link TimingTarget} object.
    */
-  @RegionEffects("writes any(java.util.concurrent.CopyOnWriteArrayList):Instance")
   public void addTarget(final TimingTarget target) {
     /*
      * This is complicated because a target can be added after the animation has
@@ -924,6 +934,7 @@ public final class Animator implements TickListener {
    * @return {@code true} if the animation is running, {@code false} if it is
    *         not.
    */
+  @RegionEffects("reads Instance")
   public boolean isRunning() {
     synchronized (f_targets) {
       return f_runningAnimationLatch != null;
@@ -938,6 +949,7 @@ public final class Animator implements TickListener {
    * @return the current direction of the animation.
    */
   @NonNull
+  @RegionEffects("reads Instance")
   public Direction getCurrentDirection() {
     synchronized (f_targets) {
       return f_currentDirection;
@@ -1182,6 +1194,7 @@ public final class Animator implements TickListener {
    * @return the time elapsed in nanoseconds between the time this cycle started
    *         and the passed time.
    */
+  @RegionEffects("reads Instance")
   public long getCycleElapsedTime(long currentTimeNanos) {
     synchronized (f_targets) {
       return (currentTimeNanos - f_cycleStartTimeNanos);
@@ -1215,6 +1228,7 @@ public final class Animator implements TickListener {
    * @return the total time elapsed between the time this animation started and
    *         the passed time.
    */
+  @RegionEffects("reads Instance")
   public long getTotalElapsedTime(long currentTimeNanos) {
     synchronized (f_targets) {
       return (currentTimeNanos - f_startTimeNanos);
@@ -1478,7 +1492,7 @@ public final class Animator implements TickListener {
         fractionScratch = Math.min(fractionScratch, 1.0);
         fractionScratch = Math.max(fractionScratch, 0.0);
       }
-      fraction = f_interpolator == null ? fractionScratch : f_interpolator.interpolate(fractionScratch);
+      fraction = f_interpolator.interpolate(fractionScratch);
     } // lock release
 
     if (notifyOfReverse && !f_targets.isEmpty()) {
