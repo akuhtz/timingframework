@@ -94,9 +94,9 @@ public final class ClickAndGo extends Canvas {
     }
   }
 
-  private static final Ball f_ball = new Ball();
-  private static final Random f_die = new Random();
-  private static Canvas f_panel = null;
+  static final Ball f_ball = new Ball();
+  static final Random f_die = new Random();
+  static Canvas f_panel = null;
 
   public static void setupGUI(Shell shell) {
     f_ball.image = DemoImages.getImage(DemoResources.BLUE_SPHERE, shell.getDisplay());

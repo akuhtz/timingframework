@@ -28,15 +28,15 @@ public final class TimingSourceResolutionThread extends Thread {
     void out(String msg);
   }
 
-  private final Depository f_to;
-  private final List<TimingSourceFactory> f_timingSourceFactories;
+  final Depository f_to;
+  final List<TimingSourceFactory> f_timingSourceFactories;
 
   public TimingSourceResolutionThread(Depository to, TimingSourceFactory... timingSourceFactories) {
     f_to = to;
     f_timingSourceFactories = new ArrayList<TimingSourceFactory>(Arrays.asList(timingSourceFactories));
   }
 
-  private final AtomicBoolean f_running = new AtomicBoolean(true);
+  final AtomicBoolean f_running = new AtomicBoolean(true);
 
   public void stopSafely() {
     f_running.set(false);

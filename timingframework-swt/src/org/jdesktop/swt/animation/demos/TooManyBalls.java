@@ -211,7 +211,7 @@ public class TooManyBalls implements JRendererTarget<Display, GC> {
     display.dispose();
   }
 
-  private void updateBallCount() {
+  void updateBallCount() {
     f_infoLabel.setText("Balls: " + f_balls.size() + "    FPS: " + getFPS());
   }
 
@@ -219,7 +219,7 @@ public class TooManyBalls implements JRendererTarget<Display, GC> {
    * Renderer thread methods and state
    */
 
-  private void addBall() {
+  void addBall() {
     final Ball ball = new Ball();
     ball.imageIndex = f_die.nextInt(5);
     Image ballImage = f_ballImages[ball.imageIndex];
@@ -270,7 +270,7 @@ public class TooManyBalls implements JRendererTarget<Display, GC> {
     f_balls.add(ball);
   }
 
-  private void removeBall() {
+  void removeBall() {
     if (f_balls.isEmpty())
       return;
 

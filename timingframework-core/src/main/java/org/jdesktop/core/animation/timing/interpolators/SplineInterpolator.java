@@ -31,7 +31,7 @@ import com.surelogic.Vouch;
 @Immutable
 public final class SplineInterpolator implements Interpolator {
 
-  private final double f_x1, f_y1, f_x2, f_y2;
+  final double f_x1, f_y1, f_x2, f_y2;
 
   @Vouch(value = "Immutable", reason = "Instance wrapped via Collections.unmodifiableList(List)")
   @Unique
@@ -254,8 +254,8 @@ public final class SplineInterpolator implements Interpolator {
    */
   @Immutable
   private static final class Point2D {
-    private final double x;
-    private final double y;
+    final double x;
+    final double y;
 
     @RegionEffects("none")
     Point2D(double x, double y) {

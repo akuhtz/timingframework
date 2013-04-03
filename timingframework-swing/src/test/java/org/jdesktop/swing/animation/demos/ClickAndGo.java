@@ -86,10 +86,10 @@ public final class ClickAndGo extends JPanel {
     }
   }
 
-  private static final Ball f_ball = new Ball();
-  private static final Random f_die = new Random();
+  static final Ball f_ball = new Ball();
+  static final Random f_die = new Random();
   @SuppressWarnings("rawtypes")
-  private static final Map f_desktopHints = (Map) java.awt.Toolkit.getDefaultToolkit().getDesktopProperty("awt.font.desktophints");
+  static final Map f_desktopHints = (Map) java.awt.Toolkit.getDefaultToolkit().getDesktopProperty("awt.font.desktophints");
 
   public static void setupGUI() {
     try {

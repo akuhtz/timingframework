@@ -31,8 +31,8 @@ import org.jdesktop.swt.animation.timing.sources.SWTTimingSource;
  */
 public class SplineInterpolatorTest extends TimingTargetAdapter {
 
-  private static Display f_display;
-  private static Text f_benchmarkOutput;
+  static Display f_display;
+  static Text f_benchmarkOutput;
 
   public static void main(String args[]) {
     f_display = Display.getDefault();

@@ -25,17 +25,17 @@ import javax.imageio.ImageIO;
 
 public class SplineDisplay extends EquationDisplay {
 
-  private static final double CONTROL_POINT_SIZE = 12.0;
+  static final double CONTROL_POINT_SIZE = 12.0;
 
-  private Point2D control1 = new Point2D.Double(0.25, 0.75);
-  private Point2D control2 = new Point2D.Double(0.75, 0.25);
+  Point2D control1 = new Point2D.Double(0.25, 0.75);
+  Point2D control2 = new Point2D.Double(0.75, 0.25);
 
-  private Point2D selected = null;
-  private Point dragStart = null;
+  Point2D selected = null;
+  Point dragStart = null;
 
-  private boolean isSaving = false;
+  boolean isSaving = false;
 
-  private PropertyChangeSupport support;
+  PropertyChangeSupport support;
 
   SplineDisplay() {
     super(0.0, 0.0, -0.1, 1.1, -0.1, 1.1, 0.2, 6, 0.2, 6);
@@ -144,7 +144,7 @@ public class SplineDisplay extends EquationDisplay {
     g2.drawLine((int) origin_x, (int) origin_y, (int) xPositionToPixel(pos), (int) yPositionToPixel(pos));
   }
 
-  private Ellipse2D getDraggableArea(Point2D control) {
+  Ellipse2D getDraggableArea(Point2D control) {
     Ellipse2D outer = new Ellipse2D.Double(xPositionToPixel(control.getX()) - CONTROL_POINT_SIZE / 2.0,
         yPositionToPixel(control.getY()) - CONTROL_POINT_SIZE / 2.0, CONTROL_POINT_SIZE, CONTROL_POINT_SIZE);
     return outer;
@@ -158,7 +158,7 @@ public class SplineDisplay extends EquationDisplay {
     g2.draw(spline);
   }
 
-  private void resetSelection() {
+  void resetSelection() {
     Point2D oldSelected = selected;
     selected = null;
 
@@ -168,7 +168,7 @@ public class SplineDisplay extends EquationDisplay {
     }
   }
 
-  private class ControlPointsHandler extends MouseMotionAdapter {
+  class ControlPointsHandler extends MouseMotionAdapter {
     @Override
     public void mouseMoved(MouseEvent e) {
       Ellipse2D area1 = getDraggableArea(control1);
@@ -223,7 +223,7 @@ public class SplineDisplay extends EquationDisplay {
     }
   }
 
-  private class SelectionHandler extends MouseAdapter {
+  class SelectionHandler extends MouseAdapter {
     @Override
     public void mousePressed(MouseEvent e) {
       Ellipse2D area1 = getDraggableArea(control1);

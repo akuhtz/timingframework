@@ -52,8 +52,8 @@ public final class RaceCompleteMultiStep {
 
   public static final int RACE_TIME = 10000;
 
-  private final Animator animator;
-  private final RaceSoundEffects soundEffects;
+  final Animator animator;
+  final RaceSoundEffects soundEffects;
 
   /** Creates a new instance of BasicRace */
   public RaceCompleteMultiStep(String appName) {

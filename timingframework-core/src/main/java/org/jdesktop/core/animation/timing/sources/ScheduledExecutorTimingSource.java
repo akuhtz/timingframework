@@ -73,7 +73,7 @@ public final class ScheduledExecutorTimingSource extends TimingSource {
     f_executor.scheduleAtFixedRate(new Runnable() {
       @Override
       public void run() {
-        getPerTickTask().run();
+        runPerTick();
       }
     }, 0, f_period, f_periodTimeUnit);
   }

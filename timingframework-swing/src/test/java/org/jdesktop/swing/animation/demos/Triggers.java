@@ -67,7 +67,7 @@ public class Triggers extends JComponent {
     TriggerUtility.addTimingTrigger(action.getAnimator(), timing.getAnimator(), TimingTriggerEvent.STOP);
   }
 
-  private static void createAndShowGUI() {
+  static void createAndShowGUI() {
     JFrame f = new JFrame("Swing Triggers");
     f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     f.setLayout(new BorderLayout());
@@ -111,16 +111,16 @@ public class Triggers extends JComponent {
    */
   public static class SpherePanel extends JPanel {
 
-    private static final int PADDING = 5;
-    private static final int PANEL_HEIGHT = 300;
-    private static final Interpolator ACCEL_5_5 = new AccelerationInterpolator(.5, .5);
+    static final int PADDING = 5;
+    static final int PANEL_HEIGHT = 300;
+    static final Interpolator ACCEL_5_5 = new AccelerationInterpolator(.5, .5);
 
-    private final BufferedImage f_sphereImage;
-    private final int f_sphereX = PADDING;
-    private final Animator f_bouncer;
-    private final String f_label;
+    final BufferedImage f_sphereImage;
+    final int f_sphereX = PADDING;
+    final Animator f_bouncer;
+    final String f_label;
 
-    private int f_sphereY = 20; // mutable
+    int f_sphereY = 20; // mutable
 
     /**
      * The animation changes the location of the sphere over time through this

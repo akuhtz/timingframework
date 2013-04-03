@@ -40,10 +40,10 @@ public class JPassiveRenderer implements JRenderer {
   /*
    * Thread-confined to the EDT thread
    */
-  private final JRendererPanel f_on;
-  private final JRendererTarget<GraphicsConfiguration, Graphics2D> f_target;
-  private final TimingSource f_ts;
-  private final PostTickListener f_postTick = new PostTickListener() {
+  final JRendererPanel f_on;
+  final JRendererTarget<GraphicsConfiguration, Graphics2D> f_target;
+  final TimingSource f_ts;
+  final PostTickListener f_postTick = new PostTickListener() {
     public void timingSourcePostTick(TimingSource source, long nanoTime) {
       long now = System.nanoTime();
       if (f_renderCount != 0) {
@@ -59,9 +59,9 @@ public class JPassiveRenderer implements JRenderer {
   /*
    * Statistics counters
    */
-  private long f_lastRenderTimeNanos;
-  private long f_totalRenderTime = 0;
-  private long f_renderCount = 0;
+  long f_lastRenderTimeNanos;
+  long f_totalRenderTime = 0;
+  long f_renderCount = 0;
 
   public JPassiveRenderer(JRendererPanel on, JRendererTarget<GraphicsConfiguration, Graphics2D> target, TimingSource timingSource) {
     if (!SwingUtilities.isEventDispatchThread())
