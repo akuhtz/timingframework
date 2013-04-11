@@ -23,7 +23,7 @@ import org.jdesktop.swing.animation.timing.triggers.TriggerUtility;
  * @author John
  * @author Tim Halloran
  */
-public class TwoButtonShimmy {
+public final class TwoButtonShimmy {
 
   public static void main(String[] args) {
     System.setProperty("swing.defaultlaf", "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
@@ -58,7 +58,7 @@ public class TwoButtonShimmy {
     TriggerUtility.addActionTrigger(btnFinite, animatorFinite);
 
     /* Creating and setting JFrame */
-    final JFrame frame = new JFrame(TwoButtonShimmy.class.getSimpleName());
+    final JFrame frame = new JFrame("TwoButtonShimmy");
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     frame.setLayout(null);
     frame.setLocationRelativeTo(null);
