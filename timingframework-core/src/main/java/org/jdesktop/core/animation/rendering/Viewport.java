@@ -1,6 +1,7 @@
 package org.jdesktop.core.animation.rendering;
 
-import java.util.concurrent.TimeUnit;
+import static java.util.concurrent.TimeUnit.MICROSECONDS;
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
 import org.jdesktop.core.animation.i18n.I18N;
 import org.jdesktop.core.animation.timing.Animator;
@@ -67,7 +68,7 @@ public final class Viewport {
      * Constructs an instance with a rate of 700 microseconds per pixel.
      */
     public DefaultMovementRateSource() {
-      this(TimeUnit.MICROSECONDS.toNanos(700));
+      this(MICROSECONDS.toNanos(700));
     }
 
     public long getMovementRateNanosPerPixel() {
@@ -208,7 +209,7 @@ public final class Viewport {
 
     if (pixelsToMove > 0) {
       f_moveHorizontalAnimator = new Animator.Builder()
-          .setDuration(f_rate.getMovementRateNanosPerPixel() * pixelsToMove, TimeUnit.NANOSECONDS).setInterpolator(f_moveI)
+          .setDuration(f_rate.getMovementRateNanosPerPixel() * pixelsToMove, NANOSECONDS).setInterpolator(f_moveI)
           .addTarget(new Mover(pixelsToMove, true, f_x, toward == Go.RIGHT)).build();
       f_moveHorizontalAnimator.start();
     }
@@ -253,7 +254,7 @@ public final class Viewport {
 
     if (pixelsToMove > 0) {
       f_moveVerticalAnimator = new Animator.Builder()
-          .setDuration(f_rate.getMovementRateNanosPerPixel() * pixelsToMove, TimeUnit.NANOSECONDS).setInterpolator(f_moveI)
+          .setDuration(f_rate.getMovementRateNanosPerPixel() * pixelsToMove, NANOSECONDS).setInterpolator(f_moveI)
           .addTarget(new Mover(pixelsToMove, false, f_y, toward == Go.DOWN)).build();
       f_moveVerticalAnimator.start();
     }

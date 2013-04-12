@@ -1,5 +1,7 @@
 package org.jdesktop.core.animation.timing;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -309,7 +311,7 @@ public final class Animator implements TickListener {
     private String f_debugName = null;
     private long f_duration = 1;
     @NonNull
-    private TimeUnit f_durationTimeUnit = TimeUnit.SECONDS;
+    private TimeUnit f_durationTimeUnit = SECONDS;
     private Animator.EndBehavior f_endBehavior = Animator.EndBehavior.HOLD;
     @NonNull
     private Interpolator f_interpolator = LinearInterpolator.getInstance();
@@ -318,7 +320,7 @@ public final class Animator implements TickListener {
     private Animator.Direction f_startDirection = Animator.Direction.FORWARD;
     private long f_startDelay = 0;
     @NonNull
-    private TimeUnit f_startDelayTimeUnit = TimeUnit.SECONDS;
+    private TimeUnit f_startDelayTimeUnit = SECONDS;
     private final List<TimingTarget> f_targets = new ArrayList<TimingTarget>();
     private final TimingSource f_timingSource;
     private boolean f_disposeTimingSource = false;
@@ -413,7 +415,7 @@ public final class Animator implements TickListener {
         throw new IllegalArgumentException(I18N.err(10, value));
 
       f_duration = value;
-      f_durationTimeUnit = unit != null ? unit : TimeUnit.SECONDS;
+      f_durationTimeUnit = unit != null ? unit : SECONDS;
       return this;
     }
 
@@ -523,7 +525,7 @@ public final class Animator implements TickListener {
         throw new IllegalArgumentException(I18N.err(13, value));
 
       f_startDelay = value;
-      f_startDelayTimeUnit = unit != null ? unit : TimeUnit.SECONDS;
+      f_startDelayTimeUnit = unit != null ? unit : SECONDS;
       return this;
     }
 
