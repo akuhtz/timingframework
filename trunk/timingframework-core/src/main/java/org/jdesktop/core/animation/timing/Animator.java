@@ -65,9 +65,12 @@ import com.surelogic.Vouch;
  * successfully invoked {@link #stop()} or {@link #cancel()} it can take some
  * time for all the calls to registered {@link TimingTarget}s to complete. Use
  * of {@link #await()} is far more efficient than polling the state of the
- * animation with {@link #isRunning()}.
+ * animation with {@link #isRunning()}. However, do not call {@link #await()} in
+ * the thread context of the timing source for this animation or it will block
+ * forever.
  * <p>
- * This class is thread-safe.
+ * This class is thread-safe. Synchronizing on the instance(<tt>this</tt>) may
+ * be used to protect state changes over several calls.
  * 
  * @author Chet Haase
  * @author Tim Halloran
@@ -77,7 +80,7 @@ import com.surelogic.Vouch;
 @ThreadSafe
 @ReferenceObject
 @Region("AnimatorState")
-@RegionLock("AnimatorLock is f_targets protects AnimatorState")
+@RegionLock("AnimatorLock is this protects AnimatorState")
 public final class Animator implements TickListener {
 
   /**
@@ -856,7 +859,7 @@ public final class Animator implements TickListener {
      * creates a dependency on how the isRunning() method works or, more
      * specifically, how the animation defines when it is running.
      */
-    synchronized (f_targets) {
+    synchronized (this) {
       if (target != null && !f_targets.contains(target)) {
         if (isRunning()) {
           final Runnable task = new Runnable() {
@@ -936,7 +939,7 @@ public final class Animator implements TickListener {
    */
   @RegionEffects("reads Instance")
   public boolean isRunning() {
-    synchronized (f_targets) {
+    synchronized (this) {
       return f_runningAnimationLatch != null;
     }
   }
@@ -951,7 +954,7 @@ public final class Animator implements TickListener {
   @NonNull
   @RegionEffects("reads Instance")
   public Direction getCurrentDirection() {
-    synchronized (f_targets) {
+    synchronized (this) {
       return f_currentDirection;
     }
   }
@@ -1075,7 +1078,7 @@ public final class Animator implements TickListener {
    * @see #isPaused()
    */
   public void pause() {
-    synchronized (f_targets) {
+    synchronized (this) {
       final boolean canPause = isRunning() && !f_stopping && f_pauseBeginTimeNanos == 0;
       if (canPause) {
         f_timingSource.removeTickListener(this);
@@ -1093,7 +1096,7 @@ public final class Animator implements TickListener {
    *         paused, {@code false} otherwise.
    */
   public boolean isPaused() {
-    synchronized (f_targets) {
+    synchronized (this) {
       return isRunning() && !f_stopping && f_pauseBeginTimeNanos > 0;
     }
   }
@@ -1105,7 +1108,7 @@ public final class Animator implements TickListener {
    * @see #pause()
    */
   public void resume() {
-    synchronized (f_targets) {
+    synchronized (this) {
       final boolean paused = isPaused();
       if (paused) {
         long pauseDeltaNanos = System.nanoTime() - f_pauseBeginTimeNanos;
@@ -1130,7 +1133,7 @@ public final class Animator implements TickListener {
    *         {@code false} if the attempt to reverse the animation failed.
    */
   public boolean reverseNow() {
-    synchronized (f_targets) {
+    synchronized (this) {
       final boolean canReverse = isRunning() && !f_stopping && f_pauseBeginTimeNanos == 0;
       if (canReverse) {
         f_reverseNowCallCount++;
@@ -1167,7 +1170,7 @@ public final class Animator implements TickListener {
    */
   public void await() throws InterruptedException {
     final CountDownLatch latch;
-    synchronized (f_targets) {
+    synchronized (this) {
       latch = f_runningAnimationLatch;
     }
     if (latch != null)
@@ -1207,7 +1210,7 @@ public final class Animator implements TickListener {
    */
   @RegionEffects("reads Instance")
   public long getCycleElapsedTime(long currentTimeNanos) {
-    synchronized (f_targets) {
+    synchronized (this) {
       return (currentTimeNanos - f_cycleStartTimeNanos);
     }
   }
@@ -1241,7 +1244,7 @@ public final class Animator implements TickListener {
    */
   @RegionEffects("reads Instance")
   public long getTotalElapsedTime(long currentTimeNanos) {
-    synchronized (f_targets) {
+    synchronized (this) {
       return (currentTimeNanos - f_startTimeNanos);
     }
   }
@@ -1280,7 +1283,7 @@ public final class Animator implements TickListener {
    *           if the this animation is already running.
    */
   void startHelper(Direction direction, String methodName) {
-    synchronized (f_targets) {
+    synchronized (this) {
       if (isRunning())
         throw new IllegalStateException(I18N.err(12, methodName));
 
@@ -1329,7 +1332,7 @@ public final class Animator implements TickListener {
    *         the process of stopping and didn't need to be stopped.
    */
   boolean stopHelper(final boolean notify) {
-    synchronized (f_targets) {
+    synchronized (this) {
       /*
        * If we are not running at all we return immediately.
        */
@@ -1370,7 +1373,7 @@ public final class Animator implements TickListener {
    */
   void latchCountDown() {
     final CountDownLatch latch;
-    synchronized (f_targets) {
+    synchronized (this) {
       latch = f_runningAnimationLatch;
       f_runningAnimationLatch = null;
     }
@@ -1391,7 +1394,7 @@ public final class Animator implements TickListener {
     boolean timeToStop = false;
     boolean notifyRepeat = false;
     boolean notifyOfReverse = false;
-    synchronized (f_targets) {
+    synchronized (this) {
       /*
        * A guard against running logic within this method if any of the
        * following conditions are true:
