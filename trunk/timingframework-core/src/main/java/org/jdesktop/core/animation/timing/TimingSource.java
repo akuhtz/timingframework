@@ -183,7 +183,8 @@ public abstract class TimingSource {
    * is not run immediately but, rather, it is run at the next tick of time
    * (before calling any {@link TickListener}s). In particular, this method will
    * not block for execution of the task and the task will not execute until
-   * after {@link #init()} has not been called.
+   * after {@link #init()} has not been called. Tasks are executed in the order
+   * they are received.
    * <p>
    * The task is wrapped, via {@link WrappedRunnable}, to log an error if it
    * fails due to an unhandled exception.
@@ -207,7 +208,7 @@ public abstract class TimingSource {
    * Used by timing source implementations to perform the following actions in
    * the listed order:
    * <ol>
-   * <li>Execute all queued "one shot" tasks.</li>
+   * <li>Execute all queued "one shot" tasks in the order they were received.</li>
    * <li>Notify all registered {@link TickListener}s</li>
    * <li>Notify all registered {@link PostTickListener}s</li>
    * </ol>
