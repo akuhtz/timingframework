@@ -158,8 +158,7 @@ public final class RaceCompleteMultiStep {
     goButton.addListener(SWT.Selection, new Listener() {
       @Override
       public void handleEvent(Event event) {
-        animator.start();
-        goButton.setEnabled(false);
+        animator.restart();
         reverseButton.setEnabled(true);
         pauseResumeButton.setEnabled(true);
         stopButton.setEnabled(true);
@@ -203,7 +202,6 @@ public final class RaceCompleteMultiStep {
       @Override
       public void handleEvent(Event event) {
         animator.stop();
-        goButton.setEnabled(true);
         reverseButton.setEnabled(false);
         pauseResumeButton.setEnabled(false);
         stopButton.setEnabled(false);
