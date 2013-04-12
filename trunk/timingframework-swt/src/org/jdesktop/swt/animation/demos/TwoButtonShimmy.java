@@ -52,12 +52,18 @@ public final class TwoButtonShimmy {
   }
 
   private static void createAndShowGUI(Shell shell) {
-    shell.setLayout(null);
-    shell.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_DARK_GRAY));
-    shell.setSize(400, 200);
+    final Color black = shell.getDisplay().getSystemColor(SWT.COLOR_BLACK);
+    final Color red = shell.getDisplay().getSystemColor(SWT.COLOR_RED);
+    final Color background = new Color(shell.getDisplay(), 225, 227, 185);
+    shell.getDisplay().disposeExec(new Runnable() {
+      public void run() {
+        background.dispose();
+      }
+    });
 
-    Color black = shell.getDisplay().getSystemColor(SWT.COLOR_BLACK);
-    Color red = shell.getDisplay().getSystemColor(SWT.COLOR_RED);
+    shell.setLayout(null);
+    shell.setBackground(background);
+    shell.setSize(400, 200);
 
     /*
      * Creating Button with a infinite number of back and forth shimmy
@@ -85,7 +91,7 @@ public final class TwoButtonShimmy {
     // Movement on click
     TimingTarget ttFinite = PropertySetter.getTarget(btnFinite, "location", new Point(10, 50), new Point(250, 50),
         new Point(10, 50));
-    Animator animatorFinite = new Animator.Builder().setDuration(3, SECONDS).addTarget(ttFinite).build();
+    Animator animatorFinite = new Animator.Builder().setDuration(6, SECONDS).addTarget(ttFinite).build();
     TriggerUtility.addEventTrigger(btnFinite, SWT.Selection, animatorFinite);
     // Red text color on mouse hover
     TimingTarget ttFinite2 = PropertySetter.getTarget(btnFinite, "foreground", black, red);
