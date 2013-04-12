@@ -73,6 +73,7 @@ public final class KnownEvaluators {
       "org.jdesktop.swing.animation.timing.evaluators.EvaluatorQuadCurve2D",
       "org.jdesktop.swing.animation.timing.evaluators.EvaluatorRectangle2D",
       "org.jdesktop.swing.animation.timing.evaluators.EvaluatorRoundRectangle2D",
+      "org.jdesktop.swt.animation.timing.evaluators.EvaluatorColor",
       "org.jdesktop.swt.animation.timing.evaluators.EvaluatorPoint",
       "org.jdesktop.swt.animation.timing.evaluators.EvaluatorRectangle",
       "org.jdesktop.swt.animation.timing.evaluators.EvaluatorRGB" };
