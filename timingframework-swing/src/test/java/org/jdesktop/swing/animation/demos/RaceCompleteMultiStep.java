@@ -148,8 +148,7 @@ public final class RaceCompleteMultiStep {
     goButton.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        animator.start();
-        goButton.setEnabled(false);
+        animator.restart();
         reverseButton.setEnabled(true);
         pauseResumeButton.setEnabled(true);
         stopButton.setEnabled(true);
@@ -193,7 +192,6 @@ public final class RaceCompleteMultiStep {
       @Override
       public void actionPerformed(ActionEvent e) {
         animator.stop();
-        goButton.setEnabled(true);
         reverseButton.setEnabled(false);
         pauseResumeButton.setEnabled(false);
         stopButton.setEnabled(false);
