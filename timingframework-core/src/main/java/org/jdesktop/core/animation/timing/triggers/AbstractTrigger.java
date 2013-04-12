@@ -138,21 +138,12 @@ public abstract class AbstractTrigger implements Trigger {
        * enabled, or restart the animation.
        */
       synchronized (f_target) {
-        if (!f_target.isRunning()) {
-          f_target.start();
-        } else {
-          if (f_oppositeEvent != null && f_target.getCurrentDirection() != normalDirection) {
-            final boolean reverseSucceeded = f_target.reverseNow();
-            if (reverseSucceeded)
-              return;
-          }
-          new Thread() {
-            public void run() {
-              f_target.stopAndAwait();
-              f_target.start();
-            }
-          }.start();
+        if (f_oppositeEvent != null && f_target.isRunning() && f_target.getCurrentDirection() != normalDirection) {
+          final boolean reverseSucceeded = f_target.reverseNow();
+          if (reverseSucceeded)
+            return;
         }
+        f_target.restart();
       }
     } else if (f_oppositeEvent == event) {
       /*
@@ -160,21 +151,12 @@ public abstract class AbstractTrigger implements Trigger {
        * animation in reverse OR reverse the animation if it is running.
        */
       synchronized (f_target) {
-        if (!f_target.isRunning()) {
-          f_target.startReverse();
-        } else {
-          if (f_target.isRunning() && f_target.getCurrentDirection() == normalDirection) {
-            final boolean reverseSucceeded = f_target.reverseNow();
-            if (reverseSucceeded)
-              return;
-          }
-          new Thread() {
-            public void run() {
-              f_target.stopAndAwait();
-              f_target.startReverse();
-            }
-          }.start();
+        if (f_target.isRunning() && f_target.isRunning() && f_target.getCurrentDirection() == normalDirection) {
+          final boolean reverseSucceeded = f_target.reverseNow();
+          if (reverseSucceeded)
+            return;
         }
+        f_target.restartReverse();
       }
     }
   }

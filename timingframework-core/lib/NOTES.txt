@@ -14,7 +14,28 @@ A library for making Java animation and timing-based control easier!
 
 Report bugs, read the documentation, and get new releases at:
    http://java.net/projects/timingframework/
-   
+
+++-------------------++
+|| 7.0 Release Notes ||
+++-------------------++
+
+o A serious bug that could lock a timing source thread was fixed.
+  Firing a trigger was calling stopAndAwait() within the timing
+  source thread context which blocked forever. This has been fixed
+  and warnings added to the await methods on Animator to avoid
+  this type of problem in the future. Thanks to Jan Studeny for
+  tracking down this serious problem
+  See the discussion about this bug at
+  http://java.net/jira/browse/TIMINGFRAMEWORK-19
+o A new demo called TwoButtonShimmy authored by Jan Studeny was
+  added, Tim Halloran ported it to SWT. It animates buttons
+  back and forth. It exercises several Triggers.
+o Two new methods were added to Animator "restart()" and
+  "restartReverse()" these are non-blocking approaches to restart
+  an animation. If the animation is not running they behave exactly
+  like start() and startReverse() -- and could be used in place of
+  those methods.
+
 ++-------------------++
 || 6.1 Release Notes ||
 ++-------------------++
