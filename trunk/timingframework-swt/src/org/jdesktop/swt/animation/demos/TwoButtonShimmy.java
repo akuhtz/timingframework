@@ -19,7 +19,7 @@ import org.jdesktop.swt.animation.timing.triggers.TriggerUtility;
  * buttons back and forth across the window. "Infinite" bounces back and forth
  * until it is clicked again. "Once" goes back and forth once and then stops.
  * 
- * @author John
+ * @author Jan Studeny
  * @author Tim Halloran
  */
 public final class TwoButtonShimmy {
@@ -35,7 +35,6 @@ public final class TwoButtonShimmy {
 
     createAndShowGUI(shell);
 
-    shell.setSize(400, 200);
     shell.open();
     while (!shell.isDisposed()) {
       if (!display.readAndDispatch())
@@ -48,6 +47,7 @@ public final class TwoButtonShimmy {
   private static void createAndShowGUI(Shell shell) {
     shell.setLayout(null);
     shell.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_DARK_GRAY));
+    shell.setSize(400, 200);
 
     final Button btnInfinite = new Button(shell, SWT.PUSH);
     btnInfinite.setText("Infinite");
