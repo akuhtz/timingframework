@@ -76,11 +76,7 @@ public class RaceBasic extends TimingTargetAdapter {
     goButton.addListener(SWT.Selection, new Listener() {
       @Override
       public void handleEvent(Event event) {
-        animator.start();
-        goButton.setEnabled(false);
-        reverseButton.setEnabled(true);
-        pauseResumeButton.setEnabled(true);
-        stopButton.setEnabled(true);
+        animator.restart();
         basicGUI.getTrack().setCarReverse(false);
       }
     });
@@ -121,10 +117,6 @@ public class RaceBasic extends TimingTargetAdapter {
       @Override
       public void handleEvent(Event event) {
         animator.stop();
-        goButton.setEnabled(true);
-        reverseButton.setEnabled(false);
-        pauseResumeButton.setEnabled(false);
-        stopButton.setEnabled(false);
       }
     });
     track = basicGUI.getTrack();
@@ -155,8 +147,14 @@ public class RaceBasic extends TimingTargetAdapter {
   }
 
   @Override
+  public void begin(Animator source) {
+    controlPanel.getReverseButton().setEnabled(true);
+    controlPanel.getPauseResumeButton().setEnabled(true);
+    controlPanel.getStopButton().setEnabled(true);
+  }
+
+  @Override
   public void end(Animator source) {
-    controlPanel.getGoButton().setEnabled(true);
     controlPanel.getReverseButton().setEnabled(false);
     controlPanel.getPauseResumeButton().setEnabled(false);
     controlPanel.getStopButton().setEnabled(false);
