@@ -1,6 +1,6 @@
 package org.jdesktop.android.animation.rendering;
 
-import java.util.concurrent.TimeUnit;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 import org.jdesktop.core.animation.i18n.I18N;
 import org.jdesktop.core.animation.rendering.JRenderer;
@@ -76,7 +76,7 @@ public final class JPassiveRenderer implements JRenderer, SurfaceHolder.Callback
   public long getFPS() {
     final long avgCycleTime = getAverageCycleTimeNanos();
     if (avgCycleTime != 0) {
-      return TimeUnit.SECONDS.toNanos(1) / avgCycleTime;
+      return SECONDS.toNanos(1) / avgCycleTime;
     } else
       return 0;
   }

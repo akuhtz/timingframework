@@ -1,6 +1,6 @@
 package org.jdesktop.android.animation.demos;
 
-import java.util.concurrent.TimeUnit;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 import org.jdesktop.android.animation.timing.sources.AndroidTimingSource;
 import org.jdesktop.core.animation.timing.TimingSource;
@@ -37,7 +37,7 @@ public final class RaceBasic extends Activity implements SurfaceHolder.Callback 
       throw new IllegalStateException("Can't find track SurfaceView for the demo");
 
     f_trackView.getHolder().addCallback(this);
-    f_timingSource = new AndroidTimingSource(1, TimeUnit.SECONDS, this);
+    f_timingSource = new AndroidTimingSource(1, SECONDS, this);
     f_timingSource.init();
   }
 
