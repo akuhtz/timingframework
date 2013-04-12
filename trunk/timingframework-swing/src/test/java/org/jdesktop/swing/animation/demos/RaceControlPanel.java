@@ -10,7 +10,7 @@ import javax.swing.JPanel;
  */
 public class RaceControlPanel extends JPanel {
 
-  JButton goButton = new JButton("Go");
+  JButton goButton = new JButton("Go/Restart");
   JButton reverseButton = new JButton("Reverse Direction");
   JButton pauseResumeButton = new JButton("Pause/Resume");
   JButton stopButton = new JButton("Stop");
