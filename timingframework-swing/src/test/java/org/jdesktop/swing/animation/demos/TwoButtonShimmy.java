@@ -20,7 +20,7 @@ import org.jdesktop.swing.animation.timing.triggers.TriggerUtility;
  * buttons back and forth across the window. "Infinite" bounces back and forth
  * until it is clicked again. "Once" goes back and forth once and then stops.
  * 
- * @author John
+ * @author Jan Studeny
  * @author Tim Halloran
  */
 public final class TwoButtonShimmy {
