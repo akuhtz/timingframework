@@ -1,9 +1,10 @@
 package org.jdesktop.swt.animation.demos;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
@@ -89,7 +90,7 @@ public class TooManyBalls implements JRendererTarget<Display, GC> {
       return 0;
     final long avgCycleTime = f_totalPaintTimeNanos / f_paintCount;
     if (avgCycleTime != 0) {
-      return TimeUnit.SECONDS.toNanos(1) / avgCycleTime;
+      return SECONDS.toNanos(1) / avgCycleTime;
     } else
       return 0;
   }
@@ -108,7 +109,7 @@ public class TooManyBalls implements JRendererTarget<Display, GC> {
     /**
      * Used to update the FPS display once a second.
      */
-    final TimingSource infoTimer = new SWTTimingSource(1, TimeUnit.SECONDS, display);
+    final TimingSource infoTimer = new SWTTimingSource(1, SECONDS, display);
 
     final GridLayout panelLayout = new GridLayout(2, false);
     shell.setLayout(panelLayout);
@@ -263,7 +264,7 @@ public class TooManyBalls implements JRendererTarget<Display, GC> {
      * Sometimes go at a constant rate, sometimes accelerate and decelerate.
      */
     final Interpolator i = f_die.nextBoolean() ? ACCEL_4_4 : null;
-    ball.animator = new Animator.Builder().setDuration(duration, TimeUnit.SECONDS).addTarget(circularMovement)
+    ball.animator = new Animator.Builder().setDuration(duration, SECONDS).addTarget(circularMovement)
         .setRepeatCount(Animator.INFINITE).setRepeatBehavior(Animator.RepeatBehavior.LOOP).setInterpolator(i).build();
     ball.animator.start();
 

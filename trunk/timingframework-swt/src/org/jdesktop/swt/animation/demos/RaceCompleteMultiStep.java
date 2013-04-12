@@ -1,6 +1,6 @@
 package org.jdesktop.swt.animation.demos;
 
-import java.util.concurrent.TimeUnit;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
@@ -70,7 +70,7 @@ public final class RaceCompleteMultiStep {
   public RaceCompleteMultiStep(Shell shell, String appName) {
     final RaceGUI basicGUI = new RaceGUI(shell, appName);
 
-    animator = new Animator.Builder().setDuration(RACE_TIME, TimeUnit.MILLISECONDS).setRepeatCount(Animator.INFINITE)
+    animator = new Animator.Builder().setDuration(RACE_TIME, MILLISECONDS).setRepeatCount(Animator.INFINITE)
         .setRepeatBehavior(RepeatBehavior.LOOP).build();
 
     // We're going to need a more involved PropertyRange object

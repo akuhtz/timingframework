@@ -1,6 +1,7 @@
 package org.jdesktop.swt.animation.demos;
 
-import java.util.concurrent.TimeUnit;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
@@ -31,7 +32,7 @@ public class DiscreteInterpolationTest extends TimingTargetAdapter {
   public static void main(String args[]) {
     f_display = Display.getDefault();
 
-    TimingSource ts = new SWTTimingSource(100, TimeUnit.MILLISECONDS, f_display);
+    TimingSource ts = new SWTTimingSource(100, MILLISECONDS, f_display);
     Animator.setDefaultTimingSource(ts);
     ts.init();
 
@@ -60,7 +61,7 @@ public class DiscreteInterpolationTest extends TimingTargetAdapter {
       out(String.format("Frame %d: value=%d timeFraction=%f interpolator=%s", i++, keyFrame.getValue(), keyFrame.getTimeFraction(),
           s));
     }
-    final Animator animator = new Animator.Builder().setDuration(3, TimeUnit.SECONDS)
+    final Animator animator = new Animator.Builder().setDuration(3, SECONDS)
         .addTarget(PropertySetter.getTarget(object, "intValue", keyFrames)).addTarget(object).build();
     out("");
     out("Animation of intValue");

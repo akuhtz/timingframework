@@ -1,6 +1,6 @@
 package org.jdesktop.swt.animation.demos;
 
-import java.util.concurrent.TimeUnit;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
@@ -137,7 +137,7 @@ public class RaceBasic extends TimingTargetAdapter {
    * @return an animation.
    */
   protected Animator getAnimator() {
-    return new Animator.Builder().setDuration(RACE_TIME, TimeUnit.SECONDS).addTarget(this).build();
+    return new Animator.Builder().setDuration(RACE_TIME, SECONDS).addTarget(this).build();
   }
 
   /**

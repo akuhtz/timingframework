@@ -1,7 +1,8 @@
 package org.jdesktop.swt.animation.demos;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
@@ -152,7 +153,7 @@ public final class ClickAndGo extends Canvas {
         });
         ts.init();
 
-        f_ball.animator = new Animator.Builder(ts).setDuration(2, TimeUnit.SECONDS).setDisposeTimingSource(true).build();
+        f_ball.animator = new Animator.Builder(ts).setDuration(2, SECONDS).setDisposeTimingSource(true).build();
 
         final Point clickPoint = new Point(e.x, e.y);
         f_ball.animator.addTarget(PropertySetter

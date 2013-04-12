@@ -1,6 +1,6 @@
 package org.jdesktop.swt.animation.demos;
 
-import java.util.concurrent.TimeUnit;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
@@ -116,7 +116,7 @@ public class TimingSourceResolution implements TimingSourceResolutionThread.Depo
 
     @Override
     public TimingSource getTimingSource(int periodMillis) {
-      return new SWTTimingSource(periodMillis, TimeUnit.MILLISECONDS, f_display);
+      return new SWTTimingSource(periodMillis, MILLISECONDS, f_display);
     }
 
     @Override
