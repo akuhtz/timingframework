@@ -28,12 +28,10 @@ public final class TestTriggers {
   public void timingTrigger() throws InterruptedException {
     TimingSource ts = new ScheduledExecutorTimingSource();
     ts.init();
-    Animator a = new Animator.Builder(ts).build(); // 1 second
     CountingTimingTarget counterA = new CountingTimingTarget();
-    a.addTarget(counterA);
-    Animator t = new Animator.Builder(ts).build(); // 1 second
+    Animator a = new Animator.Builder(ts).addTarget(counterA).build();
     CountingTimingTarget counterT = new CountingTimingTarget();
-    t.addTarget(counterT);
+    Animator t = new Animator.Builder(ts).addTarget(counterT).build();
     TimingTrigger.addTrigger(a, t, TimingTriggerEvent.STOP);
     a.start();
     a.await();

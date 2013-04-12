@@ -1,7 +1,9 @@
 package org.jdesktop.core.animation.timing;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.SECONDS;
+
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import org.jdesktop.core.animation.timing.Animator.Direction;
 import org.jdesktop.core.animation.timing.Animator.RepeatBehavior;
@@ -245,7 +247,7 @@ public final class TestAnimator {
 
   @Test(expected = IllegalArgumentException.class)
   public void negativeDuration() {
-    new Animator.Builder(new ManualTimingSource()).setDuration(-10, TimeUnit.MILLISECONDS).build();
+    new Animator.Builder(new ManualTimingSource()).setDuration(-10, MILLISECONDS).build();
   }
 
   @Test
@@ -428,7 +430,7 @@ public final class TestAnimator {
   public void timingTarget2() throws InterruptedException {
     TimingSource ts = new ScheduledExecutorTimingSource();
     ts.init();
-    Animator a = new Animator.Builder(ts).setDuration(150, TimeUnit.MILLISECONDS).setRepeatCount(4).build();
+    Animator a = new Animator.Builder(ts).setDuration(150, MILLISECONDS).setRepeatCount(4).build();
     CountingTimingTarget counter = new CountingTimingTarget();
     a.addTarget(counter);
     a.start();
@@ -750,12 +752,12 @@ public final class TestAnimator {
   public void startDelay1() throws InterruptedException {
     TimingSource ts = new ScheduledExecutorTimingSource();
     ts.init();
-    Animator a = new Animator.Builder(ts).setStartDelay(1, TimeUnit.SECONDS).build();
+    Animator a = new Animator.Builder(ts).setStartDelay(1, SECONDS).build();
     long duration = System.nanoTime();
     a.start();
     a.await();
     duration = System.nanoTime() - duration;
-    Assert.assertTrue(duration + TimeUnit.MILLISECONDS.toNanos(10) > TimeUnit.SECONDS.toNanos(2));
+    Assert.assertTrue(duration + MILLISECONDS.toNanos(10) > SECONDS.toNanos(2));
     ts.dispose();
   }
 
@@ -763,9 +765,9 @@ public final class TestAnimator {
   public void startDelay2() throws InterruptedException {
     TimingSource ts = new ScheduledExecutorTimingSource();
     ts.init();
-    Animator a = new Animator.Builder(ts).setStartDelay(50, TimeUnit.MILLISECONDS).build();
+    Animator a = new Animator.Builder(ts).setStartDelay(50, MILLISECONDS).build();
     Assert.assertEquals(50, a.getStartDelay());
-    Assert.assertSame(TimeUnit.MILLISECONDS, a.getStartDelayTimeUnit());
+    Assert.assertSame(MILLISECONDS, a.getStartDelayTimeUnit());
     a.start();
     a.stopAndAwait();
     ts.dispose();
@@ -777,7 +779,7 @@ public final class TestAnimator {
     ts.init();
     Animator a = new Animator.Builder(ts).setStartDelay(25, null).build();
     Assert.assertEquals(25, a.getStartDelay());
-    Assert.assertSame(TimeUnit.SECONDS, a.getStartDelayTimeUnit());
+    Assert.assertSame(SECONDS, a.getStartDelayTimeUnit());
     a.start();
     a.stopAndAwait();
     ts.dispose();
@@ -789,7 +791,7 @@ public final class TestAnimator {
     ts.init();
     Animator a = new Animator.Builder(ts).build();
     Assert.assertEquals(0, a.getStartDelay());
-    Assert.assertSame(TimeUnit.SECONDS, a.getStartDelayTimeUnit());
+    Assert.assertSame(SECONDS, a.getStartDelayTimeUnit());
     a.start();
     a.stopAndAwait();
     ts.dispose();

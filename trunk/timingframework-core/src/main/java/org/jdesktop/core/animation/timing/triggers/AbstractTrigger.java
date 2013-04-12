@@ -42,7 +42,7 @@ public abstract class AbstractTrigger implements Trigger {
   /**
    * The animation that is triggered, must be non-{@code null}.
    */
-  private final Animator f_target;
+  final Animator f_target;
 
   /**
    * The particular event that triggers the animation, a value of {@code null}
@@ -133,30 +133,49 @@ public abstract class AbstractTrigger implements Trigger {
 
     if (f_triggerEvent == null || f_triggerEvent == event) {
       /*
-       * Trigger event occurred - reverse the animation if it is running in the
-       * opposite direction and auto-reversing is enabled, or restart the
-       * animation.
+       * Trigger event occurred - start the animation OR reverse the animation
+       * if it is running in the opposite direction and auto-reversing is
+       * enabled, or restart the animation.
        */
-      if (f_oppositeEvent != null && f_target.isRunning() && f_target.getCurrentDirection() != normalDirection) {
-        final boolean reverseSucceeded = f_target.reverseNow();
-        if (reverseSucceeded)
-          return;
+      synchronized (f_target) {
+        if (!f_target.isRunning()) {
+          f_target.start();
+        } else {
+          if (f_oppositeEvent != null && f_target.getCurrentDirection() != normalDirection) {
+            final boolean reverseSucceeded = f_target.reverseNow();
+            if (reverseSucceeded)
+              return;
+          }
+          new Thread() {
+            public void run() {
+              f_target.stopAndAwait();
+              f_target.start();
+            }
+          }.start();
+        }
       }
-      f_target.stopAndAwait();
-      f_target.start();
     } else if (f_oppositeEvent == event) {
       /*
-       * Opposite event occurred and auto-reversing is enabled - reverse the
-       * animation if it is running, or restart it in reverse if it is not
-       * running.
+       * Opposite event occurred and auto-reversing is enabled - start the
+       * animation in reverse OR reverse the animation if it is running.
        */
-      if (f_target.isRunning() && f_target.getCurrentDirection() == normalDirection) {
-        final boolean reverseSucceeded = f_target.reverseNow();
-        if (reverseSucceeded)
-          return;
+      synchronized (f_target) {
+        if (!f_target.isRunning()) {
+          f_target.startReverse();
+        } else {
+          if (f_target.isRunning() && f_target.getCurrentDirection() == normalDirection) {
+            final boolean reverseSucceeded = f_target.reverseNow();
+            if (reverseSucceeded)
+              return;
+          }
+          new Thread() {
+            public void run() {
+              f_target.stopAndAwait();
+              f_target.startReverse();
+            }
+          }.start();
+        }
       }
-      f_target.stopAndAwait();
-      f_target.startReverse();
     }
   }
 }

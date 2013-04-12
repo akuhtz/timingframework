@@ -1,10 +1,11 @@
 package org.jdesktop.core.animation.demos;
 
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -92,7 +93,7 @@ public final class TimingSourceResolutionThread extends Thread {
               source.dispose(); // end timer
 
               final long endTime = System.nanoTime();
-              final long totalTime = TimeUnit.NANOSECONDS.toMillis(endTime - startTime);
+              final long totalTime = NANOSECONDS.toMillis(endTime - startTime);
               final float calculatedDelayTime = totalTime / (float) iterations;
               f_to.out(String.format(" %2d ms %5d  %5d ms  %5.2f ms", thisPeriodMillis, iterations, totalTime, calculatedDelayTime));
               testComplete.countDown();
