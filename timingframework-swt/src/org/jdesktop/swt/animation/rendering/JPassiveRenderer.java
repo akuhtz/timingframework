@@ -1,6 +1,6 @@
 package org.jdesktop.swt.animation.rendering;
 
-import java.util.concurrent.TimeUnit;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
@@ -111,7 +111,7 @@ public class JPassiveRenderer implements JRenderer {
   public long getFPS() {
     final long avgCycleTime = getAverageCycleTimeNanos();
     if (avgCycleTime != 0) {
-      return TimeUnit.SECONDS.toNanos(1) / avgCycleTime;
+      return SECONDS.toNanos(1) / avgCycleTime;
     } else
       return 0;
   }

@@ -1,6 +1,6 @@
 package org.jdesktop.swt.animation.demos;
 
-import java.util.concurrent.TimeUnit;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
@@ -147,7 +147,7 @@ public class Triggers extends Composite {
     SpherePanel(Composite parent, int style, String resourceName, String label, boolean bounce) {
       super(parent, style);
       f_sphereImage = DemoImages.getImage(resourceName, parent.getDisplay());
-      f_bouncer = new Animator.Builder().setDuration(2, TimeUnit.SECONDS).setInterpolator(ACCEL_5_5).build();
+      f_bouncer = new Animator.Builder().setDuration(2, SECONDS).setInterpolator(ACCEL_5_5).build();
       if (bounce)
         f_bouncer.addTarget(PropertySetter.getTarget(this, "sphereY", 20, (PANEL_HEIGHT - f_sphereImage.getBounds().height), 20));
       else

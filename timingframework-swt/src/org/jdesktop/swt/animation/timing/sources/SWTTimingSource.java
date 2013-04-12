@@ -1,5 +1,8 @@
 package org.jdesktop.swt.animation.timing.sources;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
+
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -83,7 +86,7 @@ public final class SWTTimingSource extends TimingSource {
           delayNanos = f_periodNanos;
           f_ideaNextTickNanoTime = now + f_periodNanos;
         }
-        long delayMillis = TimeUnit.NANOSECONDS.toMillis(delayNanos);
+        long delayMillis = NANOSECONDS.toMillis(delayNanos);
         if (delayMillis > 0) {
           f_display.timerExec((int) delayMillis, f_periodic);
         } else {
@@ -117,7 +120,7 @@ public final class SWTTimingSource extends TimingSource {
    *           if <tt>display<tt> is {@code null}.
    */
   public SWTTimingSource(long period, TimeUnit unit, final Display display) {
-    final long one = TimeUnit.MILLISECONDS.toNanos(1);
+    final long one = MILLISECONDS.toNanos(1);
     long periodNanos = unit.toNanos(period);
     if (periodNanos < one)
       periodNanos = one;
@@ -133,7 +136,7 @@ public final class SWTTimingSource extends TimingSource {
    * {@link #dispose()} method should be called to stop the timer.
    */
   public SWTTimingSource(final Display display) {
-    this(15, TimeUnit.MILLISECONDS, display);
+    this(15, MILLISECONDS, display);
   }
 
   @Override
@@ -155,7 +158,7 @@ public final class SWTTimingSource extends TimingSource {
   public String toString() {
     final StringBuilder b = new StringBuilder();
     b.append(SWTTimingSource.class.getSimpleName()).append('@').append(Integer.toHexString(hashCode()));
-    b.append("(period=").append(TimeUnit.NANOSECONDS.toMillis(f_periodNanos)).append(' ').append(TimeUnit.MILLISECONDS.toString());
+    b.append("(period=").append(NANOSECONDS.toMillis(f_periodNanos)).append(' ').append(TimeUnit.MILLISECONDS.toString());
     b.append(')');
     return b.toString();
   }
