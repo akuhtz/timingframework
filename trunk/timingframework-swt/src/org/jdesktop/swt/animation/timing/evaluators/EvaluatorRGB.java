@@ -1,14 +1,13 @@
 package org.jdesktop.swt.animation.timing.evaluators;
 
 import org.eclipse.swt.graphics.RGB;
-import org.eclipse.swt.graphics.Rectangle;
 import org.jdesktop.core.animation.timing.Evaluator;
 
 import com.surelogic.Immutable;
 import com.surelogic.RegionEffects;
 
 /**
- * An evaluator for {@link Rectangle}.
+ * An evaluator for {@link RGB}.
  * 
  * @author Chet Haase
  * @author Tim Halloran
