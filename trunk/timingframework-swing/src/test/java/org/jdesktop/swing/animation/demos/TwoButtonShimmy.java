@@ -77,12 +77,12 @@ public final class TwoButtonShimmy {
 
     final JFrame frame = new JFrame("TwoButtonShimmy");
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    frame.setLayout(null);
+    frame.setSize(400, 200);
     frame.setLocationRelativeTo(null);
+    frame.setLayout(null);
     frame.getContentPane().setBackground(Color.DARK_GRAY);
     frame.getContentPane().add(btnInfinite);
     frame.getContentPane().add(btnFinite);
-    frame.setSize(400, 200);
     frame.setVisible(true);
   }
 }
