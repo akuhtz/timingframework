@@ -72,7 +72,7 @@ public final class TwoButtonShimmy {
     // Movement on click
     TimingTarget ttFinite = PropertySetter.getTarget(btnFinite, "location", new Point(10, 50), new Point(250, 50),
         new Point(10, 50));
-    Animator animatorFinite = new Animator.Builder().setDuration(3, SECONDS).addTarget(ttFinite).build();
+    Animator animatorFinite = new Animator.Builder().setDuration(6, SECONDS).addTarget(ttFinite).build();
     TriggerUtility.addActionTrigger(btnFinite, animatorFinite);
     // Red text color on mouse hover
     TimingTarget ttFinite2 = PropertySetter.getTarget(btnFinite, "foreground", Color.BLACK, Color.RED);
@@ -84,7 +84,7 @@ public final class TwoButtonShimmy {
     frame.setSize(400, 200);
     frame.setLocationRelativeTo(null);
     frame.setLayout(null);
-    frame.getContentPane().setBackground(Color.DARK_GRAY);
+    frame.getContentPane().setBackground(new Color(225, 227, 185));
     frame.getContentPane().add(btnInfinite);
     frame.getContentPane().add(btnFinite);
     frame.setVisible(true);
