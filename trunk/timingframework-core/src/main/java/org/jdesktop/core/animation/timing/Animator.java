@@ -997,6 +997,10 @@ public final class Animator implements TickListener {
    * </pre>
    * 
    * {@code a} is the animator this method is invoked on.
+   * <p>
+   * This is a blocking call. Never invoke this method within the thread context
+   * of this animation's timing source&mdash;doing so will cause this call to
+   * block forever.
    */
   public void stopAndAwait() {
     stop();
@@ -1046,6 +1050,10 @@ public final class Animator implements TickListener {
    * </pre>
    * 
    * {@code a} is the animator this method is invoked on.
+   * <p>
+   * This is a blocking call. Never invoke this method within the thread context
+   * of this animation's timing source&mdash;doing so will cause this call to
+   * block forever.
    */
   public void cancelAndAwait() {
     cancel();
@@ -1141,7 +1149,10 @@ public final class Animator implements TickListener {
    * returns (unless, as noted above, the thread is
    * {@linkplain Thread#interrupt interrupted}).
    * <p>
-   * If the animation is not running then this method returns immediately.
+   * If the animation is not running then this method returns immediately,
+   * otherwise this is a blocking call. Never invoke this method within the
+   * thread context of this animation's timing source&mdash;doing so will cause
+   * this call to block forever.
    * <p>
    * If the current thread:
    * <ul>
