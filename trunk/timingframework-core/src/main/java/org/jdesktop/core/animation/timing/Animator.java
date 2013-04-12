@@ -916,6 +916,31 @@ public final class Animator implements TickListener {
   }
 
   /**
+   * Restarts the animation. If the animation is not running than this method is
+   * the same as calling {@link #start()}.
+   * <p>
+   * This call does not block.
+   * <p>
+   * <i>Implementation Note:</i> The animation is scheduled to stop right away,
+   * but the actual stop and restart occur at the next tick of the timing
+   * source.
+   */
+  public void restart() {
+    synchronized (this) {
+      if (isRunning()) {
+        stopHelper(true);
+        f_timingSource.submit(new Runnable() {
+          public void run() {
+            startHelper(f_startDirection, "restart()");
+          }
+        });
+      } else {
+        start();
+      }
+    }
+  }
+
+  /**
    * Starts the animation in the reverse direction.
    * 
    * @throws IllegalStateException
@@ -924,6 +949,31 @@ public final class Animator implements TickListener {
    */
   public void startReverse() {
     startHelper(f_startDirection.getOppositeDirection(), "startReverse()");
+  }
+
+  /**
+   * Restarts the animation in the reverse direction. If the animation is not
+   * running than this method is the same as calling {@link #startReverse()}.
+   * <p>
+   * This call does not block.
+   * <p>
+   * <i>Implementation Note:</i> The animation is scheduled to stop right away,
+   * but the actual stop and restart occur at the next tick of the timing
+   * source.
+   */
+  public void restartReverse() {
+    synchronized (this) {
+      if (isRunning()) {
+        stopHelper(true);
+        f_timingSource.submit(new Runnable() {
+          public void run() {
+            startHelper(f_startDirection.getOppositeDirection(), "restartReverse()");
+          }
+        });
+      } else {
+        restart();
+      }
+    }
   }
 
   /**
