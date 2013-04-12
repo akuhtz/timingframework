@@ -31,6 +31,9 @@ public final class ManualTimingSource extends TimingSource {
 
   /**
    * Called to "tick" time along.
+   * <p>
+   * Callers must ensure that a consistent thread context is maintained, i.e.,
+   * always call this method from the same thread.
    */
   public void tick() {
     if (f_isDisposed.get())
