@@ -1,5 +1,7 @@
 package org.jdesktop.swing.animation.demos;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -15,7 +17,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
@@ -64,7 +65,7 @@ public class TooManyBalls implements JRendererTarget<GraphicsConfiguration, Grap
   /**
    * Used to update the FPS display once a second.
    */
-  static final TimingSource f_infoTimer = new SwingTimerTimingSource(1, TimeUnit.SECONDS);
+  static final TimingSource f_infoTimer = new SwingTimerTimingSource(1, SECONDS);
 
   public static void main(String[] args) {
     System.setProperty("swing.defaultlaf", "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
@@ -285,7 +286,7 @@ public class TooManyBalls implements JRendererTarget<GraphicsConfiguration, Grap
      * Sometimes go at a constant rate, sometimes accelerate and decelerate.
      */
     final Interpolator i = f_die.nextBoolean() ? ACCEL_4_4 : null;
-    ball.animator = new Animator.Builder().setDuration(duration, TimeUnit.SECONDS).addTarget(circularMovement)
+    ball.animator = new Animator.Builder().setDuration(duration, SECONDS).addTarget(circularMovement)
         .setRepeatCount(Animator.INFINITE).setRepeatBehavior(Animator.RepeatBehavior.LOOP).setInterpolator(i).build();
     ball.animator.start();
 

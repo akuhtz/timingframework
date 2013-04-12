@@ -1,8 +1,9 @@
 package org.jdesktop.swing.animation.rendering;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
-import java.util.concurrent.TimeUnit;
 
 import javax.swing.SwingUtilities;
 
@@ -98,7 +99,7 @@ public class JPassiveRenderer implements JRenderer {
   public long getFPS() {
     final long avgCycleTime = getAverageCycleTimeNanos();
     if (avgCycleTime != 0) {
-      return TimeUnit.SECONDS.toNanos(1) / avgCycleTime;
+      return SECONDS.toNanos(1) / avgCycleTime;
     } else
       return 0;
   }

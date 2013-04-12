@@ -1,5 +1,7 @@
 package org.jdesktop.swing.animation.rendering;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
@@ -10,7 +12,6 @@ import java.awt.image.BufferedImage;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
@@ -288,7 +289,7 @@ public final class JActiveRenderer implements JRenderer {
   public long getFPS() {
     final long avgCycleTime = getAverageCycleTimeNanos();
     if (avgCycleTime != 0) {
-      return TimeUnit.SECONDS.toNanos(1) / avgCycleTime;
+      return SECONDS.toNanos(1) / avgCycleTime;
     } else
       return 0;
   }

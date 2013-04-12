@@ -14,7 +14,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
@@ -134,8 +134,7 @@ public final class ClickAndGo extends JPanel {
           }
         });
 
-        f_ball.animator = new Animator.Builder(animationTimer).setDuration(2, TimeUnit.SECONDS).setDisposeTimingSource(true)
-            .build();
+        f_ball.animator = new Animator.Builder(animationTimer).setDuration(2, SECONDS).setDisposeTimingSource(true).build();
 
         final Point clickPoint = new Point(e.getX(), e.getY());
         f_ball.animator.addTarget(PropertySetter

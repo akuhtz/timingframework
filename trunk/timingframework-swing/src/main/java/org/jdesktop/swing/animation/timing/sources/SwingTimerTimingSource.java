@@ -1,5 +1,7 @@
 package org.jdesktop.swing.animation.timing.sources;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.concurrent.TimeUnit;
@@ -82,7 +84,7 @@ public final class SwingTimerTimingSource extends TimingSource {
    * {@link #dispose()} method should be called to stop the timer.
    */
   public SwingTimerTimingSource() {
-    this(15, TimeUnit.MILLISECONDS);
+    this(15, MILLISECONDS);
   }
 
   @Override
@@ -104,7 +106,7 @@ public final class SwingTimerTimingSource extends TimingSource {
   public String toString() {
     final StringBuilder b = new StringBuilder();
     b.append(SwingTimerTimingSource.class.getSimpleName()).append('@').append(Integer.toHexString(hashCode()));
-    b.append("(period=").append(f_timer.getDelay()).append(' ').append(TimeUnit.MILLISECONDS.toString());
+    b.append("(period=").append(f_timer.getDelay()).append(' ').append(MILLISECONDS.toString());
     b.append(')');
     return b.toString();
   }

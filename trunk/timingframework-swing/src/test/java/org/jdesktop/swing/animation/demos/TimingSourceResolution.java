@@ -1,11 +1,12 @@
 package org.jdesktop.swing.animation.demos;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.concurrent.TimeUnit;
 
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
@@ -120,7 +121,7 @@ public class TimingSourceResolution implements TimingSourceResolutionThread.Depo
 
     @Override
     public TimingSource getTimingSource(int periodMillis) {
-      return new SwingTimerTimingSource(periodMillis, TimeUnit.MILLISECONDS);
+      return new SwingTimerTimingSource(periodMillis, MILLISECONDS);
     }
 
     @Override

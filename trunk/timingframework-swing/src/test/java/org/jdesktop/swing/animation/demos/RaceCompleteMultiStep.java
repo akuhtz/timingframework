@@ -1,9 +1,10 @@
 package org.jdesktop.swing.animation.demos;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.concurrent.TimeUnit;
 
 import javax.swing.JButton;
 import javax.swing.SwingUtilities;
@@ -59,7 +60,7 @@ public final class RaceCompleteMultiStep {
   public RaceCompleteMultiStep(String appName) {
     final RaceGUI basicGUI = new RaceGUI(appName);
 
-    animator = new Animator.Builder().setDuration(RACE_TIME, TimeUnit.MILLISECONDS).setRepeatCount(Animator.INFINITE)
+    animator = new Animator.Builder().setDuration(RACE_TIME, MILLISECONDS).setRepeatCount(Animator.INFINITE)
         .setRepeatBehavior(RepeatBehavior.LOOP).build();
 
     // We're going to need a more involved PropertyRange object

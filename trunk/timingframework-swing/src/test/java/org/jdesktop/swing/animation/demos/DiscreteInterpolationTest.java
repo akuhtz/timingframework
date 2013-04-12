@@ -1,11 +1,13 @@
 package org.jdesktop.swing.animation.demos;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.SECONDS;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.concurrent.TimeUnit;
 
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
@@ -36,7 +38,7 @@ public class DiscreteInterpolationTest extends TimingTargetAdapter {
   public static void main(String args[]) {
     System.setProperty("swing.defaultlaf", "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
 
-    TimingSource ts = new SwingTimerTimingSource(100, TimeUnit.MILLISECONDS);
+    TimingSource ts = new SwingTimerTimingSource(100, MILLISECONDS);
     Animator.setDefaultTimingSource(ts);
     ts.init();
 
@@ -118,7 +120,7 @@ public class DiscreteInterpolationTest extends TimingTargetAdapter {
       out(String.format("Frame %d: value=%d timeFraction=%f interpolator=%s", i++, keyFrame.getValue(), keyFrame.getTimeFraction(),
           s));
     }
-    final Animator animator = new Animator.Builder().setDuration(3, TimeUnit.SECONDS)
+    final Animator animator = new Animator.Builder().setDuration(3, SECONDS)
         .addTarget(PropertySetter.getTarget(object, "intValue", keyFrames)).addTarget(object).build();
     out("");
     out("Animation of intValue");

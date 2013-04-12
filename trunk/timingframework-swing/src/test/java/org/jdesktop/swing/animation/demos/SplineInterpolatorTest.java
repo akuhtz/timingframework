@@ -1,11 +1,12 @@
 package org.jdesktop.swing.animation.demos;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.concurrent.TimeUnit;
 
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
@@ -42,7 +43,7 @@ public class SplineInterpolatorTest extends TimingTargetAdapter {
   public static void main(String args[]) {
     System.setProperty("swing.defaultlaf", "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
 
-    TimingSource ts = new SwingTimerTimingSource(DURATION / 10, TimeUnit.MILLISECONDS);
+    TimingSource ts = new SwingTimerTimingSource(DURATION / 10, MILLISECONDS);
     Animator.setDefaultTimingSource(ts);
     ts.init();
 
@@ -106,7 +107,7 @@ public class SplineInterpolatorTest extends TimingTargetAdapter {
     frame.setVisible(true);
 
     SplineInterpolator si = new SplineInterpolator(1, 0, 0, 1);
-    Animator animator = new Animator.Builder().setDuration(DURATION, TimeUnit.MILLISECONDS).setInterpolator(si)
+    Animator animator = new Animator.Builder().setDuration(DURATION, MILLISECONDS).setInterpolator(si)
         .addTarget(new SplineInterpolatorTest()).build();
     animator.start();
   }
