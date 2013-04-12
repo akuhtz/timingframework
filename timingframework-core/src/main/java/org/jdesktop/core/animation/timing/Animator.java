@@ -10,6 +10,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.jdesktop.core.animation.i18n.I18N;
 import org.jdesktop.core.animation.timing.TimingSource.TickListener;
@@ -567,6 +569,87 @@ public final class Animator implements TickListener {
       return this;
     }
 
+    @NonNull
+    public Builder clone(Builder builder) {
+      return this;
+    }
+
+    /**
+     * Copies all values from the passed animator into this builder <b>not
+     * including its timing source</b>. The timing targets of the animation may
+     * optionally be copied as well.
+     * <p>
+     * This method allows an animation to be used as a template for other
+     * animations and can simplify construction of a large number of similar
+     * animations.
+     * 
+     * @param from
+     *          an animation, ignored if {@code null}.
+     * @param copyTargets
+     *          {@code true} if timing targets should also be copied into this
+     *          builder, {@code false} if not.
+     * @return this builder (to allow chained operations).
+     */
+    @NonNull
+    public Builder copy(Animator from, boolean copyTargets) {
+      if (from != null) {
+        setDebugName(from.getDebugName());
+        setDuration(from.getDuration(), from.getDurationTimeUnit());
+        setEndBehavior(from.getEndBehavior());
+        setInterpolator(from.getInterpolator());
+        setRepeatBehavior(from.getRepeatBehavior());
+        setRepeatCount(from.getRepeatCount());
+        setStartDirection(from.getStartDirection());
+        setStartDelay(from.getStartDelay(), from.getStartDelayTimeUnit());
+        setDisposeTimingSource(from.getDisposeTimingSource());
+        // Warn the user if the auto-dispose setting makes no sense.
+        if (f_disposeTimingSource && from.getTimingSource() == f_timingSource) {
+          Logger.getAnonymousLogger().log(Level.WARNING, I18N.err(50, f_timingSource.toString()), new Exception());
+        }
+        if (copyTargets)
+          addTargets(from.getTargets());
+      }
+      return this;
+    }
+
+    /**
+     * Copies all values from the passed animation builder into this builder
+     * <b>not including its timing source</b>. The timing targets of the
+     * animation builder may optionally be copied as well.
+     * <p>
+     * This method allows an animation builder to be used as a template for
+     * other animations and can simplify construction of a large number of
+     * similar animations.
+     * 
+     * @param from
+     *          an animation builder, ignored if {@code null}.
+     * @param copyTargets
+     *          {@code true} if timing targets should also be copied into this
+     *          builder, {@code false} if not.
+     * @return this builder (to allow chained operations).
+     */
+    @NonNull
+    public Builder copy(Builder from, boolean copyTargets) {
+      if (from != null) {
+        setDebugName(from.f_debugName);
+        setDuration(from.f_duration, from.f_durationTimeUnit);
+        setEndBehavior(from.f_endBehavior);
+        setInterpolator(from.f_interpolator);
+        setRepeatBehavior(from.f_repeatBehavior);
+        setRepeatCount(from.f_repeatCount);
+        setStartDirection(from.f_startDirection);
+        setStartDelay(from.f_startDelay, from.f_startDelayTimeUnit);
+        setDisposeTimingSource(from.f_disposeTimingSource);
+        // Warn the user if the auto-dispose setting makes no sense.
+        if (f_disposeTimingSource && from.f_timingSource == f_timingSource) {
+          Logger.getAnonymousLogger().log(Level.WARNING, I18N.err(50, f_timingSource.toString()), new Exception());
+        }
+        if (copyTargets)
+          addTargets(from.f_targets);
+      }
+      return this;
+    }
+
     /**
      * Constructs an animation with the settings defined by this builder.
      * 
@@ -745,6 +828,19 @@ public final class Animator implements TickListener {
   @RegionEffects("reads Instance")
   public TimingSource getTimingSource() {
     return f_timingSource;
+  }
+
+  /**
+   * Gets if this animation will invoke {@link TimingSource#dispose()} on its
+   * timing source when it ends.
+   * 
+   * @return {@code true} if the animation will invoke
+   *         {@link TimingSource#dispose()} on its timing source when it ends,
+   *         {@code false} if not.
+   */
+  @RegionEffects("reads Instance")
+  public boolean getDisposeTimingSource() {
+    return f_disposeTimingSource;
   }
 
   /*
@@ -1003,6 +1099,18 @@ public final class Animator implements TickListener {
    */
   public void removeTargets(TimingTarget... targets) {
     removeTargets(Arrays.asList(targets));
+  }
+
+  /**
+   * Gets the list of {@link TimingTarget}s that get notified of each timing
+   * event while the animation is running.
+   * <p>
+   * The returned list is a copy and can be mutated freely.
+   * 
+   * @return the {@link TimingTarget}s of this animation.
+   */
+  public ArrayList<TimingTarget> getTargets() {
+    return new ArrayList<TimingTarget>(f_targets);
   }
 
   /**
