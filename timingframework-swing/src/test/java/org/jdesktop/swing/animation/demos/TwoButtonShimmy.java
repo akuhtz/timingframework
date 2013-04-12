@@ -18,10 +18,14 @@ import org.jdesktop.swing.animation.timing.sources.SwingTimerTimingSource;
 import org.jdesktop.swing.animation.timing.triggers.TriggerUtility;
 
 /**
+ * A demonstration of moving buttons using the Timing Framework.
+ * <p>
  * This demonstration uses property setters and triggers together to shimmy two
- * buttons back and forth across the window. "Infinite" bounces back and forth
- * until it is clicked again. "Once" goes back and forth once and then stops. A
- * mouse hover on either button causes the button to slowly glow orange.
+ * buttons back and forth across the window when they are clicked. "Infinite"
+ * bounces back and forth until it is clicked again. "Once" goes back and forth
+ * once and then stops. A mouse hover on either button causes the button to
+ * slowly change to red. It slowly goes back to black when the mouse is moved
+ * away.
  * 
  * @author Jan Studeny
  * @author Tim Halloran
@@ -55,8 +59,8 @@ public final class TwoButtonShimmy {
     Animator animatorInfinite = new Animator.Builder().setRepeatCount(Animator.INFINITE).setDuration(3, SECONDS)
         .addTarget(ttInfinite).build();
     TriggerUtility.addActionTrigger(btnInfinite, animatorInfinite);
-    // Orange glow on mouse hover
-    TimingTarget ttInfinite2 = PropertySetter.getTarget(btnInfinite, "background", Color.GRAY, Color.ORANGE);
+    // Red text color on mouse hover
+    TimingTarget ttInfinite2 = PropertySetter.getTarget(btnInfinite, "foreground", Color.BLACK, Color.RED);
     Animator animatorInfinite2 = new Animator.Builder().setDuration(2, SECONDS).addTarget(ttInfinite2).build();
     TriggerUtility.addMouseTrigger(btnInfinite, animatorInfinite2, MouseTriggerEvent.ENTER, true);
 
@@ -70,8 +74,8 @@ public final class TwoButtonShimmy {
         new Point(10, 50));
     Animator animatorFinite = new Animator.Builder().setDuration(3, SECONDS).addTarget(ttFinite).build();
     TriggerUtility.addActionTrigger(btnFinite, animatorFinite);
-    // Orange glow on mouse hover
-    TimingTarget ttFinite2 = PropertySetter.getTarget(btnFinite, "background", Color.GRAY, Color.ORANGE);
+    // Red text color on mouse hover
+    TimingTarget ttFinite2 = PropertySetter.getTarget(btnFinite, "foreground", Color.BLACK, Color.RED);
     Animator animatorFinite2 = new Animator.Builder().setDuration(2, SECONDS).addTarget(ttFinite2).build();
     TriggerUtility.addMouseTrigger(btnFinite, animatorFinite2, MouseTriggerEvent.ENTER, true);
 
