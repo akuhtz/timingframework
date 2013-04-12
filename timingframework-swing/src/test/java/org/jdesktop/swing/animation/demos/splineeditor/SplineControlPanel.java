@@ -1,5 +1,8 @@
 package org.jdesktop.swing.animation.demos.splineeditor;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.SECONDS;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -20,7 +23,6 @@ import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.Locale;
-import java.util.concurrent.TimeUnit;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -121,6 +123,7 @@ class SplineControlPanel extends JPanel {
     return wrapper;
   }
 
+  @SuppressWarnings("all")
   private Component createTemplates() {
     DefaultListModel model = new DefaultListModel();
     model.addElement(createTemplate(0.0, 0.0, 1.0, 1.0));
@@ -220,7 +223,7 @@ class SplineControlPanel extends JPanel {
     TimingTarget dropModifier = PropertySetter.getTarget(dropSimulator, "time", frames);
     TimingTarget bounceModifier = PropertySetter.getTarget(bounceSimulator, "time", frames);
 
-    controller = new Animator.Builder().setDuration(2, TimeUnit.SECONDS).setRepeatBehavior(Animator.RepeatBehavior.REVERSE)
+    controller = new Animator.Builder().setDuration(2, SECONDS).setRepeatBehavior(Animator.RepeatBehavior.REVERSE)
         .addTarget(dropModifier).addTarget(bounceModifier).build();
     controller.start();
   }
@@ -231,6 +234,7 @@ class SplineControlPanel extends JPanel {
         return;
       }
 
+      @SuppressWarnings("rawtypes")
       JList list = (JList) e.getSource();
       Template template = (Template) list.getSelectedValue();
       if (template != null) {
@@ -238,7 +242,7 @@ class SplineControlPanel extends JPanel {
           controller.stop();
         }
 
-        controller = new Animator.Builder().setDuration(400, TimeUnit.MILLISECONDS).build();
+        controller = new Animator.Builder().setDuration(400, MILLISECONDS).build();
         controller.addTarget(PropertySetter.getTarget(display, "control1", display.getControl1(), template.getControl1()));
         controller.addTarget(PropertySetter.getTarget(display, "control2", display.getControl2(), template.getControl2()));
         controller.start();
@@ -261,7 +265,7 @@ class SplineControlPanel extends JPanel {
     private boolean isSelected;
 
     @Override
-    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+    public Component getListCellRendererComponent(@SuppressWarnings("rawtypes") JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
       Template template = (Template) value;
       this.setBackground(Color.WHITE);
       this.setIcon(new ImageIcon(template.getImage()));

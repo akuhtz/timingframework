@@ -1,5 +1,7 @@
 package org.jdesktop.swing.animation.demos;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -15,7 +17,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
@@ -71,7 +72,7 @@ public class TooManyBallsBroken {
   /**
    * Used to update the FPS display once a second.
    */
-  static final TimingSource f_infoTimer = new SwingTimerTimingSource(1, TimeUnit.SECONDS);
+  static final TimingSource f_infoTimer = new SwingTimerTimingSource(1, SECONDS);
 
   static final Interpolator ACCEL_4_4 = new AccelerationInterpolator(0.4, 0.4);
   static final Interpolator SPLINE_0_1_1_0 = new SplineInterpolator(0.00, 1.00, 1.00, 1.00);
@@ -269,7 +270,7 @@ public class TooManyBallsBroken {
     final Interpolator i = f_die.nextBoolean() ? ACCEL_4_4 : null;
     ball.ts = new SwingTimerTimingSource();
     ball.ts.init();
-    ball.animator = new Animator.Builder(ball.ts).setDuration(duration, TimeUnit.SECONDS).addTarget(circularMovement)
+    ball.animator = new Animator.Builder(ball.ts).setDuration(duration, SECONDS).addTarget(circularMovement)
         .setRepeatCount(Animator.INFINITE).setRepeatBehavior(Animator.RepeatBehavior.LOOP).setInterpolator(i).build();
     ball.animator.start();
 
@@ -296,7 +297,7 @@ public class TooManyBallsBroken {
       return 0;
     final long avgCycleTime = f_totalPaintTimeNanos / f_paintCount;
     if (avgCycleTime != 0) {
-      return TimeUnit.SECONDS.toNanos(1) / avgCycleTime;
+      return SECONDS.toNanos(1) / avgCycleTime;
     } else
       return 0;
   }

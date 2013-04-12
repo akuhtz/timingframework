@@ -1,6 +1,6 @@
 package org.jdesktop.swing.animation.demos;
 
-import java.util.concurrent.TimeUnit;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 import javax.swing.SwingUtilities;
 
@@ -43,7 +43,7 @@ public class RaceBasicNonLinear extends RaceBasic {
 
   @Override
   protected Animator getAnimator() {
-    return new Animator.Builder().setDuration(RACE_TIME, TimeUnit.SECONDS).setInterpolator(new AccelerationInterpolator(0.5, 0.2))
+    return new Animator.Builder().setDuration(RACE_TIME, SECONDS).setInterpolator(new AccelerationInterpolator(0.5, 0.2))
         .addTarget(this).build();
   }
 }

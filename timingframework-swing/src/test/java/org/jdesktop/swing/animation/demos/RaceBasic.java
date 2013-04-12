@@ -1,9 +1,10 @@
 package org.jdesktop.swing.animation.demos;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.concurrent.TimeUnit;
 
 import javax.swing.JButton;
 import javax.swing.SwingUtilities;
@@ -127,7 +128,7 @@ public class RaceBasic extends TimingTargetAdapter {
    * @return an animation.
    */
   protected Animator getAnimator() {
-    return new Animator.Builder().setDuration(RACE_TIME, TimeUnit.SECONDS).addTarget(this).build();
+    return new Animator.Builder().setDuration(RACE_TIME, SECONDS).addTarget(this).build();
   }
 
   /**

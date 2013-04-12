@@ -1,11 +1,12 @@
 package org.jdesktop.swing.animation.demos;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
-import java.util.concurrent.TimeUnit;
 
 import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
@@ -143,7 +144,7 @@ public class Triggers extends JComponent {
         throw new IllegalStateException("Problem loading image " + resourceName, e);
       }
       setPreferredSize(new Dimension(f_sphereImage.getWidth() + 2 * PADDING, PANEL_HEIGHT));
-      f_bouncer = new Animator.Builder().setDuration(2, TimeUnit.SECONDS).setInterpolator(ACCEL_5_5).build();
+      f_bouncer = new Animator.Builder().setDuration(2, SECONDS).setInterpolator(ACCEL_5_5).build();
       if (bounce)
         f_bouncer.addTarget(PropertySetter.getTarget(this, "sphereY", 20, (PANEL_HEIGHT - f_sphereImage.getHeight()), 20));
       else
