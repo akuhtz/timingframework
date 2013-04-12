@@ -1,5 +1,8 @@
 package org.jdesktop.android.animation.timing.sources;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
+
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -95,7 +98,7 @@ public final class AndroidTimingSource extends TimingSource {
           delayNanos = f_periodNanos;
           f_ideaNextTickNanoTime = now + f_periodNanos;
         }
-        long delayMillis = TimeUnit.NANOSECONDS.toMillis(delayNanos);
+        long delayMillis = NANOSECONDS.toMillis(delayNanos);
         if (delayMillis > 0) {
           f_handler.postDelayed(f_periodic, delayMillis);
         } else {
@@ -125,7 +128,7 @@ public final class AndroidTimingSource extends TimingSource {
    *           if <tt>activity<tt> is {@code null}.
    */
   public AndroidTimingSource(long period, TimeUnit unit, final Activity activity) {
-    final long one = TimeUnit.MILLISECONDS.toNanos(1);
+    final long one = MILLISECONDS.toNanos(1);
     long periodNanos = unit.toNanos(period);
     if (periodNanos < one)
       periodNanos = one;
@@ -141,7 +144,7 @@ public final class AndroidTimingSource extends TimingSource {
    * {@link #dispose()} method should be called to stop the timer.
    */
   public AndroidTimingSource(final Activity activity) {
-    this(15, TimeUnit.MILLISECONDS, activity);
+    this(15, MILLISECONDS, activity);
   }
 
   @Override

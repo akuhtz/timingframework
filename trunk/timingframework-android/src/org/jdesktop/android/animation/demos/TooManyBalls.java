@@ -1,10 +1,12 @@
 package org.jdesktop.android.animation.demos;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.SECONDS;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
 import org.jdesktop.android.animation.rendering.JPassiveRenderer;
 import org.jdesktop.android.animation.timing.sources.AndroidTimingSource;
@@ -79,7 +81,7 @@ public final class TooManyBalls extends Activity implements JRendererTarget<Surf
     /**
      * Used for ball animations.
      */
-    final TimingSource animationTimer = new AndroidTimingSource(15, TimeUnit.MILLISECONDS, this);
+    final TimingSource animationTimer = new AndroidTimingSource(15, MILLISECONDS, this);
     Animator.setDefaultTimingSource(animationTimer);
 
     f_ballView = (SurfaceView) findViewById(R.id.surfaceViewBalls);
@@ -137,7 +139,7 @@ public final class TooManyBalls extends Activity implements JRendererTarget<Surf
       return 0;
     final long avgCycleTime = f_totalPaintTimeNanos / f_paintCount;
     if (avgCycleTime != 0) {
-      return TimeUnit.SECONDS.toNanos(1) / avgCycleTime;
+      return SECONDS.toNanos(1) / avgCycleTime;
     } else
       return 0;
   }
@@ -185,7 +187,7 @@ public final class TooManyBalls extends Activity implements JRendererTarget<Surf
      * Sometimes go at a constant rate, sometimes accelerate and decelerate.
      */
     final Interpolator i = f_die.nextBoolean() ? ACCEL_4_4 : null;
-    ball.animator = new Animator.Builder().setDuration(duration, TimeUnit.SECONDS).addTarget(circularMovement)
+    ball.animator = new Animator.Builder().setDuration(duration, SECONDS).addTarget(circularMovement)
         .setRepeatCount(Animator.INFINITE).setRepeatBehavior(Animator.RepeatBehavior.LOOP).setInterpolator(i).build();
     ball.animator.start();
 

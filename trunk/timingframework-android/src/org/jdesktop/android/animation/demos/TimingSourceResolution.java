@@ -1,6 +1,6 @@
 package org.jdesktop.android.animation.demos;
 
-import java.util.concurrent.TimeUnit;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 import org.jdesktop.android.animation.timing.sources.AndroidTimingSource;
 import org.jdesktop.core.animation.demos.ScheduledExecutorFactory;
@@ -108,7 +108,7 @@ public class TimingSourceResolution extends Activity implements TimingSourceReso
     }
 
     public TimingSource getTimingSource(int periodMillis) {
-      return new AndroidTimingSource(periodMillis, TimeUnit.MILLISECONDS, f_activity);
+      return new AndroidTimingSource(periodMillis, MILLISECONDS, f_activity);
     }
 
     @Override
