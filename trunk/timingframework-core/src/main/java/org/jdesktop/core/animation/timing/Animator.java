@@ -3,6 +3,7 @@ package org.jdesktop.core.animation.timing;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -361,6 +362,43 @@ public final class Animator implements TickListener {
     public Builder addTarget(TimingTarget target) {
       if (target != null && !f_targets.contains(target))
         f_targets.add(target);
+      return this;
+    }
+
+    /**
+     * Adds the collection of passed {@link TimingTarget}s to the list of
+     * targets that get notified of each timing event while the animation is
+     * running.
+     * <p>
+     * {@link TimingTarget}s will be called in the order they are added.
+     * Duplicate additions are ignored.
+     * 
+     * @param targets
+     *          a collection of {@link TimingTarget} objects.
+     * @return this builder (to allow chained operations).
+     */
+    public Builder addTargets(Collection<TimingTarget> targets) {
+      if (targets != null)
+        for (TimingTarget target : targets)
+          addTarget(target);
+      return this;
+    }
+
+    /**
+     * Adds the collection of passed {@link TimingTarget}s to the list of
+     * targets that get notified of each timing event while the animation is
+     * running.
+     * <p>
+     * {@link TimingTarget}s will be called in the order they are added.
+     * Duplicate additions are ignored.
+     * 
+     * @param targets
+     *          a collection of {@link TimingTarget} objects.
+     * @return this builder (to allow chained operations).
+     */
+    @NonNull
+    public Builder addTargets(TimingTarget... targets) {
+      addTargets(Arrays.asList(targets));
       return this;
     }
 
@@ -879,6 +917,47 @@ public final class Animator implements TickListener {
   }
 
   /**
+   * Adds the collection of passed {@link TimingTarget}s to the list of targets
+   * that get notified of each timing event while the animation is running.
+   * <p>
+   * This can be done at any time before, during, or after the animation has
+   * started or completed; the new target will begin having its methods called
+   * as soon as it is added.
+   * <p>
+   * {@link TimingTarget}s will be called in the order they are added. Duplicate
+   * additions are ignored.
+   * 
+   * @param targets
+   *          a collection of {@link TimingTarget} objects.
+   */
+  public void addTargets(Collection<TimingTarget> targets) {
+    if (targets != null) {
+      synchronized (this) {
+        for (TimingTarget target : targets)
+          addTarget(target);
+      }
+    }
+  }
+
+  /**
+   * Adds the collection of passed {@link TimingTarget}s to the list of targets
+   * that get notified of each timing event while the animation is running.
+   * <p>
+   * This can be done at any time before, during, or after the animation has
+   * started or completed; the new target will begin having its methods called
+   * as soon as it is added.
+   * <p>
+   * {@link TimingTarget}s will be called in the order they are added. Duplicate
+   * additions are ignored.
+   * 
+   * @param targets
+   *          a collection of {@link TimingTarget} objects.
+   */
+  public void addTargets(TimingTarget... targets) {
+    addTargets(Arrays.asList(targets));
+  }
+
+  /**
    * Removes the specified {@link TimingTarget} from the list of targets that
    * get notified of each timing event while the animation is running.
    * <p>
@@ -891,6 +970,39 @@ public final class Animator implements TickListener {
    */
   public void removeTarget(TimingTarget target) {
     f_targets.remove(target);
+  }
+
+  /**
+   * Removes the specified collection of {@link TimingTarget}s from the list of
+   * targets that get notified of each timing event while the animation is
+   * running.
+   * <p>
+   * This can be done at any time before, during, or after the animation has
+   * started or completed; the target will cease having its methods called as
+   * soon as it is removed.
+   * 
+   * @param targets
+   *          a collection of {@link TimingTarget} objects.
+   */
+  public void removeTargets(Collection<TimingTarget> targets) {
+    if (targets != null)
+      f_targets.removeAll(targets);
+  }
+
+  /**
+   * Removes the specified collection of {@link TimingTarget}s from the list of
+   * targets that get notified of each timing event while the animation is
+   * running.
+   * <p>
+   * This can be done at any time before, during, or after the animation has
+   * started or completed; the target will cease having its methods called as
+   * soon as it is removed.
+   * 
+   * @param targets
+   *          a collection of {@link TimingTarget} objects.
+   */
+  public void removeTargets(TimingTarget... targets) {
+    removeTargets(Arrays.asList(targets));
   }
 
   /**
