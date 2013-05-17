@@ -77,7 +77,7 @@ public final class TwoButtonShimmy {
     Animator animatorInfinite = new Animator.Builder().setRepeatCount(Animator.INFINITE).setDuration(3, SECONDS)
         .addTarget(ttInfinite).build();
     TriggerUtility.addEventTrigger(btnInfinite, SWT.Selection, animatorInfinite);
-    // Red text color on mouse hover
+    // Red text color on mouse hover (doesn't work on Windows at all)
     TimingTarget ttInfinite2 = PropertySetter.getTarget(btnInfinite, "foreground", black, red);
     Animator animatorInfinite2 = new Animator.Builder().setDuration(2, SECONDS).addTarget(ttInfinite2).build();
     TriggerUtility.addMouseTrigger(btnInfinite, animatorInfinite2, MouseTriggerEvent.ENTER, true);
@@ -93,7 +93,7 @@ public final class TwoButtonShimmy {
         new Point(10, 50));
     Animator animatorFinite = new Animator.Builder().setDuration(6, SECONDS).addTarget(ttFinite).build();
     TriggerUtility.addEventTrigger(btnFinite, SWT.Selection, animatorFinite);
-    // Red text color on mouse hover
+    // Red text color on mouse hover (doesn't work on Windows at all)
     TimingTarget ttFinite2 = PropertySetter.getTarget(btnFinite, "foreground", black, red);
     Animator animatorFinite2 = new Animator.Builder().setDuration(2, SECONDS).addTarget(ttFinite2).build();
     TriggerUtility.addMouseTrigger(btnFinite, animatorFinite2, MouseTriggerEvent.ENTER, true);
