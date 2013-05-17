@@ -569,9 +569,24 @@ public final class Animator implements TickListener {
       return this;
     }
 
+    /**
+     * Copies all values from the passed animator into this builder <b>not
+     * including its timing source</b>. The timing targets of the animation are
+     * copied as well.
+     * <p>
+     * This method allows an animation to be used as a template for other
+     * animations and can simplify construction of a large number of similar
+     * animations.
+     * 
+     * @param from
+     *          an animation, ignored if {@code null}.
+     * @return this builder (to allow chained operations).
+     * 
+     * @see #copy(Animator, boolean)
+     */
     @NonNull
-    public Builder clone(Builder builder) {
-      return this;
+    public Builder copy(Animator from) {
+      return copy(from, true);
     }
 
     /**
@@ -589,6 +604,8 @@ public final class Animator implements TickListener {
      *          {@code true} if timing targets should also be copied into this
      *          builder, {@code false} if not.
      * @return this builder (to allow chained operations).
+     * 
+     * @see #copy(Animator)
      */
     @NonNull
     public Builder copy(Animator from, boolean copyTargets) {
@@ -615,6 +632,26 @@ public final class Animator implements TickListener {
     /**
      * Copies all values from the passed animation builder into this builder
      * <b>not including its timing source</b>. The timing targets of the
+     * animation are copied as well.
+     * <p>
+     * This method allows an animation builder to be used as a template for
+     * other animations and can simplify construction of a large number of
+     * similar animations.
+     * 
+     * @param from
+     *          an animation builder, ignored if {@code null}.
+     * @return this builder (to allow chained operations).
+     * 
+     * @see #copy(Builder, boolean)
+     */
+    @NonNull
+    public Builder copy(Builder from) {
+      return copy(from, true);
+    }
+
+    /**
+     * Copies all values from the passed animation builder into this builder
+     * <b>not including its timing source</b>. The timing targets of the
      * animation builder may optionally be copied as well.
      * <p>
      * This method allows an animation builder to be used as a template for
@@ -627,6 +664,8 @@ public final class Animator implements TickListener {
      *          {@code true} if timing targets should also be copied into this
      *          builder, {@code false} if not.
      * @return this builder (to allow chained operations).
+     * 
+     * @see #copy(Builder)
      */
     @NonNull
     public Builder copy(Builder from, boolean copyTargets) {

@@ -4,9 +4,12 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.jdesktop.core.animation.timing.Animator.Direction;
+import org.jdesktop.core.animation.timing.Animator.EndBehavior;
 import org.jdesktop.core.animation.timing.Animator.RepeatBehavior;
+import org.jdesktop.core.animation.timing.interpolators.AccelerationInterpolator;
 import org.jdesktop.core.animation.timing.sources.ManualTimingSource;
 import org.jdesktop.core.animation.timing.sources.ScheduledExecutorTimingSource;
 import org.junit.Assert;
@@ -795,5 +798,269 @@ public final class TestAnimator {
     a.start();
     a.stopAndAwait();
     ts.dispose();
+  }
+
+  @Test
+  public void testCopyBuilder1() {
+    ManualTimingSource ts = new ManualTimingSource();
+    Animator.Builder ab1 = new Animator.Builder(ts);
+    Animator.Builder ab2 = new Animator.Builder(ts);
+    Interpolator i = new AccelerationInterpolator(0.4, 0.4);
+
+    ab1.setDebugName("expected");
+    ab1.setInterpolator(i);
+    ab1.setDuration(5, TimeUnit.MINUTES);
+    ab1.setEndBehavior(EndBehavior.HOLD);
+    ab1.setRepeatBehavior(RepeatBehavior.LOOP);
+    ab1.setRepeatCount(5);
+    ab1.setStartDirection(Direction.BACKWARD);
+    ab1.setStartDelay(2, TimeUnit.MINUTES);
+
+    ab2.copy(ab1);
+    Animator a2 = ab2.build();
+    Assert.assertEquals("expected", a2.getDebugName());
+    Assert.assertSame(i, a2.getInterpolator());
+    Assert.assertEquals(5, a2.getDuration());
+    Assert.assertSame(TimeUnit.MINUTES, a2.getDurationTimeUnit());
+    Assert.assertSame(RepeatBehavior.LOOP, a2.getRepeatBehavior());
+    Assert.assertEquals(5, a2.getRepeatCount());
+    Assert.assertSame(Direction.BACKWARD, a2.getStartDirection());
+    Assert.assertEquals(2, a2.getStartDelay());
+    Assert.assertSame(TimeUnit.MINUTES, a2.getStartDelayTimeUnit());
+    Assert.assertFalse(a2.getDisposeTimingSource());
+    Assert.assertEquals(0, a2.getTargets().size());
+  }
+
+  @Test
+  public void testCopyBuilder2() {
+    ManualTimingSource ts = new ManualTimingSource();
+    Animator.Builder ab1 = new Animator.Builder(ts);
+    Animator.Builder ab2 = new Animator.Builder(ts);
+    Interpolator i = new AccelerationInterpolator(0.4, 0.4);
+    TimingTarget t1 = new CountingTimingTarget();
+
+    ab1.setDebugName("expected");
+    ab1.setInterpolator(i);
+    ab1.setDuration(5, TimeUnit.MINUTES);
+    ab1.setEndBehavior(EndBehavior.HOLD);
+    ab1.setRepeatBehavior(RepeatBehavior.LOOP);
+    ab1.setRepeatCount(5);
+    ab1.setStartDirection(Direction.BACKWARD);
+    ab1.setStartDelay(2, TimeUnit.MINUTES);
+    ab1.addTarget(t1);
+
+    ab2.copy(ab1);
+    Animator a2 = ab2.build();
+    Assert.assertEquals("expected", a2.getDebugName());
+    Assert.assertSame(i, a2.getInterpolator());
+    Assert.assertEquals(5, a2.getDuration());
+    Assert.assertSame(TimeUnit.MINUTES, a2.getDurationTimeUnit());
+    Assert.assertSame(RepeatBehavior.LOOP, a2.getRepeatBehavior());
+    Assert.assertEquals(5, a2.getRepeatCount());
+    Assert.assertSame(Direction.BACKWARD, a2.getStartDirection());
+    Assert.assertEquals(2, a2.getStartDelay());
+    Assert.assertSame(TimeUnit.MINUTES, a2.getStartDelayTimeUnit());
+    Assert.assertFalse(a2.getDisposeTimingSource());
+    Assert.assertEquals(1, a2.getTargets().size());
+  }
+
+  @Test
+  public void testCopyBuilder3() {
+    ManualTimingSource ts = new ManualTimingSource();
+    Animator.Builder ab1 = new Animator.Builder(ts);
+    Animator.Builder ab2 = new Animator.Builder(ts);
+    Interpolator i = new AccelerationInterpolator(0.4, 0.4);
+    TimingTarget t1 = new CountingTimingTarget();
+
+    ab1.setDebugName("expected");
+    ab1.setInterpolator(i);
+    ab1.setDuration(5, TimeUnit.MINUTES);
+    ab1.setEndBehavior(EndBehavior.HOLD);
+    ab1.setRepeatBehavior(RepeatBehavior.LOOP);
+    ab1.setRepeatCount(5);
+    ab1.setStartDirection(Direction.BACKWARD);
+    ab1.setStartDelay(2, TimeUnit.MINUTES);
+    ab1.addTarget(t1);
+
+    ab2.copy(ab1, true);
+    Animator a2 = ab2.build();
+    Assert.assertEquals("expected", a2.getDebugName());
+    Assert.assertSame(i, a2.getInterpolator());
+    Assert.assertEquals(5, a2.getDuration());
+    Assert.assertSame(TimeUnit.MINUTES, a2.getDurationTimeUnit());
+    Assert.assertSame(RepeatBehavior.LOOP, a2.getRepeatBehavior());
+    Assert.assertEquals(5, a2.getRepeatCount());
+    Assert.assertSame(Direction.BACKWARD, a2.getStartDirection());
+    Assert.assertEquals(2, a2.getStartDelay());
+    Assert.assertSame(TimeUnit.MINUTES, a2.getStartDelayTimeUnit());
+    Assert.assertFalse(a2.getDisposeTimingSource());
+    Assert.assertEquals(1, a2.getTargets().size());
+  }
+
+  @Test
+  public void testCopyBuilder4() {
+    ManualTimingSource ts = new ManualTimingSource();
+    Animator.Builder ab1 = new Animator.Builder(ts);
+    Animator.Builder ab2 = new Animator.Builder(ts);
+    Interpolator i = new AccelerationInterpolator(0.4, 0.4);
+    TimingTarget t1 = new CountingTimingTarget();
+
+    ab1.setDebugName("expected");
+    ab1.setInterpolator(i);
+    ab1.setDuration(5, TimeUnit.MINUTES);
+    ab1.setEndBehavior(EndBehavior.HOLD);
+    ab1.setRepeatBehavior(RepeatBehavior.LOOP);
+    ab1.setRepeatCount(5);
+    ab1.setStartDirection(Direction.BACKWARD);
+    ab1.setStartDelay(2, TimeUnit.MINUTES);
+    ab1.addTarget(t1);
+
+    ab2.copy(ab1, false);
+    Animator a2 = ab2.build();
+    Assert.assertEquals("expected", a2.getDebugName());
+    Assert.assertSame(i, a2.getInterpolator());
+    Assert.assertEquals(5, a2.getDuration());
+    Assert.assertSame(TimeUnit.MINUTES, a2.getDurationTimeUnit());
+    Assert.assertSame(RepeatBehavior.LOOP, a2.getRepeatBehavior());
+    Assert.assertEquals(5, a2.getRepeatCount());
+    Assert.assertSame(Direction.BACKWARD, a2.getStartDirection());
+    Assert.assertEquals(2, a2.getStartDelay());
+    Assert.assertSame(TimeUnit.MINUTES, a2.getStartDelayTimeUnit());
+    Assert.assertFalse(a2.getDisposeTimingSource());
+    Assert.assertEquals(0, a2.getTargets().size());
+  }
+
+  @Test
+  public void testCopyAnimation1() {
+    ManualTimingSource ts = new ManualTimingSource();
+    Animator.Builder ab1 = new Animator.Builder(ts);
+    Animator.Builder ab2 = new Animator.Builder(ts);
+    Interpolator i = new AccelerationInterpolator(0.4, 0.4);
+
+    ab1.setDebugName("expected");
+    ab1.setInterpolator(i);
+    ab1.setDuration(5, TimeUnit.MINUTES);
+    ab1.setEndBehavior(EndBehavior.HOLD);
+    ab1.setRepeatBehavior(RepeatBehavior.LOOP);
+    ab1.setRepeatCount(5);
+    ab1.setStartDirection(Direction.BACKWARD);
+    ab1.setStartDelay(2, TimeUnit.MINUTES);
+    Animator a1 = ab1.build();
+
+    ab2.copy(a1);
+    Animator a2 = ab2.build();
+    Assert.assertEquals("expected", a2.getDebugName());
+    Assert.assertSame(i, a2.getInterpolator());
+    Assert.assertEquals(5, a2.getDuration());
+    Assert.assertSame(TimeUnit.MINUTES, a2.getDurationTimeUnit());
+    Assert.assertSame(RepeatBehavior.LOOP, a2.getRepeatBehavior());
+    Assert.assertEquals(5, a2.getRepeatCount());
+    Assert.assertSame(Direction.BACKWARD, a2.getStartDirection());
+    Assert.assertEquals(2, a2.getStartDelay());
+    Assert.assertSame(TimeUnit.MINUTES, a2.getStartDelayTimeUnit());
+    Assert.assertFalse(a2.getDisposeTimingSource());
+    Assert.assertEquals(0, a2.getTargets().size());
+  }
+
+  @Test
+  public void testCopyAnimation2() {
+    ManualTimingSource ts = new ManualTimingSource();
+    Animator.Builder ab1 = new Animator.Builder(ts);
+    Animator.Builder ab2 = new Animator.Builder(ts);
+    Interpolator i = new AccelerationInterpolator(0.4, 0.4);
+    TimingTarget t1 = new CountingTimingTarget();
+
+    ab1.setDebugName("expected");
+    ab1.setInterpolator(i);
+    ab1.setDuration(5, TimeUnit.MINUTES);
+    ab1.setEndBehavior(EndBehavior.HOLD);
+    ab1.setRepeatBehavior(RepeatBehavior.LOOP);
+    ab1.setRepeatCount(5);
+    ab1.setStartDirection(Direction.BACKWARD);
+    ab1.setStartDelay(2, TimeUnit.MINUTES);
+    ab1.addTarget(t1);
+    Animator a1 = ab1.build();
+
+    ab2.copy(a1);
+    Animator a2 = ab2.build();
+    Assert.assertEquals("expected", a2.getDebugName());
+    Assert.assertSame(i, a2.getInterpolator());
+    Assert.assertEquals(5, a2.getDuration());
+    Assert.assertSame(TimeUnit.MINUTES, a2.getDurationTimeUnit());
+    Assert.assertSame(RepeatBehavior.LOOP, a2.getRepeatBehavior());
+    Assert.assertEquals(5, a2.getRepeatCount());
+    Assert.assertSame(Direction.BACKWARD, a2.getStartDirection());
+    Assert.assertEquals(2, a2.getStartDelay());
+    Assert.assertSame(TimeUnit.MINUTES, a2.getStartDelayTimeUnit());
+    Assert.assertFalse(a2.getDisposeTimingSource());
+    Assert.assertEquals(1, a2.getTargets().size());
+  }
+
+  @Test
+  public void testCopyAnimation3() {
+    ManualTimingSource ts = new ManualTimingSource();
+    Animator.Builder ab1 = new Animator.Builder(ts);
+    Animator.Builder ab2 = new Animator.Builder(ts);
+    Interpolator i = new AccelerationInterpolator(0.4, 0.4);
+    TimingTarget t1 = new CountingTimingTarget();
+
+    ab1.setDebugName("expected");
+    ab1.setInterpolator(i);
+    ab1.setDuration(5, TimeUnit.MINUTES);
+    ab1.setEndBehavior(EndBehavior.HOLD);
+    ab1.setRepeatBehavior(RepeatBehavior.LOOP);
+    ab1.setRepeatCount(5);
+    ab1.setStartDirection(Direction.BACKWARD);
+    ab1.setStartDelay(2, TimeUnit.MINUTES);
+    ab1.addTarget(t1);
+    Animator a1 = ab1.build();
+
+    ab2.copy(a1, true);
+    Animator a2 = ab2.build();
+    Assert.assertEquals("expected", a2.getDebugName());
+    Assert.assertSame(i, a2.getInterpolator());
+    Assert.assertEquals(5, a2.getDuration());
+    Assert.assertSame(TimeUnit.MINUTES, a2.getDurationTimeUnit());
+    Assert.assertSame(RepeatBehavior.LOOP, a2.getRepeatBehavior());
+    Assert.assertEquals(5, a2.getRepeatCount());
+    Assert.assertSame(Direction.BACKWARD, a2.getStartDirection());
+    Assert.assertEquals(2, a2.getStartDelay());
+    Assert.assertSame(TimeUnit.MINUTES, a2.getStartDelayTimeUnit());
+    Assert.assertFalse(a2.getDisposeTimingSource());
+    Assert.assertEquals(1, a2.getTargets().size());
+  }
+
+  @Test
+  public void testCopyAnimation4() {
+    ManualTimingSource ts = new ManualTimingSource();
+    Animator.Builder ab1 = new Animator.Builder(ts);
+    Animator.Builder ab2 = new Animator.Builder(ts);
+    Interpolator i = new AccelerationInterpolator(0.4, 0.4);
+    TimingTarget t1 = new CountingTimingTarget();
+
+    ab1.setDebugName("expected");
+    ab1.setInterpolator(i);
+    ab1.setDuration(5, TimeUnit.MINUTES);
+    ab1.setEndBehavior(EndBehavior.HOLD);
+    ab1.setRepeatBehavior(RepeatBehavior.LOOP);
+    ab1.setRepeatCount(5);
+    ab1.setStartDirection(Direction.BACKWARD);
+    ab1.setStartDelay(2, TimeUnit.MINUTES);
+    ab1.addTarget(t1);
+    Animator a1 = ab1.build();
+
+    ab2.copy(a1, false);
+    Animator a2 = ab2.build();
+    Assert.assertEquals("expected", a2.getDebugName());
+    Assert.assertSame(i, a2.getInterpolator());
+    Assert.assertEquals(5, a2.getDuration());
+    Assert.assertSame(TimeUnit.MINUTES, a2.getDurationTimeUnit());
+    Assert.assertSame(RepeatBehavior.LOOP, a2.getRepeatBehavior());
+    Assert.assertEquals(5, a2.getRepeatCount());
+    Assert.assertSame(Direction.BACKWARD, a2.getStartDirection());
+    Assert.assertEquals(2, a2.getStartDelay());
+    Assert.assertSame(TimeUnit.MINUTES, a2.getStartDelayTimeUnit());
+    Assert.assertFalse(a2.getDisposeTimingSource());
+    Assert.assertEquals(0, a2.getTargets().size());
   }
 }
