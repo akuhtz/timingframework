@@ -19,6 +19,8 @@ Report bugs, read the documentation, and get new releases at:
 || 7.0 Release Notes ||
 ++-------------------++
 
+17/May/2013
+
 o A serious bug that could lock a timing source thread was fixed.
   Firing a trigger was calling stopAndAwait() within the timing
   source thread context which blocked forever. This has been fixed
@@ -29,7 +31,7 @@ o A serious bug that could lock a timing source thread was fixed.
   http://java.net/jira/browse/TIMINGFRAMEWORK-19
 o A new demo called TwoButtonShimmy authored by Jan Studeny was
   added, Tim Halloran ported it to SWT. It animates buttons
-  back and forth. It exercises several Triggers.
+  back and forth. It exercises several Triggers. Thanks!
 o Two new methods were added to Animator "restart()" and
   "restartReverse()" these are non-blocking approaches to restart
   an animation. If the animation is not running they behave exactly
@@ -37,6 +39,18 @@ o Two new methods were added to Animator "restart()" and
   those methods. The race demos in Swing and SWT have been changed
   to use restart so the first button is now "Go/Restart" rather
   than just "Go" and you can always press it.
+o The documentation for the Animator methods "await()" and
+  "stopAndAwait()" has been augmented to include the warning:
+    Never invoke this method within the thread context of
+    this animation's timing source -- doing so will cause
+    this call to block forever. If you are trying to wait
+    for the animation to stop so that it can be restarted,
+    then you should use restart() or restartReverse() which
+    are safe to call in the thread context of this animation's
+    timing source.
+   These methods were designed for testing, but see the
+   discussion about this occurring in user code at
+   https://java.net/jira/browse/TIMINGFRAMEWORK-22
 
 ++-------------------++
 || 6.1 Release Notes ||
