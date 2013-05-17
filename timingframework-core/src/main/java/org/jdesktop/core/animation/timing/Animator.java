@@ -645,7 +645,7 @@ public final class Animator implements TickListener {
      *          an animation builder, ignored if {@code null}.
      * @return this builder (to allow chained operations).
      * 
-     * @see #copy(Builder, boolean)
+     * @see #copy(Animator.Builder, boolean)
      */
     @NonNull
     public Builder copy(Builder from) {
@@ -668,7 +668,7 @@ public final class Animator implements TickListener {
      *          builder, {@code false} if not.
      * @return this builder (to allow chained operations).
      * 
-     * @see #copy(Builder)
+     * @see #copy(Animator.Builder)
      */
     @NonNull
     public Builder copy(Builder from, boolean copyTargets) {
