@@ -262,7 +262,10 @@ public final class Animator implements TickListener {
    * <td align="right">null</td>
    * </tr>
    * </table>
-   * 
+   * <p>
+   * Values can be "cloned" from another {@link Animator} or
+   * {@link Animator.Builder} using one of several <tt>copy</tt> methods
+   * provided by this class.
    * <p>
    * Instances of this class are not thread safe and are intended to be
    * thread-confined. However, the {@link Animator} objects produced are
@@ -1312,9 +1315,15 @@ public final class Animator implements TickListener {
    * 
    * {@code a} is the animator this method is invoked on.
    * <p>
-   * This is a blocking call. Never invoke this method within the thread context
-   * of this animation's timing source&mdash;doing so will cause this call to
-   * block forever.
+   * This is a blocking call.
+   * <p>
+   * <b>Never invoke this method within the thread context of this animation's
+   * timing source&mdash;doing so will cause this call to block forever.</b> If
+   * you are trying to wait for the animation to stop so that it can be
+   * restarted, then you should use {@link #restart()} or
+   * {@link #restartReverse()} which are safe to call in the thread context of
+   * this animation's timing source.
+   * <p>
    */
   public void stopAndAwait() {
     stop();
@@ -1464,9 +1473,14 @@ public final class Animator implements TickListener {
    * {@linkplain Thread#interrupt interrupted}).
    * <p>
    * If the animation is not running then this method returns immediately,
-   * otherwise this is a blocking call. Never invoke this method within the
-   * thread context of this animation's timing source&mdash;doing so will cause
-   * this call to block forever.
+   * otherwise this is a blocking call.
+   * <p>
+   * <b>Never invoke this method within the thread context of this animation's
+   * timing source&mdash;doing so will cause this call to block forever.</b> If
+   * you are trying to wait for the animation to stop so that it can be
+   * restarted, then you should use {@link #restart()} or
+   * {@link #restartReverse()} which are safe to call in the thread context of
+   * this animation's timing source.
    * <p>
    * If the current thread:
    * <ul>
