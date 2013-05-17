@@ -234,7 +234,6 @@ class SplineControlPanel extends JPanel {
         return;
       }
 
-      @SuppressWarnings("rawtypes")
       JList list = (JList) e.getSource();
       Template template = (Template) list.getSelectedValue();
       if (template != null) {
@@ -265,7 +264,7 @@ class SplineControlPanel extends JPanel {
     private boolean isSelected;
 
     @Override
-    public Component getListCellRendererComponent(@SuppressWarnings("rawtypes") JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
       Template template = (Template) value;
       this.setBackground(Color.WHITE);
       this.setIcon(new ImageIcon(template.getImage()));
