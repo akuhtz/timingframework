@@ -1725,7 +1725,6 @@ public final class Animator implements TickListener {
   /**
    * Helper routine to trip the latch to notify anyone blocked on
    * {@link #await()} after the animation is ready to be completely stopped.
-   * TODO why no null check here?
    * <p>
    * {@link #f_targets} should NOT be held when invoking this method.
    */
