@@ -1183,9 +1183,12 @@ public final class Animator implements TickListener {
    * <p>
    * This call does not block.
    * <p>
-   * <i>Implementation Note:</i> The animation is scheduled to stop right away,
-   * but the actual stop and restart occur at the next tick of the timing
-   * source.
+   * Shutdown callbacks to any registered {@link TimingTarget} instances are
+   * made at the next tick of this animation's timing source, after that time
+   * the animation actually restarts. Therefore it is possible to call
+   * {@link #restart()} or {@link #restartReverse()} multiple times but only get
+   * the effect of a single restart. If this is done then only the first call
+   * takes effect, any others are ignored.
    */
   public void restart() {
     synchronized (this) {
@@ -1193,7 +1196,15 @@ public final class Animator implements TickListener {
         stopHelper(true);
         f_timingSource.submit(new Runnable() {
           public void run() {
-            startHelper(f_startDirection, "restart()");
+            synchronized (Animator.this) {
+              /*
+               * If the animation is running then it has been started by another
+               * restart() or restartReverse() call. Guard against throwing an
+               * exception in this case, in effect this call is ignored.
+               */
+              if (!isRunning())
+                startHelper(f_startDirection, "restart()");
+            }
           }
         });
       } else {
@@ -1219,9 +1230,12 @@ public final class Animator implements TickListener {
    * <p>
    * This call does not block.
    * <p>
-   * <i>Implementation Note:</i> The animation is scheduled to stop right away,
-   * but the actual stop and restart occur at the next tick of the timing
-   * source.
+   * Shutdown callbacks to any registered {@link TimingTarget} instances are
+   * made at the next tick of this animation's timing source, after that time
+   * the animation actually restarts. Therefore it is possible to call
+   * {@link #restart()} or {@link #restartReverse()} multiple times but only get
+   * the effect of a single restart. If this is done then only the first call
+   * takes effect, any others are ignored.
    */
   public void restartReverse() {
     synchronized (this) {
@@ -1229,7 +1243,15 @@ public final class Animator implements TickListener {
         stopHelper(true);
         f_timingSource.submit(new Runnable() {
           public void run() {
-            startHelper(f_startDirection.getOppositeDirection(), "restartReverse()");
+            synchronized (Animator.this) {
+              /*
+               * If the animation is running then it has been started by another
+               * restart() or restartReverse() call. Guard against throwing an
+               * exception in this case, in effect this call is ignored.
+               */
+              if (!isRunning())
+                startHelper(f_startDirection.getOppositeDirection(), "restartReverse()");
+            }
           }
         });
       } else {
@@ -1278,24 +1300,28 @@ public final class Animator implements TickListener {
    * animations will stop on their own. If the animation is not running, or is
    * stopping, then this method returns {@code false}.
    * <p>
+   * This call does not block.
+   * <p>
    * This call will result in calls to the {@link TimingTarget#end(Animator)}
    * method of all the registered timing targets of this animation.
    * <p>
-   * The animation may take some period of time to actually stop, it waits for
-   * all calls to registered {@link TimingTarget}s to complete. Invoking
-   * {@link #await()} after this method will wait until the animation stops.
-   * This means that the code snippet "{@code a.stop(); a.start();}" could fail
-   * throwing an {@link IllegalStateException} at the call to {@link #start()}
-   * because the animation may not have stopped right away. This can be fixed by
-   * inserting a call to {@link #await()} or using the snippet "
-   * {@code a.stopAndAwait(); a.start();}" instead.
+   * The animation takes some period of time to actually stop. The stop started
+   * by this call finishes upon the next tick of this animation's timing source.
+   * What happens is that {@link TimingTarget#end(Animator)} callbacks to any
+   * registered {@link TimingTarget} instances are made at the next tick of this
+   * animation's timing source. This is done to ensure all callbacks are made in
+   * the thread context of this animation's timing target. This means that the
+   * code snippet "{@code a.stop(); a.start();}" could fail throwing an
+   * {@link IllegalStateException} at the call to {@link #start()} because the
+   * animation is not immediately ready to be started again. If you are trying
+   * to wait for the animation to stop so that it can be restarted, then you
+   * should use {@link #restart()} or {@link #restartReverse()} which are safe
+   * to call in the thread context of this animation's timing source.
    * 
    * @return {@code true} if the animation was running and was successfully
    *         stopped, {@code false} if the animation was not running or was in
    *         the process of stopping and didn't need to be stopped.
    * 
-   * @see #await()
-   * @see #stopAndAwait()
    * @see #cancel()
    */
   public boolean stop() {
@@ -1324,6 +1350,7 @@ public final class Animator implements TickListener {
    * {@link #restartReverse()} which are safe to call in the thread context of
    * this animation's timing source.
    * <p>
+   * This method is primarily intended for testing.
    */
   public void stopAndAwait() {
     stop();
@@ -1340,21 +1367,22 @@ public final class Animator implements TickListener {
    * immediately and returns. If the animation is not running, or is stopping,
    * then this method returns {@code false}.
    * <p>
-   * The animation may take some period of time to actually stop, it waits for
-   * all calls to registered {@link TimingTarget}s to complete. Invoking
-   * {@link #await()} after this method will wait until the animation stops.
-   * This means that the code snippet "{@code a.cancel(); a.start();}" could
-   * fail throwing an {@link IllegalStateException} at the call to
-   * {@link #start()} because the animation may not have stopped right away.
-   * This can be fixed by inserting a call to {@link #await()} or using the
-   * snippet " {@code a.cancelAndAwait(); a.start();}" instead.
+   * This call does not block.
+   * <p>
+   * The animation may take some period of time to actually cancel. The cancel
+   * started by this call finishes upon the next tick of this animation's timing
+   * source. This means that the code snippet "{@code a.cancel(); a.start();}"
+   * could fail throwing an {@link IllegalStateException} at the call to
+   * {@link #start()} because the animation is not immediately ready to be
+   * started again. If you are trying to wait for the animation to stop so that
+   * it can be restarted, then you should use {@link #restart()} or
+   * {@link #restartReverse()} which are safe to call in the thread context of
+   * this animation's timing source.
    * 
    * @return {@code true} if the animation was running and was successfully
    *         stopped, {@code false} if the animation was not running or was in
    *         the process of stopping and didn't need to be stopped.
    * 
-   * @see #await()
-   * @see #cancelAndAwait()
    * @see #stop()
    */
   public boolean cancel() {
@@ -1377,6 +1405,8 @@ public final class Animator implements TickListener {
    * This is a blocking call. Never invoke this method within the thread context
    * of this animation's timing source&mdash;doing so will cause this call to
    * block forever.
+   * <p>
+   * This method is primarily intended for testing.
    */
   public void cancelAndAwait() {
     cancel();
@@ -1489,6 +1519,8 @@ public final class Animator implements TickListener {
    * </ul>
    * then {@link InterruptedException} is thrown and the current thread's
    * interrupted status is cleared.
+   * <p>
+   * This method is primarily intended for testing.
    * 
    * @throws InterruptedException
    *           if the current thread is interrupted while waiting.
@@ -1691,8 +1723,9 @@ public final class Animator implements TickListener {
   }
 
   /**
-   * Helper routine to trip the latch after all callbacks have finished up that
-   * need to finish up.
+   * Helper routine to trip the latch to notify anyone blocked on
+   * {@link #await()} after the animation is ready to be completely stopped.
+   * TODO why no null check here?
    * <p>
    * {@link #f_targets} should NOT be held when invoking this method.
    */
