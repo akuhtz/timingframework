@@ -248,6 +248,180 @@ public final class TestAnimator {
     Assert.assertSame(going.getOppositeDirection(), a.getCurrentDirection());
   }
 
+  @Test
+  public void restart1() {
+    ManualTimingSource ts = new ManualTimingSource();
+    CountingTimingTarget cct = new CountingTimingTarget();
+    Animator a = new Animator.Builder(ts).build();
+    a.addTarget(cct);
+    a.start();
+    a.restart();
+    ts.tick();
+    ts.tick();
+    ts.tick();
+    Assert.assertEquals(2, cct.getBeginCount());
+    Assert.assertEquals(1, cct.getEndCount());
+  }
+
+  @Test
+  public void restart2() {
+    ManualTimingSource ts = new ManualTimingSource();
+    CountingTimingTarget cct = new CountingTimingTarget();
+    Animator a = new Animator.Builder(ts).build();
+    a.addTarget(cct);
+    a.start();
+    a.restart();
+    a.restart();
+    ts.tick();
+    ts.tick();
+    ts.tick();
+    Assert.assertEquals(2, cct.getBeginCount());
+    Assert.assertEquals(1, cct.getEndCount());
+  }
+
+  @Test
+  public void restart3() {
+    ManualTimingSource ts = new ManualTimingSource();
+    CountingTimingTarget cct = new CountingTimingTarget();
+    Animator a = new Animator.Builder(ts).build();
+    a.addTarget(cct);
+    a.start();
+    ts.tick();
+    a.restart();
+    a.restart();
+    a.restart();
+    ts.tick();
+    ts.tick();
+    ts.tick();
+    Assert.assertEquals(2, cct.getBeginCount());
+    Assert.assertEquals(1, cct.getEndCount());
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void restartThenStart() {
+    ManualTimingSource ts = new ManualTimingSource();
+    Animator a = new Animator.Builder(ts).build();
+    a.start();
+    ts.tick();
+    a.restart();
+    a.start();
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void restartThenStartReverse() {
+    ManualTimingSource ts = new ManualTimingSource();
+    Animator a = new Animator.Builder(ts).build();
+    a.start();
+    ts.tick();
+    a.restart();
+    a.startReverse();
+  }
+
+  @Test
+  public void restartReverse1() {
+    ManualTimingSource ts = new ManualTimingSource();
+    CountingTimingTarget cct = new CountingTimingTarget();
+    Animator a = new Animator.Builder(ts).build();
+    a.addTarget(cct);
+    a.start();
+    a.restartReverse();
+    ts.tick();
+    ts.tick();
+    ts.tick();
+    Assert.assertEquals(2, cct.getBeginCount());
+    Assert.assertEquals(1, cct.getEndCount());
+  }
+
+  @Test
+  public void restartReverse2() {
+    ManualTimingSource ts = new ManualTimingSource();
+    CountingTimingTarget cct = new CountingTimingTarget();
+    Animator a = new Animator.Builder(ts).build();
+    a.addTarget(cct);
+    a.start();
+    a.restartReverse();
+    a.restartReverse();
+    ts.tick();
+    ts.tick();
+    ts.tick();
+    Assert.assertEquals(2, cct.getBeginCount());
+    Assert.assertEquals(1, cct.getEndCount());
+  }
+
+  @Test
+  public void restartReverse3() {
+    ManualTimingSource ts = new ManualTimingSource();
+    CountingTimingTarget cct = new CountingTimingTarget();
+    Animator a = new Animator.Builder(ts).build();
+    a.addTarget(cct);
+    a.start();
+    ts.tick();
+    a.restartReverse();
+    a.restartReverse();
+    a.restartReverse();
+    ts.tick();
+    ts.tick();
+    ts.tick();
+    Assert.assertEquals(2, cct.getBeginCount());
+    Assert.assertEquals(1, cct.getEndCount());
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void restartReverseThenStart() {
+    ManualTimingSource ts = new ManualTimingSource();
+    Animator a = new Animator.Builder(ts).build();
+    a.start();
+    ts.tick();
+    a.restartReverse();
+    a.start();
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void restartReverseThenStartReverse() {
+    ManualTimingSource ts = new ManualTimingSource();
+    Animator a = new Animator.Builder(ts).build();
+    a.start();
+    ts.tick();
+    a.restartReverse();
+    a.startReverse();
+  }
+
+  @Test
+  public void restartAndRestartReverse1() {
+    ManualTimingSource ts = new ManualTimingSource();
+    CountingTimingTarget cct = new CountingTimingTarget();
+    Animator a = new Animator.Builder(ts).build();
+    a.addTarget(cct);
+    a.start();
+    ts.tick();
+    a.restart();
+    a.restartReverse();
+    a.restart();
+    ts.tick();
+    ts.tick();
+    ts.tick();
+    Assert.assertEquals(2, cct.getBeginCount());
+    Assert.assertEquals(1, cct.getEndCount());
+  }
+
+  @Test
+  public void restartAndRestartReverse2() {
+    ManualTimingSource ts = new ManualTimingSource();
+    CountingTimingTarget cct = new CountingTimingTarget();
+    Animator a = new Animator.Builder(ts).build();
+    a.addTarget(cct);
+    a.start();
+    ts.tick();
+    a.restartReverse();
+    a.restart();
+    a.restartReverse();
+    ts.tick();
+    ts.tick();
+    ts.tick();
+    Assert.assertEquals(2, cct.getBeginCount());
+    Assert.assertEquals(1, cct.getEndCount());
+  }
+
   @Test(expected = IllegalArgumentException.class)
   public void negativeDuration() {
     new Animator.Builder(new ManualTimingSource()).setDuration(-10, MILLISECONDS).build();

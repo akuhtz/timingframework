@@ -14,6 +14,21 @@ A library for making Java animation and timing-based control easier!
 
 Report bugs, read the documentation, and get new releases at:
    http://java.net/projects/timingframework/
+   
+++-------------------++
+|| 7.1 Release Notes ||
+++-------------------++
+
+29/May/2013
+
+o Fixed a bug where multiple calls to restart() or restartReverse()
+  could cause an IllegalStateException to be thrown. This is
+  because several starts were being queued up and, after the first
+  one, they would fail. This has been fixed so that only the first
+  restart invocation is started, any subsequent calls prior to the
+  completion of the restart are ignored.
+  See the discussion about this bug at
+  http://java.net/jira/browse/TIMINGFRAMEWORK-23
 
 ++-------------------++
 || 7.0 Release Notes ||
