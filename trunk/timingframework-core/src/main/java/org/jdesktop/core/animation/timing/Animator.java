@@ -318,16 +318,21 @@ public final class Animator implements TickListener {
     private long f_duration = 1;
     @NonNull
     private TimeUnit f_durationTimeUnit = SECONDS;
+    @NonNull
     private Animator.EndBehavior f_endBehavior = Animator.EndBehavior.HOLD;
     @NonNull
     private Interpolator f_interpolator = LinearInterpolator.getInstance();
+    @NonNull
     private Animator.RepeatBehavior f_repeatBehavior = Animator.RepeatBehavior.REVERSE;
     private long f_repeatCount = 1;
+    @NonNull
     private Animator.Direction f_startDirection = Animator.Direction.FORWARD;
     private long f_startDelay = 0;
     @NonNull
     private TimeUnit f_startDelayTimeUnit = SECONDS;
+    @NonNull
     private final List<TimingTarget> f_targets = new ArrayList<TimingTarget>();
+    @NonNull
     private final TimingSource f_timingSource;
     private boolean f_disposeTimingSource = false;
 
@@ -991,9 +996,10 @@ public final class Animator implements TickListener {
    * This constructor should only be called from {@link Builder#build()}.
    */
   @Unique("return")
-  Animator(String debugName, long duration, TimeUnit durationTimeUnit, EndBehavior endBehavior, Interpolator interpolator,
-      RepeatBehavior repeatBehavior, long repeatCount, Direction startDirection, long startDelay, TimeUnit startDelayTimeUnit,
-      TimingSource timingSource, boolean disposeTimingSource, Collection<TimingTarget> targets) {
+  Animator(String debugName, long duration, @NonNull TimeUnit durationTimeUnit, @NonNull EndBehavior endBehavior,
+      @NonNull Interpolator interpolator, @NonNull RepeatBehavior repeatBehavior, long repeatCount,
+      @NonNull Direction startDirection, long startDelay, @NonNull TimeUnit startDelayTimeUnit, @NonNull TimingSource timingSource,
+      boolean disposeTimingSource, @NonNull Collection<TimingTarget> targets) {
     f_debugName = debugName;
     f_duration = duration;
     f_durationTimeUnit = durationTimeUnit;

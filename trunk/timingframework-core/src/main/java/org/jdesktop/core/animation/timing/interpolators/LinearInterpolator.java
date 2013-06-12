@@ -3,6 +3,7 @@ package org.jdesktop.core.animation.timing.interpolators;
 import org.jdesktop.core.animation.timing.Interpolator;
 
 import com.surelogic.Immutable;
+import com.surelogic.NonNull;
 import com.surelogic.RegionEffects;
 import com.surelogic.Singleton;
 
@@ -20,6 +21,7 @@ import com.surelogic.Singleton;
 @Singleton
 public final class LinearInterpolator implements Interpolator {
 
+  @NonNull
   private static final LinearInterpolator INSTANCE = new LinearInterpolator();
 
   private LinearInterpolator() {
@@ -31,6 +33,7 @@ public final class LinearInterpolator implements Interpolator {
    * 
    * @return the single {@link LinearInterpolator} object.
    */
+  @NonNull
   public static LinearInterpolator getInstance() {
     return INSTANCE;
   }
