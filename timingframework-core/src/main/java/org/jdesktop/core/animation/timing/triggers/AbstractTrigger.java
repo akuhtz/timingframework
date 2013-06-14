@@ -151,7 +151,7 @@ public abstract class AbstractTrigger implements Trigger {
        * animation in reverse OR reverse the animation if it is running.
        */
       synchronized (f_target) {
-        if (f_target.isRunning() && f_target.isRunning() && f_target.getCurrentDirection() == normalDirection) {
+        if (f_target.isRunning() && f_target.getCurrentDirection() == normalDirection) {
           final boolean reverseSucceeded = f_target.reverseNow();
           if (reverseSucceeded)
             return;
