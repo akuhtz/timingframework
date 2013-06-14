@@ -14,7 +14,22 @@ A library for making Java animation and timing-based control easier!
 
 Report bugs, read the documentation, and get new releases at:
    http://java.net/projects/timingframework/
-   
+
+
+++-------------------++
+|| 7.2 Release Notes ||
+++-------------------++
+
+14/Jun/2013
+
+o Fixed a bug where invoking restartReverse() on an animation
+  that was NOT running caused the animation to start in its
+  normal direction. This behavior was incorrect. The code has
+  been fixed so that, in this situation, the animation starts
+  up and goes in its reverse direction.
+  See the discussion about this bug at
+  http://java.net/jira/browse/TIMINGFRAMEWORK-24
+
 ++-------------------++
 || 7.1 Release Notes ||
 ++-------------------++
