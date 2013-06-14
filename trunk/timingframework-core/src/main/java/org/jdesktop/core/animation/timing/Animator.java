@@ -1214,7 +1214,7 @@ public final class Animator implements TickListener {
           }
         });
       } else {
-        start();
+        startHelper(f_startDirection, "restart()");
       }
     }
   }
@@ -1261,7 +1261,7 @@ public final class Animator implements TickListener {
           }
         });
       } else {
-        restart();
+        startHelper(f_startDirection.getOppositeDirection(), "restartReverse()");
       }
     }
   }
