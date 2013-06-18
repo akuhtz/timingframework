@@ -118,6 +118,7 @@ public final class Animator implements TickListener {
      */
     FORWARD {
       @Override
+      @NonNull
       public Direction getOppositeDirection() {
         return BACKWARD;
       }
@@ -127,11 +128,13 @@ public final class Animator implements TickListener {
      */
     BACKWARD {
       @Override
+      @NonNull
       public Direction getOppositeDirection() {
         return FORWARD;
       }
     };
 
+    @NonNull
     abstract public Direction getOppositeDirection();
   };
 
@@ -1645,7 +1648,7 @@ public final class Animator implements TickListener {
    * @throws IllegalStateException
    *           if the this animation is already running.
    */
-  void startHelper(Direction direction, String methodName) {
+  void startHelper(@NonNull Direction direction, @NonNull String methodName) {
     synchronized (this) {
       if (isRunning())
         throw new IllegalStateException(I18N.err(12, methodName));
