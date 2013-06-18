@@ -285,6 +285,7 @@ public final class Animator implements TickListener {
      * <i>Implementation note:</i> The setting and getting of the default timing
      * source is thread safe.
      */
+    @NonNull
     static AtomicReference<TimingSource> f_defaultTimingSource = new AtomicReference<TimingSource>();
 
     /**
@@ -390,6 +391,7 @@ public final class Animator implements TickListener {
      *          a collection of {@link TimingTarget} objects.
      * @return this builder (to allow chained operations).
      */
+    @NonNull
     public Builder addTargets(Collection<TimingTarget> targets) {
       if (targets != null)
         for (TimingTarget target : targets)
