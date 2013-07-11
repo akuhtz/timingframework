@@ -286,7 +286,7 @@ public final class Animator implements TickListener {
      * source is thread safe.
      */
     @NonNull
-    static AtomicReference<TimingSource> f_defaultTimingSource = new AtomicReference<TimingSource>();
+    static final AtomicReference<TimingSource> f_defaultTimingSource = new AtomicReference<TimingSource>();
 
     /**
      * Sets the passed timing source as the default used for the construction of
