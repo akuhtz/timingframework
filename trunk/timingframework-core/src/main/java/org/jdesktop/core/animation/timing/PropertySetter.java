@@ -331,7 +331,7 @@ public final class PropertySetter {
       f_keyFrames.set(keyFrames);
       f_object = object;
       f_propertySetter = propertySetter;
-      setDebugName(propertyName);
+      f_debugName = propertyName;
     }
 
     @Override

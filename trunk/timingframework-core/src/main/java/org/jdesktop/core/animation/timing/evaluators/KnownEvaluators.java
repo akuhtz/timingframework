@@ -5,6 +5,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.jdesktop.core.animation.timing.Evaluator;
 
+import com.surelogic.NonNull;
 import com.surelogic.Singleton;
 import com.surelogic.ThreadSafe;
 import com.surelogic.Vouch;
@@ -82,6 +83,7 @@ public final class KnownEvaluators {
    * A list of known immutable evaluators. The single instance stored in this
    * list is shared by all requesters.
    */
+  @NonNull
   private final CopyOnWriteArrayList<Evaluator<?>> f_immutableImplementations = new CopyOnWriteArrayList<Evaluator<?>>();
 
   /**
