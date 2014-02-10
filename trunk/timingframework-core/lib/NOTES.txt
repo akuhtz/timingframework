@@ -15,6 +15,17 @@ A library for making Java animation and timing-based control easier!
 Report bugs, read the documentation, and get new releases at:
    http://java.net/projects/timingframework/
 
+++-------------------++
+|| 7.3 Release Notes ||
+++-------------------++
+
+10/Feb/2014
+
+o Fixed a bug where a timing target added after an animation
+  had been started did not have its begin() method invoked.
+  Instead, and incorrectly, the begin() method on each of the
+  animation's existing timing targets was called.
+  http://java.net/jira/browse/TIMINGFRAMEWORK-25
 
 ++-------------------++
 || 7.2 Release Notes ||
