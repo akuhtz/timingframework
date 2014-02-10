@@ -916,6 +916,7 @@ public final class TestAnimator {
     CountingTimingTarget counter = new CountingTimingTarget();
     a.start();
     a.addTarget(counter);
+    ts.tick();
     Assert.assertTrue(a.stop());
     ts.tick();
     Assert.assertEquals(1, counter.getBeginCount());
@@ -1236,5 +1237,48 @@ public final class TestAnimator {
     Assert.assertSame(TimeUnit.MINUTES, a2.getStartDelayTimeUnit());
     Assert.assertFalse(a2.getDisposeTimingSource());
     Assert.assertEquals(0, a2.getTargets().size());
+  }
+
+  @Test
+  public void jira25() throws InterruptedException {
+    /*
+     * Ensure that adding timing targets after animation start works properly
+     * and calls the target protocol correctly.
+     */
+    ScheduledExecutorTimingSource ts = new ScheduledExecutorTimingSource();
+    ts.init();
+    try {
+      Animator.Builder ab1 = new Animator.Builder(ts);
+      CountingTimingTarget tt1 = new CountingTimingTarget();
+      CountingTimingTarget tt2 = new CountingTimingTarget();
+      CountingTimingTarget tt3 = new CountingTimingTarget();
+      CountingTimingTarget tt4 = new CountingTimingTarget();
+      CountingTimingTarget tt5 = new CountingTimingTarget();
+      final Animator a = ab1.addTarget(tt1).addTarget(tt2).setDuration(3, SECONDS).build();
+      a.start();
+      a.addTarget(tt3);
+      Thread.sleep(10);
+      a.addTarget(tt4);
+      Thread.sleep(1000);
+      a.addTarget(tt5);
+      a.await();
+      Assert.assertTrue(tt1.getProtocolMsg(), tt1.isProtocolOkay());
+      Assert.assertTrue(tt2.getProtocolMsg(), tt2.isProtocolOkay());
+      Assert.assertTrue(tt3.getProtocolMsg(), tt3.isProtocolOkay());
+      Assert.assertTrue(tt4.getProtocolMsg(), tt3.isProtocolOkay());
+      Assert.assertTrue(tt5.getProtocolMsg(), tt3.isProtocolOkay());
+      Assert.assertEquals(1, tt1.getBeginCount());
+      Assert.assertEquals(1, tt2.getBeginCount());
+      Assert.assertEquals(1, tt3.getBeginCount());
+      Assert.assertEquals(1, tt4.getBeginCount());
+      Assert.assertEquals(1, tt5.getBeginCount());
+      Assert.assertEquals(1, tt1.getEndCount());
+      Assert.assertEquals(1, tt2.getEndCount());
+      Assert.assertEquals(1, tt3.getEndCount());
+      Assert.assertEquals(1, tt4.getEndCount());
+      Assert.assertEquals(1, tt5.getEndCount());
+    } finally {
+      ts.dispose();
+    }
   }
 }

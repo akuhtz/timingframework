@@ -910,13 +910,14 @@ public final class Animator implements TickListener {
    * <p>
    * Do not hold this lock when invoking any method on {@link #f_timingSource}.
    */
+  @NonNull
   @Vouch("AnnotationBounds")
   final CopyOnWriteArrayList<TimingTarget> f_targets = new CopyOnWriteArrayList<TimingTarget>();
 
   /**
    * Tracks the original start time in nanoseconds of the animation.
    * <p>
-   * Accesses must be guarded by a lock on {@link #f_targets}.
+   * Accesses must be guarded by a lock on {@code this}.
    */
   @InRegion("AnimatorState")
   long f_startTimeNanos;
@@ -925,7 +926,7 @@ public final class Animator implements TickListener {
    * Tracks start time of current cycle. For the first cycle this time may be in
    * the future if and only if the user set a start delay.
    * <p>
-   * Accesses must be guarded by a lock on {@link #f_targets}.
+   * Accesses must be guarded by a lock on {@code this}.
    */
   @InRegion("AnimatorState")
   long f_cycleStartTimeNanos;
@@ -934,7 +935,7 @@ public final class Animator implements TickListener {
    * Used for pause/resume. If this value is non-zero and the animation is
    * running, then the animation is paused.
    * <p>
-   * Accesses must be guarded by a lock on {@link #f_targets}.
+   * Accesses must be guarded by a lock on {@code this}.
    */
   @InRegion("AnimatorState")
   long f_pauseBeginTimeNanos;
@@ -942,7 +943,7 @@ public final class Animator implements TickListener {
   /**
    * The current direction of the animation.
    * <p>
-   * Accesses must be guarded by a lock on {@link #f_targets}.
+   * Accesses must be guarded by a lock on {@code this}.
    */
   @NonNull
   @InRegion("AnimatorState")
@@ -953,6 +954,8 @@ public final class Animator implements TickListener {
    * reverse occurs during the next call to this animation's
    * {@link #timingSourceTick(TimingSource, long)} method so we need to remember
    * how many calls were made.
+   * <p>
+   * Accesses must be guarded by a lock on {@code this}.
    */
   @InRegion("AnimatorState")
   int f_reverseNowCallCount;
@@ -969,7 +972,7 @@ public final class Animator implements TickListener {
    * {@link TimingTarget}s have completed. The flag {@link #f_stopping}
    * indicates the animation is in the process of stopping.
    * <p>
-   * Accesses must be guarded by a lock on {@link #f_targets}.
+   * Accesses must be guarded by a lock on {@code this}.
    */
   @InRegion("AnimatorState")
   @Nullable
@@ -990,7 +993,7 @@ public final class Animator implements TickListener {
    * client code complete. The animation is still running but should not try to
    * stop again &mdash; avoiding this problem is the purpose of this guard.
    * <p>
-   * Accesses must be guarded by a lock on {@link #f_targets}.
+   * Accesses must be guarded by a lock on {@code this}.
    */
   @InRegion("AnimatorState")
   boolean f_stopping;
@@ -1042,25 +1045,35 @@ public final class Animator implements TickListener {
      * This is complicated because a target can be added after the animation has
      * started. In this case we need to call its begin(Animator) method via a
      * submit(Runnable) call on the timing source.
-     * 
-     * Because we don't want the state of the animation to change during this
-     * call, in particular to start or stop running, we hold the lock. This
-     * creates a dependency on how the isRunning() method works or, more
-     * specifically, how the animation defines when it is running.
      */
     synchronized (this) {
       if (target != null && !f_targets.contains(target)) {
         if (isRunning()) {
           final Runnable task = new Runnable() {
             public void run() {
-              for (TimingTarget target : f_targets) {
+              final boolean beginAndAddToTargets;
+              synchronized (Animator.this) {
+                /*
+                 * Check if we are running and not in the process of stopping.
+                 * We must release the lock before we make the calls below or
+                 * deadlock could occur.
+                 */
+                beginAndAddToTargets = isRunning() && !f_stopping;
+              }
+              if (beginAndAddToTargets) {
                 target.begin(Animator.this);
+                f_targets.add(target);
               }
             }
           };
           f_timingSource.submit(task);
+        } else {
+          /*
+           * This is the more typical case where the target is added before the
+           * animation is started.
+           */
+          f_targets.add(target);
         }
-        f_targets.add(target);
       }
     }
   }
