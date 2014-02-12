@@ -28,6 +28,8 @@ import org.jdesktop.core.animation.timing.TimingSource;
 import org.jdesktop.core.animation.timing.WrappedRunnable;
 import org.jdesktop.core.animation.timing.sources.ManualTimingSource;
 
+import com.surelogic.ThreadConfined;
+
 /**
  * Manages two-thread active rendering on a Swing {@link JRendererPanel}.
  * <p>
@@ -190,12 +192,15 @@ public final class JActiveRenderer implements JRenderer {
   /*
    * Thread-confined to the renderer thread (f_executor)
    */
+  @ThreadConfined
   final JRendererTarget<GraphicsConfiguration, Graphics2D> f_target;
 
   /*
    * Thread-confined to the EDT thread
    */
+  @ThreadConfined
   final JRendererPanel f_on;
+  @ThreadConfined
   final boolean f_hasChildren;
 
   /**
