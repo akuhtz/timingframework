@@ -13,6 +13,8 @@ import org.jdesktop.core.animation.rendering.JRendererTarget;
 import org.jdesktop.core.animation.timing.TimingSource;
 import org.jdesktop.core.animation.timing.TimingSource.PostTickListener;
 
+import com.surelogic.ThreadConfined;
+
 /**
  * Manages passive rendering on a Swing {@link JRendererPanel}.
  * <p>
@@ -41,9 +43,13 @@ public class JPassiveRenderer implements JRenderer {
   /*
    * Thread-confined to the EDT thread
    */
+  @ThreadConfined
   final JRendererPanel f_on;
+  @ThreadConfined
   final JRendererTarget<GraphicsConfiguration, Graphics2D> f_target;
+  @ThreadConfined
   final TimingSource f_ts;
+  @ThreadConfined
   final PostTickListener f_postTick = new PostTickListener() {
     public void timingSourcePostTick(TimingSource source, long nanoTime) {
       long now = System.nanoTime();
@@ -60,8 +66,11 @@ public class JPassiveRenderer implements JRenderer {
   /*
    * Statistics counters
    */
+  @ThreadConfined
   long f_lastRenderTimeNanos;
+  @ThreadConfined
   long f_totalRenderTime = 0;
+  @ThreadConfined
   long f_renderCount = 0;
 
   public JPassiveRenderer(JRendererPanel on, JRendererTarget<GraphicsConfiguration, Graphics2D> target, TimingSource timingSource) {
