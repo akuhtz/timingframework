@@ -7,6 +7,7 @@ import org.jdesktop.core.animation.timing.Evaluator;
 
 import com.surelogic.Immutable;
 import com.surelogic.RegionEffects;
+import com.surelogic.Vouch;
 
 /**
  * An evaluator for {@link Color}.
@@ -21,6 +22,7 @@ import com.surelogic.RegionEffects;
 public final class EvaluatorColor implements Evaluator<Color> {
 
   @RegionEffects("reads Instance, v0:Instance, v1:Instance")
+  @Vouch("Uses SWT Color which is not annotated")
   public Color evaluate(Color v0, Color v1, double fraction) {
     int r = v0.getRed() + (int) ((v1.getRed() - v0.getRed()) * fraction + 0.5f);
     int g = v0.getGreen() + (int) ((v1.getGreen() - v0.getGreen()) * fraction + 0.5f);
