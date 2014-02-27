@@ -1713,11 +1713,13 @@ public final class Animator implements TickListener {
    *         the process of stopping and didn't need to be stopped.
    */
   boolean stopHelper(final boolean notify) {
+    final CountDownLatch latch;
     synchronized (this) {
       /*
        * If we are not running at all we return immediately.
        */
-      if (f_runningAnimationLatch == null)
+      latch = f_runningAnimationLatch;
+      if (latch == null)
         return false;
       /*
        * If we are already stopping we return immediately.
@@ -1738,27 +1740,15 @@ public final class Animator implements TickListener {
               target.end(Animator.this);
             }
         } finally {
-          latchCountDown();
+          synchronized (Animator.this) {
+            f_runningAnimationLatch = null;
+          }
+          latch.countDown();
         }
       }
     };
     f_timingSource.submit(task);
     return true;
-  }
-
-  /**
-   * Helper routine to trip the latch to notify anyone blocked on
-   * {@link #await()} after the animation is ready to be completely stopped.
-   * <p>
-   * {@link #f_targets} should NOT be held when invoking this method.
-   */
-  void latchCountDown() {
-    final CountDownLatch latch;
-    synchronized (this) {
-      latch = f_runningAnimationLatch;
-      f_runningAnimationLatch = null;
-    }
-    latch.countDown();
   }
 
   /**

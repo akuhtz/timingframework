@@ -9,6 +9,7 @@ import com.surelogic.NonNull;
 import com.surelogic.Singleton;
 import com.surelogic.ThreadSafe;
 import com.surelogic.Vouch;
+import com.surelogic.Initialized;
 
 /**
  * Manages a set of known immutable evaluator implementations that the program
@@ -93,6 +94,7 @@ public final class KnownEvaluators {
    * @param singleton
    *          an immutable evaluator instance.
    */
+  @Initialized(through = "Object")
   public void register(Evaluator<?> singleton) {
     f_immutableImplementations.add(singleton);
   }
@@ -169,6 +171,7 @@ public final class KnownEvaluators {
    *           if something goes wrong. For example, if the evaluator
    *           implementation does not have a no-argument constructor.
    */
+  @Initialized(through = "Object")
   private <T> Evaluator<T> construct(Class<? extends Evaluator<T>> evaluatorType) {
     Constructor<? extends Evaluator<T>> ctor = null;
     /*

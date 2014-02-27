@@ -11,6 +11,7 @@ import com.surelogic.Immutable;
 import com.surelogic.RegionEffects;
 import com.surelogic.Unique;
 import com.surelogic.Vouch;
+import com.surelogic.Initialized;
 
 /**
  * This class interpolates fractional values using Bezier splines to animate
@@ -113,6 +114,7 @@ public final class SplineInterpolator implements Interpolator {
    * @param t
    *          parametric value for spline calculation.
    */
+  @Initialized(through = "Object")
   @Borrowed("this")
   @RegionEffects("reads Instance")
   private Point2D getXY(double t) {
