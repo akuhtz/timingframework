@@ -88,7 +88,7 @@ public final class TooManyBalls extends Activity implements JRendererTarget<Surf
     if (f_ballView == null)
       throw new IllegalStateException("Can't find ball SurfaceView for the demo");
 
-    f_renderer = new JPassiveRenderer(f_ballView, this, animationTimer);
+    f_renderer = JPassiveRenderer.getInstance(f_ballView, this, animationTimer);
 
     animationTimer.init();
   }

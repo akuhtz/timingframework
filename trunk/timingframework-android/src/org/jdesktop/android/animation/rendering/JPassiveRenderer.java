@@ -49,7 +49,13 @@ public final class JPassiveRenderer implements JRenderer, SurfaceHolder.Callback
   long f_totalRenderTime = 0;
   long f_renderCount = 0;
 
-  public JPassiveRenderer(SurfaceView on, JRendererTarget<SurfaceView, Canvas> target, TimingSource timingSource) {
+  public static JPassiveRenderer getInstance(SurfaceView on, JRendererTarget<SurfaceView, Canvas> target, TimingSource timingSource) {
+    final JPassiveRenderer result = new JPassiveRenderer(on, target, timingSource);
+    result.f_on.getHolder().addCallback(result);
+    return result;
+  }
+
+  JPassiveRenderer(SurfaceView on, JRendererTarget<SurfaceView, Canvas> target, TimingSource timingSource) {
     if (on == null)
       throw new IllegalArgumentException(I18N.err(1, "on"));
     f_on = on;
@@ -61,8 +67,6 @@ public final class JPassiveRenderer implements JRenderer, SurfaceHolder.Callback
     if (timingSource == null)
       throw new IllegalArgumentException(I18N.err(1, "timingSource"));
     f_ts = timingSource;
-
-    f_on.getHolder().addCallback(this);
   }
 
   public void invokeLater(Runnable task) {
