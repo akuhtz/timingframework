@@ -5,11 +5,11 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.jdesktop.core.animation.timing.Evaluator;
 
+import com.surelogic.Cast;
 import com.surelogic.NonNull;
 import com.surelogic.Singleton;
 import com.surelogic.ThreadSafe;
 import com.surelogic.Vouch;
-import com.surelogic.Initialized;
 
 /**
  * Manages a set of known immutable evaluator implementations that the program
@@ -32,15 +32,16 @@ public final class KnownEvaluators {
   }
 
   private KnownEvaluators() {
+    final @NonNull KnownEvaluators iThis = Cast.toNonNull(this);
     /*
      * Add implementations in core.
      */
-    register(new EvaluatorByte());
-    register(new EvaluatorShort());
-    register(new EvaluatorInteger());
-    register(new EvaluatorLong());
-    register(new EvaluatorFloat());
-    register(new EvaluatorDouble());
+    iThis.register(new EvaluatorByte());
+    iThis.register(new EvaluatorShort());
+    iThis.register(new EvaluatorInteger());
+    iThis.register(new EvaluatorLong());
+    iThis.register(new EvaluatorFloat());
+    iThis.register(new EvaluatorDouble());
 
     /*
      * Add known non-core immutable implementations if we can find them. If not,
@@ -56,8 +57,8 @@ public final class KnownEvaluators {
          */
         @SuppressWarnings("unchecked")
         final Class<? extends Evaluator<Object>> evaluatorType = (Class<? extends Evaluator<Object>>) Class.forName(className);
-        Evaluator<Object> evaluator = construct(evaluatorType);
-        register(evaluator);
+        Evaluator<Object> evaluator = iThis.construct(evaluatorType);
+        iThis.register(evaluator);
       } catch (Exception ignore) {
         // ignore
       }
@@ -75,8 +76,7 @@ public final class KnownEvaluators {
       "org.jdesktop.swing.animation.timing.evaluators.EvaluatorQuadCurve2D",
       "org.jdesktop.swing.animation.timing.evaluators.EvaluatorRectangle2D",
       "org.jdesktop.swing.animation.timing.evaluators.EvaluatorRoundRectangle2D",
-      "org.jdesktop.swt.animation.timing.evaluators.EvaluatorColor",
-      "org.jdesktop.swt.animation.timing.evaluators.EvaluatorPoint",
+      "org.jdesktop.swt.animation.timing.evaluators.EvaluatorColor", "org.jdesktop.swt.animation.timing.evaluators.EvaluatorPoint",
       "org.jdesktop.swt.animation.timing.evaluators.EvaluatorRectangle",
       "org.jdesktop.swt.animation.timing.evaluators.EvaluatorRGB" };
 
@@ -94,7 +94,6 @@ public final class KnownEvaluators {
    * @param singleton
    *          an immutable evaluator instance.
    */
-  @Initialized(through = "Object")
   public void register(Evaluator<?> singleton) {
     f_immutableImplementations.add(singleton);
   }
@@ -171,7 +170,6 @@ public final class KnownEvaluators {
    *           if something goes wrong. For example, if the evaluator
    *           implementation does not have a no-argument constructor.
    */
-  @Initialized(through = "Object")
   private <T> Evaluator<T> construct(Class<? extends Evaluator<T>> evaluatorType) {
     Constructor<? extends Evaluator<T>> ctor = null;
     /*
