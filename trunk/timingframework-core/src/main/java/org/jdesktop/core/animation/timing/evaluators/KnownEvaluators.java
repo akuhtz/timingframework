@@ -10,6 +10,7 @@ import com.surelogic.NonNull;
 import com.surelogic.Singleton;
 import com.surelogic.ThreadSafe;
 import com.surelogic.Vouch;
+import com.surelogic.TrackPartiallyInitialized;
 
 /**
  * Manages a set of known immutable evaluator implementations that the program
@@ -23,6 +24,7 @@ import com.surelogic.Vouch;
  */
 @ThreadSafe
 @Singleton
+@TrackPartiallyInitialized
 public final class KnownEvaluators {
 
   private static final KnownEvaluators INSTANCE = new KnownEvaluators();

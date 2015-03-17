@@ -29,6 +29,7 @@ import com.surelogic.RegionLock;
 import com.surelogic.ThreadSafe;
 import com.surelogic.Unique;
 import com.surelogic.Vouch;
+import com.surelogic.TrackPartiallyInitialized;
 
 /**
  * This class controls the timing of animations. Instances are constructed by a
@@ -86,6 +87,7 @@ import com.surelogic.Vouch;
 @ReferenceObject
 @Region("AnimatorState")
 @RegionLock("AnimatorLock is this protects AnimatorState")
+@TrackPartiallyInitialized
 public final class Animator implements TickListener {
 
   /**
@@ -277,6 +279,7 @@ public final class Animator implements TickListener {
    * @author Tim Halloran
    */
   @NotThreadSafe
+  @TrackPartiallyInitialized
   public static class Builder {
 
     /**
