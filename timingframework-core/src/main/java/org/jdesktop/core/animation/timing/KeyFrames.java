@@ -19,6 +19,7 @@ import com.surelogic.NotThreadSafe;
 import com.surelogic.RegionEffects;
 import com.surelogic.Unique;
 import com.surelogic.Vouch;
+import com.surelogic.TrackPartiallyInitialized;
 
 /**
  * This class manages a list of key frames to animate values via interpolation
@@ -269,6 +270,7 @@ public class KeyFrames<T> implements Iterable<Frame<T>> {
    * @author Tim Halloran
    */
   @NotThreadSafe
+  @TrackPartiallyInitialized
   public static class Builder<T> {
 
     private Evaluator<T> f_evaluator = null;
@@ -677,18 +679,16 @@ public class KeyFrames<T> implements Iterable<Frame<T>> {
     return f_frames[index];
   }
 
-  @Borrowed(value = "this", allowReturn = true)
-  @RegionEffects("writes this:Instance")
+  @Borrowed("this")
+  @RegionEffects("reads this:Instance")
   @Unique("return")
   public Iterator<Frame<T>> iterator() {
-    @Borrowed("KeyFrames.this")
     class It implements Iterator<Frame<T>> {
       @Unique
       final AtomicInteger f_index = new AtomicInteger(0);
 
       @Unique("return")
-      @Borrowed(value = "KeyFrames.this", allowReturn = true)
-      @RegionEffects("writes KeyFrames.this:Instance")
+      @RegionEffects("none")
       public It() {
         super();
       }
