@@ -6,13 +6,13 @@ import java.util.List;
 
 import org.jdesktop.core.animation.timing.Interpolator;
 
-import com.surelogic.Assume;
 import com.surelogic.Borrowed;
+import com.surelogic.Cast;
 import com.surelogic.Immutable;
+import com.surelogic.Initialized;
 import com.surelogic.RegionEffects;
 import com.surelogic.Unique;
 import com.surelogic.Vouch;
-import com.surelogic.Initialized;
 
 /**
  * This class interpolates fractional values using Bezier splines to animate
@@ -58,7 +58,6 @@ public final class SplineInterpolator implements Interpolator {
    *           range are passed in.
    */
   @Unique("return")
-  @Assume("@Unique(return) for unmodifiableList(*) in Collections")
   public SplineInterpolator(double x1, double y1, double x2, double y2) {
     if (x1 < 0 || x1 > 1 || y1 < 0 || y1 > 1.0f || x2 < 0 || x2 > 1 || y2 < 0 || y2 > 1) {
       throw new IllegalArgumentException("Control points must be in the range [0,1].");
@@ -94,7 +93,7 @@ public final class SplineInterpolator implements Interpolator {
     for (LengthItemBase length : baseLengths) {
       resultLengths.add(new LengthItem(length.getLength(), length.getT(), cumulativeLength));
     }
-    f_lengths = Collections.unmodifiableList(resultLengths);
+    f_lengths = Cast.toUniqueReference(Collections.unmodifiableList(resultLengths));
   }
 
   /**
