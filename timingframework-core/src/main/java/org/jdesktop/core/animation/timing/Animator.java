@@ -23,7 +23,6 @@ import com.surelogic.NonNull;
 import com.surelogic.NotThreadSafe;
 import com.surelogic.Nullable;
 import com.surelogic.ReferenceObject;
-import com.surelogic.Region;
 import com.surelogic.RegionEffects;
 import com.surelogic.RegionLock;
 import com.surelogic.ThreadSafe;
@@ -85,7 +84,6 @@ import com.surelogic.TrackPartiallyInitialized;
  */
 @ThreadSafe
 @ReferenceObject
-@Region("AnimatorState")
 @RegionLock("AnimatorLock is this protects AnimatorState")
 @TrackPartiallyInitialized
 public final class Animator implements TickListener {
