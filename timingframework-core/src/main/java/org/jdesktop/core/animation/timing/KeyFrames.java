@@ -59,7 +59,7 @@ public class KeyFrames<T> implements Iterable<Frame<T>> {
    */
   @Immutable
   @TrackPartiallyInitialized
-  public static final class Frame<T> {
+  public static class Frame<T> {
 
     /**
      * Indicates that the time fraction when this fame occurs should be
@@ -295,7 +295,7 @@ public class KeyFrames<T> implements Iterable<Frame<T>> {
    */
   @NotThreadSafe
   @TrackPartiallyInitialized
-  public static class Builder<T> {
+  public static final class Builder<T> {
 
     private Evaluator<T> f_evaluator = null;
     private final List<T> f_values = new ArrayList<T>();
