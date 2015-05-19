@@ -41,7 +41,7 @@
 		</copy>
 
 		<mkdir dir="${swing-release-work}${fs}bin" />
-		<javac srcdir="${swing-release-work}${fs}src" destdir="${swing-release-work}${fs}bin" debug="on" source="1.6" target="1.6" includeantruntime="false" />
+		<javac srcdir="${swing-release-work}${fs}src" destdir="${swing-release-work}${fs}bin" debug="on" source="1.7" target="1.7" includeantruntime="false" />
 		<jar destfile="${swing-release-work}${fs}lib${fs}${swing-jar}">
 			<fileset dir="${swing-release-work}${fs}bin" excludes="**/demos/**" />
 			<manifest />
@@ -60,7 +60,7 @@
 		</jar>
 		<delete quiet="true" dir="${swing-release-work}${fs}bin" />
 
-		<javadoc access="public" destdir="${swing-release-work}${fs}/javadoc" source="1.6" sourcepath="${swing-release-work}${fs}src" Overview="${core-lib}${fs}javadoc-overview.html" excludepackagenames="**.demos,**.demos.*" notree="true" nodeprecatedlist="true" />
+		<javadoc access="public" destdir="${swing-release-work}${fs}/javadoc" source="1.7" sourcepath="${swing-release-work}${fs}src" Overview="${core-lib}${fs}javadoc-overview.html" excludepackagenames="**.demos,**.demos.*" notree="true" nodeprecatedlist="true" />
 
 		<zip destfile="${swing-release}${fs}timingframework-swing-${release-version}.zip" basedir="${swing-release-work}" />
 	</target>
