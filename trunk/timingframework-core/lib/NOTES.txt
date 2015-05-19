@@ -16,6 +16,20 @@ Report bugs, read the documentation, and get new releases at:
    http://java.net/projects/timingframework/
 
 ++-------------------++
+|| 7.4 Release Notes ||
+++-------------------++
+
+19/May/2015
+
+o The PropertySetter utility now deals with overloaded setter
+  methods in a more principled manner. If more than a single
+  one-argument "setX" method is found then the argument type
+  is examined and a heuristic choice made. The heuristic
+  used is documented in the PropertySetter class Javadoc.
+  http://java.net/jira/browse/TIMINGFRAMEWORK-26
+o The KeyFrames.Builder class is now final.
+
+++-------------------++
 || 7.3 Release Notes ||
 ++-------------------++
 
