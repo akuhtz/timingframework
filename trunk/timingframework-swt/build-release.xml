@@ -36,7 +36,7 @@
 		</copy>
 
 		<mkdir dir="${swt-release-work}${fs}bin" />
-		<javac srcdir="${swt-release-work}${fs}src" destdir="${swt-release-work}${fs}bin" classpath="${org.eclipse.swt-jar}" debug="on" source="1.6" target="1.6" includeantruntime="false" />
+		<javac srcdir="${swt-release-work}${fs}src" destdir="${swt-release-work}${fs}bin" classpath="${org.eclipse.swt-jar}" debug="on" source="1.7" target="1.7" includeantruntime="false" />
 		<jar destfile="${swt-release-work}${fs}lib${fs}${swt-jar}">
 			<fileset dir="${swt-release-work}${fs}bin" excludes="**/demos/**" />
 			<manifest />
@@ -55,7 +55,7 @@
 		</jar>
 		<delete quiet="true" dir="${swt-release-work}${fs}bin" />
 
-		<javadoc access="public" destdir="${swt-release-work}${fs}/javadoc" classpath="${org.eclipse.swt-jar}" source="1.6" sourcepath="${swt-release-work}${fs}src" Overview="${core-lib}${fs}javadoc-overview.html" excludepackagenames="**.demos" notree="true" nodeprecatedlist="true" />
+		<javadoc access="public" destdir="${swt-release-work}${fs}/javadoc" classpath="${org.eclipse.swt-jar}" source="1.7" sourcepath="${swt-release-work}${fs}src" Overview="${core-lib}${fs}javadoc-overview.html" excludepackagenames="**.demos" notree="true" nodeprecatedlist="true" />
 
 		<zip destfile="${swt-release}${fs}timingframework-swt-${release-version}.zip" basedir="${swt-release-work}" />
 	</target>
