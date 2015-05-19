@@ -351,10 +351,8 @@ public final class PropertySetter {
   }
 
   /**
-   * Heuristically picks the best potential setter. If only one <tt>setX</tt>
-   * method is found this is always returned. If no method is found,
-   * {@code potentials.isEmpty()} is {@code true}, then {@code null} is
-   * returned.
+   * Heuristically picks the best potential setter. See doc for
+   * {@link PropertySetter} about the heuristic and how a choice is made.
    * 
    * @param argType
    *          the type of the value being passed to the setter method.
@@ -382,7 +380,6 @@ public final class PropertySetter {
               || (byte.class.equals(formalType) && Byte.class.equals(argType))
               || (void.class.equals(formalType) && Void.class.equals(argType))
               || (short.class.equals(formalType) && Short.class.equals(argType))) {
-            System.out.println("FOUND EXACT MATCH " + formalType.toString() + " to " + argType.toString());
             return m;
           }
         }
@@ -392,7 +389,6 @@ public final class PropertySetter {
         final Class<?> formalType = m.getParameterTypes()[0];
         if (!formalType.isPrimitive()) {
           if (formalType.equals(argType)) {
-            System.out.println("FOUND EXACT MATCH " + formalType.toString() + " to " + argType.toString());
             return m;
           }
         }
@@ -411,7 +407,6 @@ public final class PropertySetter {
               || (double.class.equals(formalType) && (Byte.class.equals(argType) || Short.class.equals(argType)
                   || Integer.class.equals(argType) || Long.class.equals(argType) || Character.class.equals(argType) || Float.class
                     .equals(argType)))) {
-            System.out.println("FOUND ASSIGNABLE MATCH " + formalType.toString() + " to " + argType.toString());
             return m;
           }
         }
@@ -421,7 +416,6 @@ public final class PropertySetter {
         final Class<?> formalType = m.getParameterTypes()[0];
         if (!formalType.isPrimitive()) {
           if (formalType.isAssignableFrom(argType)) {
-            System.out.println("FOUND ASSIGNABLE MATCH " + formalType.toString() + " to " + argType.toString());
             return m;
           }
         }
