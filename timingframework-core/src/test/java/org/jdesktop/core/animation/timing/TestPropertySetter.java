@@ -16,8 +16,15 @@ public final class TestPropertySetter {
       return value;
     }
 
-    public void setValue(int value) {
-      this.value = value;
+    public void setValue(Object value) {
+      throw new IllegalStateException("should not get matched");
+    }
+
+    public void setValue(double value) {
+      /*
+       * Forced non-exact match on primitive value
+       */
+      this.value = (int) value;
     }
 
     private byte byteValue;
@@ -28,6 +35,14 @@ public final class TestPropertySetter {
 
     public void setByteValue(byte byteValue) {
       this.byteValue = byteValue;
+    }
+
+    public void setByteValue(Object byteValue) {
+      throw new IllegalStateException("should not get matched");
+    }
+
+    public void setByteValue(int byteValue) {
+      throw new IllegalStateException("should not get matched");
     }
 
     @Override
@@ -115,6 +130,23 @@ public final class TestPropertySetter {
     while (a.isRunning())
       ts.tick();
     Assert.assertEquals((byte) 3, pt.sneakyGetByteValue());
+  }
+
+  @Test
+  public void byteValueToIntProperty() {
+    /*
+     * Test assignable match to a primitive method
+     */
+    MyProps pt = new MyProps();
+    TimingTarget tt = PropertySetter.getTarget(pt, "value", (byte) 1, (byte) 2, (byte) 3);
+    ManualTimingSource ts = new ManualTimingSource();
+    Animator a = new Animator.Builder(ts).addTarget(tt).build();
+    a.start();
+    ts.tick();
+    Assert.assertEquals(1, pt.getValue());
+    while (a.isRunning())
+      ts.tick();
+    Assert.assertEquals(3, pt.getValue());
   }
 
   @Test

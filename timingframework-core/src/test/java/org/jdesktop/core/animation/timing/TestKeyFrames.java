@@ -473,6 +473,8 @@ public final class TestKeyFrames {
 
     final KeyFrames<Integer> kf = b.build();
 
+    Assert.assertEquals(Integer.class, kf.getClassOfValue());
+
     Assert.assertEquals(1, kf.getFrame(0).getValue().intValue());
     Assert.assertEquals(2, kf.getFrame(1).getValue().intValue());
     Assert.assertEquals(3, kf.getFrame(2).getValue().intValue());
@@ -498,6 +500,8 @@ public final class TestKeyFrames {
     b.addFrames(1, 2, 3, 4);
 
     final KeyFrames<Integer> kf = b.build();
+    
+    Assert.assertEquals(Integer.class, kf.getClassOfValue());
 
     Assert.assertEquals(1, kf.getFrame(0).getValue().intValue());
     Assert.assertEquals(2, kf.getFrame(1).getValue().intValue());
@@ -528,6 +532,8 @@ public final class TestKeyFrames {
     b.addFrames(l);
 
     final KeyFrames<Integer> kf = b.build();
+    
+    Assert.assertEquals(Integer.class, kf.getClassOfValue());
 
     Assert.assertEquals(1, kf.getFrame(0).getValue().intValue());
     Assert.assertEquals(2, kf.getFrame(1).getValue().intValue());
@@ -559,6 +565,8 @@ public final class TestKeyFrames {
     b.addFrames(l);
 
     final KeyFrames<Integer> kf = b.build();
+    
+    Assert.assertEquals(Integer.class, kf.getClassOfValue());
 
     Assert.assertEquals(1, kf.getFrame(0).getValue().intValue());
     Assert.assertEquals(2, kf.getFrame(1).getValue().intValue());
@@ -741,6 +749,7 @@ public final class TestKeyFrames {
     final KeyFrames.Builder<Integer> b = new KeyFrames.Builder<Integer>(1);
     b.addFrame(100);
     final KeyFrames<Integer> kf = b.build();
+    Assert.assertEquals(Integer.class, kf.getClassOfValue());
     Assert.assertEquals(1, kf.getInterpolatedValueAt(0).intValue());
     Assert.assertEquals(20, kf.getInterpolatedValueAt(0.2).intValue());
     Assert.assertEquals(25, kf.getInterpolatedValueAt(0.25).intValue());
@@ -754,6 +763,7 @@ public final class TestKeyFrames {
     b.addFrame("last");
     b.setEvaluator(f_stringEvaluator);
     final KeyFrames<String> kf = b.build();
+    Assert.assertEquals(String.class, kf.getClassOfValue());
     Assert.assertEquals("first", kf.getInterpolatedValueAt(0));
     Assert.assertEquals("first", kf.getInterpolatedValueAt(0.2));
     Assert.assertEquals("last", kf.getInterpolatedValueAt(0.5));
