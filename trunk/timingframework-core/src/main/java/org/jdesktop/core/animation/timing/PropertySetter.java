@@ -1,6 +1,7 @@
 package org.jdesktop.core.animation.timing;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -10,7 +11,11 @@ import org.jdesktop.core.animation.timing.interpolators.LinearInterpolator;
 import org.jdesktop.core.animation.timing.interpolators.SplineInterpolator;
 
 import com.surelogic.Immutable;
+import com.surelogic.NonNull;
+import com.surelogic.Nullable;
+import com.surelogic.ThreadSafe;
 import com.surelogic.Utility;
+import com.surelogic.Vouch;
 
 /**
  * A utility to construct {@link TimingTarget} instances that enables automating
@@ -107,6 +112,27 @@ import com.surelogic.Utility;
  * TimingTargetAdapter ps = PropertySetter.getTarget(obj, &quot;background&quot;, Color.BLUE, Color.RED);
  * ps.setDebugName(&quot;BlueToRed&quot;);
  * </pre>
+ * 
+ * <p>
+ * If the target class has more than one setter method defined due to method
+ * overloading (e.g., we want <tt>setX</tt> and declarations exist for
+ * <tt>setX(int)</tt> and <tt>setX(double)</tt>) then the following heuristic,
+ * in order, determines the method chosen. Implementation note: the key value
+ * types are internally always wrapper types (e.g., Integer never int) so
+ * primitive type setter methods must be considered.
+ * <ol>
+ * <li>If a setter with an "exact" match primitive can be found that is used.
+ * For example, setX(int) for key value of Integer.</li>
+ * <li>If a setter with an exact match reference type can be found that is used.
+ * For example, setX(Color) for key value of Color, or setX(Integer) for key
+ * value of Integer.</li>
+ * <li>If a setter with an "assignable" match primitive can be found that is
+ * used. For example, setX(double) for key value of Integer.</li>
+ * <li>If a setter with an assignable match reference type can be found that is
+ * used. For example, setX(Object) for key value of Color, or setX(Number) for
+ * key value of Integer.</li>
+ * <li>The first in the set of choices is chosen.</li>
+ * </ol>
  * 
  * <p>
  * The "debug" name is automatically set to the value passed for the property
@@ -256,7 +282,7 @@ public final class PropertySetter {
     throw new AssertionError();
   }
 
-  static TimingTargetAdapter getTargetHelper(final Object object, final String propertyName, final KeyFrames<?> keyFrames,
+  static <T> TimingTargetAdapter getTargetHelper(final Object object, final String propertyName, final KeyFrames<T> keyFrames,
       final boolean isToAnimation) {
     if (object == null)
       throw new IllegalArgumentException(I18N.err(1, "object"));
@@ -272,16 +298,19 @@ public final class PropertySetter {
     final String firstChar = propertyName.substring(0, 1);
     final String remainder = propertyName.substring(1);
     final String propertySetterName = "set" + firstChar.toUpperCase(Locale.ENGLISH) + remainder;
-    Method propertySetter = null;
+    final Class<?> argType = keyFrames.getClassOfValue();
+    final ArrayList<Method> potentials = new ArrayList<Method>();
+    final Method propertySetter;
     try {
       for (Method m : object.getClass().getMethods()) {
         if (m.getName().equals(propertySetterName)) {
-          if (m.getParameterTypes().length == 1) {
-            propertySetter = m;
-            break;
+          final Class<?>[] parameterTypes = m.getParameterTypes();
+          if (parameterTypes.length == 1) {
+            potentials.add(m);
           }
         }
       }
+      propertySetter = bestSetterMatch(argType, potentials);
       if (propertySetter == null) {
         throw new IllegalArgumentException(I18N.err(30, propertySetterName, propertyName, object.toString()));
       }
@@ -321,13 +350,97 @@ public final class PropertySetter {
     }
   }
 
+  /**
+   * Heuristically picks the best potential setter. If only one <tt>setX</tt>
+   * method is found this is always returned. If no method is found,
+   * {@code potentials.isEmpty()} is {@code true}, then {@code null} is
+   * returned.
+   * 
+   * @param argType
+   *          the type of the value being passed to the setter method.
+   * @param potentials
+   *          methods found that are called <tt>setX</tt> with one argument.
+   * @return the best potential setter, or {@code null} if none.
+   */
+  @Nullable
+  private static Method bestSetterMatch(@NonNull Class<?> argType, @NonNull ArrayList<Method> potentials) {
+    if (potentials.isEmpty())
+      return null;
+    else if (potentials.size() == 1)
+      return potentials.get(0);
+    else {
+      // try for exact match on primitive formal
+      for (Method m : potentials) {
+        final Class<?> formalType = m.getParameterTypes()[0];
+        if (formalType.isPrimitive()) {
+          if ((int.class.equals(formalType) && Integer.class.equals(argType))
+              || (long.class.equals(formalType) && Long.class.equals(argType))
+              || (double.class.equals(formalType) && Double.class.equals(argType))
+              || (float.class.equals(formalType) && Float.class.equals(argType))
+              || (boolean.class.equals(formalType) && Boolean.class.equals(argType))
+              || (char.class.equals(formalType) && Character.class.equals(argType))
+              || (byte.class.equals(formalType) && Byte.class.equals(argType))
+              || (void.class.equals(formalType) && Void.class.equals(argType))
+              || (short.class.equals(formalType) && Short.class.equals(argType))) {
+            System.out.println("FOUND EXACT MATCH " + formalType.toString() + " to " + argType.toString());
+            return m;
+          }
+        }
+      }
+      // try for exact match on reference formal
+      for (Method m : potentials) {
+        final Class<?> formalType = m.getParameterTypes()[0];
+        if (!formalType.isPrimitive()) {
+          if (formalType.equals(argType)) {
+            System.out.println("FOUND EXACT MATCH " + formalType.toString() + " to " + argType.toString());
+            return m;
+          }
+        }
+      }
+      // try for assignable match on primitive formal
+      for (Method m : potentials) {
+        final Class<?> formalType = m.getParameterTypes()[0];
+        if (formalType.isPrimitive()) {
+          if ((short.class.equals(formalType) && Byte.class.equals(argType))
+              || (int.class.equals(formalType) && (Byte.class.equals(argType) || Short.class.equals(argType) || Character.class
+                  .equals(argType)))
+              || (long.class.equals(formalType) && (Byte.class.equals(argType) || Short.class.equals(argType)
+                  || Integer.class.equals(argType) || Character.class.equals(argType)))
+              || (float.class.equals(formalType) && (Byte.class.equals(argType) || Short.class.equals(argType)
+                  || Integer.class.equals(argType) || Long.class.equals(argType) || Character.class.equals(argType)))
+              || (double.class.equals(formalType) && (Byte.class.equals(argType) || Short.class.equals(argType)
+                  || Integer.class.equals(argType) || Long.class.equals(argType) || Character.class.equals(argType) || Float.class
+                    .equals(argType)))) {
+            System.out.println("FOUND ASSIGNABLE MATCH " + formalType.toString() + " to " + argType.toString());
+            return m;
+          }
+        }
+      }
+      // try for assignable match on reference formal
+      for (Method m : potentials) {
+        final Class<?> formalType = m.getParameterTypes()[0];
+        if (!formalType.isPrimitive()) {
+          if (formalType.isAssignableFrom(argType)) {
+            System.out.println("FOUND ASSIGNABLE MATCH " + formalType.toString() + " to " + argType.toString());
+            return m;
+          }
+        }
+      }
+      // just return the first (old behavior)
+      return potentials.get(0);
+    }
+  }
+
+  @ThreadSafe
   static class PropertySetterTimingTarget extends TimingTargetAdapter {
 
     protected final AtomicReference<KeyFrames<Object>> f_keyFrames = new AtomicReference<KeyFrames<Object>>();
+    @Vouch("ThreadSafe")
     protected final Object f_object;
+    @Vouch("ThreadSafe")
     protected final Method f_propertySetter;
 
-    public PropertySetterTimingTarget(KeyFrames<Object> keyFrames, Object object, Method propertySetter, String propertyName) {
+    PropertySetterTimingTarget(KeyFrames<Object> keyFrames, Object object, Method propertySetter, String propertyName) {
       f_keyFrames.set(keyFrames);
       f_object = object;
       f_propertySetter = propertySetter;
@@ -350,11 +463,13 @@ public final class PropertySetter {
     }
   }
 
+  @ThreadSafe
   static final class PropertySetterToTimingTarget extends PropertySetterTimingTarget {
 
+    @Vouch("ThreadSafe")
     final Method f_propertyGetter;
 
-    public PropertySetterToTimingTarget(KeyFrames<Object> keyFrames, Object object, Method propertyGetter, Method propertySetter,
+    PropertySetterToTimingTarget(KeyFrames<Object> keyFrames, Object object, Method propertyGetter, Method propertySetter,
         String propertyName) {
       super(keyFrames, object, propertySetter, propertyName);
       f_propertyGetter = propertyGetter;

@@ -15,11 +15,13 @@ import org.jdesktop.core.animation.timing.interpolators.LinearInterpolator;
 
 import com.surelogic.Borrowed;
 import com.surelogic.Immutable;
+import com.surelogic.NonNull;
 import com.surelogic.NotThreadSafe;
+import com.surelogic.Nullable;
 import com.surelogic.RegionEffects;
+import com.surelogic.TrackPartiallyInitialized;
 import com.surelogic.Unique;
 import com.surelogic.Vouch;
-import com.surelogic.TrackPartiallyInitialized;
 
 /**
  * This class manages a list of key frames to animate values via interpolation
@@ -56,7 +58,8 @@ public class KeyFrames<T> implements Iterable<Frame<T>> {
    *          the type of the values at each frame.
    */
   @Immutable
-  public static class Frame<T> {
+  @TrackPartiallyInitialized
+  public static final class Frame<T> {
 
     /**
      * Indicates that the time fraction when this fame occurs should be
@@ -73,6 +76,7 @@ public class KeyFrames<T> implements Iterable<Frame<T>> {
      * The non-{@code null} value of this key frame.
      */
     @Vouch("Immutable")
+    @NonNull
     private final T f_value;
 
     /**
@@ -85,6 +89,7 @@ public class KeyFrames<T> implements Iterable<Frame<T>> {
      * The interpolator that should be used between the previous key frame and
      * this one, or {@link null}.
      */
+    @Nullable
     private final Interpolator f_interpolator;
 
     /**
@@ -202,8 +207,26 @@ public class KeyFrames<T> implements Iterable<Frame<T>> {
      * 
      * @return a value.
      */
+    @NonNull
     public T getValue() {
       return f_value;
+    }
+
+    /**
+     * This method returns the {@link Class} object for the value of this frame.
+     * It produces the same result as invoking
+     * 
+     * <pre>
+     * f.getValue().getClass()
+     * </pre>
+     * 
+     * on a {@link Frame} f.
+     * 
+     * @return the {@link Class} object for the value of this frame.
+     */
+    @NonNull
+    public Class<?> getClassOfValue() {
+      return f_value.getClass();
     }
 
     /**
@@ -247,6 +270,7 @@ public class KeyFrames<T> implements Iterable<Frame<T>> {
      */
     @Borrowed("this")
     @RegionEffects("none")
+    @Nullable
     public Interpolator getInterpolator() {
       return f_interpolator;
     }
@@ -675,8 +699,26 @@ public class KeyFrames<T> implements Iterable<Frame<T>> {
    *           if the index is out of range (
    *           <tt>index &lt; 0 || index &gt;= size()</tt>)
    */
+  @NonNull
   public Frame<T> getFrame(int index) {
     return f_frames[index];
+  }
+
+  /**
+   * This method returns the {@link Class} object for the value of a frame. It
+   * produces the same result as invoking
+   * 
+   * <pre>
+   * kf.getFrame(0).getClassOfValue()
+   * </pre>
+   * 
+   * on a {@link KeyFrames} kf.
+   * 
+   * @return the {@link Class} object for the value of this frame.
+   */
+  @NonNull
+  public Class<?> getClassOfValue() {
+    return getFrame(0).getClassOfValue();
   }
 
   @Borrowed("this")
