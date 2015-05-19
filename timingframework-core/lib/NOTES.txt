@@ -21,6 +21,11 @@ Report bugs, read the documentation, and get new releases at:
 
 19/May/2015
 
+o Release byte code is now Java 7 (it is getting hard to
+  to tell if the library use is consistent with Java 1.6).
+  The source code is still buildable in 1.6 (for now) so if
+  you use 1.6 you can still import the sources into your
+  work (and let us know if you run into any issues).
 o The PropertySetter utility now deals with overloaded setter
   methods in a more principled manner. If more than a single
   one-argument "setX" method is found then the argument type
