@@ -75,7 +75,7 @@ public final class SplineInterpolator implements Interpolator {
     double prevX = 0;
     double prevY = 0;
     double cumulativeLength = 0;
-    for (double t = 0; t <= 1; t += 0.01) {
+    for (double t = 0; t < 1.01; t += 0.01) {
       Point2D xy = getXY(t);
       double length = cumulativeLength + Math.sqrt((xy.x - prevX) * (xy.x - prevX) + (xy.y - prevY) * (xy.y - prevY));
       final LengthItemBase lengthItem = new LengthItemBase(length, t);
