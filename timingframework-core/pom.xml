@@ -57,13 +57,10 @@
         <dependency>
             <groupId>org.bidib.com.surelogic</groupId>
             <artifactId>promises</artifactId>
-            <version>5.6.0</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.9</version>
-            <type>jar</type>
             <scope>test</scope>
         </dependency>
 
@@ -74,7 +71,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.5.1</version>
                 <configuration>
                     <encoding>UTF-8</encoding>
                     <showDeprecation>true</showDeprecation>
@@ -84,24 +80,7 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.10.4</version>
-                <!-- add this to disable checking under JDK8 -->
-                <configuration>
-                    <additionalparam>${javadoc.opts}</additionalparam>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.0.2</version>
                 <executions>
                     <execution>
                         <goals>
@@ -113,7 +92,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>3.0.1</version>
                 <executions>
                     <execution>
                         <goals>
