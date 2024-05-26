@@ -57,8 +57,9 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <jdepend-version>2.0-beta-2</jdepend-version>
-        
+		
+		<junit-jupiter.version>5.10.2</junit-jupiter.version>
+
         <gpg.useagent>true</gpg.useagent>
     </properties>
 
@@ -69,16 +70,35 @@
     
     <dependencyManagement>
         <dependencies>
+			<dependency>
+				<groupId>org.bidib.net.java.timingframework</groupId>
+				<artifactId>timingframework-core</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.bidib.net.java.timingframework</groupId>
+				<artifactId>timingframework-core</artifactId>
+				<version>${project.version}</version>
+				<classifier>tests</classifier>
+			</dependency>
+			<dependency>
+				<groupId>org.bidib.net.java.timingframework</groupId>
+				<artifactId>timingframework-swing</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+		
             <dependency>
                 <groupId>org.bidib.com.surelogic</groupId>
                 <artifactId>promises</artifactId>
                 <version>5.6.0</version>
             </dependency>
-            <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>4.13.1</version>
-            </dependency>
+			<dependency>
+				<groupId>org.junit</groupId>
+				<artifactId>junit-bom</artifactId>
+				<version>${junit-jupiter.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -88,17 +108,17 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.8.1</version>
+					<version>3.13.0</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-deploy-plugin</artifactId>
-					<version>3.0.0-M1</version>
+					<version>3.1.1</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-gpg-plugin</artifactId>
-					<version>1.6</version>
+					<version>3.2.4</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -108,22 +128,17 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-javadoc-plugin</artifactId>
-					<version>3.1.0</version>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-pmd-plugin</artifactId>
-					<version>3.7</version>
+					<version>3.6.3</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-source-plugin</artifactId>
-					<version>3.0.1</version>
+					<version>3.3.1</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>
-					<version>2.22.2</version>
+					<version>3.2.5</version>
 				</plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -156,10 +171,6 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <configuration>
-                            <passphrase>${gpg.passphrase}</passphrase>
-                            <useAgent>${gpg.useagent}</useAgent>
-                        </configuration>
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>
@@ -187,18 +198,6 @@
 
     <reporting>
         <plugins>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>jdepend-maven-plugin</artifactId>
-                <version>${jdepend-version}</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-pmd-plugin</artifactId>
-                <configuration>
-                    <targetJdk>${maven.compiler.target}</targetJdk>
-                </configuration>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>

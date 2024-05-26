@@ -3,8 +3,8 @@ package org.jdesktop.core.animation.timing;
 import org.jdesktop.core.animation.timing.TimingSource.PostTickListener;
 import org.jdesktop.core.animation.timing.TimingSource.TickListener;
 import org.jdesktop.core.animation.timing.sources.ManualTimingSource;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public final class TestTimingSource {
 
@@ -12,17 +12,17 @@ public final class TestTimingSource {
   int tickCounter;
   int postTickCounter;
 
-  @Test
+  @org.junit.jupiter.api.Test
   public void tick1() {
     final ManualTimingSource ts = new ManualTimingSource();
     tickCounter = 0;
     ts.addTickListener(new TickListener() {
       public void timingSourceTick(TimingSource source, long nanoTime) {
         tickCounter++;
-        Assert.assertSame(ts, source);
+        Assertions.assertSame(ts, source);
       }
     });
-    Assert.assertEquals(0, tickCounter);
+    Assertions.assertEquals(0, tickCounter);
   }
 
   @Test
@@ -32,26 +32,26 @@ public final class TestTimingSource {
     ts.addTickListener(new TickListener() {
       public void timingSourceTick(TimingSource source, long nanoTime) {
         tickCounter++;
-        Assert.assertSame(ts, source);
+        Assertions.assertSame(ts, source);
       }
     });
     ts.tick();
-    Assert.assertEquals(1, tickCounter);
+    Assertions.assertEquals(1, tickCounter);
   }
 
-  @Test
+  @org.junit.jupiter.api.Test
   public void tick3() {
     final ManualTimingSource ts = new ManualTimingSource();
     tickCounter = 0;
     ts.addTickListener(new TickListener() {
       public void timingSourceTick(TimingSource source, long nanoTime) {
         tickCounter++;
-        Assert.assertSame(ts, source);
+        Assertions.assertSame(ts, source);
       }
     });
     ts.tick();
     ts.tick();
-    Assert.assertEquals(2, tickCounter);
+    Assertions.assertEquals(2, tickCounter);
   }
 
   @Test
@@ -61,12 +61,12 @@ public final class TestTimingSource {
     ts.addTickListener(new TickListener() {
       public void timingSourceTick(TimingSource source, long nanoTime) {
         tickCounter++;
-        Assert.assertSame(ts, source);
+        Assertions.assertSame(ts, source);
       }
     });
     for (int i = 0; i < 1000; i++)
       ts.tick();
-    Assert.assertEquals(1000, tickCounter);
+    Assertions.assertEquals(1000, tickCounter);
   }
 
   @Test
@@ -76,17 +76,17 @@ public final class TestTimingSource {
     final TickListener tl = new TickListener() {
       public void timingSourceTick(TimingSource source, long nanoTime) {
         tickCounter++;
-        Assert.assertSame(ts, source);
+        Assertions.assertSame(ts, source);
       }
     };
     ts.addTickListener(tl);
     ts.tick();
     ts.tick();
-    Assert.assertEquals(2, tickCounter);
+    Assertions.assertEquals(2, tickCounter);
     ts.removeTickListener(tl);
     ts.tick();
     ts.tick();
-    Assert.assertEquals(2, tickCounter);
+    Assertions.assertEquals(2, tickCounter);
   }
 
   @Test
@@ -96,10 +96,10 @@ public final class TestTimingSource {
     ts.addPostTickListener(new PostTickListener() {
       public void timingSourcePostTick(TimingSource source, long nanoTime) {
         postTickCounter++;
-        Assert.assertSame(ts, source);
+        Assertions.assertSame(ts, source);
       }
     });
-    Assert.assertEquals(0, postTickCounter);
+    Assertions.assertEquals(0, postTickCounter);
   }
 
   @Test
@@ -109,11 +109,11 @@ public final class TestTimingSource {
     ts.addPostTickListener(new PostTickListener() {
       public void timingSourcePostTick(TimingSource source, long nanoTime) {
         postTickCounter++;
-        Assert.assertSame(ts, source);
+        Assertions.assertSame(ts, source);
       }
     });
     ts.tick();
-    Assert.assertEquals(1, postTickCounter);
+    Assertions.assertEquals(1, postTickCounter);
   }
 
   @Test
@@ -123,12 +123,12 @@ public final class TestTimingSource {
     ts.addPostTickListener(new PostTickListener() {
       public void timingSourcePostTick(TimingSource source, long nanoTime) {
         postTickCounter++;
-        Assert.assertSame(ts, source);
+        Assertions.assertSame(ts, source);
       }
     });
     ts.tick();
     ts.tick();
-    Assert.assertEquals(2, postTickCounter);
+    Assertions.assertEquals(2, postTickCounter);
   }
 
   @Test
@@ -138,32 +138,32 @@ public final class TestTimingSource {
     ts.addPostTickListener(new PostTickListener() {
       public void timingSourcePostTick(TimingSource source, long nanoTime) {
         postTickCounter++;
-        Assert.assertSame(ts, source);
+        Assertions.assertSame(ts, source);
       }
     });
     for (int i = 0; i < 1000; i++)
       ts.tick();
-    Assert.assertEquals(1000, postTickCounter);
+    Assertions.assertEquals(1000, postTickCounter);
   }
 
-  @Test
+  @org.junit.jupiter.api.Test
   public void postTickRemove() {
     final ManualTimingSource ts = new ManualTimingSource();
     postTickCounter = 0;
     final PostTickListener tl = new PostTickListener() {
       public void timingSourcePostTick(TimingSource source, long nanoTime) {
         postTickCounter++;
-        Assert.assertSame(ts, source);
+        Assertions.assertSame(ts, source);
       }
     };
     ts.addPostTickListener(tl);
     ts.tick();
     ts.tick();
-    Assert.assertEquals(2, postTickCounter);
+    Assertions.assertEquals(2, postTickCounter);
     ts.removePostTickListener(tl);
     ts.tick();
     ts.tick();
-    Assert.assertEquals(2, postTickCounter);
+    Assertions.assertEquals(2, postTickCounter);
   }
 
   @Test
@@ -173,22 +173,22 @@ public final class TestTimingSource {
     postTickCounter = 0;
     ts.addTickListener(new TickListener() {
       public void timingSourceTick(TimingSource source, long nanoTime) {
-        Assert.assertEquals(tickCounter, postTickCounter);
+        Assertions.assertEquals(tickCounter, postTickCounter);
         tickCounter++;
-        Assert.assertSame(ts, source);
+        Assertions.assertSame(ts, source);
       }
     });
     ts.addPostTickListener(new PostTickListener() {
       public void timingSourcePostTick(TimingSource source, long nanoTime) {
-        Assert.assertEquals(tickCounter - 1, postTickCounter);
+        Assertions.assertEquals(tickCounter - 1, postTickCounter);
         postTickCounter++;
-        Assert.assertSame(ts, source);
+        Assertions.assertSame(ts, source);
       }
     });
     ts.tick();
     ts.tick();
-    Assert.assertEquals(2, tickCounter);
-    Assert.assertEquals(2, postTickCounter);
+    Assertions.assertEquals(2, tickCounter);
+    Assertions.assertEquals(2, postTickCounter);
   }
 
   @Test
@@ -198,22 +198,22 @@ public final class TestTimingSource {
     postTickCounter = 0;
     ts.addTickListener(new TickListener() {
       public void timingSourceTick(TimingSource source, long nanoTime) {
-        Assert.assertEquals(tickCounter, postTickCounter);
+        Assertions.assertEquals(tickCounter, postTickCounter);
         tickCounter++;
-        Assert.assertSame(ts, source);
+        Assertions.assertSame(ts, source);
       }
     });
     ts.addPostTickListener(new PostTickListener() {
       public void timingSourcePostTick(TimingSource source, long nanoTime) {
-        Assert.assertEquals(tickCounter - 1, postTickCounter);
+        Assertions.assertEquals(tickCounter - 1, postTickCounter);
         postTickCounter++;
-        Assert.assertSame(ts, source);
+        Assertions.assertSame(ts, source);
       }
     });
     for (int i = 0; i < 1000; i++)
       ts.tick();
-    Assert.assertEquals(1000, tickCounter);
-    Assert.assertEquals(1000, postTickCounter);
+    Assertions.assertEquals(1000, tickCounter);
+    Assertions.assertEquals(1000, postTickCounter);
   }
 
   @Test
@@ -226,6 +226,6 @@ public final class TestTimingSource {
       }
     });
     ts.tick();
-    Assert.assertEquals(1, taskCounter);
+    Assertions.assertEquals(1, taskCounter);
   }
 }

@@ -45,13 +45,6 @@
         </developer>
     </developers>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        
-        <gpg.useagent>true</gpg.useagent>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.bidib.com.surelogic</groupId>
@@ -61,18 +54,16 @@
         <dependency>
             <groupId>org.bidib.net.java.timingframework</groupId>
             <artifactId>timingframework-core</artifactId>
-            <version>7.4.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.bidib.net.java.timingframework</groupId>
             <artifactId>timingframework-core</artifactId>
-            <version>7.4.1-SNAPSHOT</version>
             <classifier>tests</classifier>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-engine</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -85,8 +76,8 @@
                 <configuration>
                     <encoding>UTF-8</encoding>
                     <showDeprecation>true</showDeprecation>
-                    <source>1.7</source>
-                    <target>1.7</target>
+                    <source>1.8</source>
+                    <target>1.8</target>
                 </configuration>
             </plugin>
             <plugin>

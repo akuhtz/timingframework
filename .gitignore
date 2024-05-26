@@ -3,3 +3,7 @@
 .project
 target
 test-output
+.flattened-pom.xml
+.sts4-cache
+_remote.repositories
+m2e-lastUpdated.properties

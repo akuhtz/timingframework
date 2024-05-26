@@ -4,12 +4,12 @@ import org.jdesktop.core.animation.timing.sources.ManualTimingSource;
 import org.jdesktop.core.animation.timing.sources.ScheduledExecutorTimingSource;
 import org.jdesktop.core.animation.timing.triggers.TimingTrigger;
 import org.jdesktop.core.animation.timing.triggers.TimingTriggerEvent;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public final class TestTriggers {
 
-  @Test
+  @org.junit.jupiter.api.Test
   public void disarm() {
     TimingSource ts = new ManualTimingSource();
     Animator a = new Animator.Builder(ts).build();
@@ -19,9 +19,9 @@ public final class TestTriggers {
     CountingTimingTarget counterT = new CountingTimingTarget();
     t.addTarget(counterT);
     final Trigger trigger = TimingTrigger.addTrigger(a, t, TimingTriggerEvent.STOP);
-    Assert.assertTrue(trigger.isArmed());
+    Assertions.assertTrue(trigger.isArmed());
     trigger.disarm();
-    Assert.assertFalse(trigger.isArmed());
+    Assertions.assertFalse(trigger.isArmed());
   }
 
   @Test
@@ -38,14 +38,14 @@ public final class TestTriggers {
     t.await();
     ts.dispose();
 
-    Assert.assertEquals(1, counterA.getBeginCount());
-    Assert.assertEquals(1, counterA.getEndCount());
-    Assert.assertEquals(0, counterA.getReverseCount());
-    Assert.assertEquals(0, counterA.getRepeatCount());
+    Assertions.assertEquals(1, counterA.getBeginCount());
+    Assertions.assertEquals(1, counterA.getEndCount());
+    Assertions.assertEquals(0, counterA.getReverseCount());
+    Assertions.assertEquals(0, counterA.getRepeatCount());
 
-    Assert.assertEquals(1, counterT.getBeginCount());
-    Assert.assertEquals(1, counterT.getEndCount());
-    Assert.assertEquals(0, counterT.getReverseCount());
-    Assert.assertEquals(0, counterT.getRepeatCount());
+    Assertions.assertEquals(1, counterT.getBeginCount());
+    Assertions.assertEquals(1, counterT.getEndCount());
+    Assertions.assertEquals(0, counterT.getReverseCount());
+    Assertions.assertEquals(0, counterT.getRepeatCount());
   }
 }
