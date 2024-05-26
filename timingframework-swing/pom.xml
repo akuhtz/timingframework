@@ -3,14 +3,14 @@
     <parent>
         <groupId>org.bidib.net.java.timingframework</groupId>
         <artifactId>timingframework</artifactId>
-        <version>7.4.1-SNAPSHOT</version>
+        <version>7.4.1</version>
     </parent>
 
     <groupId>org.bidib.net.java.timingframework</groupId>
     <artifactId>timingframework-swing</artifactId>
     <packaging>jar</packaging>
     <name>Timing Framework - Swing</name>
-    <version>7.4.1-SNAPSHOT</version>
+    <version>7.4.1</version>
     <description>
     This project provides a framework and sample code for time-based animations in Swing.
     </description>
@@ -70,16 +70,6 @@
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <encoding>UTF-8</encoding>
-                    <showDeprecation>true</showDeprecation>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
