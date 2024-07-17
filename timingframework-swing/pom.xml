@@ -6,11 +6,10 @@
         <version>7.4.2-SNAPSHOT</version>
     </parent>
 
-    <groupId>org.bidib.net.java.timingframework</groupId>
     <artifactId>timingframework-swing</artifactId>
     <packaging>jar</packaging>
     <name>Timing Framework - Swing</name>
-    <version>7.4.2-SNAPSHOT</version>
+
     <description>
     This project provides a framework and sample code for time-based animations in Swing.
     </description>
@@ -46,11 +45,6 @@
     </developers>
 
     <dependencies>
-        <dependency>
-            <groupId>org.bidib.com.surelogic</groupId>
-            <artifactId>promises</artifactId>
-            <scope>provided</scope>
-        </dependency>
         <dependency>
             <groupId>org.bidib.net.java.timingframework</groupId>
             <artifactId>timingframework-core</artifactId>

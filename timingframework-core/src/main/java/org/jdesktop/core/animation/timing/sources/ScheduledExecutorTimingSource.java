@@ -6,8 +6,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.jdesktop.core.animation.timing.TimingSource;
 
-import com.surelogic.ThreadSafe;
-
 /**
  * A timing source using a {@link ScheduledExecutorService} as returned from
  * {@link Executors#newSingleThreadScheduledExecutor()}.
@@ -25,74 +23,74 @@ import com.surelogic.ThreadSafe;
  * ts.dispose(); // done using ts
  * </pre>
  * 
- * If you are not sure what period to set, use the
- * {@link #ScheduledExecutorTimingSource()} constructor which uses a reasonable
- * default value of 15 milliseconds.
+ * If you are not sure what period to set, use the {@link #ScheduledExecutorTimingSource()} constructor which uses a
+ * reasonable default value of 15 milliseconds.
  * <p>
- * Tasks submitted to {@link #submit(Runnable)} and calls to registered
- * {@code TickListener} and {@code PostTickListener} objects from this timing
- * source are always made in the context of a single thread. This thread is the
- * thread created by {@link Executors#newSingleThreadScheduledExecutor()}.
+ * Tasks submitted to {@link #submit(Runnable)} and calls to registered {@code TickListener} and
+ * {@code PostTickListener} objects from this timing source are always made in the context of a single thread. This
+ * thread is the thread created by {@link Executors#newSingleThreadScheduledExecutor()}.
  * 
  * @author Tim Halloran
  */
-@ThreadSafe
 public final class ScheduledExecutorTimingSource extends TimingSource {
 
-  private final ScheduledExecutorService f_executor;
-  private final long f_period;
-  private final TimeUnit f_periodTimeUnit;
+    private final ScheduledExecutorService f_executor;
 
-  /**
-   * Constructs a new instance. The {@link #init()} must be called on the new
-   * instance to start the timer. The {@link #dispose()} method should be called
-   * to stop the timer.
-   * 
-   * @param period
-   *          the period of time between "tick" events.
-   * @param unit
-   *          the time unit of period parameter.
-   */
-  public ScheduledExecutorTimingSource(long period, TimeUnit unit) {
-    f_period = period;
-    f_periodTimeUnit = unit;
-    f_executor = Executors.newSingleThreadScheduledExecutor();
-  }
+    private final long f_period;
 
-  /**
-   * Constructs a new instance with a period of 15 milliseconds. The
-   * {@link #init()} must be called on the new instance to start the timer. The
-   * {@link #dispose()} method should be called to stop the timer.
-   */
-  public ScheduledExecutorTimingSource() {
-    this(15, TimeUnit.MILLISECONDS);
-  }
+    private final TimeUnit f_periodTimeUnit;
 
-  @Override
-  public void init() {
-    f_executor.scheduleAtFixedRate(new Runnable() {
-      public void run() {
-        runPerTick();
-      }
-    }, 0, f_period, f_periodTimeUnit);
-  }
+    /**
+     * Constructs a new instance. The {@link #init()} must be called on the new instance to start the timer. The
+     * {@link #dispose()} method should be called to stop the timer.
+     * 
+     * @param period
+     *            the period of time between "tick" events.
+     * @param unit
+     *            the time unit of period parameter.
+     */
+    public ScheduledExecutorTimingSource(long period, TimeUnit unit) {
+        f_period = period;
+        f_periodTimeUnit = unit;
+        f_executor = Executors.newSingleThreadScheduledExecutor();
+    }
 
-  @Override
-  public void dispose() {
-    f_executor.shutdown();
-  }
+    /**
+     * Constructs a new instance with a period of 15 milliseconds. The {@link #init()} must be called on the new
+     * instance to start the timer. The {@link #dispose()} method should be called to stop the timer.
+     */
+    public ScheduledExecutorTimingSource() {
+        this(15, TimeUnit.MILLISECONDS);
+    }
 
-  @Override
-  public boolean isDisposed() {
-    return f_executor.isShutdown();
-  }
+    @Override
+    public void init() {
+        f_executor.scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run() {
+                runPerTick();
+            }
+        }, 0, f_period, f_periodTimeUnit);
+    }
 
-  @Override
-  public String toString() {
-    final StringBuilder b = new StringBuilder();
-    b.append(ScheduledExecutorTimingSource.class.getSimpleName()).append('@').append(Integer.toHexString(hashCode()));
-    b.append("(period=").append(f_period).append(' ').append(f_periodTimeUnit.toString());
-    b.append(')');
-    return b.toString();
-  }
+    @Override
+    public void dispose() {
+        f_executor.shutdown();
+    }
+
+    @Override
+    public boolean isDisposed() {
+        return f_executor.isShutdown();
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder b = new StringBuilder();
+        b
+            .append(ScheduledExecutorTimingSource.class.getSimpleName()).append('@')
+            .append(Integer.toHexString(hashCode()));
+        b.append("(period=").append(f_period).append(' ').append(f_periodTimeUnit.toString());
+        b.append(')');
+        return b.toString();
+    }
 }

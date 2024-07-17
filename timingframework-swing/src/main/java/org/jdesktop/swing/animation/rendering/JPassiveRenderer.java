@@ -13,14 +13,11 @@ import org.jdesktop.core.animation.rendering.JRendererTarget;
 import org.jdesktop.core.animation.timing.TimingSource;
 import org.jdesktop.core.animation.timing.TimingSource.PostTickListener;
 
-import com.surelogic.ThreadConfined;
-
 /**
  * Manages passive rendering on a Swing {@link JRendererPanel}.
  * <p>
- * To use this renderer a client constructs a {@link JRendererPanel} and passes
- * it to the constructor with a {@link JRendererTarget} implementation and a
- * timing source. A typical sequence would be
+ * To use this renderer a client constructs a {@link JRendererPanel} and passes it to the constructor with a
+ * {@link JRendererTarget} implementation and a timing source. A typical sequence would be
  * 
  * <pre>
  * JFrame frame = new JFrame(&quot;Renderer Demonstration&quot;);
@@ -32,98 +29,105 @@ import com.surelogic.ThreadConfined;
  * timingSource.init();
  * </pre>
  * 
- * In the above snippet <tt>on</tt> will be rendered to. The enclosing instance,
- * <tt>this</tt>, implements {@link JRendererTarget} and will be called to
- * customize what is displayed on-screen.
+ * In the above snippet <tt>on</tt> will be rendered to. The enclosing instance, <tt>this</tt>, implements
+ * {@link JRendererTarget} and will be called to customize what is displayed on-screen.
  * 
  * @author Tim Halloran
  */
 public class JPassiveRenderer implements JRenderer {
 
-  /*
-   * Thread-confined to the EDT thread
-   */
-  @ThreadConfined
-  final JRendererPanel f_on;
-  @ThreadConfined
-  final JRendererTarget<GraphicsConfiguration, Graphics2D> f_target;
-  @ThreadConfined
-  final TimingSource f_ts;
-  @ThreadConfined
-  final PostTickListener f_postTick = new PostTickListener() {
-    public void timingSourcePostTick(TimingSource source, long nanoTime) {
-      long now = System.nanoTime();
-      if (f_renderCount != 0) {
-        f_totalRenderTime += now - f_lastRenderTimeNanos;
-      }
-      f_lastRenderTimeNanos = now;
-      f_renderCount++;
-      f_target.renderUpdate();
-      f_on.repaint();
+    /*
+     * Thread-confined to the EDT thread
+     */
+    final JRendererPanel f_on;
+
+    final JRendererTarget<GraphicsConfiguration, Graphics2D> f_target;
+
+    final TimingSource f_ts;
+
+    final PostTickListener f_postTick = new PostTickListener() {
+        @Override
+        public void timingSourcePostTick(TimingSource source, long nanoTime) {
+            long now = System.nanoTime();
+            if (f_renderCount != 0) {
+                f_totalRenderTime += now - f_lastRenderTimeNanos;
+            }
+            f_lastRenderTimeNanos = now;
+            f_renderCount++;
+            f_target.renderUpdate();
+            f_on.repaint();
+        }
+    };
+
+    /*
+     * Statistics counters
+     */
+    long f_lastRenderTimeNanos;
+
+    long f_totalRenderTime = 0;
+
+    long f_renderCount = 0;
+
+    public JPassiveRenderer(JRendererPanel on, JRendererTarget<GraphicsConfiguration, Graphics2D> target,
+        TimingSource timingSource) {
+        if (!SwingUtilities.isEventDispatchThread()) {
+            throw new IllegalStateException(I18N.err(100));
+        }
+
+        if (on == null) {
+            throw new IllegalArgumentException(I18N.err(1, "on"));
+        }
+        f_on = on;
+
+        if (target == null) {
+            throw new IllegalArgumentException(I18N.err(1, "target"));
+        }
+        f_target = target;
+
+        if (timingSource == null) {
+            throw new IllegalArgumentException(I18N.err(1, "timingSource"));
+        }
+        f_ts = timingSource;
+
+        f_on.setDoubleBuffered(true);
+        f_on.setOpaque(true);
+        f_on.setTarget(f_target, f_ts, f_postTick);
     }
-  };
 
-  /*
-   * Statistics counters
-   */
-  @ThreadConfined
-  long f_lastRenderTimeNanos;
-  @ThreadConfined
-  long f_totalRenderTime = 0;
-  @ThreadConfined
-  long f_renderCount = 0;
+    @Override
+    public void invokeLater(Runnable task) {
+        SwingUtilities.invokeLater(task);
+    }
 
-  public JPassiveRenderer(JRendererPanel on, JRendererTarget<GraphicsConfiguration, Graphics2D> target, TimingSource timingSource) {
-    if (!SwingUtilities.isEventDispatchThread())
-      throw new IllegalStateException(I18N.err(100));
+    @Override
+    public TimingSource getTimingSource() {
+        return f_ts;
+    }
 
-    if (on == null)
-      throw new IllegalArgumentException(I18N.err(1, "on"));
-    f_on = on;
+    @Override
+    public long getFPS() {
+        final long avgCycleTime = getAverageCycleTimeNanos();
+        if (avgCycleTime != 0) {
+            return SECONDS.toNanos(1) / avgCycleTime;
+        }
+        else {
+            return 0;
+        }
+    }
 
-    if (target == null)
-      throw new IllegalArgumentException(I18N.err(1, "target"));
-    f_target = target;
+    @Override
+    public long getAverageCycleTimeNanos() {
+        if (f_renderCount != 0) {
+            return (f_totalRenderTime) / f_renderCount;
+        }
+        else {
+            return 0;
+        }
+    }
 
-    if (timingSource == null)
-      throw new IllegalArgumentException(I18N.err(1, "timingSource"));
-    f_ts = timingSource;
-
-    f_on.setDoubleBuffered(true);
-    f_on.setOpaque(true);
-    f_on.setTarget(f_target, f_ts, f_postTick);
-  }
-
-  @Override
-  public void invokeLater(Runnable task) {
-    SwingUtilities.invokeLater(task);
-  }
-
-  @Override
-  public TimingSource getTimingSource() {
-    return f_ts;
-  }
-
-  @Override
-  public long getFPS() {
-    final long avgCycleTime = getAverageCycleTimeNanos();
-    if (avgCycleTime != 0) {
-      return SECONDS.toNanos(1) / avgCycleTime;
-    } else
-      return 0;
-  }
-
-  @Override
-  public long getAverageCycleTimeNanos() {
-    if (f_renderCount != 0) {
-      return (f_totalRenderTime) / f_renderCount;
-    } else
-      return 0;
-  }
-
-  @Override
-  public void shutdown() {
-    f_on.clearTarget();
-    f_target.renderShutdown();
-  }
+    @Override
+    public void shutdown() {
+        f_on.clearTarget();
+        f_target.renderShutdown();
+    }
 }

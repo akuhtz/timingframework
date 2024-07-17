@@ -10,22 +10,14 @@ import org.jdesktop.core.animation.timing.Animator.Direction;
 import org.jdesktop.core.animation.timing.interpolators.LinearInterpolator;
 import org.jdesktop.core.animation.timing.interpolators.SplineInterpolator;
 
-import com.surelogic.Immutable;
-import com.surelogic.NonNull;
-import com.surelogic.Nullable;
-import com.surelogic.ThreadSafe;
-import com.surelogic.Utility;
-import com.surelogic.Vouch;
-
 /**
- * A utility to construct {@link TimingTarget} instances that enables automating
- * the animation of object properties. The returned {@link TimingTarget}
- * instances from the <tt>getTarget</tt> or <tt>getTargetTo</tt> static factory
- * methods should be added as a timing target of an animation. The timing events
- * from the animation will change the specified property over time.
+ * A utility to construct {@link TimingTarget} instances that enables automating the animation of object properties. The
+ * returned {@link TimingTarget} instances from the <tt>getTarget</tt> or <tt>getTargetTo</tt> static factory methods
+ * should be added as a timing target of an animation. The timing events from the animation will change the specified
+ * property over time.
  * <p>
- * For example, here is an animation of the "background" property of some object
- * {@code obj} from blue to red over a period of one second:
+ * For example, here is an animation of the "background" property of some object {@code obj} from blue to red over a
+ * period of one second:
  * 
  * <pre>
  * TimingTarget ps = PropertySetter.getTarget(obj, &quot;background&quot;, Color.BLUE, Color.RED);
@@ -33,8 +25,7 @@ import com.surelogic.Vouch;
  * animator.start();
  * </pre>
  * 
- * More complex animations can be created by passing in multiple values for the
- * property to take on, for example:
+ * More complex animations can be created by passing in multiple values for the property to take on, for example:
  * 
  * <pre>
  * TimingTarget ps = PropertySetter.getTarget(obj, &quot;background&quot;, Color.BLUE, Color.RED, Color.GREEN);
@@ -42,15 +33,12 @@ import com.surelogic.Vouch;
  * animator.start();
  * </pre>
  * 
- * It is also possible to define more involved and tightly-controlled steps in
- * the animation, including the times between the values and how the values are
- * interpolated by using the constructor that takes a {@link KeyFrames} object.
- * {@link KeyFrames} defines the fractional times at which an object takes on
- * specific values, the values to assume at those times, and the method of
- * interpolation between those values. For example, here is the same animation
- * as above, specified through KeyFrames, where the RED color will be set 10% of
- * the way through the animation (note that we are not setting an Interpolator,
- * so the timing intervals will use the default LinearInterpolator):
+ * It is also possible to define more involved and tightly-controlled steps in the animation, including the times
+ * between the values and how the values are interpolated by using the constructor that takes a {@link KeyFrames}
+ * object. {@link KeyFrames} defines the fractional times at which an object takes on specific values, the values to
+ * assume at those times, and the method of interpolation between those values. For example, here is the same animation
+ * as above, specified through KeyFrames, where the RED color will be set 10% of the way through the animation (note
+ * that we are not setting an Interpolator, so the timing intervals will use the default LinearInterpolator):
  * 
  * <pre>
  * KeyFramesBuilder&lt;Color&gt; builder = new KeyFramesBuilder&lt;Color&gt;(Color.BLUE);
@@ -62,11 +50,9 @@ import com.surelogic.Vouch;
  * animator.start();
  * </pre>
  * 
- * It is also possible to setup a {@link PropertySetter} to use the current
- * value of the property as the starting value in an animation. This is called a
- * "to" animation. For example, here is an animation of the "foreground"
- * property of some object {@code obj} from it's current value to white and then
- * to blue over a period of 5 seconds:
+ * It is also possible to setup a {@link PropertySetter} to use the current value of the property as the starting value
+ * in an animation. This is called a "to" animation. For example, here is an animation of the "foreground" property of
+ * some object {@code obj} from it's current value to white and then to blue over a period of 5 seconds:
  * 
  * <pre>
  * TimingTarget ps = PropertySetter.getTargetTo(obj, &quot;foreground&quot;, Color.WHITE, Color.BLUE);
@@ -74,21 +60,17 @@ import com.surelogic.Vouch;
  * animator.start();
  * </pre>
  * 
- * Note the use of <tt><b>getTargetTo</b></tt>, rather than <tt>getTarget</tt>,
- * to construct an instance for a "to" animation.
+ * Note the use of <tt><b>getTargetTo</b></tt>, rather than <tt>getTarget</tt>, to construct an instance for a "to"
+ * animation.
  * <p>
- * As with <tt>getTarget</tt>, it is also possible with <tt>getTargetTo</tt> to
- * define more involved and tightly-controlled steps in the animation, including
- * the times between the values and how the values are interpolated by using the
- * constructor that takes a {@link KeyFrames} object. In the case of a "to"
- * animation, the first key value of the {@link KeyFrames} object is
- * ignored&mdash;it is replaced with the current value of the property. For
- * example, here is the same animation as above, specified through a list of
- * {@link KeyFrames.Frame} objects, where the WHITE color will be set 40% of the
- * way through the animation. The final transition to BLUE uses a
- * {@link SplineInterpolator} rather than the default {@link LinearInterpolator}
- * . The RED color that is specified as the starting value is ignored and
- * replaced with the current value of the foreground property.
+ * As with <tt>getTarget</tt>, it is also possible with <tt>getTargetTo</tt> to define more involved and
+ * tightly-controlled steps in the animation, including the times between the values and how the values are interpolated
+ * by using the constructor that takes a {@link KeyFrames} object. In the case of a "to" animation, the first key value
+ * of the {@link KeyFrames} object is ignored&mdash;it is replaced with the current value of the property. For example,
+ * here is the same animation as above, specified through a list of {@link KeyFrames.Frame} objects, where the WHITE
+ * color will be set 40% of the way through the animation. The final transition to BLUE uses a
+ * {@link SplineInterpolator} rather than the default {@link LinearInterpolator} . The RED color that is specified as
+ * the starting value is ignored and replaced with the current value of the foreground property.
  * 
  * <pre>
  * KeyFramesBuilder&lt;Color&gt; builder = new KeyFramesBuilder&lt;Color&gt;(Color.RED);
@@ -101,12 +83,10 @@ import com.surelogic.Vouch;
  * </pre>
  * 
  * <p>
- * All the methods in this utility return a {@link TimingTargetAdapter} so that
- * a "debug" name can be explicitly set on a returned timing target. In the
- * example code below calling {@link TimingTargetAdapter#getDebugName()
- * ps.getDebugName()} will result in <tt>"BlueToRed"</tt> and calling
- * {@link TimingTargetAdapter#toString() ps.toString()} will result in
- * <tt>"PropertySetterTimingTarget@BlueToRed"</tt>.
+ * All the methods in this utility return a {@link TimingTargetAdapter} so that a "debug" name can be explicitly set on
+ * a returned timing target. In the example code below calling {@link TimingTargetAdapter#getDebugName()
+ * ps.getDebugName()} will result in <tt>"BlueToRed"</tt> and calling {@link TimingTargetAdapter#toString()
+ * ps.toString()} will result in <tt>"PropertySetterTimingTarget@BlueToRed"</tt>.
  * 
  * <pre>
  * TimingTargetAdapter ps = PropertySetter.getTarget(obj, &quot;background&quot;, Color.BLUE, Color.RED);
@@ -114,32 +94,26 @@ import com.surelogic.Vouch;
  * </pre>
  * 
  * <p>
- * If the target class has more than one setter method defined due to method
- * overloading (e.g., we want <tt>setX</tt> and declarations exist for
- * <tt>setX(int)</tt> and <tt>setX(double)</tt>) then the following heuristic,
- * in order, determines the method chosen. Implementation note: the key value
- * types are internally always wrapper types (e.g., Integer never int) so
- * primitive type setter methods must be considered.
+ * If the target class has more than one setter method defined due to method overloading (e.g., we want <tt>setX</tt>
+ * and declarations exist for <tt>setX(int)</tt> and <tt>setX(double)</tt>) then the following heuristic, in order,
+ * determines the method chosen. Implementation note: the key value types are internally always wrapper types (e.g.,
+ * Integer never int) so primitive type setter methods must be considered.
  * <ol>
- * <li>If a setter with an "exact" match primitive can be found that is used.
- * For example, setX(int) for key value of Integer.</li>
- * <li>If a setter with an exact match reference type can be found that is used.
- * For example, setX(Color) for key value of Color, or setX(Integer) for key
+ * <li>If a setter with an "exact" match primitive can be found that is used. For example, setX(int) for key value of
+ * Integer.</li>
+ * <li>If a setter with an exact match reference type can be found that is used. For example, setX(Color) for key value
+ * of Color, or setX(Integer) for key value of Integer.</li>
+ * <li>If a setter with an "assignable" match primitive can be found that is used. For example, setX(double) for key
  * value of Integer.</li>
- * <li>If a setter with an "assignable" match primitive can be found that is
- * used. For example, setX(double) for key value of Integer.</li>
- * <li>If a setter with an assignable match reference type can be found that is
- * used. For example, setX(Object) for key value of Color, or setX(Number) for
- * key value of Integer.</li>
+ * <li>If a setter with an assignable match reference type can be found that is used. For example, setX(Object) for key
+ * value of Color, or setX(Number) for key value of Integer.</li>
  * <li>The first in the set of choices is chosen.</li>
  * </ol>
  * 
  * <p>
- * The "debug" name is automatically set to the value passed for the property
- * name. In the example code below the {@link TimingTargetAdapter} type doesn't
- * need to be used but calling {@link TimingTargetAdapter#toString()
- * ps.toString()} will result in
- * <tt>"PropertySetterTimingTarget@background"</tt>.
+ * The "debug" name is automatically set to the value passed for the property name. In the example code below the
+ * {@link TimingTargetAdapter} type doesn't need to be used but calling {@link TimingTargetAdapter#toString()
+ * ps.toString()} will result in <tt>"PropertySetterTimingTarget@background"</tt>.
  * 
  * <pre>
  * TimingTarget ps = PropertySetter.getTarget(obj, &quot;background&quot;, Color.BLUE, Color.RED);
@@ -148,344 +122,354 @@ import com.surelogic.Vouch;
  * @author Chet Haase
  * @author Tim Halloran
  */
-@Immutable
-@Utility
 public final class PropertySetter {
 
-  /**
-   * Constructs a timing target that changes an object's property over time.
-   * 
-   * @param <T>
-   *          the type of the object's property.
-   * @param object
-   *          an object.
-   * @param propertyName
-   *          the name of the the property to manipulate on <tt>object</tt>.
-   * @param keyFrames
-   *          a key frames instance that define how the property's value changes
-   *          over time.
-   * @return a timing target.
-   */
-  public static <T> TimingTargetAdapter getTarget(Object object, String propertyName, KeyFrames<T> keyFrames) {
-    return getTargetHelper(object, propertyName, keyFrames, false);
-  }
-
-  /**
-   * Constructs a timing target that changes an object's property over time.
-   * 
-   * @param <T>
-   *          the type of the object's property.
-   * @param object
-   *          an object.
-   * @param propertyName
-   *          the name of the the property to manipulate on <tt>object</tt>.
-   * @param values
-   *          an ordered list of values that the property should be animated
-   *          between. The values will be spaced equally in time and a
-   *          {@link LinearInterpolator} will be used.
-   * @return a timing target.
-   */
-  public static <T> TimingTargetAdapter getTarget(Object object, String propertyName, T... values) {
-    final KeyFrames<T> keyFrames = new KeyFrames.Builder<T>().addFrames(values).build();
-    return getTarget(object, propertyName, keyFrames);
-  }
-
-  /**
-   * Constructs a timing target that changes an object's property over time.
-   * 
-   * @param <T>
-   *          the type of the object's property.
-   * @param object
-   *          an object.
-   * @param propertyName
-   *          the name of the the property to manipulate on <tt>object</tt>.
-   * @param interpolator
-   *          the interpolator that should be used between the values.
-   * @param values
-   *          an ordered list of values that the property should be animated
-   *          between. The values will be spaced equally in time and the passed
-   *          interpolator will be used.
-   * @return a timing target.
-   */
-  public static <T> TimingTargetAdapter getTarget(Object object, String propertyName, Interpolator interpolator, T... values) {
-    final KeyFrames<T> keyFrames = new KeyFrames.Builder<T>().setInterpolator(interpolator).addFrames(values).build();
-    return getTarget(object, propertyName, keyFrames);
-  }
-
-  /**
-   * Constructs a timing target that changes an object's property from its
-   * current value over time. This is referred to as a "to" animation.
-   * 
-   * @param <T>
-   *          the type of the object's property.
-   * @param object
-   *          an object.
-   * @param propertyName
-   *          the name of the the property to manipulate on <tt>object</tt>.
-   * @param keyFrames
-   *          a key frames instance that define how the property's value changes
-   *          over time. The initial value is ignored and replaced with the
-   *          current value of the object's property.
-   * @return a timing target.
-   */
-  public static <T> TimingTargetAdapter getTargetTo(Object object, String propertyName, KeyFrames<T> keyFrames) {
-    return getTargetHelper(object, propertyName, keyFrames, true);
-  }
-
-  /**
-   * Constructs a timing target that changes an object's property from its
-   * current value over time. This is referred to as a "to" animation.
-   * 
-   * @param <T>
-   *          the type of the object's property.
-   * @param object
-   *          an object.
-   * @param propertyName
-   *          the name of the the property to manipulate on <tt>object</tt>.
-   * @param values
-   *          an ordered list of values that the property should be animated
-   *          between. The current value of the object's property is added to
-   *          the start of this ordered list. The values will be spaced equally
-   *          in time and a {@link LinearInterpolator} will be used.
-   * @return a timing target.
-   */
-  public static <T> TimingTargetAdapter getTargetTo(Object object, String propertyName, T... values) {
-    final KeyFrames<T> keyFrames = new KeyFrames.Builder<T>(values[0]).addFrames(values).build();
-    return getTargetTo(object, propertyName, keyFrames);
-  }
-
-  /**
-   * Constructs a timing target that changes an object's property from its
-   * current value over time. This is referred to as a "to" animation.
-   * 
-   * @param <T>
-   *          the type of the object's property.
-   * @param object
-   *          an object.
-   * @param propertyName
-   *          the name of the the property to manipulate on <tt>object</tt>.
-   * @param interpolator
-   *          the interpolator that should be used between the values.
-   * @param values
-   *          an ordered list of values that the property should be animated
-   *          between. The current value of the object's property is added to
-   *          the start of this ordered list. The values will be spaced equally
-   *          in time and the passed interpolator will be used.
-   * @return a timing target.
-   */
-  public static <T> TimingTargetAdapter getTargetTo(Object object, String propertyName, Interpolator interpolator, T... values) {
-    final KeyFrames<T> keyFrames = new KeyFrames.Builder<T>(values[0]).setInterpolator(interpolator).addFrames(values).build();
-    return getTargetTo(object, propertyName, keyFrames);
-  }
-
-  private PropertySetter() {
-    throw new AssertionError();
-  }
-
-  static <T> TimingTargetAdapter getTargetHelper(final Object object, final String propertyName, final KeyFrames<T> keyFrames,
-      final boolean isToAnimation) {
-    if (object == null)
-      throw new IllegalArgumentException(I18N.err(1, "object"));
-    if (propertyName == null)
-      throw new IllegalArgumentException(I18N.err(1, "propertyName"));
-    if (keyFrames == null)
-      throw new IllegalArgumentException(I18N.err(1, "keyFrames"));
-    @SuppressWarnings("unchecked")
-    final KeyFrames<Object> objectKeyFrames = (KeyFrames<Object>) keyFrames;
-    /*
-     * Find the setter method for the property.
+    /**
+     * Constructs a timing target that changes an object's property over time.
+     * 
+     * @param <T>
+     *            the type of the object's property.
+     * @param object
+     *            an object.
+     * @param propertyName
+     *            the name of the the property to manipulate on <tt>object</tt>.
+     * @param keyFrames
+     *            a key frames instance that define how the property's value changes over time.
+     * @return a timing target.
      */
-    final String firstChar = propertyName.substring(0, 1);
-    final String remainder = propertyName.substring(1);
-    final String propertySetterName = "set" + firstChar.toUpperCase(Locale.ENGLISH) + remainder;
-    final Class<?> argType = keyFrames.getClassOfValue();
-    final ArrayList<Method> potentials = new ArrayList<Method>();
-    final Method propertySetter;
-    try {
-      for (Method m : object.getClass().getMethods()) {
-        if (m.getName().equals(propertySetterName)) {
-          final Class<?>[] parameterTypes = m.getParameterTypes();
-          if (parameterTypes.length == 1) {
-            potentials.add(m);
-          }
-        }
-      }
-      propertySetter = bestSetterMatch(argType, potentials);
-      if (propertySetter == null) {
-        throw new IllegalArgumentException(I18N.err(30, propertySetterName, propertyName, object.toString()));
-      }
-    } catch (SecurityException e) {
-      throw new IllegalArgumentException(I18N.err(30, propertySetterName, propertyName, object.toString()), e);
+    public static <T> TimingTargetAdapter getTarget(Object object, String propertyName, KeyFrames<T> keyFrames) {
+        return getTargetHelper(object, propertyName, keyFrames, false);
     }
-    /*
-     * Find the getter method for the property if this is a "to" animations
+
+    /**
+     * Constructs a timing target that changes an object's property over time.
+     * 
+     * @param <T>
+     *            the type of the object's property.
+     * @param object
+     *            an object.
+     * @param propertyName
+     *            the name of the the property to manipulate on <tt>object</tt>.
+     * @param values
+     *            an ordered list of values that the property should be animated between. The values will be spaced
+     *            equally in time and a {@link LinearInterpolator} will be used.
+     * @return a timing target.
      */
-    if (isToAnimation) {
-      final String propertyGetterName = "get" + firstChar.toUpperCase(Locale.ENGLISH) + remainder;
-      Method propertyGetter = null;
-      try {
-        for (Method m : object.getClass().getMethods()) {
-          if (m.getName().equals(propertyGetterName)) {
-            if (m.getParameterTypes().length == 0) {
-              propertyGetter = m;
-              break;
+    public static <T> TimingTargetAdapter getTarget(Object object, String propertyName, T... values) {
+        final KeyFrames<T> keyFrames = new KeyFrames.Builder<T>().addFrames(values).build();
+        return getTarget(object, propertyName, keyFrames);
+    }
+
+    /**
+     * Constructs a timing target that changes an object's property over time.
+     * 
+     * @param <T>
+     *            the type of the object's property.
+     * @param object
+     *            an object.
+     * @param propertyName
+     *            the name of the the property to manipulate on <tt>object</tt>.
+     * @param interpolator
+     *            the interpolator that should be used between the values.
+     * @param values
+     *            an ordered list of values that the property should be animated between. The values will be spaced
+     *            equally in time and the passed interpolator will be used.
+     * @return a timing target.
+     */
+    public static <T> TimingTargetAdapter getTarget(
+        Object object, String propertyName, Interpolator interpolator, T... values) {
+        final KeyFrames<T> keyFrames =
+            new KeyFrames.Builder<T>().setInterpolator(interpolator).addFrames(values).build();
+        return getTarget(object, propertyName, keyFrames);
+    }
+
+    /**
+     * Constructs a timing target that changes an object's property from its current value over time. This is referred
+     * to as a "to" animation.
+     * 
+     * @param <T>
+     *            the type of the object's property.
+     * @param object
+     *            an object.
+     * @param propertyName
+     *            the name of the the property to manipulate on <tt>object</tt>.
+     * @param keyFrames
+     *            a key frames instance that define how the property's value changes over time. The initial value is
+     *            ignored and replaced with the current value of the object's property.
+     * @return a timing target.
+     */
+    public static <T> TimingTargetAdapter getTargetTo(Object object, String propertyName, KeyFrames<T> keyFrames) {
+        return getTargetHelper(object, propertyName, keyFrames, true);
+    }
+
+    /**
+     * Constructs a timing target that changes an object's property from its current value over time. This is referred
+     * to as a "to" animation.
+     * 
+     * @param <T>
+     *            the type of the object's property.
+     * @param object
+     *            an object.
+     * @param propertyName
+     *            the name of the the property to manipulate on <tt>object</tt>.
+     * @param values
+     *            an ordered list of values that the property should be animated between. The current value of the
+     *            object's property is added to the start of this ordered list. The values will be spaced equally in
+     *            time and a {@link LinearInterpolator} will be used.
+     * @return a timing target.
+     */
+    public static <T> TimingTargetAdapter getTargetTo(Object object, String propertyName, T... values) {
+        final KeyFrames<T> keyFrames = new KeyFrames.Builder<T>(values[0]).addFrames(values).build();
+        return getTargetTo(object, propertyName, keyFrames);
+    }
+
+    /**
+     * Constructs a timing target that changes an object's property from its current value over time. This is referred
+     * to as a "to" animation.
+     * 
+     * @param <T>
+     *            the type of the object's property.
+     * @param object
+     *            an object.
+     * @param propertyName
+     *            the name of the the property to manipulate on <tt>object</tt>.
+     * @param interpolator
+     *            the interpolator that should be used between the values.
+     * @param values
+     *            an ordered list of values that the property should be animated between. The current value of the
+     *            object's property is added to the start of this ordered list. The values will be spaced equally in
+     *            time and the passed interpolator will be used.
+     * @return a timing target.
+     */
+    public static <T> TimingTargetAdapter getTargetTo(
+        Object object, String propertyName, Interpolator interpolator, T... values) {
+        final KeyFrames<T> keyFrames =
+            new KeyFrames.Builder<T>(values[0]).setInterpolator(interpolator).addFrames(values).build();
+        return getTargetTo(object, propertyName, keyFrames);
+    }
+
+    private PropertySetter() {
+        throw new AssertionError();
+    }
+
+    static <T> TimingTargetAdapter getTargetHelper(
+        final Object object, final String propertyName, final KeyFrames<T> keyFrames, final boolean isToAnimation) {
+        if (object == null) {
+            throw new IllegalArgumentException(I18N.err(1, "object"));
+        }
+        if (propertyName == null) {
+            throw new IllegalArgumentException(I18N.err(1, "propertyName"));
+        }
+        if (keyFrames == null) {
+            throw new IllegalArgumentException(I18N.err(1, "keyFrames"));
+        }
+        @SuppressWarnings("unchecked")
+        final KeyFrames<Object> objectKeyFrames = (KeyFrames<Object>) keyFrames;
+        /*
+         * Find the setter method for the property.
+         */
+        final String firstChar = propertyName.substring(0, 1);
+        final String remainder = propertyName.substring(1);
+        final String propertySetterName = "set" + firstChar.toUpperCase(Locale.ENGLISH) + remainder;
+        final Class<?> argType = keyFrames.getClassOfValue();
+        final ArrayList<Method> potentials = new ArrayList<Method>();
+        final Method propertySetter;
+        try {
+            for (Method m : object.getClass().getMethods()) {
+                if (m.getName().equals(propertySetterName)) {
+                    final Class<?>[] parameterTypes = m.getParameterTypes();
+                    if (parameterTypes.length == 1) {
+                        potentials.add(m);
+                    }
+                }
             }
-          }
+            propertySetter = bestSetterMatch(argType, potentials);
+            if (propertySetter == null) {
+                throw new IllegalArgumentException(I18N.err(30, propertySetterName, propertyName, object.toString()));
+            }
         }
-        if (propertyGetter == null) {
-          throw new IllegalArgumentException(I18N.err(30, propertyGetterName, propertyName, object.toString()));
+        catch (SecurityException e) {
+            throw new IllegalArgumentException(I18N.err(30, propertySetterName, propertyName, object.toString()), e);
         }
-      } catch (SecurityException e) {
-        throw new IllegalArgumentException(I18N.err(30, propertyGetterName, propertyName, object.toString()), e);
-      }
-      /*
-       * Setup "to" animation.
-       */
-      return new PropertySetterToTimingTarget(objectKeyFrames, object, propertyGetter, propertySetter, propertyName);
-    } else {
-      /*
-       * Setup animation.
-       */
-      return new PropertySetterTimingTarget(objectKeyFrames, object, propertySetter, propertyName);
-    }
-  }
-
-  /**
-   * Heuristically picks the best potential setter. See doc for
-   * {@link PropertySetter} about the heuristic and how a choice is made.
-   * 
-   * @param argType
-   *          the type of the value being passed to the setter method.
-   * @param potentials
-   *          methods found that are called <tt>setX</tt> with one argument.
-   * @return the best potential setter, or {@code null} if none.
-   */
-  @Nullable
-  private static Method bestSetterMatch(@NonNull Class<?> argType, @NonNull ArrayList<Method> potentials) {
-    if (potentials.isEmpty())
-      return null;
-    else if (potentials.size() == 1)
-      return potentials.get(0);
-    else {
-      // try for exact match on primitive formal
-      for (Method m : potentials) {
-        final Class<?> formalType = m.getParameterTypes()[0];
-        if (formalType.isPrimitive()) {
-          if ((int.class.equals(formalType) && Integer.class.equals(argType))
-              || (long.class.equals(formalType) && Long.class.equals(argType))
-              || (double.class.equals(formalType) && Double.class.equals(argType))
-              || (float.class.equals(formalType) && Float.class.equals(argType))
-              || (boolean.class.equals(formalType) && Boolean.class.equals(argType))
-              || (char.class.equals(formalType) && Character.class.equals(argType))
-              || (byte.class.equals(formalType) && Byte.class.equals(argType))
-              || (void.class.equals(formalType) && Void.class.equals(argType))
-              || (short.class.equals(formalType) && Short.class.equals(argType))) {
-            return m;
-          }
+        /*
+         * Find the getter method for the property if this is a "to" animations
+         */
+        if (isToAnimation) {
+            final String propertyGetterName = "get" + firstChar.toUpperCase(Locale.ENGLISH) + remainder;
+            Method propertyGetter = null;
+            try {
+                for (Method m : object.getClass().getMethods()) {
+                    if (m.getName().equals(propertyGetterName)) {
+                        if (m.getParameterTypes().length == 0) {
+                            propertyGetter = m;
+                            break;
+                        }
+                    }
+                }
+                if (propertyGetter == null) {
+                    throw new IllegalArgumentException(
+                        I18N.err(30, propertyGetterName, propertyName, object.toString()));
+                }
+            }
+            catch (SecurityException e) {
+                throw new IllegalArgumentException(I18N.err(30, propertyGetterName, propertyName, object.toString()),
+                    e);
+            }
+            /*
+             * Setup "to" animation.
+             */
+            return new PropertySetterToTimingTarget(objectKeyFrames, object, propertyGetter, propertySetter,
+                propertyName);
         }
-      }
-      // try for exact match on reference formal
-      for (Method m : potentials) {
-        final Class<?> formalType = m.getParameterTypes()[0];
-        if (!formalType.isPrimitive()) {
-          if (formalType.equals(argType)) {
-            return m;
-          }
+        else {
+            /*
+             * Setup animation.
+             */
+            return new PropertySetterTimingTarget(objectKeyFrames, object, propertySetter, propertyName);
         }
-      }
-      // try for assignable match on primitive formal
-      for (Method m : potentials) {
-        final Class<?> formalType = m.getParameterTypes()[0];
-        if (formalType.isPrimitive()) {
-          if ((short.class.equals(formalType) && Byte.class.equals(argType))
-              || (int.class.equals(formalType) && (Byte.class.equals(argType) || Short.class.equals(argType) || Character.class
-                  .equals(argType)))
-              || (long.class.equals(formalType) && (Byte.class.equals(argType) || Short.class.equals(argType)
-                  || Integer.class.equals(argType) || Character.class.equals(argType)))
-              || (float.class.equals(formalType) && (Byte.class.equals(argType) || Short.class.equals(argType)
-                  || Integer.class.equals(argType) || Long.class.equals(argType) || Character.class.equals(argType)))
-              || (double.class.equals(formalType) && (Byte.class.equals(argType) || Short.class.equals(argType)
-                  || Integer.class.equals(argType) || Long.class.equals(argType) || Character.class.equals(argType) || Float.class
-                    .equals(argType)))) {
-            return m;
-          }
-        }
-      }
-      // try for assignable match on reference formal
-      for (Method m : potentials) {
-        final Class<?> formalType = m.getParameterTypes()[0];
-        if (!formalType.isPrimitive()) {
-          if (formalType.isAssignableFrom(argType)) {
-            return m;
-          }
-        }
-      }
-      // just return the first (old behavior)
-      return potentials.get(0);
-    }
-  }
-
-  @ThreadSafe
-  static class PropertySetterTimingTarget extends TimingTargetAdapter {
-
-    protected final AtomicReference<KeyFrames<Object>> f_keyFrames = new AtomicReference<KeyFrames<Object>>();
-    @Vouch("ThreadSafe")
-    protected final Object f_object;
-    @Vouch("ThreadSafe")
-    protected final Method f_propertySetter;
-
-    PropertySetterTimingTarget(KeyFrames<Object> keyFrames, Object object, Method propertySetter, String propertyName) {
-      f_keyFrames.set(keyFrames);
-      f_object = object;
-      f_propertySetter = propertySetter;
-      f_debugName = propertyName;
     }
 
-    @Override
-    public void timingEvent(Animator source, double fraction) {
-      try {
-        f_propertySetter.invoke(f_object, f_keyFrames.get().getInterpolatedValueAt(fraction));
-      } catch (Exception e) {
-        throw new IllegalStateException(I18N.err(31, f_propertySetter.getName(), f_object.toString()), e);
-      }
-    }
-
-    @Override
-    public void begin(Animator source) {
-      final double fraction = source.getCurrentDirection() == Direction.FORWARD ? 0.0 : 1.0;
-      timingEvent(source, fraction);
-    }
-  }
-
-  @ThreadSafe
-  static final class PropertySetterToTimingTarget extends PropertySetterTimingTarget {
-
-    @Vouch("ThreadSafe")
-    final Method f_propertyGetter;
-
-    PropertySetterToTimingTarget(KeyFrames<Object> keyFrames, Object object, Method propertyGetter, Method propertySetter,
-        String propertyName) {
-      super(keyFrames, object, propertySetter, propertyName);
-      f_propertyGetter = propertyGetter;
-    }
-
-    @Override
-    public void begin(Animator source) {
-      try {
-        final Object startValue = f_propertyGetter.invoke(f_object);
-        final KeyFrames.Builder<Object> builder = new KeyFrames.Builder<Object>(startValue);
-        boolean first = true;
-        for (KeyFrames.Frame<Object> frame : f_keyFrames.get()) {
-          if (first)
-            first = false;
-          else
-            builder.addFrame(frame);
+    /**
+     * Heuristically picks the best potential setter. See doc for {@link PropertySetter} about the heuristic and how a
+     * choice is made.
+     * 
+     * @param argType
+     *            the type of the value being passed to the setter method.
+     * @param potentials
+     *            methods found that are called <tt>setX</tt> with one argument.
+     * @return the best potential setter, or {@code null} if none.
+     */
+    private static Method bestSetterMatch(Class<?> argType, ArrayList<Method> potentials) {
+        if (potentials.isEmpty()) {
+            return null;
         }
-        f_keyFrames.set(builder.build());
-      } catch (Exception e) {
-        throw new IllegalStateException(I18N.err(31, f_propertyGetter.getName(), f_object.toString()), e);
-      }
-      super.begin(source); // set the initial value
+        else if (potentials.size() == 1) {
+            return potentials.get(0);
+        }
+        else {
+            // try for exact match on primitive formal
+            for (Method m : potentials) {
+                final Class<?> formalType = m.getParameterTypes()[0];
+                if (formalType.isPrimitive()) {
+                    if ((int.class.equals(formalType) && Integer.class.equals(argType))
+                        || (long.class.equals(formalType) && Long.class.equals(argType))
+                        || (double.class.equals(formalType) && Double.class.equals(argType))
+                        || (float.class.equals(formalType) && Float.class.equals(argType))
+                        || (boolean.class.equals(formalType) && Boolean.class.equals(argType))
+                        || (char.class.equals(formalType) && Character.class.equals(argType))
+                        || (byte.class.equals(formalType) && Byte.class.equals(argType))
+                        || (void.class.equals(formalType) && Void.class.equals(argType))
+                        || (short.class.equals(formalType) && Short.class.equals(argType))) {
+                        return m;
+                    }
+                }
+            }
+            // try for exact match on reference formal
+            for (Method m : potentials) {
+                final Class<?> formalType = m.getParameterTypes()[0];
+                if (!formalType.isPrimitive()) {
+                    if (formalType.equals(argType)) {
+                        return m;
+                    }
+                }
+            }
+            // try for assignable match on primitive formal
+            for (Method m : potentials) {
+                final Class<?> formalType = m.getParameterTypes()[0];
+                if (formalType.isPrimitive()) {
+                    if ((short.class.equals(formalType) && Byte.class.equals(argType))
+                        || (int.class.equals(formalType) && (Byte.class.equals(argType) || Short.class.equals(argType)
+                            || Character.class.equals(argType)))
+                        || (long.class.equals(formalType) && (Byte.class.equals(argType) || Short.class.equals(argType)
+                            || Integer.class.equals(argType) || Character.class.equals(argType)))
+                        || (float.class.equals(formalType) && (Byte.class.equals(argType) || Short.class.equals(argType)
+                            || Integer.class.equals(argType) || Long.class.equals(argType)
+                            || Character.class.equals(argType)))
+                        || (double.class.equals(formalType)
+                            && (Byte.class.equals(argType) || Short.class.equals(argType)
+                                || Integer.class.equals(argType) || Long.class.equals(argType)
+                                || Character.class.equals(argType) || Float.class.equals(argType)))) {
+                        return m;
+                    }
+                }
+            }
+            // try for assignable match on reference formal
+            for (Method m : potentials) {
+                final Class<?> formalType = m.getParameterTypes()[0];
+                if (!formalType.isPrimitive()) {
+                    if (formalType.isAssignableFrom(argType)) {
+                        return m;
+                    }
+                }
+            }
+            // just return the first (old behavior)
+            return potentials.get(0);
+        }
     }
-  }
+
+    static class PropertySetterTimingTarget extends TimingTargetAdapter {
+
+        protected final AtomicReference<KeyFrames<Object>> f_keyFrames = new AtomicReference<KeyFrames<Object>>();
+
+        protected final Object f_object;
+
+        protected final Method f_propertySetter;
+
+        PropertySetterTimingTarget(KeyFrames<Object> keyFrames, Object object, Method propertySetter,
+            String propertyName) {
+            f_keyFrames.set(keyFrames);
+            f_object = object;
+            f_propertySetter = propertySetter;
+            f_debugName = propertyName;
+        }
+
+        @Override
+        public void timingEvent(Animator source, double fraction) {
+            try {
+                f_propertySetter.invoke(f_object, f_keyFrames.get().getInterpolatedValueAt(fraction));
+            }
+            catch (Exception e) {
+                throw new IllegalStateException(I18N.err(31, f_propertySetter.getName(), f_object.toString()), e);
+            }
+        }
+
+        @Override
+        public void begin(Animator source) {
+            final double fraction = source.getCurrentDirection() == Direction.FORWARD ? 0.0 : 1.0;
+            timingEvent(source, fraction);
+        }
+    }
+
+    static final class PropertySetterToTimingTarget extends PropertySetterTimingTarget {
+
+        final Method f_propertyGetter;
+
+        PropertySetterToTimingTarget(KeyFrames<Object> keyFrames, Object object, Method propertyGetter,
+            Method propertySetter, String propertyName) {
+            super(keyFrames, object, propertySetter, propertyName);
+            f_propertyGetter = propertyGetter;
+        }
+
+        @Override
+        public void begin(Animator source) {
+            try {
+                final Object startValue = f_propertyGetter.invoke(f_object);
+                final KeyFrames.Builder<Object> builder = new KeyFrames.Builder<Object>(startValue);
+                boolean first = true;
+                for (KeyFrames.Frame<Object> frame : f_keyFrames.get()) {
+                    if (first) {
+                        first = false;
+                    }
+                    else {
+                        builder.addFrame(frame);
+                    }
+                }
+                f_keyFrames.set(builder.build());
+            }
+            catch (Exception e) {
+                throw new IllegalStateException(I18N.err(31, f_propertyGetter.getName(), f_object.toString()), e);
+            }
+            super.begin(source); // set the initial value
+        }
+    }
 }

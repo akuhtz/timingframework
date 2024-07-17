@@ -90,11 +90,6 @@
 				<version>${project.version}</version>
 			</dependency>
 		
-            <dependency>
-                <groupId>org.bidib.com.surelogic</groupId>
-                <artifactId>promises</artifactId>
-                <version>5.6.0</version>
-            </dependency>
 			<dependency>
 				<groupId>org.junit</groupId>
 				<artifactId>junit-bom</artifactId>
