@@ -198,7 +198,7 @@ public abstract class TimingSource {
             }
             task.run();
         }
-        final long nanoTime = System.nanoTime();
+        final long nanoTime = getNanoTime();
         if (!f_tickListeners.isEmpty()) {
             for (TickListener listener : f_tickListeners) {
                 listener.timingSourceTick(TimingSource.this, nanoTime);
@@ -209,5 +209,17 @@ public abstract class TimingSource {
                 listener.timingSourcePostTick(TimingSource.this, nanoTime);
             }
         }
+    }
+    
+    /**
+     * Returns the reference time of this TimingSource in nanoseconds.
+     * By default, this method delegates to {@link System#nanoTime()}.
+     * Subclasses may override this method to provide their own reference time,
+     * such as a frame counter or an alternative high-precision timing source.
+     *
+     * @return the reference time in nanoseconds
+     */
+    public long getNanoTime() {
+        return System.nanoTime();
     }
 }
