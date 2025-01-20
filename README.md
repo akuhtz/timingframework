@@ -1,4 +1,8 @@
 # timingframework
+
+[![Build Status](https://github.com/akuhtz/timingframework/workflows/Java%20CI/badge.svg)](https://github.com/akuhtz/timingframework/actions)
+[![Maven Central](https://img.shields.io/maven-central/v/org.bidib.net.java.timingframework/timingframework.svg?label=Maven%20Central&style=flat)](https://search.maven.org/artifact/org.bidib.net.java.timingframework/timingframework)
+
 Timing Framework 
 
 Welcome to the Timing Framework, a library for making Java animation and timing-based control easier. 
