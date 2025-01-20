@@ -1307,7 +1307,7 @@ public final class Animator implements TickListener {
             final boolean canPause = isRunning() && !f_stopping && f_pauseBeginTimeNanos == 0;
             if (canPause) {
                 f_timingSource.removeTickListener(this);
-                f_pauseBeginTimeNanos = System.nanoTime();
+                f_pauseBeginTimeNanos = f_timingSource.getNanoTime();
             }
         }
     }
@@ -1333,7 +1333,7 @@ public final class Animator implements TickListener {
         synchronized (this) {
             final boolean paused = isPaused();
             if (paused) {
-                long pauseDeltaNanos = System.nanoTime() - f_pauseBeginTimeNanos;
+                long pauseDeltaNanos = f_timingSource.getNanoTime() - f_pauseBeginTimeNanos;
                 f_startTimeNanos += pauseDeltaNanos;
                 f_cycleStartTimeNanos += pauseDeltaNanos;
                 f_pauseBeginTimeNanos = 0;
@@ -1411,7 +1411,7 @@ public final class Animator implements TickListener {
      *         time.
      */
     public long getCycleElapsedTime() {
-        return getCycleElapsedTime(System.nanoTime());
+        return getCycleElapsedTime(f_timingSource.getNanoTime());
     }
 
     /**
@@ -1440,7 +1440,7 @@ public final class Animator implements TickListener {
      * @return the total time elapsed in nanoseconds between the time this animation started and the current time.
      */
     public long getTotalElapsedTime() {
-        return getTotalElapsedTime(System.nanoTime());
+        return getTotalElapsedTime(f_timingSource.getNanoTime());
     }
 
     /**
@@ -1493,7 +1493,7 @@ public final class Animator implements TickListener {
                 throw new IllegalStateException(I18N.err(12, methodName));
             }
 
-            final long nanoTime = System.nanoTime();
+            final long nanoTime = f_timingSource.getNanoTime();
             f_startTimeNanos = nanoTime;
             f_cycleStartTimeNanos = nanoTime + f_startDelayNanos;
             f_currentDirection = direction;
