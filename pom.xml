@@ -11,7 +11,7 @@
     <packaging>pom</packaging>
     
     <name>Timing Framework</name>
-    <version>7.4.3-SNAPSHOT</version>
+    <version>7.4.3</version>
     <description>
     This project provides a framework and sample code for time-based animations.
     </description>
